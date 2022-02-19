@@ -10,19 +10,19 @@ public class WeightedBlock
         this.weight = weight;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getId() {
         return this.id;
     }
 
-    public void setWeight(Double weight) {
-        this.weight = weight;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Double getWeight() {
         return this.weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
     }
 }

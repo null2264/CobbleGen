@@ -7,7 +7,6 @@ import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 
 import java.util.List;
-import java.util.Map;
 
 import static io.github.null2264.CobbleGen.MOD_ID;
 
