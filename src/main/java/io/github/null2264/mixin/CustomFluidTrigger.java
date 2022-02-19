@@ -27,7 +27,6 @@ public class CustomFluidTrigger
         Block block = state.getBlock();
 
         if (block.equals(Blocks.COBBLESTONE)) {
-            // TODO: Make it actually randomized
             String replacement = Util.randomizeBlockId(CobbleGenConfig.get().cobbleGen);
             return Registry.BLOCK.get(new Identifier(replacement)).getDefaultState();
         } else if (block.equals(Blocks.BASALT)) {
