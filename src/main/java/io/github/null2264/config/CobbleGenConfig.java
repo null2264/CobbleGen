@@ -14,15 +14,16 @@ import static io.github.null2264.CobbleGen.MOD_ID;
 public class CobbleGenConfig implements ConfigData
 {
     public List<WeightedBlock> cobbleGen = List.of(
-        new WeightedBlock("minecraft:dirt", 5.5),
-        new WeightedBlock("minecraft:stone", 10.0),
-        new WeightedBlock("minecraft:cobblestone", 50.0)
+        new WeightedBlock("minecraft:diamond_ore", 5.0),
+        new WeightedBlock("minecraft:iron_ore", 15.0),
+        new WeightedBlock("minecraft:coal_ore", 20.0),
+        new WeightedBlock("minecraft:cobblestone", 60.0)
     );
     public List<WeightedBlock> stoneGen = List.of(
-        new WeightedBlock("minecraft:dirt", 100.0)
+        new WeightedBlock("minecraft:stone", 100.0)
     );
     public List<WeightedBlock> basaltGen = List.of(
-        new WeightedBlock("minecraft:dirt", 100.0)
+        new WeightedBlock("minecraft:basalt", 100.0)
     );
 
     public static void init() {
