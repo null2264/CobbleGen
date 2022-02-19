@@ -1,0 +1,30 @@
+{
+    "schemaVersion": 1,
+    "id": "null2264",
+    "version": "${version}",
+    "name": "CobbleGen",
+    "description": "Custom cobble gen",
+    "authors": [
+        "null2264"
+    ],
+    "contact": {},
+    "license": "MIT",
+    "icon": "assets/null2264/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "io.github.null2264.client.CobbleGenClient"
+        ],
+        "main": [
+            "io.github.null2264.CobbleGen"
+        ]
+    },
+    "mixins": [
+        "null2264.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.13.2",
+        "fabric": "*",
+        "minecraft": "1.18.1"
+    }
+}
