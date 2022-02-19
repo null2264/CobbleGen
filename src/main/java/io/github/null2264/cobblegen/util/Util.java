@@ -1,4 +1,4 @@
-package io.github.null2264.util;
+package io.github.null2264.cobblegen.util;
 
 import java.util.List;
 

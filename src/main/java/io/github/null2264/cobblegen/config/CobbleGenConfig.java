@@ -1,6 +1,6 @@
-package io.github.null2264.config;
+package io.github.null2264.cobblegen.config;
 
-import io.github.null2264.util.WeightedBlock;
+import io.github.null2264.cobblegen.util.WeightedBlock;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
@@ -8,7 +8,7 @@ import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 
 import java.util.List;
 
-import static io.github.null2264.CobbleGen.MOD_ID;
+import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
 @Config(name = MOD_ID)
 public class CobbleGenConfig implements ConfigData

@@ -1,6 +1,6 @@
-package io.github.null2264;
+package io.github.null2264.cobblegen;
 
-import io.github.null2264.config.CobbleGenConfig;
+import io.github.null2264.cobblegen.config.CobbleGenConfig;
 import net.fabricmc.api.ModInitializer;
 
 public class CobbleGen implements ModInitializer

@@ -1,4 +1,4 @@
-package io.github.null2264.client;
+package io.github.null2264.cobblegen.client;
 
 import net.fabricmc.api.ClientModInitializer;
 

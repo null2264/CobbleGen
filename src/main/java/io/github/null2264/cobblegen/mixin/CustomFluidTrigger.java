@@ -1,7 +1,7 @@
-package io.github.null2264.mixin;
+package io.github.null2264.cobblegen.mixin;
 
-import io.github.null2264.config.CobbleGenConfig;
-import io.github.null2264.util.Util;
+import io.github.null2264.cobblegen.config.CobbleGenConfig;
+import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
