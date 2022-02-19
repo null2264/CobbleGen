@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "null2264",
+    "id": "cobblegen",
     "version": "${version}",
     "name": "CobbleGen",
     "description": "Custom cobble gen",
@@ -9,18 +9,18 @@
     ],
     "contact": {},
     "license": "MIT",
-    "icon": "assets/null2264/icon.png",
+    "icon": "assets/icon.png",
     "environment": "*",
     "entrypoints": {
         "client": [
-            "io.github.null2264.client.CobbleGenClient"
+            "io.github.null2264.cobblegen.client.CobbleGenClient"
         ],
         "main": [
-            "io.github.null2264.CobbleGen"
+            "io.github.null2264.cobblegen.CobbleGen"
         ]
     },
     "mixins": [
-        "null2264.mixins.json"
+        "cobblegen.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=0.13.2",
