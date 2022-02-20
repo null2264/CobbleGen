@@ -1,36 +1,43 @@
 package io.github.null2264.cobblegen.config;
 
+import draylar.omegaconfig.OmegaConfig;
+import draylar.omegaconfig.api.Comment;
+import draylar.omegaconfig.api.Config;
 import io.github.null2264.cobblegen.util.WeightedBlock;
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
 
 import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
-@Config(name = MOD_ID)
-public class CobbleGenConfig implements ConfigData
+public class CobbleGenConfig implements Config
 {
+    @Comment(value = "Cobblestone Generator\n" +
+        "{ \"id\": \"mod_id:block_id\", \"weight\": 95.5 }")
     public List<WeightedBlock> cobbleGen = List.of(
         new WeightedBlock("minecraft:diamond_ore", 5.0),
         new WeightedBlock("minecraft:iron_ore", 15.0),
         new WeightedBlock("minecraft:coal_ore", 20.0),
         new WeightedBlock("minecraft:cobblestone", 60.0)
     );
+
+    @Comment(value = "Stone Generator\n" +
+        "{ \"id\": \"mod_id:block_id\", \"weight\": 95.5 }")
     public List<WeightedBlock> stoneGen = List.of(
         new WeightedBlock("minecraft:stone", 100.0)
     );
+
+    @Comment(value = "Basalt Generator\n" +
+        "{ \"id\": \"mod_id:block_id\", \"weight\": 95.5 }")
     public List<WeightedBlock> basaltGen = List.of(
         new WeightedBlock("minecraft:basalt", 100.0)
     );
 
-    public static void init() {
-        AutoConfig.register(CobbleGenConfig.class, JanksonConfigSerializer::new);
+    @Override
+    public String getName() {
+        return MOD_ID;
     }
 
-    public static CobbleGenConfig get() {
-        return AutoConfig.getConfigHolder(CobbleGenConfig.class).getConfig();
+    public static CobbleGenConfig init() {
+        return OmegaConfig.register(CobbleGenConfig.class);
     }
 }

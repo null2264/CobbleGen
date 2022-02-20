@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
+
 @Mixin(LavaFluid.class)
 public class LavaEventMixin
 {
@@ -33,7 +35,7 @@ public class LavaEventMixin
         if (world.getBlockState(pos.down()).isOf(Blocks.BEDROCK))
             replacement = "minecraft:dirt";
         else
-            replacement = Util.randomizeBlockId(CobbleGenConfig.get().stoneGen);
+            replacement = Util.randomizeBlockId(CONFIG.stoneGen);
 
         args.set(1, replacement != null ? Registry.BLOCK.get(new Identifier(replacement)).getDefaultState() : state);
     }

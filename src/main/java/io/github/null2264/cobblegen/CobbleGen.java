@@ -6,6 +6,7 @@ import net.fabricmc.api.ModInitializer;
 public class CobbleGen implements ModInitializer
 {
     public static final String MOD_ID = "cobblegen";
+    public static final CobbleGenConfig CONFIG = CobbleGenConfig.init();
 
     @Override
     public void onInitialize() {

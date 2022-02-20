@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
+
 @Mixin(FluidBlock.class)
 public class FluidEventMixin
 {
@@ -36,9 +38,9 @@ public class FluidEventMixin
                 // TODO: Config for this
                 replacement = "minecraft:stone";
             else
-                replacement = Util.randomizeBlockId(CobbleGenConfig.get().cobbleGen);
+                replacement = Util.randomizeBlockId(CONFIG.cobbleGen);
         } else if (block.equals(Blocks.BASALT))
-            replacement = Util.randomizeBlockId(CobbleGenConfig.get().basaltGen);
+            replacement = Util.randomizeBlockId(CONFIG.basaltGen);
 
         args.set(1, replacement != null ? Registry.BLOCK.get(new Identifier(replacement)).getDefaultState() : state);
     }
