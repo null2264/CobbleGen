@@ -3,7 +3,7 @@
     "id": "cobblegen",
     "version": "${version}",
     "name": "CobbleGen",
-    "description": "Custom cobble gen",
+    "description": "Customize cobblestone generator",
     "authors": [
         "null2264"
     ],
