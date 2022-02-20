@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.mixin;
 
-import io.github.null2264.cobblegen.config.CobbleGenConfig;
 import io.github.null2264.cobblegen.util.Util;
+import io.github.null2264.cobblegen.util.WeightedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,6 +14,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import java.util.List;
+import java.util.Map;
 
 import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
 
@@ -30,18 +33,24 @@ public class FluidEventMixin
     )
     private void injected$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
         BlockState state = args.get(1);
-        String replacement = null;
+        List<WeightedBlock> replacements = null;
 
         Block block = state.getBlock();
         if (block.equals(Blocks.COBBLESTONE)) {
-            if (world.getBlockState(pos.down()).isOf(Blocks.BEDROCK))
-                // TODO: Config for this
-                replacement = "minecraft:stone";
-            else
-                replacement = Util.randomizeBlockId(CONFIG.cobbleGen);
-        } else if (block.equals(Blocks.BASALT))
-            replacement = Util.randomizeBlockId(CONFIG.basaltGen);
+            Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.getOrDefault("cobbleGen", null);
+            if (customGen != null)
+                replacements = customGen.get(
+                    Registry.BLOCK.getId(
+                        world.getBlockState(pos.down()).getBlock()
+                    ).toString()
+                );
 
-        args.set(1, replacement != null ? Registry.BLOCK.get(new Identifier(replacement)).getDefaultState() : state);
+            if (replacements == null)
+                replacements = CONFIG.cobbleGen;
+        } else if (block.equals(Blocks.BASALT))
+            replacements = CONFIG.basaltGen;
+
+        args.set(1, replacements != null ? Registry.BLOCK.get(
+            new Identifier(Util.randomizeBlockId(replacements))).getDefaultState() : state);
     }
 }
