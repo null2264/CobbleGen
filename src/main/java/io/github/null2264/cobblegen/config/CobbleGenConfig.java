@@ -37,6 +37,11 @@ public class CobbleGenConfig implements Config
         return MOD_ID;
     }
 
+    @Override
+    public String getExtension() {
+        return "json5";
+    }
+
     public static CobbleGenConfig init() {
         return OmegaConfig.register(CobbleGenConfig.class);
     }
