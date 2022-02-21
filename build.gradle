@@ -3,7 +3,9 @@ plugins {
     id 'maven-publish'
 }
 
-version = project.mod_version
+ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+
+version = "mc${project.minecraft_version}_v${project.mod_version}" + (buildNumber != null ? "b${buildNumber}" : "")
 group = project.maven_group
 
 repositories {

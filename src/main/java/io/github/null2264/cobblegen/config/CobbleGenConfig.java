@@ -35,16 +35,6 @@ public class CobbleGenConfig implements Config
             " <stoneGen|cobbleGen>: { <modifier block id>: [ { \"id\": <block id>, \"weight\": <randomness weight> }, ... ] }"
     )
     public Map<String, Map<String, List<WeightedBlock>>> customGen = Map.of(
-        "stoneGen",
-        Map.of(
-            "minecraft:bedrock",
-            List.of(
-                new WeightedBlock("minecraft:stone", 40.0),
-                new WeightedBlock("minecraft:diorite", 20.0),
-                new WeightedBlock("minecraft:andesite", 20.0),
-                new WeightedBlock("minecraft:granite", 20.0)
-            )
-        ),
         "cobbleGen",
         Map.of(
             "minecraft:bedrock",
@@ -56,6 +46,16 @@ public class CobbleGenConfig implements Config
                 new WeightedBlock("minecraft:iron_ore", 15.0),
                 new WeightedBlock("minecraft:coal_ore", 20.0),
                 new WeightedBlock("minecraft:cobblestone", 40.0)
+            )
+        ),
+        "stoneGen",
+        Map.of(
+            "minecraft:bedrock",
+            List.of(
+                new WeightedBlock("minecraft:stone", 40.0),
+                new WeightedBlock("minecraft:diorite", 20.0),
+                new WeightedBlock("minecraft:andesite", 20.0),
+                new WeightedBlock("minecraft:granite", 20.0)
             )
         )
     );

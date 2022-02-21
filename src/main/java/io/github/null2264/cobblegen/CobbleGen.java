@@ -10,6 +10,5 @@ public class CobbleGen implements ModInitializer
 
     @Override
     public void onInitialize() {
-        CobbleGenConfig.init();
     }
 }
