@@ -3,6 +3,7 @@ package io.github.null2264.cobblegen.config;
 import draylar.omegaconfig.OmegaConfig;
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
+import io.github.null2264.cobblegen.util.CustomGen;
 import io.github.null2264.cobblegen.util.WeightedBlock;
 
 import java.util.List;
@@ -34,8 +35,8 @@ public class CobbleGenConfig implements Config
         value = " Custom Generator\n" +
             " <stoneGen|cobbleGen>: { <modifier block id>: [ { \"id\": <block id>, \"weight\": <randomness weight> }, ... ] }"
     )
-    public Map<String, Map<String, List<WeightedBlock>>> customGen = Map.of(
-        "cobbleGen",
+    public CustomGen customGen = new CustomGen(
+        // Cobble Gen
         Map.of(
             "minecraft:bedrock",
             List.of(
@@ -48,7 +49,7 @@ public class CobbleGenConfig implements Config
                 new WeightedBlock("minecraft:cobblestone", 40.0)
             )
         ),
-        "stoneGen",
+        // Stone Gen
         Map.of(
             "minecraft:bedrock",
             List.of(

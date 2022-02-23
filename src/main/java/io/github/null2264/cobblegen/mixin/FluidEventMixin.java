@@ -37,7 +37,7 @@ public class FluidEventMixin
 
         Block block = state.getBlock();
         if (block.equals(Blocks.COBBLESTONE)) {
-            Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.getOrDefault("cobbleGen", null);
+            Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.cobbleGen;
             if (customGen != null)
                 replacements = customGen.get(
                     Registry.BLOCK.getId(
@@ -50,7 +50,8 @@ public class FluidEventMixin
         } else if (block.equals(Blocks.BASALT))
             replacements = CONFIG.basaltGen;
 
-        args.set(1, replacements != null ? Registry.BLOCK.get(
-            new Identifier(Util.randomizeBlockId(replacements))).getDefaultState() : state);
+        if (replacements != null && replacements.size() >= 1)
+            args.set(1, Registry.BLOCK.get(
+                new Identifier(Util.randomizeBlockId(replacements))).getDefaultState());
     }
 }

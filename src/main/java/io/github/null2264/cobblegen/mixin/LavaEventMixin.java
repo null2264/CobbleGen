@@ -31,10 +31,9 @@ public class LavaEventMixin
         )
     )
     private void injected$flow(Args args, WorldAccess world, BlockPos pos, BlockState fluidBlockState, Direction direction, FluidState fluidState) {
-        BlockState state = args.get(1);
         List<WeightedBlock> replacements = null;
 
-        Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.getOrDefault("stoneGen", null);
+        Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.stoneGen;
         if (customGen != null)
             replacements = customGen.get(
                 Registry.BLOCK.getId(
@@ -45,7 +44,8 @@ public class LavaEventMixin
         if (replacements == null)
             replacements = CONFIG.stoneGen;
 
-        args.set(1, Registry.BLOCK.get(
-            new Identifier(Util.randomizeBlockId(replacements))).getDefaultState());
+        if (replacements.size() >= 1)
+            args.set(1, Registry.BLOCK.get(
+                new Identifier(Util.randomizeBlockId(replacements))).getDefaultState());
     }
 }
