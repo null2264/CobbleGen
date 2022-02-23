@@ -3,14 +3,13 @@ package io.github.null2264.cobblegen.config;
 import draylar.omegaconfig.OmegaConfig;
 import draylar.omegaconfig.api.Comment;
 import draylar.omegaconfig.api.Config;
-import io.github.null2264.cobblegen.util.CustomGen;
-import io.github.null2264.cobblegen.util.WeightedBlock;
 
 import java.util.List;
 import java.util.Map;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
+// TODO: Modmenu Integration (move back to cloth config + auto config?)
 public class CobbleGenConfig implements Config
 {
     @Comment(value = " Cobblestone Generator\n" +

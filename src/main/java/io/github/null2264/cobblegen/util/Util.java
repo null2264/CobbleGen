@@ -1,5 +1,7 @@
 package io.github.null2264.cobblegen.util;
 
+import io.github.null2264.cobblegen.config.WeightedBlock;
+
 import java.util.List;
 
 public class Util

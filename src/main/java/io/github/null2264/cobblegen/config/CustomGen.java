@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.util;
+package io.github.null2264.cobblegen.config;
 
 import java.util.List;
 import java.util.Map;

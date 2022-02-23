@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.mixin;
 
 import io.github.null2264.cobblegen.util.Util;
-import io.github.null2264.cobblegen.util.WeightedBlock;
+import io.github.null2264.cobblegen.config.WeightedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.LavaFluid;
