@@ -57,6 +57,13 @@ public class CobbleGenConfig implements Config
                 new WeightedBlock("minecraft:andesite", 20.0),
                 new WeightedBlock("minecraft:granite", 20.0)
             )
+        ),
+        // Basalt Gen
+        Map.of(
+            "minecraft:bedrock",
+            List.of(
+                new WeightedBlock("minecraft:granite", 100.0)
+            )
         )
     );
 

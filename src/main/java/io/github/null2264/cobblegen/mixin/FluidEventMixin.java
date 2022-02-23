@@ -1,10 +1,8 @@
 package io.github.null2264.cobblegen.mixin;
 
-import io.github.null2264.cobblegen.util.Util;
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import net.minecraft.block.Block;
+import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +11,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.List;
@@ -28,27 +27,46 @@ public class FluidEventMixin
         method = "receiveNeighborFluids",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z"
+            target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
+            ordinal = 0
         )
     )
-    private void injected$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
-        BlockState state = args.get(1);
-        List<WeightedBlock> replacements = null;
+    private void cobble$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
+        List<WeightedBlock> replacements = Util.getCustomReplacement(
+            world, pos, CONFIG.customGen.cobbleGen, CONFIG.cobbleGen);
 
-        Block block = state.getBlock();
-        if (block.equals(Blocks.COBBLESTONE)) {
-            Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.cobbleGen;
-            if (customGen != null)
-                replacements = customGen.get(
-                    Registry.BLOCK.getId(
-                        world.getBlockState(pos.down()).getBlock()
-                    ).toString()
-                );
+        if (replacements != null && replacements.size() >= 1)
+            args.set(1, Registry.BLOCK.get(
+                new Identifier(Util.randomizeBlockId(replacements))).getDefaultState());
+    }
 
-            if (replacements == null)
-                replacements = CONFIG.cobbleGen;
-        } else if (block.equals(Blocks.BASALT))
-            replacements = CONFIG.basaltGen;
+    @ModifyVariable(
+        method = "receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
+        at = @At("STORE"),
+        ordinal = 0
+    )
+    private boolean soulSoil$receiveNeighborFluid(boolean isExists, World world, BlockPos pos, BlockState fluidBlockState) {
+        Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.basaltGen;
+        if (customGen != null && customGen.size() >= 1) {
+            return customGen.get(
+                Registry.BLOCK.getId(
+                    world.getBlockState(pos.down()).getBlock()).toString()
+            ) != null || isExists;
+        }
+        return isExists;
+    }
+
+    @ModifyArgs(
+        method = "receiveNeighborFluids",
+        at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
+            ordinal = 1
+        )
+    )
+    private void basalt$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
+        List<WeightedBlock> replacements = Util.getCustomReplacement(
+            world, pos, CONFIG.customGen.basaltGen, CONFIG.basaltGen);
 
         if (replacements != null && replacements.size() >= 1)
             args.set(1, Registry.BLOCK.get(

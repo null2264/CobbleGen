@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,20 +32,10 @@ public class LavaEventMixin
         )
     )
     private void injected$flow(Args args, WorldAccess world, BlockPos pos, BlockState fluidBlockState, Direction direction, FluidState fluidState) {
-        List<WeightedBlock> replacements = null;
+        List<WeightedBlock> replacements = Util.getCustomReplacement(
+            (World) world, pos, CONFIG.customGen.stoneGen, CONFIG.stoneGen);
 
-        Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.stoneGen;
-        if (customGen != null)
-            replacements = customGen.get(
-                Registry.BLOCK.getId(
-                    world.getBlockState(pos.down()).getBlock()
-                ).toString()
-            );
-
-        if (replacements == null)
-            replacements = CONFIG.stoneGen;
-
-        if (replacements.size() >= 1)
+        if (replacements != null && replacements.size() >= 1)
             args.set(1, Registry.BLOCK.get(
                 new Identifier(Util.randomizeBlockId(replacements))).getDefaultState());
     }
