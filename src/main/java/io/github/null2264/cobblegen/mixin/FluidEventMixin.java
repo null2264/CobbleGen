@@ -40,6 +40,7 @@ public class FluidEventMixin
                 new Identifier(Util.randomizeBlockId(replacements))).getDefaultState());
     }
 
+    @SuppressWarnings("InvalidInjectorMethodSignature")
     @ModifyVariable(
         method = "receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
         at = @At("STORE"),
