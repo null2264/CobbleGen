@@ -3,6 +3,7 @@ package io.github.null2264.cobblegen.mixin;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +33,9 @@ public class FluidEventMixin
         )
     )
     private void cobble$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
+        if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN))
+            return;
+
         List<WeightedBlock> replacements = Util.getCustomReplacement(
             world, pos, CONFIG.customGen.cobbleGen, CONFIG.cobbleGen);
 

@@ -62,7 +62,7 @@ public class CobbleGenConfig implements Config
         Map.of(
             "minecraft:bedrock",
             List.of(
-                new WeightedBlock("minecraft:granite", 100.0)
+                new WeightedBlock("minecraft:blackstone", 100.0)
             )
         )
     );
