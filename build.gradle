@@ -5,7 +5,7 @@ plugins {
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
 
-version = "v${project.mod_version}" + (buildNumber != null ? "b${buildNumber}" : "") + "+mc${project.minecraft_version}"
+version = "v${project.mod_version}" + (buildNumber != null ? "b${buildNumber}" : "") + "+mc${project.supported_version}"
 group = project.maven_group
 
 repositories {
