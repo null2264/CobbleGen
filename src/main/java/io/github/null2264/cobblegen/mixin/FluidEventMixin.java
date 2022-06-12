@@ -43,7 +43,7 @@ public class FluidEventMixin
             args.set(1, Registry.BLOCK.get(
                 new Identifier(Util.randomizeBlockId(
                         replacements,
-                        world.getDimensionKey().getValue().toString(),
+                        world.getRegistryKey().getValue().toString(),
                         pos.getY()
                 ))).getDefaultState());
     }
@@ -81,7 +81,7 @@ public class FluidEventMixin
             args.set(1, Registry.BLOCK.get(
                 new Identifier(Util.randomizeBlockId(
                         replacements,
-                        world.getDimensionKey().getValue().toString(),
+                        world.getRegistryKey().getValue().toString(),
                         pos.getY()
                 ))).getDefaultState());
     }

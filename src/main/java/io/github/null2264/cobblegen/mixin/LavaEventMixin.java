@@ -39,7 +39,7 @@ public class LavaEventMixin
             args.set(1, Registry.BLOCK.get(
                 new Identifier(Util.randomizeBlockId(
                         replacements,
-                        ((World) world).getDimensionKey().getValue().toString(),
+                        ((World) world).getRegistryKey().getValue().toString(),
                         pos.getY()
                 )))
                     .getDefaultState());
