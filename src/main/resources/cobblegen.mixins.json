@@ -7,8 +7,6 @@
         "FluidEventMixin",
         "LavaEventMixin"
     ],
-    "client": [
-    ],
     "injectors": {
         "defaultRequire": 1
     }

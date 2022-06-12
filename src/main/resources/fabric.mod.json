@@ -12,9 +12,6 @@
     "icon": "assets/icon.png",
     "environment": "*",
     "entrypoints": {
-        "client": [
-            "io.github.null2264.cobblegen.client.CobbleGenClient"
-        ],
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ]

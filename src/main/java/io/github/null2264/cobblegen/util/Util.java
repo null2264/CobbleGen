@@ -5,31 +5,46 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
 
 public class Util
 {
     // https://stackoverflow.com/a/6737362
-    public static String randomizeBlockId(List<WeightedBlock> blockIds) {
+    public static String randomizeBlockId(List<WeightedBlock> blockIds, String dim, Integer yLevel) {
         if (blockIds.size() == 1)
             return blockIds.get(0).id;
 
+        System.out.println(dim);
+        ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
         double totalWeight = 0.0;
 
         for (WeightedBlock block : blockIds) {
+            if (block.dimensions != null && !block.dimensions.contains(dim))
+                continue;
+
+            if (block.excludedDimensions != null && block.excludedDimensions.contains(dim))
+                continue;
+
+            if (block.maxY != null && block.maxY <= yLevel)
+                continue;
+
+            if (block.minY != null && block.minY >= yLevel)
+                continue;
+
+            filteredBlockIds.add(block);
             totalWeight += block.weight;
         }
 
         int idx = 0;
-        for (double r = Math.random() * totalWeight; idx < blockIds.size() - 1; ++idx) {
-            r -= blockIds.get(idx).weight;
+        for (double r = Math.random() * totalWeight; idx < filteredBlockIds.size() - 1; ++idx) {
+            r -= filteredBlockIds.get(idx).weight;
             if (r <= 0.0) break;
         }
 
-        return blockIds.get(idx).id;
+        return filteredBlockIds.get(idx).id;
     }
 
     public static List<WeightedBlock> getCustomReplacement(World world, BlockPos pos, Map<String, List<WeightedBlock>> customGen, List<WeightedBlock> fallback) {
