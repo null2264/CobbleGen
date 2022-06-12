@@ -37,11 +37,13 @@ repositories {
 dependencies {
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    //noinspection GradlePackageVersionRange
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API. This is technically optional, but you probably want it anyway.
-    // modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    //noinspection GradlePackageVersionRange
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     include("com.github.Draylar.omega-config:omega-config-base:${project.omega_config_version}")
     modImplementation("com.github.Draylar.omega-config:omega-config-base:${project.omega_config_version}")

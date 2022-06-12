@@ -12,28 +12,57 @@ import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 // TODO: Modmenu Integration (move back to cloth config + auto config?)
 public class CobbleGenConfig implements Config
 {
-    @Comment(value = " Cobblestone Generator\n" +
-        " { \"id\": \"mod_id:block_id\", \"weight\": 95.5 }")
+
+    @Comment(value = """
+             Default Generators
+             {
+               "id": "mod_id:block_id",
+               "weight": 95.5,
+               "dimensions": [
+                 "mod_id:dimension_id",
+                 "mod_id:dimension_id"
+               ],
+               "excludedDimensions": [
+                 "mod_id:dimension_id",
+                 "mod_id:dimension_id"
+               ],
+               "minY": 0,
+               "maxY": 69
+             }""")
     public List<WeightedBlock> cobbleGen = List.of(
-        new WeightedBlock("minecraft:cobblestone", 100.0)
+        new WeightedBlock("minecraft:cobblestone", 100.0, null, null, null, 0),
+        new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null)
     );
 
-    @Comment(value = " Stone Generator\n" +
-        " { \"id\": \"mod_id:block_id\", \"weight\": 95.5 }")
     public List<WeightedBlock> stoneGen = List.of(
         new WeightedBlock("minecraft:stone", 100.0)
     );
 
-    @Comment(value = " Basalt Generator\n" +
-        " { \"id\": \"mod_id:block_id\", \"weight\": 95.5 }")
     public List<WeightedBlock> basaltGen = List.of(
         new WeightedBlock("minecraft:basalt", 100.0)
     );
 
-    @Comment(
-        value = " Custom Generator\n" +
-            " <stoneGen|cobbleGen>: { <modifier block id>: [ { \"id\": <block id>, \"weight\": <randomness weight> }, ... ] }"
-    )
+    @Comment(value = """
+             Custom Generators
+             <stoneGen|cobbleGen|basaltGen>: {
+               "mod_id:modifier_block_id": [
+                 {
+                   "id": "mod_id:block_id",
+                   "weight": 95.5,
+                   "dimensions": [
+                     "mod_id:dimension_id",
+                     "mod_id:dimension_id"
+                   ],
+                   "excludedDimensions": [
+                     "mod_id:dimension_id",
+                     "mod_id:dimension_id"
+                   ],
+                   "minY": 0,
+                   "maxY": 69
+                 },
+                 ...
+               ]
+             }""")
     public CustomGen customGen = new CustomGen(
         // Cobble Gen
         Map.of(
@@ -62,7 +91,8 @@ public class CobbleGenConfig implements Config
         Map.of(
             "minecraft:bedrock",
             List.of(
-                new WeightedBlock("minecraft:blackstone", 100.0)
+                new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
+                new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:the_end"))
             )
         )
     );
