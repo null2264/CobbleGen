@@ -17,7 +17,6 @@ public class Util
         if (blockIds.size() == 1)
             return blockIds.get(0).id;
 
-        System.out.println(dim);
         ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
         double totalWeight = 0.0;
 
