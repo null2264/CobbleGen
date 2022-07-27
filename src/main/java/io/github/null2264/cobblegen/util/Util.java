@@ -5,7 +5,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +42,8 @@ public class Util
             if (r <= 0.0) break;
         }
 
+        if (filteredBlockIds.isEmpty())
+            return null;
         return filteredBlockIds.get(idx).id;
     }
 

@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.List;
-import java.util.Map;
 
 import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
 
@@ -35,13 +34,17 @@ public class LavaEventMixin
         List<WeightedBlock> replacements = Util.getCustomReplacement(
             (World) world, pos, CONFIG.customGen.stoneGen, CONFIG.stoneGen);
 
-        if (replacements != null && replacements.size() >= 1)
+        String replacementId = null;
+        if (replacements != null && !replacements.isEmpty())
+            replacementId = Util.randomizeBlockId(
+                    replacements,
+                    ((World) world).getDimensionKey().getValue().toString(),
+                    pos.getY()
+            );
+
+        if (replacementId != null)
             args.set(1, Registry.BLOCK.get(
-                new Identifier(Util.randomizeBlockId(
-                        replacements,
-                        ((World) world).getDimensionKey().getValue().toString(),
-                        pos.getY()
-                )))
+                new Identifier(replacementId))
                     .getDefaultState());
     }
 }

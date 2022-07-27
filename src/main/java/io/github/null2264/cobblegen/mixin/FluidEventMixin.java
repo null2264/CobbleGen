@@ -39,13 +39,17 @@ public class FluidEventMixin
         List<WeightedBlock> replacements = Util.getCustomReplacement(
             world, pos, CONFIG.customGen.cobbleGen, CONFIG.cobbleGen);
 
-        if (replacements != null && replacements.size() >= 1)
+        String replacementId = null;
+        if (replacements != null && !replacements.isEmpty())
+            replacementId = Util.randomizeBlockId(
+                    replacements,
+                    world.getDimensionKey().getValue().toString(),
+                    pos.getY()
+            );
+
+        if (replacementId != null)
             args.set(1, Registry.BLOCK.get(
-                new Identifier(Util.randomizeBlockId(
-                        replacements,
-                        world.getDimensionKey().getValue().toString(),
-                        pos.getY()
-                ))).getDefaultState());
+                new Identifier(replacementId)).getDefaultState());
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
@@ -56,7 +60,7 @@ public class FluidEventMixin
     )
     private boolean soulSoil$receiveNeighborFluid(boolean isExists, World world, BlockPos pos, BlockState fluidBlockState) {
         Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.basaltGen;
-        if (customGen != null && customGen.size() >= 1) {
+        if (customGen != null && !customGen.isEmpty()) {
             return customGen.get(
                 Registry.BLOCK.getId(
                     world.getBlockState(pos.down()).getBlock()).toString()
@@ -77,12 +81,16 @@ public class FluidEventMixin
         List<WeightedBlock> replacements = Util.getCustomReplacement(
             world, pos, CONFIG.customGen.basaltGen, CONFIG.basaltGen);
 
-        if (replacements != null && replacements.size() >= 1)
+        String replacementId = null;
+        if (replacements != null && !replacements.isEmpty())
+            replacementId = Util.randomizeBlockId(
+                    replacements,
+                    world.getDimensionKey().getValue().toString(),
+                    pos.getY()
+            );
+
+        if (replacementId != null)
             args.set(1, Registry.BLOCK.get(
-                new Identifier(Util.randomizeBlockId(
-                        replacements,
-                        world.getDimensionKey().getValue().toString(),
-                        pos.getY()
-                ))).getDefaultState());
+                new Identifier(replacementId)).getDefaultState());
     }
 }
