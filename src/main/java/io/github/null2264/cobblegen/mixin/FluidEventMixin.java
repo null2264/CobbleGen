@@ -39,13 +39,17 @@ public class FluidEventMixin
         List<WeightedBlock> replacements = Util.getCustomReplacement(
             world, pos, CONFIG.customGen.cobbleGen, CONFIG.cobbleGen);
 
-        if (replacements != null && replacements.size() >= 1)
+        String replacementId = null;
+        if (replacements != null && !replacements.isEmpty())
+            replacementId = Util.randomizeBlockId(
+                    replacements,
+                    world.getRegistryKey().getValue().toString(),
+                    pos.getY()
+            );
+
+        if (replacementId != null)
             args.set(1, Registry.BLOCK.get(
-                new Identifier(Util.randomizeBlockId(
-                        replacements,
-                        world.getRegistryKey().getValue().toString(),
-                        pos.getY()
-                ))).getDefaultState());
+                new Identifier(replacementId)).getDefaultState());
     }
 
     @SuppressWarnings("InvalidInjectorMethodSignature")
@@ -77,12 +81,16 @@ public class FluidEventMixin
         List<WeightedBlock> replacements = Util.getCustomReplacement(
             world, pos, CONFIG.customGen.basaltGen, CONFIG.basaltGen);
 
-        if (replacements != null && replacements.size() >= 1)
+        String replacementId = null;
+        if (replacements != null && !replacements.isEmpty())
+            replacementId = Util.randomizeBlockId(
+                    replacements,
+                    world.getRegistryKey().getValue().toString(),
+                    pos.getY()
+            );
+
+        if (replacementId != null)
             args.set(1, Registry.BLOCK.get(
-                new Identifier(Util.randomizeBlockId(
-                        replacements,
-                        world.getRegistryKey().getValue().toString(),
-                        pos.getY()
-                ))).getDefaultState());
+                new Identifier(replacementId)).getDefaultState());
     }
 }
