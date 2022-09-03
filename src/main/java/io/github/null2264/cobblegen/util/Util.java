@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Util
-{
+public class Util {
     // https://stackoverflow.com/a/6737362
     public static String randomizeBlockId(List<WeightedBlock> blockIds, String dim, Integer yLevel) {
         if (blockIds.size() == 1)
@@ -52,8 +51,8 @@ public class Util
 
         if (customGen != null)
             replacements = customGen.get(
-                Registry.BLOCK.getId(
-                    world.getBlockState(pos.down()).getBlock()).toString()
+                    Registry.BLOCK.getId(
+                            world.getBlockState(pos.down()).getBlock()).toString()
             );
 
         if (replacements == null || replacements.size() < 1)
