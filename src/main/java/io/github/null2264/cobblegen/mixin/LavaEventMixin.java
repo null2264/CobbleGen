@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.mixin;
 
+import io.github.null2264.cobblegen.util.BlockGenerator;
 import io.github.null2264.cobblegen.util.Util;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import net.minecraft.block.BlockState;
@@ -31,20 +32,10 @@ public class LavaEventMixin
         )
     )
     private void injected$flow(Args args, WorldAccess world, BlockPos pos, BlockState fluidBlockState, Direction direction, FluidState fluidState) {
-        List<WeightedBlock> replacements = Util.getCustomReplacement(
-            (World) world, pos, CONFIG.customGen.stoneGen, CONFIG.stoneGen);
+        BlockGenerator generator = new BlockGenerator((World) world, pos, CONFIG.customGen.stoneGen, CONFIG.stoneGen);
+        BlockState replacement = generator.getReplacement();
 
-        String replacementId = null;
-        if (replacements != null && !replacements.isEmpty())
-            replacementId = Util.randomizeBlockId(
-                    replacements,
-                    ((World) world).getDimensionKey().getValue().toString(),
-                    pos.getY()
-            );
-
-        if (replacementId != null)
-            args.set(1, Registry.BLOCK.get(
-                new Identifier(replacementId))
-                    .getDefaultState());
+        if (replacement != null)
+            args.set(1, replacement);
     }
 }
