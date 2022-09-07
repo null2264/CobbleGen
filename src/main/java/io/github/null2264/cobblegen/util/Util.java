@@ -55,7 +55,7 @@ public class Util {
                             world.getBlockState(pos.down()).getBlock()).toString()
             );
 
-        if (replacements == null || replacements.size() < 1)
+        if (replacements == null || replacements.isEmpty())
             replacements = fallback;
 
         return replacements;

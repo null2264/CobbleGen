@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
+import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 @Mixin(LavaFluid.class)
 public class LavaEventMixin {

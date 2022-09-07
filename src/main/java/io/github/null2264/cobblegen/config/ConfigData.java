@@ -1,17 +1,11 @@
 package io.github.null2264.cobblegen.config;
 
-import draylar.omegaconfig.OmegaConfig;
-import draylar.omegaconfig.api.Comment;
-import draylar.omegaconfig.api.Config;
+import blue.endless.jankson.Comment;
 
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-
-// TODO: Modmenu Integration (move back to cloth config + auto config?)
-public class CobbleGenConfig implements Config {
-
+public class ConfigData {
     @Comment(value = """
             Default Generators
             {
@@ -95,18 +89,4 @@ public class CobbleGenConfig implements Config {
                     )
             )
     );
-
-    public static CobbleGenConfig init() {
-        return OmegaConfig.register(CobbleGenConfig.class);
-    }
-
-    @Override
-    public String getName() {
-        return MOD_ID;
-    }
-
-    @Override
-    public String getExtension() {
-        return "json5";
-    }
 }

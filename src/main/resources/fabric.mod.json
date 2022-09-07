@@ -3,7 +3,7 @@
     "id": "cobblegen",
     "version": "${version}",
     "name": "CobbleGen",
-    "description": "Customize cobblestone generator",
+    "description": "A fabric mod that allows you to customize cobblestone (stone and basalt) generators",
     "authors": [
         "null2264"
     ],
@@ -21,7 +21,6 @@
     ],
     "depends": {
         "fabricloader": "*",
-        "fabric": "*",
         "minecraft": ">=1.18.2"
     }
 }

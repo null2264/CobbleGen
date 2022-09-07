@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.CobbleGen.CONFIG;
+import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 @Mixin(FluidBlock.class)
 public class FluidEventMixin {
