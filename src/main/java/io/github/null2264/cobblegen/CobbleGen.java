@@ -11,6 +11,7 @@ public class CobbleGen implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        LOGGER.info("Loading config...");
         ConfigHelper.loadAndSaveDefault();
     }
 }

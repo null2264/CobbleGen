@@ -23,38 +23,41 @@ public class ConfigHelper {
     public static ConfigData CONFIG;
 
     public static void loadAndSaveDefault() {
-        try {
-            if (!ConfigHelper.load(true)) {
-                ConfigHelper.save();
-            }
-        } catch (Exception e) {
-            LOGGER.error("Error: ", e);
-            CONFIG = new ConfigData();
+        ConfigHelper.loadOrDefault();
+        if (!configFile.exists()) {
+            ConfigHelper.save();
         }
     }
 
-    public static boolean load(Boolean fallback) throws SyntaxError, IOException {
+    public static void loadOrDefault() {
         try {
+            jankson.load(configFile);
+        } catch (Exception e) {
+            LOGGER.error("There was an error while (re)loading the config file!", e);
+            CONFIG = new ConfigData();
+            LOGGER.warn("Falling back to default config...");
+        }
+    }
+
+    public static void load() throws SyntaxError, IOException {
+        try {
+            LOGGER.info("Trying to (re)load config file...");
             JsonObject json = jankson.load(configFile);
             CONFIG = gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
-            return true;
         } catch (Exception e) {
-            if (fallback) {
-                LOGGER.error("Error: ", e);
-                CONFIG = new ConfigData();
-                return false;
-            }
+            LOGGER.error("There was an error while (re)loading the config file!", e);
             throw e;
         }
     }
 
     public static void save() {
         try {
+            LOGGER.info("Trying to create config file...");
             FileWriter fw = new FileWriter(configFile);
             fw.write(Jankson.builder().build().toJson(CONFIG).toJson(JsonGrammar.JSON5));
             fw.close();
         } catch (Exception e) {
-            LOGGER.error("Error: ", e);
+            LOGGER.error("There was an error while creating the config file!", e);
         }
     }
 }
