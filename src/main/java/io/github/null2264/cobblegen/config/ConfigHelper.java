@@ -31,7 +31,7 @@ public class ConfigHelper {
 
     public static void loadOrDefault() {
         try {
-            jankson.load(configFile);
+            ConfigHelper.load();
             LOGGER.info("Config file successfully loaded");
         } catch (Exception e) {
             LOGGER.error("There was an error while (re)loading the config file!", e);
