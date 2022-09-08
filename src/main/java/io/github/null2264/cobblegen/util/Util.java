@@ -1,13 +1,19 @@
 package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import net.minecraft.block.Block;
+import net.minecraft.tag.TagKey;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Util {
     // https://stackoverflow.com/a/6737362
@@ -16,7 +22,7 @@ public class Util {
             return blockIds.get(0).id;
 
         ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
-        double totalWeight = 0.0;
+        AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
 
         for (WeightedBlock block : blockIds) {
             if (block.dimensions != null && !block.dimensions.contains(dim))
@@ -31,12 +37,29 @@ public class Util {
             if (block.minY != null && block.minY >= yLevel)
                 continue;
 
-            filteredBlockIds.add(block);
-            totalWeight += block.weight;
+            if (block.id.startsWith("#")) {
+                TagKey<Block> blockTag = TagKey.of(Registry.BLOCK_KEY, new Identifier(block.id.substring(1)));
+                Registry.BLOCK.getEntryList(blockTag).ifPresent(t -> t.stream().forEach(taggedBlock -> {
+                    Optional<RegistryKey<Block>> key = taggedBlock.getKey();
+                    if (key.isPresent()) {
+                        RegistryKey<Block> actualKey = key.get();
+                        filteredBlockIds.add(
+                                new WeightedBlock(
+                                        actualKey.getValue().toString(),
+                                        block.weight
+                                )
+                        );
+                        totalWeight.updateAndGet(v -> v + block.weight);
+                    }
+                }));
+            } else {
+                filteredBlockIds.add(block);
+                totalWeight.updateAndGet(v -> v + block.weight);
+            }
         }
 
         int idx = 0;
-        for (double r = Math.random() * totalWeight; idx < filteredBlockIds.size() - 1; ++idx) {
+        for (double r = Math.random() * totalWeight.get(); idx < filteredBlockIds.size() - 1; ++idx) {
             r -= filteredBlockIds.get(idx).weight;
             if (r <= 0.0) break;
         }
