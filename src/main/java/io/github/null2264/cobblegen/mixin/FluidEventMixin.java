@@ -47,6 +47,8 @@ public class FluidEventMixin {
             at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z", ordinal = 0)
     )
     private boolean soulSoil$receiveNeighborFluid(BlockState instance, Block block) {
+        // FIXME: Known Issue, when mod failed to obtain the block or the list has invalid block/tag,
+        //  this will generate Basalt instead
         boolean originalValue = instance.isOf(block);
 
         Map<String, List<WeightedBlock>> customGen = CONFIG.customGen.basaltGen;
