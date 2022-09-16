@@ -20,10 +20,10 @@ public class ReloadCommandMixin {
     )
     private static void reloadConfig(Collection<String> dataPacks, ServerCommandSource source, CallbackInfo ci) throws CommandSyntaxException {
         try {
-            source.getPlayerOrThrow().sendMessage(Text.of("Reloading config file..."));
+            source.getPlayerOrThrow().sendMessage(Text.of("Reloading config file..."), false);
             ConfigHelper.load();
         } catch (Exception e) {
-            source.getPlayerOrThrow().sendMessage(Text.of("Failed to reload config file!"));
+            source.getPlayerOrThrow().sendMessage(Text.of("Failed to reload config file!"), false);
         }
     }
 }
