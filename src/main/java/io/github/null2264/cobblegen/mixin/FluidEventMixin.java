@@ -15,7 +15,8 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 @Mixin(FluidBlock.class)
-public abstract class FluidEventMixin {
+public abstract class FluidEventMixin
+{
     private BlockState basaltReplacement;
 
     private boolean shouldBasaltGenerate(World world, BlockPos pos) {
@@ -24,45 +25,25 @@ public abstract class FluidEventMixin {
         return basaltReplacement != null;
     }
 
-    @ModifyArgs(
-            method = "receiveNeighborFluids",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
-                    ordinal = 0
-            )
-    )
+    @ModifyArgs(method = "receiveNeighborFluids", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", ordinal = 0))
     private void cobble$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
-        if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN))
-            return;
+        if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN)) return;
 
         BlockGenerator generator = new BlockGenerator(world, pos, CONFIG.customGen.cobbleGen, CONFIG.cobbleGen);
         BlockState replacement = generator.getReplacement();
 
-        if (replacement != null)
-            args.set(1, replacement);
+        if (replacement != null) args.set(1, replacement);
     }
 
-    @ModifyExpressionValue(
-            method = "receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z", ordinal = 0)
-    )
+    @ModifyExpressionValue(method = "receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z", ordinal = 0))
     private boolean soulSoil$receiveNeighborFluid(boolean original, World world, BlockPos pos, BlockState state) {
         return shouldBasaltGenerate(world, pos) || original;
     }
 
-    @ModifyArgs(
-            method = "receiveNeighborFluids",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z",
-                    ordinal = 1
-            )
-    )
+    @ModifyArgs(method = "receiveNeighborFluids", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", ordinal = 1))
     private void basalt$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
         BlockState replacement = basaltReplacement;
 
-        if (replacement != null)
-            args.set(1, replacement);
+        if (replacement != null) args.set(1, replacement);
     }
 }

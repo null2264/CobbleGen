@@ -15,27 +15,23 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class Util {
+public class Util
+{
     // https://stackoverflow.com/a/6737362
     public static String randomizeBlockId(List<WeightedBlock> blockIds, String dim, Integer yLevel) {
-        if (blockIds.size() == 1)
-            return blockIds.get(0).id;
+        if (blockIds.size() == 1) return blockIds.get(0).id;
 
         ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
         AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
 
         for (WeightedBlock block : blockIds) {
-            if (block.dimensions != null && !block.dimensions.contains(dim))
-                continue;
+            if (block.dimensions != null && !block.dimensions.contains(dim)) continue;
 
-            if (block.excludedDimensions != null && block.excludedDimensions.contains(dim))
-                continue;
+            if (block.excludedDimensions != null && block.excludedDimensions.contains(dim)) continue;
 
-            if (block.maxY != null && block.maxY <= yLevel)
-                continue;
+            if (block.maxY != null && block.maxY <= yLevel) continue;
 
-            if (block.minY != null && block.minY >= yLevel)
-                continue;
+            if (block.minY != null && block.minY >= yLevel) continue;
 
             if (block.id.startsWith("#")) {
                 TagKey<Block> blockTag = TagKey.of(Registry.BLOCK_KEY, new Identifier(block.id.substring(1)));
@@ -43,12 +39,7 @@ public class Util {
                     Optional<RegistryKey<Block>> key = taggedBlock.getKey();
                     if (key.isPresent()) {
                         RegistryKey<Block> actualKey = key.get();
-                        filteredBlockIds.add(
-                                new WeightedBlock(
-                                        actualKey.getValue().toString(),
-                                        block.weight
-                                )
-                        );
+                        filteredBlockIds.add(new WeightedBlock(actualKey.getValue().toString(), block.weight));
                         totalWeight.updateAndGet(v -> v + block.weight);
                     }
                 }));
@@ -64,8 +55,7 @@ public class Util {
             if (r <= 0.0) break;
         }
 
-        if (filteredBlockIds.isEmpty())
-            return null;
+        if (filteredBlockIds.isEmpty()) return null;
         return filteredBlockIds.get(idx).id;
     }
 
@@ -73,13 +63,9 @@ public class Util {
         List<WeightedBlock> replacements = null;
 
         if (customGen != null)
-            replacements = customGen.get(
-                    Registry.BLOCK.getId(
-                            world.getBlockState(pos.down()).getBlock()).toString()
-            );
+            replacements = customGen.get(Registry.BLOCK.getId(world.getBlockState(pos.down()).getBlock()).toString());
 
-        if (replacements == null || replacements.isEmpty())
-            replacements = fallback;
+        if (replacements == null || replacements.isEmpty()) replacements = fallback;
 
         return replacements;
     }

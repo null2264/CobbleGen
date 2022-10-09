@@ -11,7 +11,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public class BlockGenerator {
+public class BlockGenerator
+{
     private final List<WeightedBlock> expectedBlocks;
     private final World world;
     private final BlockPos pos;
@@ -25,14 +26,9 @@ public class BlockGenerator {
     public @Nullable BlockState getReplacement() {
         String replacementId = null;
         if (expectedBlocks != null && !expectedBlocks.isEmpty())
-            replacementId = Util.randomizeBlockId(
-                    expectedBlocks,
-                    world.getRegistryKey().getValue().toString(),
-                    pos.getY()
-            );
+            replacementId = Util.randomizeBlockId(expectedBlocks, world.getRegistryKey().getValue().toString(), pos.getY());
 
-        if (replacementId == null)
-            return null;
+        if (replacementId == null) return null;
 
         return Registry.BLOCK.get(new Identifier(replacementId)).getDefaultState();
     }

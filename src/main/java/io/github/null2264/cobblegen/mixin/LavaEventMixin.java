@@ -16,19 +16,13 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 @Mixin(LavaFluid.class)
-public class LavaEventMixin {
-    @ModifyArgs(
-            method = "flow",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/WorldAccess;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z"
-            )
-    )
+public class LavaEventMixin
+{
+    @ModifyArgs(method = "flow", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldAccess;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;I)Z"))
     private void injected$flow(Args args, WorldAccess world, BlockPos pos, BlockState fluidBlockState, Direction direction, FluidState fluidState) {
         BlockGenerator generator = new BlockGenerator((World) world, pos, CONFIG.customGen.stoneGen, CONFIG.stoneGen);
         BlockState replacement = generator.getReplacement();
 
-        if (replacement != null)
-            args.set(1, replacement);
+        if (replacement != null) args.set(1, replacement);
     }
 }

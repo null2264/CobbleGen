@@ -2,7 +2,8 @@ package io.github.null2264.cobblegen.config;
 
 import java.util.List;
 
-public class WeightedBlock {
+public class WeightedBlock
+{
     public String id;
     public Double weight;
     public List<String> dimensions;

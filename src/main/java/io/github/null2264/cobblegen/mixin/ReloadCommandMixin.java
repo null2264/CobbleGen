@@ -13,11 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Collection;
 
 @Mixin(ReloadCommand.class)
-public class ReloadCommandMixin {
-    @Inject(
-            method = "tryReloadDataPacks(Ljava/util/Collection;Lnet/minecraft/server/command/ServerCommandSource;)V",
-            at = @At("HEAD")
-    )
+public class ReloadCommandMixin
+{
+    @Inject(method = "tryReloadDataPacks(Ljava/util/Collection;Lnet/minecraft/server/command/ServerCommandSource;)V", at = @At("HEAD"))
     private static void reloadConfig(Collection<String> dataPacks, ServerCommandSource source, CallbackInfo ci) throws CommandSyntaxException {
         try {
             source.getPlayerOrThrow().sendMessage(Text.of("Reloading config file..."), false);

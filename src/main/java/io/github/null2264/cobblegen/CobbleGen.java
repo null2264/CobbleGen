@@ -5,7 +5,8 @@ import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CobbleGen implements ModInitializer {
+public class CobbleGen implements ModInitializer
+{
     public static final Logger LOGGER = LogManager.getLogger("CobbleGen");
     public static final String MOD_ID = "cobblegen";
 

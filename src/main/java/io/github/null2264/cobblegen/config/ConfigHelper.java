@@ -14,7 +14,8 @@ import java.nio.file.Path;
 import static io.github.null2264.cobblegen.CobbleGen.LOGGER;
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
-public class ConfigHelper {
+public class ConfigHelper
+{
     private static final Path configPath = FabricLoader.getInstance().getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     private static final Jankson jankson = Jankson.builder().build();
@@ -55,8 +56,7 @@ public class ConfigHelper {
             result = finalResult;
         } else if (json instanceof JsonArray finalResult) {
             finalResult.forEach(element -> {
-                if (element instanceof JsonObject)
-                    filter(element);
+                if (element instanceof JsonObject) filter(element);
             });
             result = finalResult;
         }
