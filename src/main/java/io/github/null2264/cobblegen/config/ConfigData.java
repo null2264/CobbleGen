@@ -85,7 +85,7 @@ public class ConfigData {
                     "minecraft:bedrock",
                     List.of(
                             new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
-                            new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:the_end"))
+                            new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
                     )
             )
     );

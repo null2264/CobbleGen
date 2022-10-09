@@ -36,4 +36,8 @@ public class BlockGenerator {
 
         return Registry.BLOCK.get(new Identifier(replacementId)).getDefaultState();
     }
+
+    public List<WeightedBlock> getExpectedBlocks() {
+        return expectedBlocks;
+    }
 }

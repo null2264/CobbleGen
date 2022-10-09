@@ -12,6 +12,9 @@
     "icon": "assets/icon.png",
     "environment": "*",
     "entrypoints": {
+        "preLaunch": [
+            "io.github.null2264.cobblegen.CobbleGenPreLaunch"
+        ],
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ]
