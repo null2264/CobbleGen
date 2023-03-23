@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.null2264.cobblegen.util.BlockGenerator;
+import io.github.null2264.cobblegen.util.GeneratorType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -12,15 +13,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
-
 @Mixin(FluidBlock.class)
 public abstract class FluidEventMixin
 {
     private BlockState basaltReplacement;
 
     private boolean shouldBasaltGenerate(World world, BlockPos pos) {
-        BlockGenerator basaltGenerator = new BlockGenerator(world, pos, CONFIG.customGen.basaltGen, CONFIG.basaltGen);
+        BlockGenerator basaltGenerator = new BlockGenerator(world, pos, GeneratorType.BASALT);
         basaltReplacement = basaltGenerator.getReplacement();
         return basaltReplacement != null;
     }
@@ -29,7 +28,7 @@ public abstract class FluidEventMixin
     private void cobble$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
         if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN)) return;
 
-        BlockGenerator generator = new BlockGenerator(world, pos, CONFIG.customGen.cobbleGen, CONFIG.cobbleGen);
+        BlockGenerator generator = new BlockGenerator(world, pos, GeneratorType.COBBLE);
         BlockState replacement = generator.getReplacement();
 
         if (replacement != null) args.set(1, replacement);
