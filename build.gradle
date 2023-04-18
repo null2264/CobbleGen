@@ -9,7 +9,7 @@ allprojects {
         maven { url 'https://jitpack.io' }
         maven {
             name 'modmaven'
-            url "https://modmaven.dev/"
+            url "https://maven.blamejared.com/"
             content {
                 includeGroup "mezz.jei"
             }
@@ -87,14 +87,12 @@ dependencies {
     include project(path: ':cobblegen-1.18.2-compat', configuration: 'namedElements')
     include project(path: ':cobblegen-1.19.3-compat', configuration: 'namedElements')
 
-    mappings loom.layered {
-        officialMojangMappings()
-        mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
-    }
-
+    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_19_2}"
 
-    modCompileOnly("mezz.jei:jei-1.19.2-fabric:${jei_version}")
+    modImplementation("mezz.jei:jei-1.19.2-fabric:${jei_version}") {
+        exclude(group: "mezz.jei")  // Fix mappings issue caused by MojMap
+    }
 }
 
 processResources {

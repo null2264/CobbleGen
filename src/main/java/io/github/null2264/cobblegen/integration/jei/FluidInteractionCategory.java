@@ -5,26 +5,28 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionDisplay>
 {
     @Override
-    public RecipeType<FluidInteractionDisplay> getRecipeType() {
+    public @NotNull RecipeType<FluidInteractionDisplay> getRecipeType() {
         return null;
     }
 
     @Override
-    public net.minecraft.network.chat.Component getTitle() {
+    public @NotNull Text getTitle() {
         return null;
     }
 
     @Override
-    public IDrawable getBackground() {
+    public @NotNull IDrawable getBackground() {
         return null;
     }
 
     @Override
-    public IDrawable getIcon() {
+    public @NotNull IDrawable getIcon() {
         return null;
     }
 
