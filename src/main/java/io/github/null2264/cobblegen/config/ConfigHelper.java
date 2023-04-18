@@ -4,8 +4,8 @@ import blue.endless.jankson.*;
 import blue.endless.jankson.api.SyntaxError;
 import com.google.gson.Gson;
 import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

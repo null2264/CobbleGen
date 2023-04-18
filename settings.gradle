@@ -6,4 +6,12 @@ pluginManagement {
         }
         gradlePluginPortal()
     }
+    plugins {
+        id 'fabric-loom' version "${loom_version}"
+    }
 }
+
+rootProject.name = "cobblegen"
+
+include 'cobblegen-1.18.2-compat'
+include 'cobblegen-1.19.3-compat'

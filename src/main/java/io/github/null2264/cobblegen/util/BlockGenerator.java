@@ -10,14 +10,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 public class BlockGenerator
@@ -123,17 +124,13 @@ public class BlockGenerator
         if (expectedBlocks != null && !expectedBlocks.isEmpty())
             replacementId = randomizeBlockId(
                     expectedBlocks,
-                    world.getRegistryKey().getValue().toString(),
+                    getCompat().getDimension(world),
                     pos.getY()
             );
 
         if (replacementId == null)
             return null;
 
-        return Registry.BLOCK.get(new Identifier(replacementId)).getDefaultState();
-    }
-
-    public List<WeightedBlock> getExpectedBlocks() {
-        return expectedBlocks;
+        return getCompat().getBlock(new Identifier(replacementId)).getDefaultState();
     }
 }
