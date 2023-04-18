@@ -7,6 +7,17 @@ allprojects {
 
     repositories {
         maven { url 'https://jitpack.io' }
+        maven {
+            name 'modmaven'
+            url "https://modmaven.dev/"
+            content {
+                includeGroup "mezz.jei"
+            }
+        }
+        maven {
+            name "Shedaniel Maven"
+            url "https://maven.shedaniel.me/"
+        }
     }
 
     archivesBaseName = project.archives_base_name
@@ -76,9 +87,14 @@ dependencies {
     include project(path: ':cobblegen-1.18.2-compat', configuration: 'namedElements')
     include project(path: ':cobblegen-1.19.3-compat', configuration: 'namedElements')
 
+    mappings loom.layered {
+        officialMojangMappings()
+        mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
+    }
+
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_19_2}"
-    //noinspection GradlePackageVersionRange
-    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
+
+    modCompileOnly("mezz.jei:jei-1.19.2-fabric:${jei_version}")
 }
 
 processResources {

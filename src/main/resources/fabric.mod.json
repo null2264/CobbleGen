@@ -17,6 +17,9 @@
         ],
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
+        ],
+        "jei_mod_plugin": [
+            "io.github.null2264.cobblegen.integration.jei.CGJEIPlugin"
         ]
     },
     "mixins": [
