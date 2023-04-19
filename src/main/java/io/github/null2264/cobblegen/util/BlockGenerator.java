@@ -4,18 +4,14 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
@@ -55,20 +51,16 @@ public class BlockGenerator
                 continue;
 
             if (block.id.startsWith("#")) {
-                TagKey<Block> blockTag = TagKey.of(Registry.BLOCK_KEY, new Identifier(block.id.substring(1)));
-                Registry.BLOCK.getEntryList(blockTag).ifPresent(t -> t.stream().forEach(taggedBlock -> {
-                    Optional<RegistryKey<Block>> key = taggedBlock.getKey();
-                    if (key.isPresent()) {
-                        RegistryKey<Block> actualKey = key.get();
-                        filteredBlockIds.add(
-                                new WeightedBlock(
-                                        actualKey.getValue().toString(),
-                                        block.weight
-                                )
-                        );
-                        totalWeight.updateAndGet(v -> v + block.weight);
-                    }
-                }));
+                List<Identifier> taggedBlocks = getCompat().getTaggedBlockIds(new Identifier(block.id.substring(1)));
+                for (Identifier taggedBlock : taggedBlocks) {
+                    filteredBlockIds.add(
+                            new WeightedBlock(
+                                    taggedBlock.toString(),
+                                    block.weight
+                            )
+                    );
+                    totalWeight.updateAndGet(v -> v + block.weight);
+                }
             } else {
                 filteredBlockIds.add(block);
                 totalWeight.updateAndGet(v -> v + block.weight);
@@ -107,7 +99,7 @@ public class BlockGenerator
         }
 
         if (customGen != null)
-            replacements = customGen.get(Registry.BLOCK.getId(blockBelow).toString());
+            replacements = customGen.get(getCompat().getBlockId(blockBelow).toString());
 
         if (type == GeneratorType.BASALT)
             return blockBelow == Blocks.SOUL_SOIL ? fallback : replacements;
