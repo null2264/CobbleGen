@@ -20,6 +20,12 @@ public class CompatImpl extends Compat
     }
 
     @Override
+    public
+    Identifier getBlockId(Block block) {
+        return Registry.BLOCK.getId(block);
+    }
+
+    @Override
     public List<Identifier> getTaggedBlockIds(Identifier tagId) {
         TagKey<Block> blockTag = TagKey.of(Registry.BLOCK_KEY, tagId);
 
