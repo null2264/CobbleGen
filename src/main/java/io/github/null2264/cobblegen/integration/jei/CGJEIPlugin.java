@@ -6,9 +6,13 @@ import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IJeiHelpers;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.common.platform.IPlatformHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -28,9 +32,12 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        FluidInteractionCategory cobbleGen = new FluidInteractionCategory(registration.getJeiHelpers().getGuiHelper(), GeneratorType.COBBLE);
-        FluidInteractionCategory stoneGen = new FluidInteractionCategory(registration.getJeiHelpers().getGuiHelper(), GeneratorType.STONE);
-        FluidInteractionCategory basaltGen = new FluidInteractionCategory(registration.getJeiHelpers().getGuiHelper(), GeneratorType.BASALT);
+        IJeiHelpers jeiHelpers = registration.getJeiHelpers();
+        IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
+        IPlatformFluidHelper<?> fluidHelper = jeiHelpers.getPlatformFluidHelper();
+        FluidInteractionCategory cobbleGen = new FluidInteractionCategory(guiHelper, fluidHelper, GeneratorType.COBBLE);
+        FluidInteractionCategory stoneGen = new FluidInteractionCategory(guiHelper, fluidHelper, GeneratorType.STONE);
+        FluidInteractionCategory basaltGen = new FluidInteractionCategory(guiHelper, fluidHelper, GeneratorType.BASALT);
         registration.addRecipeCategories(cobbleGen);
         registration.addRecipeCategories(stoneGen);
         registration.addRecipeCategories(basaltGen);

@@ -7,6 +7,7 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.helpers.IGuiHelper;
+import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
@@ -23,11 +24,13 @@ import static io.github.null2264.cobblegen.util.Util.identifierOf;
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionRecipeHolder>
 {
     private final IDrawableStatic background;
+    private final Long full;
     private final IDrawable icon;
     private final GeneratorType type;
 
-    public FluidInteractionCategory(IGuiHelper guiHelper, GeneratorType generatorType) {
+    public FluidInteractionCategory(IGuiHelper guiHelper, IPlatformFluidHelper<?> fluidHelper, GeneratorType generatorType) {
         background = guiHelper.createBlankDrawable(52, 32);
+        full = 10 * fluidHelper.bucketVolume();
         ItemStack iconStack = Items.AIR.getDefaultStack();
         switch (generatorType) {
             case COBBLE -> iconStack = Items.COBBLESTONE.getDefaultStack();
@@ -96,8 +99,8 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         if (isBasaltGen)
             coldBuilder.addItemStack(Blocks.BLUE_ICE.asItem().getDefaultStack());
         else
-            coldBuilder.addFluidStack(Fluids.WATER, 1000L);
-        builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(Fluids.LAVA, 1000L);
+            coldBuilder.addFluidStack(Fluids.WATER, full);
+        builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(Fluids.LAVA, full);
         builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY).addItemStack(output.getBlock().asItem().getDefaultStack());
         if (modifier != null)
             builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY).addItemStack(modifier.asItem().getDefaultStack());
