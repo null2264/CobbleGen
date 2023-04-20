@@ -1,11 +1,13 @@
 package io.github.null2264.cobblegen.integration.jei;
 
+import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.drawable.IDrawableStatic;
+import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.IFocusGroup;
@@ -13,11 +15,16 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
@@ -28,8 +35,16 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     private final IDrawable icon;
     private final GeneratorType type;
 
-    public FluidInteractionCategory(IGuiHelper guiHelper, IPlatformFluidHelper<?> fluidHelper, GeneratorType generatorType) {
-        background = guiHelper.createBlankDrawable(52, 32);
+    public FluidInteractionCategory(
+            IGuiHelper guiHelper,
+            IPlatformFluidHelper<?> fluidHelper,
+            GeneratorType generatorType
+    ) {
+        background = guiHelper.createBlankDrawable(
+                Constants.JEI_RECIPE_WIDTH,
+                generatorType.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
+                                                          : Constants.JEI_RECIPE_HEIGHT
+        );
         full = 10 * fluidHelper.bucketVolume();
         ItemStack iconStack = Items.AIR.getDefaultStack();
         switch (generatorType) {
@@ -66,43 +81,61 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         val output = recipe.getResult();
         val modifier = recipe.getModifier();
 
-        var offset = 18;
+        val offset = Constants.SLOT_SIZE;
         var x = 0;
         var y = 0;
+        val gap = 2;
 
-        var isBasaltGen = false;
-        var coldX = x;
+        var isBasaltGen = type == GeneratorType.BASALT;
         var coldY = y;
 
-        var lavaX = x + 2 * offset;
+        var lavaX = x + (2 * (offset + gap));
 
-        var resultX = x + offset - 1;
-        var resultY = y - 1;
-        var resultModY = y + offset - 1;
+        var resultX = x + offset + gap;
+        var resultY = y;
+        var resultModY = y + offset + gap;
 
-        switch (type) {
-            case STONE -> {
-                lavaX = x + offset;
-                coldY = y + offset;
-                resultY = resultModY;
-                resultModY = y + 2 * offset - 1;
-            }
-            case BASALT -> {
-                isBasaltGen = true;
-                coldX = lavaX;
-                coldY = y - 1;
-                lavaX = x;
-            }
+        if (type == GeneratorType.STONE) {
+            lavaX = x + offset + gap;
+            coldY = y + offset + gap;
+            resultY = resultModY;
+            resultModY = resultModY + offset + gap;
         }
 
-        val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, coldX, coldY);
-        if (isBasaltGen)
-            coldBuilder.addItemStack(Blocks.BLUE_ICE.asItem().getDefaultStack());
-        else
-            coldBuilder.addFluidStack(Fluids.WATER, full);
+        val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
+        if (isBasaltGen) coldBuilder.addItemStack(Blocks.BLUE_ICE.asItem().getDefaultStack());
+        else coldBuilder.addFluidStack(Fluids.WATER, full);
         builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(Fluids.LAVA, full);
-        builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY).addItemStack(output.getBlock().asItem().getDefaultStack());
-        if (modifier != null)
-            builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY).addItemStack(modifier.asItem().getDefaultStack());
+        builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY)
+                .addItemStack(output.getBlock().asItem().getDefaultStack());
+        if (modifier != null) builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY)
+                .addItemStack(modifier.asItem().getDefaultStack());
+    }
+
+    @Override
+    public void draw(
+            FluidInteractionRecipeHolder recipe,
+            IRecipeSlotsView recipeSlotsView,
+            MatrixStack stack,
+            double mouseX,
+            double mouseY
+    ) {
+        MinecraftClient minecraft = MinecraftClient.getInstance();
+        var minY = recipe.getResult().minY;
+        if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
+        var maxY = recipe.getResult().maxY;
+        if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
+        List<Text> texts = List.of(
+                Text.literal("Weight: " + recipe.getResult().weight.toString()),
+                Text.literal("Min Y: " + minY),
+                Text.literal("Max Y: " + maxY)
+        );
+        TextRenderer textRenderer = minecraft.textRenderer;
+        var y = 0;
+        for (Text text : texts) {
+            int width = textRenderer.getWidth(text);
+            minecraft.textRenderer.draw(stack, text, getBackground().getWidth() - width, y, 0xFF808080);
+            y += textRenderer.fontHeight;
+        }
     }
 }
