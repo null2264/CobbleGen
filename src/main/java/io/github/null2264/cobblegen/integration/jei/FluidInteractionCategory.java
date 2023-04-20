@@ -92,7 +92,6 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             }
         }
 
-        // FIXME: Basalt doesn't want to show up
         val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, coldX, coldY);
         if (isBasaltGen)
             coldBuilder.addItemStack(Blocks.BLUE_ICE.asItem().getDefaultStack());

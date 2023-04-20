@@ -1,9 +1,9 @@
 package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import lombok.val;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +62,7 @@ public class Util
         return new Identifier(MOD_ID, id);
     }
 
+    @NotNull
     public static Pair<List<WeightedBlock>, Map<String, List<WeightedBlock>>> configFromType(GeneratorType type) {
         Map<String, List<WeightedBlock>> customGen = null;
         List<WeightedBlock> fallback = null;

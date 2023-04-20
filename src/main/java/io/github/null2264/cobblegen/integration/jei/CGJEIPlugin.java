@@ -46,14 +46,17 @@ public class CGJEIPlugin implements IModPlugin
                         new FluidInteractionRecipeHolder(block, type, type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null)
                 );
             }
-            config.getRight().forEach((modifierId, blocks) -> {
-                val modifier = getCompat().getBlock(new Identifier(modifierId));
-                for (WeightedBlock block : blocks) {
-                    recipes.add(
-                            new FluidInteractionRecipeHolder(block, type, modifier)
-                    );
-                }
-            });
+            try {
+                config.getRight().forEach((modifierId, blocks) -> {
+                    val modifier = getCompat().getBlock(new Identifier(modifierId));
+                    for (WeightedBlock block : blocks) {
+                        recipes.add(
+                                new FluidInteractionRecipeHolder(block, type, modifier)
+                        );
+                    }
+                });
+            } catch (NullPointerException ignored) {
+            }
             registration.addRecipes(new RecipeType<>(identifierOf(type), FluidInteractionRecipeHolder.class), recipes);
         }
     }
