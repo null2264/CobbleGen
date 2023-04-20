@@ -56,23 +56,26 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         type = generatorType;
     }
 
+    @NotNull
     @Override
-    public @NotNull RecipeType<FluidInteractionRecipeHolder> getRecipeType() {
+    public RecipeType<FluidInteractionRecipeHolder> getRecipeType() {
         return new RecipeType<>(identifierOf(type), FluidInteractionRecipeHolder.class);
     }
-
+    @NotNull
     @Override
-    public @NotNull Text getTitle() {
+    public Text getTitle() {
         return Text.translatable("cobblegen.generators." + type.name().toLowerCase());
     }
 
+    @NotNull
     @Override
-    public @NotNull IDrawable getBackground() {
+    public IDrawable getBackground() {
         return background;
     }
 
+    @NotNull
     @Override
-    public @NotNull IDrawable getIcon() {
+    public IDrawable getIcon() {
         return icon;
     }
 
@@ -137,5 +140,15 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             minecraft.textRenderer.draw(stack, text, getBackground().getWidth() - width, y, 0xFF808080);
             y += textRenderer.fontHeight;
         }
+        // TODO: Add dimensions
+    }
+
+    @NotNull
+    @Override
+    public List<Text> getTooltipStrings(
+            FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY
+    ) {
+        // TODO: Add dimensions
+        return List.of();
     }
 }
