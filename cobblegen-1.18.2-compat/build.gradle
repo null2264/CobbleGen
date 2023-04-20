@@ -5,9 +5,7 @@ dependencies {
     //noinspection GradlePackageVersionRange
     mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
 
-    modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}")
+    modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_19_2}")
 
-    modLocalRuntime modCompileOnly("mezz.jei:jei-1.19.2-fabric:${jei_version}") {
-        exclude group: "mezz.jei"
-    }
+    modLocalRuntime modCompileOnly("mezz.jei:${project.jei_version_1_19_2}")
 }

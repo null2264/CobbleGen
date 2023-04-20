@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -81,22 +82,9 @@ public class BlockGenerator
     public static List<WeightedBlock> getCustomReplacement(World world, BlockPos pos, GeneratorType type) {
         List<WeightedBlock> replacements = null;
         Block blockBelow = world.getBlockState(pos.down()).getBlock();
-        Map<String, List<WeightedBlock>> customGen = Map.of();
-        List<WeightedBlock> fallback = List.of();
-        switch (type) {
-            case COBBLE -> {
-                customGen = CONFIG.customGen.cobbleGen;
-                fallback = CONFIG.cobbleGen;
-            }
-            case STONE -> {
-                customGen = CONFIG.customGen.stoneGen;
-                fallback = CONFIG.stoneGen;
-            }
-            case BASALT -> {
-                customGen = CONFIG.customGen.basaltGen;
-                fallback = CONFIG.basaltGen;
-            }
-        }
+        val config = Util.configFromType(type);
+        Map<String, List<WeightedBlock>> customGen = config.getRight();
+        List<WeightedBlock> fallback = config.getLeft();
 
         if (customGen != null)
             replacements = customGen.get(getCompat().getBlockId(blockBelow).toString());

@@ -1,13 +1,18 @@
 package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import lombok.val;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
+import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 public class Util
 {
@@ -47,5 +52,33 @@ public class Util
 
         if (filteredBlockIds.isEmpty()) return null;
         return filteredBlockIds.get(idx).id;
+    }
+
+    public static Identifier identifierOf(GeneratorType type) {
+        return new Identifier(MOD_ID, type.name().toLowerCase());
+    }
+
+    public static Identifier identifierOf(String id) {
+        return new Identifier(MOD_ID, id);
+    }
+
+    public static Pair<List<WeightedBlock>, Map<String, List<WeightedBlock>>> configFromType(GeneratorType type) {
+        Map<String, List<WeightedBlock>> customGen = null;
+        List<WeightedBlock> fallback = null;
+        switch (type) {
+            case COBBLE -> {
+                customGen = CONFIG.customGen.cobbleGen;
+                fallback = CONFIG.cobbleGen;
+            }
+            case STONE -> {
+                customGen = CONFIG.customGen.stoneGen;
+                fallback = CONFIG.stoneGen;
+            }
+            case BASALT -> {
+                customGen = CONFIG.customGen.basaltGen;
+                fallback = CONFIG.basaltGen;
+            }
+        }
+        return new Pair<>(fallback, customGen);
     }
 }

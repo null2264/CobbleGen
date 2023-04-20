@@ -89,10 +89,14 @@ dependencies {
 
     mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_19_2}"
+    modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_19_2}")
 
-    modImplementation("mezz.jei:jei-1.19.2-fabric:${jei_version}") {
-        exclude(group: "mezz.jei")  // Fix mappings issue caused by MojMap
+    modCompileOnlyApi("mezz.jei:${project.jei_version_1_19_2}") {
+        transitive = false
     }
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 processResources {

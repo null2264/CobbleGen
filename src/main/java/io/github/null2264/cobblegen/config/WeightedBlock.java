@@ -1,6 +1,11 @@
 package io.github.null2264.cobblegen.config;
 
+import net.minecraft.block.Block;
+import net.minecraft.util.Identifier;
+
 import java.util.List;
+
+import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class WeightedBlock
 {
@@ -30,5 +35,9 @@ public class WeightedBlock
         this.excludedDimensions = excludedDimensions;
         this.maxY = maxY;
         this.minY = minY;
+    }
+
+    public Block getBlock() {
+        return getCompat().getBlock(Identifier.tryParse(id));
     }
 }
