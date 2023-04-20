@@ -126,9 +126,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var maxY = recipe.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
         List<Text> texts = List.of(
-                Text.literal("Weight: " + recipe.getResult().weight.toString()),
-                Text.literal("Min Y: " + minY),
-                Text.literal("Max Y: " + maxY)
+                Text.translatable("cobblegen.info.weight").append(recipe.getResult().weight.toString()),
+                Text.translatable("cobblegen.info.minY").append(minY.toString()),
+                Text.translatable("cobblegen.info.maxY").append(maxY.toString())
         );
         TextRenderer textRenderer = minecraft.textRenderer;
         var y = 0;
