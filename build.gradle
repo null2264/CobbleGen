@@ -8,7 +8,6 @@ allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
         maven {
-            name 'modmaven'
             url "https://maven.blamejared.com/"
             content {
                 includeGroup "mezz.jei"
