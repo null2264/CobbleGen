@@ -23,13 +23,26 @@ public class CompatImpl extends Compat
     }
 
     @Override
-    public MutableText translatableTextWithFallback(String string, String fallback) {
-        return Text.translatable(string, fallback);
+    public MutableText translatableAppendingText(String string, List<Text> texts) {
+        MutableText text = translatableText(string);
+        for (Text appendText : texts) {
+            text.append(appendText);
+        }
+        return text;
     }
 
     @Override
     public MutableText text(String string) {
         return Text.literal(string);
+    }
+
+    @Override
+    public MutableText appendingText(String string, List<Text> texts) {
+        MutableText text = text(string);
+        for (Text appendText : texts) {
+            text.append(appendText);
+        }
+        return text;
     }
 
     @Override

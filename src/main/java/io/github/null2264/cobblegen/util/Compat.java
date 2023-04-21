@@ -13,9 +13,11 @@ public abstract class Compat
 {
     public abstract MutableText translatableText(String string);
 
-    public abstract MutableText translatableTextWithFallback(String string, String fallback);
+    public abstract MutableText translatableAppendingText(String string, List<Text> texts);
 
     public abstract MutableText text(String string);
+
+    public abstract MutableText appendingText(String string, List<Text> texts);
 
     public abstract Block getBlock(Identifier id);
 
