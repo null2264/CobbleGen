@@ -4,5 +4,10 @@
   "cobblegen.generators.basalt": "Basalt Generator",
   "cobblegen.info.weight": "Weight: ",
   "cobblegen.info.minY": "Min Y: ",
-  "cobblegen.info.maxY": "Max Y: "
+  "cobblegen.info.maxY": "Max Y: ",
+  "cobblegen.info.dimensions": "Dimensions",
+  "cobblegen.info.whitelistedDim": "Whitelisted Dimensions:",
+  "cobblegen.info.blacklistedDim": "Blacklisted Dimensions:",
+  "cobblegen.dim.any": "any",
+  "cobblegen.dim.none": "none"
 }

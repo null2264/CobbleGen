@@ -7,7 +7,6 @@ import lombok.val;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
-import mezz.jei.api.gui.drawable.IDrawableStatic;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
@@ -26,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
@@ -33,20 +33,25 @@ import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionRecipeHolder>
 {
-    private final IDrawableStatic background;
+    private final IDrawable background;
     private final Long full;
     private final IDrawable icon;
     private final GeneratorType type;
+    private final int initialHeight;
+    private final IDrawable whitelistIcon;
+    private final IDrawable blacklistIcon;
+    private int dimensionIconsY = 0;
 
     public FluidInteractionCategory(
-            IGuiHelper guiHelper,
-            IPlatformFluidHelper<?> fluidHelper,
-            GeneratorType generatorType
+            IGuiHelper guiHelper, IPlatformFluidHelper<?> fluidHelper, GeneratorType generatorType
     ) {
-        background = guiHelper.createBlankDrawable(
-                Constants.JEI_RECIPE_WIDTH,
-                generatorType.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
-                                                          : Constants.JEI_RECIPE_HEIGHT
+        initialHeight = generatorType.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
+                                                                  : Constants.JEI_RECIPE_HEIGHT;
+        background = guiHelper.createBlankDrawable(Constants.JEI_RECIPE_WIDTH,
+                                                   initialHeight + (2 * 9) // Dimensions Title's gaps (top and bottom)
+                                                           + 20 // Dimension Icon's height
+                                                           + 9
+                                                   // Another gap
         );
         full = 10 * fluidHelper.bucketVolume();
         ItemStack iconStack = Items.AIR.getDefaultStack();
@@ -57,6 +62,8 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
         icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, iconStack);
         type = generatorType;
+        whitelistIcon = guiHelper.drawableBuilder(Constants.JEI_UI_COMPONENT, 0, 0, 15, 20).build();
+        blacklistIcon = guiHelper.drawableBuilder(Constants.JEI_UI_COMPONENT, 15, 0, 15, 20).build();
     }
 
     @NotNull
@@ -64,6 +71,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public RecipeType<FluidInteractionRecipeHolder> getRecipeType() {
         return new RecipeType<>(identifierOf(type), FluidInteractionRecipeHolder.class);
     }
+
     @NotNull
     @Override
     public Text getTitle() {
@@ -132,9 +140,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var maxY = recipe.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
         List<Text> texts = List.of(
-                getCompat().translatableTextWithLiteral("cobblegen.info.weight", Text.of(recipe.getResult().weight.toString())),
-                getCompat().translatableTextWithLiteral("cobblegen.info.minY", Text.of(minY.toString())),
-                getCompat().translatableTextWithLiteral("cobblegen.info.maxY", Text.of(maxY.toString()))
+                getCompat().translatableText("cobblegen.info.weight").append(recipe.getResult().weight.toString()),
+                getCompat().translatableText("cobblegen.info.minY").append(minY.toString()),
+                getCompat().translatableText("cobblegen.info.maxY").append(maxY.toString())
         );
         TextRenderer textRenderer = minecraft.textRenderer;
         var y = 0;
@@ -143,7 +151,18 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             minecraft.textRenderer.draw(stack, text, getBackground().getWidth() - width, y, 0xFF808080);
             y += textRenderer.fontHeight;
         }
-        // TODO: Add dimensions
+        Text text = getCompat().translatableText("cobblegen.info.dimensions");
+        var deepestY = initialHeight + 9;
+        minecraft.textRenderer.draw(stack,
+                                    text,
+                                    ((float) getBackground().getWidth() / 2) - ((float) textRenderer.getWidth(text) / 2),
+                                    deepestY,
+                                    0xFF808080
+        );
+        deepestY = deepestY + textRenderer.fontHeight + 9;
+        dimensionIconsY = deepestY;
+        whitelistIcon.draw(stack, 18, deepestY);
+        blacklistIcon.draw(stack, getBackground().getWidth() - 15 - 18, deepestY);
     }
 
     @NotNull
@@ -151,7 +170,38 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public List<Text> getTooltipStrings(
             FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY
     ) {
-        // TODO: Add dimensions
+        if ((mouseX > 18 && mouseX < 18 + 15) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
+            ArrayList<Text> biomeList = new ArrayList<>();
+            biomeList.add(getCompat().translatableText("cobblegen.info.whitelistedDim"));
+
+            List<String> recipeBiomeList = recipe.getResult().dimensions;
+            try {
+                for (String biome : recipeBiomeList) {
+                    Identifier id = new Identifier(biome);
+                    biomeList.add(getCompat().text("- " + id));
+                }
+            } catch (NullPointerException ignored) {
+                biomeList.add(getCompat().text("- ").append(getCompat().translatableText("cobblegen.dim.any")));
+            }
+            return biomeList;
+        }
+
+        val aetherX = getBackground().getWidth() - 18;
+        if ((mouseX > aetherX - 15 && mouseX < aetherX) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
+            ArrayList<Text> biomeList = new ArrayList<>();
+            biomeList.add(getCompat().translatableText("cobblegen.info.blacklistedDim"));
+
+            List<String> recipeBiomeList = recipe.getResult().excludedDimensions;
+            try {
+                for (String biome : recipeBiomeList) {
+                    Identifier id = new Identifier(biome);
+                    biomeList.add(getCompat().text("- " + id));
+                }
+            } catch (NullPointerException ignored) {
+                biomeList.add(getCompat().text("- ").append(getCompat().translatableText("cobblegen.dim.none")));
+            }
+            return biomeList;
+        }
         return List.of();
     }
 

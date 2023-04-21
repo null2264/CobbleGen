@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.util;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -10,9 +11,11 @@ import java.util.List;
 
 public abstract class Compat
 {
-    public abstract Text translatableText(String string);
+    public abstract MutableText translatableText(String string);
 
-    public abstract Text translatableTextWithLiteral(String string, Text literal);
+    public abstract MutableText translatableTextWithFallback(String string, String fallback);
+
+    public abstract MutableText text(String string);
 
     public abstract Block getBlock(Identifier id);
 

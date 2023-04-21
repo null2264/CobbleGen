@@ -11,7 +11,12 @@ public class CompatImpl extends Compat118
     }
 
     @Override
-    public Text translatableTextWithLiteral(String string, Text literal) {
-        return Text.translatable(string).append(literal);
+    public MutableText translatableTextWithFallback(String string, String fallback) {
+        return Text.translatable(string, fallback);
+    }
+
+    @Override
+    public MutableText text(String string) {
+        return Text.literal(string);
     }
 }

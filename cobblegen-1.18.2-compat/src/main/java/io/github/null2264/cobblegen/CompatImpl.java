@@ -1,17 +1,23 @@
 package io.github.null2264.cobblegen;
 
-import net.minecraft.text.Text;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.TranslatableText;
 
 public class CompatImpl extends Compat118
 {
     @Override
-    public Text translatableText(String string) {
+    public MutableText translatableText(String string) {
         return new TranslatableText(string);
     }
 
     @Override
-    public Text translatableTextWithLiteral(String string, Text literal) {
-        return new TranslatableText(string).append(literal);
+    public MutableText translatableTextWithFallback(String string, String fallback) {
+        return new TranslatableText(string, fallback);
+    }
+
+    @Override
+    public MutableText text(String string) {
+        return new LiteralText(string);
     }
 }
