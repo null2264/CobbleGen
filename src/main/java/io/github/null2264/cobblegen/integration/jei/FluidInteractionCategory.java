@@ -141,15 +141,15 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
         List<Text> texts = List.of(getCompat().translatableAppendingText(
                                            "cobblegen.info.weight",
-                                           List.of(Text.of(recipe.getResult().weight.toString()))
+                                           Text.of(recipe.getResult().weight.toString())
                                    ),
                                    getCompat().translatableAppendingText(
                                            "cobblegen.info.minY",
-                                           List.of((Text.of(minY.toString())))
+                                           Text.of(minY.toString())
                                    ),
                                    getCompat().translatableAppendingText(
                                            "cobblegen.info.maxY",
-                                           List.of((Text.of(maxY.toString())))
+                                           Text.of(maxY.toString())
                                    )
         );
         TextRenderer textRenderer = minecraft.textRenderer;
@@ -191,7 +191,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             } catch (NullPointerException ignored) {
                 biomeList.add(getCompat().appendingText(
                         "- ",
-                        List.of(getCompat().translatableText("cobblegen.dim.any"))
+                        getCompat().translatableText("cobblegen.dim.any")
                 ));
             }
             return biomeList;
@@ -211,7 +211,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             } catch (NullPointerException ignored) {
                 biomeList.add(getCompat().appendingText(
                         "- ",
-                        List.of(getCompat().translatableText("cobblegen.dim.none"))
+                        getCompat().translatableText("cobblegen.dim.none")
                 ));
             }
             return biomeList;

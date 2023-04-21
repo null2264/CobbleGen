@@ -13,11 +13,11 @@ public interface Compat
 {
     MutableText translatableText(String string);
 
-    MutableText translatableAppendingText(String string, List<Text> texts);
+    MutableText translatableAppendingText(String string, Text... texts);
 
     MutableText text(String string);
 
-    MutableText appendingText(String string, List<Text> texts);
+    MutableText appendingText(String string, Text... texts);
 
     Block getBlock(Identifier id);
 

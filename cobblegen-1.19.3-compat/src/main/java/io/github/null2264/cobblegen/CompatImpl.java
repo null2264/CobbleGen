@@ -23,7 +23,7 @@ public class CompatImpl implements Compat
     }
 
     @Override
-    public MutableText translatableAppendingText(String string, List<Text> texts) {
+    public MutableText translatableAppendingText(String string, Text... texts) {
         MutableText text = translatableText(string);
         for (Text appendText : texts) {
             text.append(appendText);
@@ -37,7 +37,7 @@ public class CompatImpl implements Compat
     }
 
     @Override
-    public MutableText appendingText(String string, List<Text> texts) {
+    public MutableText appendingText(String string, Text... texts) {
         MutableText text = text(string);
         for (Text appendText : texts) {
             text.append(appendText);
