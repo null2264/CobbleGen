@@ -2,18 +2,28 @@ package io.github.null2264.cobblegen.util;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public abstract class Compat
+public interface Compat
 {
-    public abstract Block getBlock(Identifier id);
+    MutableText translatableText(String string);
 
-    public abstract Identifier getBlockId(Block block);
+    MutableText translatableAppendingText(String string, Text... texts);
 
-    public abstract List<Identifier> getTaggedBlockIds(Identifier tagId);
+    MutableText text(String string);
 
-    public abstract String getDimension(World world);
+    MutableText appendingText(String string, Text... texts);
+
+    Block getBlock(Identifier id);
+
+    Identifier getBlockId(Block block);
+
+    List<Identifier> getTaggedBlockIds(Identifier tagId);
+
+    String getDimension(World world);
 }

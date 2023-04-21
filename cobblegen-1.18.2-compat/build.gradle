@@ -1,7 +1,11 @@
 archivesBaseName += "-1.18.2-compat"
 
 dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version_1_19_2}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
     //noinspection GradlePackageVersionRange
-    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_18_2}:v2"
+
+    modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
+
+    modLocalRuntime modCompileOnly("mezz.jei:${project.jei_version_1_18_2}")
 }
