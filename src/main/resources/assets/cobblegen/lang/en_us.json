@@ -3,6 +3,6 @@
   "cobblegen.generators.stone": "Stone Generator",
   "cobblegen.generators.basalt": "Basalt Generator",
   "cobblegen.info.weight": "Weight: ",
-  "cobblegen.info.miny": "Min Y: ",
-  "cobblegen.info.maxy": "Max Y: "
+  "cobblegen.info.minY": "Min Y: ",
+  "cobblegen.info.maxY": "Max Y: "
 }

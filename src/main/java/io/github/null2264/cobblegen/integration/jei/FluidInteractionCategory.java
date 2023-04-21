@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.integration.jei;
 
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -22,10 +23,12 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionRecipeHolder>
@@ -64,7 +67,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     @NotNull
     @Override
     public Text getTitle() {
-        return Text.translatable("cobblegen.generators." + type.name().toLowerCase());
+        return getCompat().translatableText("cobblegen.generators." + type.name().toLowerCase());
     }
 
     @NotNull
@@ -129,9 +132,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var maxY = recipe.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
         List<Text> texts = List.of(
-                Text.translatable("cobblegen.info.weight").append(recipe.getResult().weight.toString()),
-                Text.translatable("cobblegen.info.minY").append(minY.toString()),
-                Text.translatable("cobblegen.info.maxY").append(maxY.toString())
+                getCompat().translatableTextWithLiteral("cobblegen.info.weight", Text.of(recipe.getResult().weight.toString())),
+                getCompat().translatableTextWithLiteral("cobblegen.info.minY", Text.of(minY.toString())),
+                getCompat().translatableTextWithLiteral("cobblegen.info.maxY", Text.of(maxY.toString()))
         );
         TextRenderer textRenderer = minecraft.textRenderer;
         var y = 0;
@@ -150,5 +153,21 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     ) {
         // TODO: Add dimensions
         return List.of();
+    }
+
+    @SuppressWarnings("removal")
+    @Deprecated
+    @NotNull
+    @Override
+    public Identifier getUid() {
+        return Util.identifierOf("fluid_interaction");
+    }
+
+    @SuppressWarnings("removal")
+    @Deprecated
+    @NotNull
+    @Override
+    public Class<? extends FluidInteractionRecipeHolder> getRecipeClass() {
+        return FluidInteractionRecipeHolder.class;
     }
 }

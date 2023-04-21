@@ -84,13 +84,14 @@ subprojects {
 
 dependencies {
     include project(path: ':cobblegen-1.18.2-compat', configuration: 'namedElements')
+    include project(path: ':cobblegen-1.19-compat', configuration: 'namedElements')
     include project(path: ':cobblegen-1.19.3-compat', configuration: 'namedElements')
 
-    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
-    minecraft "com.mojang:minecraft:${project.minecraft_version_1_19_2}"
-    modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_19_2}")
+    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_18_2}:v2"
+    minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
+    modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
-    modCompileOnlyApi("mezz.jei:${project.jei_version_1_19_2}") {
+    modCompileOnlyApi("mezz.jei:${project.jei_version_1_18_2}") {
         transitive = false
     }
 
