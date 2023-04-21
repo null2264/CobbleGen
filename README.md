@@ -1,4 +1,4 @@
-<p align="center"><img src="https://cdn.discordapp.com/attachments/745223081898934365/1016964487204581426/unknown.png" alt="CobbleGen" width="150"/></p>
+<p align="center"><img src="./assets/icon.png" alt="CobbleGen" width="150"/></p>
 
 <h3 align="center">CobbleGen</h3>
 
