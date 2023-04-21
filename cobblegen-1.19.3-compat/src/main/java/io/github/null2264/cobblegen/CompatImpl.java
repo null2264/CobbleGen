@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class CompatImpl extends Compat
+public class CompatImpl implements Compat
 {
     @Override
     public MutableText translatableText(String string) {

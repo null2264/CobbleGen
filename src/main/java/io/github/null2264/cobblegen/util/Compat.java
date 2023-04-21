@@ -9,21 +9,21 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public abstract class Compat
+public interface Compat
 {
-    public abstract MutableText translatableText(String string);
+    MutableText translatableText(String string);
 
-    public abstract MutableText translatableAppendingText(String string, List<Text> texts);
+    MutableText translatableAppendingText(String string, List<Text> texts);
 
-    public abstract MutableText text(String string);
+    MutableText text(String string);
 
-    public abstract MutableText appendingText(String string, List<Text> texts);
+    MutableText appendingText(String string, List<Text> texts);
 
-    public abstract Block getBlock(Identifier id);
+    Block getBlock(Identifier id);
 
-    public abstract Identifier getBlockId(Block block);
+    Identifier getBlockId(Block block);
 
-    public abstract List<Identifier> getTaggedBlockIds(Identifier tagId);
+    List<Identifier> getTaggedBlockIds(Identifier tagId);
 
-    public abstract String getDimension(World world);
+    String getDimension(World world);
 }
