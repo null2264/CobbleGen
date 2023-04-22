@@ -27,17 +27,17 @@ public class CGREIPlugin implements REIClientPlugin
         for (GeneratorType type : GeneratorType.values()) {
             val config = Util.configFromType(type);
             for (WeightedBlock block : config.getLeft()) {
-                registry.add(
-                        new FluidInteractionRecipeHolderDisplay(block, type, type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null)
-                );
+                registry.add(new FluidInteractionRecipeHolderDisplay(
+                        block,
+                        type,
+                        type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null
+                ));
             }
             try {
                 config.getRight().forEach((modifierId, blocks) -> {
                     val modifier = getCompat().getBlock(new Identifier(modifierId));
                     for (WeightedBlock block : blocks) {
-                        registry.add(
-                                new FluidInteractionRecipeHolderDisplay(block, type, modifier)
-                        );
+                        registry.add(new FluidInteractionRecipeHolderDisplay(block, type, modifier));
                     }
                 });
             } catch (NullPointerException ignored) {

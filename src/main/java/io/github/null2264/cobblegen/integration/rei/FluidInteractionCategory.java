@@ -44,10 +44,13 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         type = generatorType;
     }
 
+    public static CategoryIdentifier<? extends FluidInteractionRecipeHolderDisplay> generateIdentifier(GeneratorType type) {
+        return CategoryIdentifier.of(Util.identifierOf(ID_PREFIX + type.name().toLowerCase()));
+    }
+
     @Override
     public int getDisplayHeight() {
-        return initialHeight
-                + (2 * 3)  // Gap against display's top border
+        return initialHeight + (2 * 3)  // Gap against display's top border
                 + (2 * 9)  // Dimensions Title's gaps (top and bottom)
                 + 20  // Dimension Icon's height
                 + 9  // Another gap
@@ -95,7 +98,10 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         widgets.add(Widgets.createRecipeBase(bounds));
         widgets.add(Widgets.createSlot(lava).entries(display.getInputEntries().get(0)).markInput().disableBackground());
         widgets.add(Widgets.createSlot(cold).entries(display.getInputEntries().get(1)).markInput().disableBackground());
-        widgets.add(Widgets.createSlot(result).entries(display.getOutputEntries().get(0)).markOutput().disableBackground());
+        widgets.add(Widgets.createSlot(result)
+                            .entries(display.getOutputEntries().get(0))
+                            .markOutput()
+                            .disableBackground());
         val modifier = display.getInputEntries().get(2).get(0);
         if (modifier != null)
             widgets.add(Widgets.createSlot(resultMod).entry(modifier).markInput().disableBackground());
@@ -106,17 +112,14 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
         var maxY = display.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(getCompat().translatableAppendingText(
-                                           "cobblegen.info.weight",
-                                           Text.of(display.getResult().weight.toString())
+        List<Text> texts = List.of(getCompat().translatableAppendingText("cobblegen.info.weight",
+                                                                         Text.of(display.getResult().weight.toString())
                                    ),
-                                   getCompat().translatableAppendingText(
-                                           "cobblegen.info.minY",
-                                           Text.of(minY.toString())
+                                   getCompat().translatableAppendingText("cobblegen.info.minY",
+                                                                         Text.of(minY.toString())
                                    ),
-                                   getCompat().translatableAppendingText(
-                                           "cobblegen.info.maxY",
-                                           Text.of(maxY.toString())
+                                   getCompat().translatableAppendingText("cobblegen.info.maxY",
+                                                                         Text.of(maxY.toString())
                                    )
         );
         var y = base.y;
@@ -150,22 +153,21 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
                 whitelist.add(getCompat().text("- " + id));
             }
         } catch (NullPointerException ignored) {
-            whitelist.add(getCompat().appendingText(
-                    "- ",
-                    getCompat().translatableText("cobblegen.dim.any")
-            ));
+            whitelist.add(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.any")));
         }
-        widgets.add(
-                Widgets.withTooltip(
-                        Widgets.withBounds(whitelistIcon, whitelistBounds),
-                        whitelist
-                )
-        );
+        widgets.add(Widgets.withTooltip(Widgets.withBounds(whitelistIcon, whitelistBounds), whitelist));
 
         // Blacklisted Dimensions
         val blacklistBounds = dimensionBounds.clone();
         blacklistBounds.x += bounds.width - 15 - 18 - (2 * gapAgainstBound);
-        val blacklistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT, blacklistBounds, 15F, 0F, 256, 256);
+        val blacklistIcon = Widgets.createTexturedWidget(
+                Constants.JEI_UI_COMPONENT,
+                blacklistBounds,
+                15F,
+                0F,
+                256,
+                256
+        );
 
         val blacklist = new ArrayList<Text>();
         blacklist.add(getCompat().translatableText("cobblegen.info.blacklistedDim"));
@@ -176,22 +178,10 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
                 blacklist.add(getCompat().text("- " + id));
             }
         } catch (NullPointerException ignored) {
-            blacklist.add(getCompat().appendingText(
-                    "- ",
-                    getCompat().translatableText("cobblegen.dim.none")
-            ));
+            blacklist.add(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.none")));
         }
-        widgets.add(
-                Widgets.withTooltip(
-                        Widgets.withBounds(blacklistIcon, blacklistBounds),
-                        blacklist
-                )
-        );
+        widgets.add(Widgets.withTooltip(Widgets.withBounds(blacklistIcon, blacklistBounds), blacklist));
         return widgets;
-    }
-
-    public static CategoryIdentifier<? extends FluidInteractionRecipeHolderDisplay> generateIdentifier(GeneratorType type) {
-        return CategoryIdentifier.of(Util.identifierOf(ID_PREFIX + type.name().toLowerCase()));
     }
 
     @Override

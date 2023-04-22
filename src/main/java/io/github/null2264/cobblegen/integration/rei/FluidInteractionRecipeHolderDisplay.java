@@ -1,19 +1,14 @@
 package io.github.null2264.cobblegen.integration.rei;
 
-import com.sun.jdi.InvalidTypeException;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
-import lombok.val;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
-import me.shedaniel.rei.api.common.entry.EntryStack;
-import me.shedaniel.rei.api.common.entry.type.VanillaEntryTypes;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import org.jetbrains.annotations.Nullable;
 
