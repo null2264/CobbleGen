@@ -35,12 +35,11 @@ public class CGJEIPlugin implements IModPlugin
         IJeiHelpers jeiHelpers = registration.getJeiHelpers();
         IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
         IPlatformFluidHelper<?> fluidHelper = jeiHelpers.getPlatformFluidHelper();
-        FluidInteractionCategory cobbleGen = new FluidInteractionCategory(guiHelper, fluidHelper, GeneratorType.COBBLE);
-        FluidInteractionCategory stoneGen = new FluidInteractionCategory(guiHelper, fluidHelper, GeneratorType.STONE);
-        FluidInteractionCategory basaltGen = new FluidInteractionCategory(guiHelper, fluidHelper, GeneratorType.BASALT);
-        registration.addRecipeCategories(cobbleGen);
-        registration.addRecipeCategories(stoneGen);
-        registration.addRecipeCategories(basaltGen);
+
+        for (GeneratorType generator : GeneratorType.values()) {
+            FluidInteractionCategory category = new FluidInteractionCategory(guiHelper, fluidHelper, generator);
+            registration.addRecipeCategories(category);
+        }
     }
 
     @Override
