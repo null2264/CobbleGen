@@ -3,10 +3,7 @@ package io.github.null2264.cobblegen;
 import io.github.null2264.cobblegen.util.Compat;
 import net.minecraft.block.Block;
 import net.minecraft.tag.TagKey;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -44,6 +41,11 @@ public class CompatImpl implements Compat
             text.append(appendText);
         }
         return text;
+    }
+
+    @Override
+    public OrderedText toOrderedText(Text text) {
+        return text.asOrderedText();
     }
 
     @Override

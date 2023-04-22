@@ -8,14 +8,18 @@ allprojects {
     repositories {
         maven { url 'https://jitpack.io' }
         maven {
-            url "https://maven.blamejared.com/"
+            url = "https://maven.blamejared.com/"
             content {
                 includeGroup "mezz.jei"
             }
         }
         maven {
-            name "Shedaniel Maven"
-            url "https://maven.shedaniel.me/"
+            name = "Shedaniel Maven"
+            url = "https://maven.shedaniel.me/"
+        }
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/"
         }
     }
 
@@ -91,7 +95,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
     modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
-    modCompileOnlyApi "me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2"
+    modCompileOnlyApi("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}:api")
+    modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2")
     modCompileOnlyApi("mezz.jei:${project.jei_version_1_18_2}") {
         transitive = false
     }
