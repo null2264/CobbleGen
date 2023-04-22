@@ -7,7 +7,8 @@ dependencies {
 
     modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_19_2}")
 
-    modLocalRuntime("dev.architectury:architectury-fabric:${project.architectury_version_1_19_2}")
-    modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version_1_19_2")
-    modCompileOnly("mezz.jei:${project.jei_version_1_19_2}")
+    modLocalRuntime("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_19_2}")
+    //modLocalRuntime("dev.architectury:architectury-fabric:${project.architectury_version_1_19_2}")
+    //modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version_1_19_2")
+    //modLocalRuntime("mezz.jei:${project.jei_version_1_19_2}")
 }

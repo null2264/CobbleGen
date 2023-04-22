@@ -3,6 +3,7 @@ package io.github.null2264.cobblegen.util;
 
 import net.minecraft.block.Block;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -18,6 +19,8 @@ public interface Compat
     MutableText text(String string);
 
     MutableText appendingText(String string, Text... texts);
+
+    OrderedText toOrderedText(Text text);
 
     Block getBlock(Identifier id);
 

@@ -7,6 +7,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -43,6 +44,11 @@ public class CompatImpl implements Compat
             text.append(appendText);
         }
         return text;
+    }
+
+    @Override
+    public OrderedText toOrderedText(Text text) {
+        return text.asOrderedText();
     }
 
     @Override

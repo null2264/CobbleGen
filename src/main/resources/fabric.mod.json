@@ -23,6 +23,9 @@
         ],
         "rei_client": [
             "io.github.null2264.cobblegen.integration.rei.CGREIPlugin"
+        ],
+        "emi": [
+            "io.github.null2264.cobblegen.integration.emi.CGEMIPlugin"
         ]
     },
     "mixins": [
