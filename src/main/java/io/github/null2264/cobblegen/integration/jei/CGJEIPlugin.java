@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.integration.jei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
@@ -12,7 +13,6 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.common.platform.IPlatformHelper;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;

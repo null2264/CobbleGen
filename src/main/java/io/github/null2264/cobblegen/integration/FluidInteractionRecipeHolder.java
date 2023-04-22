@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.integration.jei;
+package io.github.null2264.cobblegen.integration;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;

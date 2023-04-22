@@ -91,6 +91,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
     modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
+    modCompileOnlyApi "me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2"
     modCompileOnlyApi("mezz.jei:${project.jei_version_1_18_2}") {
         transitive = false
     }

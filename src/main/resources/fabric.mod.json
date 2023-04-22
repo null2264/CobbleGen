@@ -20,6 +20,9 @@
         ],
         "jei_mod_plugin": [
             "io.github.null2264.cobblegen.integration.jei.CGJEIPlugin"
+        ],
+        "rei_client": [
+            "io.github.null2264.cobblegen.integration.rei.CGREIPlugin"
         ]
     },
     "mixins": [
