@@ -125,7 +125,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         var y = base.y;
         for (Text text : texts) {
             val labelPoint = new Point(bounds.x + getDisplayWidth(display) - gapAgainstBound, y);
-            val label = Widgets.createLabel(labelPoint, text).rightAligned().noShadow().color(0xFF808080, 0xFFFFFF);
+            val label = Widgets.createLabel(labelPoint, text).rightAligned().noShadow().color(0xFF404040, 0xFFBBBBBB);
             widgets.add(label);
             y += 9;
         }
@@ -133,7 +133,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         // Dimensions
         Text text = getCompat().translatableText("cobblegen.info.dimensions");
         val dimensionTitlePoint = new Point(bounds.getCenterX(), resultMod.y + offset + 9);
-        widgets.add(Widgets.createLabel(dimensionTitlePoint, text).centered().noShadow().color(0xFF808080, 0xFFFFFF));
+        widgets.add(Widgets.createLabel(dimensionTitlePoint, text).centered().noShadow().color(0xFF404040, 0xFFBBBBBB));
 
         val dimensionBounds = base.clone();
         dimensionBounds.resize(15, 20);
