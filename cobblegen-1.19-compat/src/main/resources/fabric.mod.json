@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "cobblegen-1_18_2-compat",
+    "id": "cobblegen-1_19_2-compat",
     "version": "${version}",
     "name": "CobbleGen 1.19 Compat",
     "description": "1.19 Compatibility Layer for CobbleGen",
