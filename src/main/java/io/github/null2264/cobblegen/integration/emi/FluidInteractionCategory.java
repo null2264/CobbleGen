@@ -60,9 +60,11 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
 
     @Override
     public List<EmiIngredient> getInputs() {
+        EmiStack lava = EmiStack.of(Fluids.LAVA, 81_000);
+        EmiStack water = EmiStack.of(Fluids.WATER, 81_000);
         return List.of(
-                EmiStack.of(Fluids.LAVA, 81_000),
-                getType().equals(GeneratorType.BASALT) ? EmiStack.of(Blocks.BLUE_ICE) : EmiStack.of(Fluids.WATER, 81_000),
+                lava.copy().setRemainder(lava),
+                getType().equals(GeneratorType.BASALT) ? EmiStack.of(Blocks.BLUE_ICE) : water.copy().setRemainder(water),
                 EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
         );
     }
@@ -97,10 +99,10 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
             resultMod.y += offset + gap;
         }
 
-        widgets.addSlot(getInputs().get(0), lava.x, lava.y);
-        widgets.addSlot(getInputs().get(1), cold.x, cold.y);
+        widgets.addSlot(getInputs().get(0), lava.x, lava.y).catalyst(true);
+        widgets.addSlot(getInputs().get(1), cold.x, cold.y).catalyst(true);
         widgets.addSlot(getOutputs().get(0), result.x, result.y).recipeContext(this);
-        widgets.addSlot(getInputs().get(2), resultMod.x, resultMod.y);
+        widgets.addSlot(getInputs().get(2), resultMod.x, resultMod.y).catalyst(true);
 
         // Additional Info
         MinecraftClient minecraft = MinecraftClient.getInstance();
