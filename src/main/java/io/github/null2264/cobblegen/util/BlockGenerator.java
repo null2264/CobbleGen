@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,5 +113,10 @@ public class BlockGenerator
             return null;
 
         return getCompat().getBlock(new Identifier(replacementId)).getDefaultState();
+    }
+
+    public void tryReplace(Args args) {
+        val replacement = getReplacement();
+        if (replacement != null) args.set(1, replacement);
     }
 }

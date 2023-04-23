@@ -106,6 +106,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
     modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
+    modCompileOnlyApi("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
     modCompileOnlyApi("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
     modCompileOnlyApi("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}:api")
     modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2")
