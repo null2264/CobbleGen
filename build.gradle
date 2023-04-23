@@ -93,6 +93,11 @@ allprojects {
     }
 }
 
+if (System.getenv("GITHUB_ENV")) {
+    def envFile = new File(System.getenv("GITHUB_ENV"))
+    envFile.append("VERSION=${version}")
+}
+
 subprojects {
     dependencies {
         implementation(project(path: ":", configuration: "namedElements")) {
