@@ -37,7 +37,7 @@ allprojects {
     archivesBaseName = project.archives_base_name
 
     ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-    version = "v${project.mod_version}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage
+    version = project.mod_version + (buildNumber != null ? "+${buildNumber}-" : "-") + project.version_stage
 
     group = project.maven_group
 
