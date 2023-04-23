@@ -163,7 +163,7 @@ if (System.getenv("CURSEFORGE")) {
             }
             addGameVersion "Fabric"
             mainArtifact(remapJar.archiveFile) {
-                displayName = "${project.mod_version}-${project.version_stage}"
+                displayName = "v${project.mod_version}-${project.version_stage}"
             }
         }
         options {
@@ -187,7 +187,7 @@ if (System.getenv("MODRINTH")) {
         token = System.getenv("MODRINTH")
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
         projectId = project.modrinth_project
-        versionName = "${project.mod_version}-${project.version_stage}"
+        versionName = "v${project.mod_version}"
         versionNumber = version as String
         versionType = mrReleaseType
         uploadFile = remapJar
