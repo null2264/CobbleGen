@@ -189,6 +189,7 @@ if (System.getenv("MODRINTH")) {
         versionName = "${project.mod_version}-${project.version_stage}"
         versionNumber = version as String
         versionType = mrReleaseType
+        uploadFile = remapJar
         gameVersions = supportedVersions
         loaders = [ "fabric", "quilt" ]
     }
