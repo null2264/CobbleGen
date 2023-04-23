@@ -21,6 +21,17 @@ allprojects {
             name = "TerraformersMC"
             url = "https://maven.terraformersmc.com/"
         }
+        maven {
+            name = "Modrinth Maven"
+            url = "https://api.modrinth.com/maven"
+        }
+        maven {
+            name = "CurseMaven"
+            url = "https://cursemaven.com"
+        }
+        maven { url = "https://mvn.devos.one/snapshots/" }
+        maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
+        maven { url = "https://maven.tterrag.com/" }
     }
 
     archivesBaseName = project.archives_base_name
@@ -95,6 +106,8 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
     modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
+    modCompileOnlyApi("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+    modCompileOnlyApi("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
     modCompileOnlyApi("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}:api")
     modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2")
     modCompileOnlyApi("mezz.jei:${project.jei_version_1_18_2}") {

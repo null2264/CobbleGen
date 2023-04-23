@@ -7,7 +7,10 @@ dependencies {
 
     modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_19_3}")
 
-    modLocalRuntime("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_19_3}")
-    //modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version_1_19_3")
-    //modLocalRuntime("mezz.jei:${project.jei_version_1_19_3}")
+    switch (project.recipe_viewer.toLowerCase(Locale.ROOT)) {
+        case "rei": modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version_1_19_3"); break
+        case "emi": modLocalRuntime("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_19_3}"); break
+        case "disabled": break
+        default: modLocalRuntime("mezz.jei:${project.jei_version_1_19_3}"); break
+    }
 }

@@ -29,9 +29,7 @@ public abstract class FluidEventMixin
         if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN)) return;
 
         BlockGenerator generator = new BlockGenerator(world, pos, GeneratorType.COBBLE);
-        BlockState replacement = generator.getReplacement();
-
-        if (replacement != null) args.set(1, replacement);
+        generator.tryReplace(args);
     }
 
     @ModifyExpressionValue(method = "receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z", ordinal = 0))

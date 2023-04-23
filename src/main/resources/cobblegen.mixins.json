@@ -4,11 +4,13 @@
   "package": "io.github.null2264.cobblegen.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "CreateFluidReactionsMixin",
     "FluidEventMixin",
     "LavaEventMixin",
     "ReloadCommandMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "plugin": "io.github.null2264.cobblegen.mixin.CGMixinPlugin"
 }
