@@ -1,9 +1,11 @@
 plugins {
-    id 'fabric-loom' apply false
+    id "fabric-loom" apply false
+    id "com.matthewprenger.cursegradle" version "1.4.0"
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 allprojects {
-    apply plugin: 'fabric-loom'
+    apply plugin: "fabric-loom"
 
     repositories {
         maven { url 'https://jitpack.io' }
@@ -38,6 +40,9 @@ allprojects {
 
     ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
     version = project.mod_version + (buildNumber != null ? "+${buildNumber}-" : "-") + project.version_stage
+
+    ext.isAlpha = project.version_stage == "ALPHA"
+    ext.isBeta = project.version_stage == "BETA"
 
     group = project.maven_group
 
