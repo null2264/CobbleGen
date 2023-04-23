@@ -3,7 +3,7 @@
 # certain platforms or Java versions, and provides a first line of defence
 # against bad commits.
 
-name: build
+name: release
 on:
   release:
     types: [ published ]
@@ -67,7 +67,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/gradle-setup
+      - uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17  # Current Java LTS
+      - run: chmod +x ./gradlew
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
@@ -88,7 +93,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./.github/actions/gradle-setup
+      - uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17  # Current Java LTS
+      - run: chmod +x ./gradlew
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
