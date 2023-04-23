@@ -128,3 +128,63 @@ processResources {
         into "assets/cobblegen/"
     }
 }
+
+def supportedVersions = [
+        "1.18.2",
+        "1.19",
+        "1.19.2",
+        "1.19.3",
+        "1.19.4"
+]
+
+if (System.getenv("CURSEFORGE")) {
+    def cfReleaseType = "release"
+    if (ext.isAlpha) {
+        cfReleaseType = "alpha"
+    } else if (ext.isBeta) {
+        cfReleaseType = "beta"
+    }
+
+    curseforge {
+        apiKey = System.getenv("CURSEFORGE")
+        project {
+            id = project.curseforge_project
+            changelogType = "markdown"
+            changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
+            releaseType = cfReleaseType
+            for (final def mcVersion in supportedVersions) {
+                addGameVersion mcVersion
+            }
+            addGameVersion "Fabric"
+            mainArtifact(remapJar.archiveFile) {
+                displayName = "${project.mod_version}-${project.version_stage}"
+            }
+        }
+        options {
+            forgeGradleIntegration = false
+        }
+        afterEvaluate {
+            tasks.getByName("curseforge${project.curseforge_project}").dependsOn remapJar
+        }
+    }
+}
+
+if (System.getenv("MODRINTH")) {
+    def mrReleaseType = "release"
+    if (ext.isAlpha) {
+        mrReleaseType = "alpha"
+    } else if (ext.isBeta) {
+        mrReleaseType = "beta"
+    }
+
+    modrinth {
+        token = System.getenv("MODRINTH")
+        changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
+        projectId = project.modrinth_project
+        versionName = "${project.mod_version}-${project.version_stage}"
+        versionNumber = version as String
+        versionType = mrReleaseType
+        gameVersions = supportedVersions
+        loaders = [ "fabric", "quilt" ]
+    }
+}
