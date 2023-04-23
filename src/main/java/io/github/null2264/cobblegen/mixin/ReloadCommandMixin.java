@@ -16,7 +16,11 @@ import java.util.Collection;
 public class ReloadCommandMixin
 {
     @Inject(method = "tryReloadDataPacks(Ljava/util/Collection;Lnet/minecraft/server/command/ServerCommandSource;)V", at = @At("HEAD"))
-    private static void reloadConfig(Collection<String> dataPacks, ServerCommandSource source, CallbackInfo ci) throws CommandSyntaxException {
+    private static void reloadConfig(
+            Collection<String> dataPacks,
+            ServerCommandSource source,
+            CallbackInfo ci
+    ) throws CommandSyntaxException {
         try {
             source.getPlayer().sendMessage(Text.of("Reloading config file..."), false);
             ConfigHelper.load();

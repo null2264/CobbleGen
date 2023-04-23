@@ -27,10 +27,10 @@ public class CGREIPlugin implements REIClientPlugin
         for (GeneratorType type : GeneratorType.values()) {
             val config = Util.configFromType(type);
             for (WeightedBlock block : config.getLeft()) {
-                registry.add(new FluidInteractionRecipeHolderDisplay(
-                        block,
-                        type,
-                        type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null
+                registry.add(new FluidInteractionRecipeHolderDisplay(block,
+                                                                     type,
+                                                                     type == GeneratorType.BASALT ? Blocks.SOUL_SOIL
+                                                                                                  : null
                 ));
             }
             try {

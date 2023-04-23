@@ -140,17 +140,14 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
         var maxY = recipe.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(getCompat().translatableAppendingText(
-                                           "cobblegen.info.weight",
-                                           Text.of(recipe.getResult().weight.toString())
+        List<Text> texts = List.of(getCompat().translatableAppendingText("cobblegen.info.weight",
+                                                                         Text.of(recipe.getResult().weight.toString())
                                    ),
-                                   getCompat().translatableAppendingText(
-                                           "cobblegen.info.minY",
-                                           Text.of(minY.toString())
+                                   getCompat().translatableAppendingText("cobblegen.info.minY",
+                                                                         Text.of(minY.toString())
                                    ),
-                                   getCompat().translatableAppendingText(
-                                           "cobblegen.info.maxY",
-                                           Text.of(maxY.toString())
+                                   getCompat().translatableAppendingText("cobblegen.info.maxY",
+                                                                         Text.of(maxY.toString())
                                    )
         );
         TextRenderer textRenderer = minecraft.textRenderer;
@@ -190,10 +187,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                     biomeList.add(getCompat().text("- " + id));
                 }
             } catch (NullPointerException ignored) {
-                biomeList.add(getCompat().appendingText(
-                        "- ",
-                        getCompat().translatableText("cobblegen.dim.any")
-                ));
+                biomeList.add(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.any")));
             }
             return biomeList;
         }
@@ -210,10 +204,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                     biomeList.add(getCompat().text("- " + id));
                 }
             } catch (NullPointerException ignored) {
-                biomeList.add(getCompat().appendingText(
-                        "- ",
-                        getCompat().translatableText("cobblegen.dim.none")
-                ));
+                biomeList.add(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.none")));
             }
             return biomeList;
         }

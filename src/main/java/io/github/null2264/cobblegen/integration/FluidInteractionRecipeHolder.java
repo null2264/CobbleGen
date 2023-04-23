@@ -7,7 +7,8 @@ import net.minecraft.block.Block;
 import org.jetbrains.annotations.Nullable;
 
 @Data
-public class FluidInteractionRecipeHolder {
+public class FluidInteractionRecipeHolder
+{
     private final WeightedBlock result;
     private final GeneratorType type;
     private final @Nullable Block modifier;

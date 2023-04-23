@@ -14,9 +14,7 @@ public class CobbleGen implements ModInitializer
     private static Compat compat;
 
     public static Compat getCompat() {
-        if (compat == null)
-            compat = FabricLoader.getInstance()
-                .getEntrypoints("cobblegen-compat", Compat.class).get(0);
+        if (compat == null) compat = FabricLoader.getInstance().getEntrypoints("cobblegen-compat", Compat.class).get(0);
         return compat;
     }
 

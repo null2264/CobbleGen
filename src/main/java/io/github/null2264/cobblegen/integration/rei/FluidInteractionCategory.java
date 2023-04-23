@@ -160,13 +160,12 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         // Blacklisted Dimensions
         val blacklistBounds = dimensionBounds.clone();
         blacklistBounds.x += bounds.width - 15 - 18 - (2 * gapAgainstBound);
-        val blacklistIcon = Widgets.createTexturedWidget(
-                Constants.JEI_UI_COMPONENT,
-                blacklistBounds,
-                15F,
-                0F,
-                256,
-                256
+        val blacklistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT,
+                                                         blacklistBounds,
+                                                         15F,
+                                                         0F,
+                                                         256,
+                                                         256
         );
 
         val blacklist = new ArrayList<Text>();

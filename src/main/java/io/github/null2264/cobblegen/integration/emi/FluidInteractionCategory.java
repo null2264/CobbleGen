@@ -35,8 +35,8 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
             WeightedBlock result, GeneratorType type, @Nullable Block modifier
     ) {
         super(result, type, modifier);
-        initialHeight = type.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
-                                                                  : Constants.JEI_RECIPE_HEIGHT;
+        initialHeight =
+                type.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE : Constants.JEI_RECIPE_HEIGHT;
     }
 
     @Override
@@ -46,8 +46,7 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
 
     @Override
     public int getDisplayHeight() {
-        return initialHeight
-                + (2 * 9)  // Dimensions Title's gaps (top and bottom)
+        return initialHeight + (2 * 9)  // Dimensions Title's gaps (top and bottom)
                 + 20  // Dimension Icon's height
                 + 9  // Another gap
                 + 2;  // Last gap between border and dimension icon
@@ -62,18 +61,16 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
     public List<EmiIngredient> getInputs() {
         EmiStack lava = EmiStack.of(Fluids.LAVA, 81_000);
         EmiStack water = EmiStack.of(Fluids.WATER, 81_000);
-        return List.of(
-                lava.copy().setRemainder(lava),
-                getType().equals(GeneratorType.BASALT) ? EmiStack.of(Blocks.BLUE_ICE) : water.copy().setRemainder(water),
-                EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
+        return List.of(lava.copy().setRemainder(lava),
+                       getType().equals(GeneratorType.BASALT) ? EmiStack.of(Blocks.BLUE_ICE)
+                                                              : water.copy().setRemainder(water),
+                       EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
         );
     }
 
     @Override
     public List<EmiStack> getOutputs() {
-        return List.of(
-                EmiStack.of(getResult().getBlock())
-        );
+        return List.of(EmiStack.of(getResult().getBlock()));
     }
 
     @Override
@@ -130,7 +127,10 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
 
         // Dimensions
         Text text = getCompat().translatableText("cobblegen.info.dimensions");
-        val dimensionTitlePoint = new Point((getDisplayWidth() / 2) - (textRenderer.getWidth(text) / 2), resultMod.y + offset + 9);
+        val dimensionTitlePoint = new Point(
+                (getDisplayWidth() / 2) - (textRenderer.getWidth(text) / 2),
+                resultMod.y + offset + 9
+        );
         widgets.addText(text, dimensionTitlePoint.x, dimensionTitlePoint.y, 0xFFFFFFFF, true);
 
         val dimensionBounds = (Point) base.clone();
@@ -141,7 +141,8 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
         whitelistBounds.x += 18;
 
         val whitelist = new ArrayList<TooltipComponent>();
-        whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().translatableText("cobblegen.info.whitelistedDim"))));
+        whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().translatableText(
+                "cobblegen.info.whitelistedDim"))));
         List<String> recipeWhitelist = getResult().dimensions;
         try {
             for (String biome : recipeWhitelist) {
@@ -149,18 +150,21 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
                 whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().text("- " + id))));
             }
         } catch (NullPointerException ignored) {
-            whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.any")))));
+            whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().appendingText(
+                    "- ",
+                    getCompat().translatableText("cobblegen.dim.any")
+            ))));
         }
-        widgets.addTexture(Constants.JEI_UI_COMPONENT, whitelistBounds.x, whitelistBounds.y, 15, 20, 0, 0).tooltip(
-                (mouseX, mouseY) -> whitelist
-        );
+        widgets.addTexture(Constants.JEI_UI_COMPONENT, whitelistBounds.x, whitelistBounds.y, 15, 20, 0, 0)
+                .tooltip((mouseX, mouseY) -> whitelist);
 
         // Blacklisted Dimensions
         val blacklistBounds = (Point) dimensionBounds.clone();
         blacklistBounds.x += getDisplayWidth() - 15 - 18;
 
         val blacklist = new ArrayList<TooltipComponent>();
-        blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().translatableText("cobblegen.info.blacklistedDim"))));
+        blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().translatableText(
+                "cobblegen.info.blacklistedDim"))));
         List<String> recipeBlacklist = getResult().excludedDimensions;
         try {
             for (String biome : recipeBlacklist) {
@@ -168,11 +172,13 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
                 blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().text("- " + id))));
             }
         } catch (NullPointerException ignored) {
-            blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.none")))));
+            blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().appendingText(
+                    "- ",
+                    getCompat().translatableText("cobblegen.dim.none")
+            ))));
         }
-        widgets.addTexture(Constants.JEI_UI_COMPONENT, blacklistBounds.x, blacklistBounds.y, 15, 20, 15, 0).tooltip(
-                (mouseX, mouseY) -> blacklist
-        );
+        widgets.addTexture(Constants.JEI_UI_COMPONENT, blacklistBounds.x, blacklistBounds.y, 15, 20, 15, 0)
+                .tooltip((mouseX, mouseY) -> blacklist);
     }
 
     @Override
@@ -182,6 +188,7 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
         if (getModifier() != null) {
             modifierId = getModifier().getLootTableId();
         }
-        return Util.identifierOf(CGEMIPlugin.ID_PREFIX + getType().name().toLowerCase() + "_" + resultId.getNamespace() + "-" + resultId.getPath() + "_" + modifierId.getNamespace() + "-" + modifierId.getPath());
+        return Util.identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
+                .toLowerCase() + "_" + resultId.getNamespace() + "-" + resultId.getPath() + "_" + modifierId.getNamespace() + "-" + modifierId.getPath());
     }
 }

@@ -48,17 +48,17 @@ public class CGJEIPlugin implements IModPlugin
             val config = Util.configFromType(type);
             val recipes = new ArrayList<FluidInteractionRecipeHolder>();
             for (WeightedBlock block : config.getLeft()) {
-                recipes.add(
-                        new FluidInteractionRecipeHolder(block, type, type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null)
-                );
+                recipes.add(new FluidInteractionRecipeHolder(
+                        block,
+                        type,
+                        type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null
+                ));
             }
             try {
                 config.getRight().forEach((modifierId, blocks) -> {
                     val modifier = getCompat().getBlock(new Identifier(modifierId));
                     for (WeightedBlock block : blocks) {
-                        recipes.add(
-                                new FluidInteractionRecipeHolder(block, type, modifier)
-                        );
+                        recipes.add(new FluidInteractionRecipeHolder(block, type, modifier));
                     }
                 });
             } catch (NullPointerException ignored) {

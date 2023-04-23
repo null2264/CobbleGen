@@ -32,34 +32,24 @@ public class BlockGenerator
 
     // https://stackoverflow.com/a/6737362
     public static String randomizeBlockId(List<WeightedBlock> blockIds, String dim, Integer yLevel) {
-        if (blockIds.size() == 1)
-            return blockIds.get(0).id;
+        if (blockIds.size() == 1) return blockIds.get(0).id;
 
         ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
         AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
 
         for (WeightedBlock block : blockIds) {
-            if (block.dimensions != null && !block.dimensions.contains(dim))
-                continue;
+            if (block.dimensions != null && !block.dimensions.contains(dim)) continue;
 
-            if (block.excludedDimensions != null && block.excludedDimensions.contains(dim))
-                continue;
+            if (block.excludedDimensions != null && block.excludedDimensions.contains(dim)) continue;
 
-            if (block.maxY != null && block.maxY <= yLevel)
-                continue;
+            if (block.maxY != null && block.maxY <= yLevel) continue;
 
-            if (block.minY != null && block.minY >= yLevel)
-                continue;
+            if (block.minY != null && block.minY >= yLevel) continue;
 
             if (block.id.startsWith("#")) {
                 List<Identifier> taggedBlocks = getCompat().getTaggedBlockIds(new Identifier(block.id.substring(1)));
                 for (Identifier taggedBlock : taggedBlocks) {
-                    filteredBlockIds.add(
-                            new WeightedBlock(
-                                    taggedBlock.toString(),
-                                    block.weight
-                            )
-                    );
+                    filteredBlockIds.add(new WeightedBlock(taggedBlock.toString(), block.weight));
                     totalWeight.updateAndGet(v -> v + block.weight);
                 }
             } else {
@@ -74,8 +64,7 @@ public class BlockGenerator
             if (r <= 0.0) break;
         }
 
-        if (filteredBlockIds.isEmpty())
-            return null;
+        if (filteredBlockIds.isEmpty()) return null;
         return filteredBlockIds.get(idx).id;
     }
 
@@ -86,11 +75,9 @@ public class BlockGenerator
         Map<String, List<WeightedBlock>> customGen = config.getRight();
         List<WeightedBlock> fallback = config.getLeft();
 
-        if (customGen != null)
-            replacements = customGen.get(getCompat().getBlockId(blockBelow).toString());
+        if (customGen != null) replacements = customGen.get(getCompat().getBlockId(blockBelow).toString());
 
-        if (type == GeneratorType.BASALT)
-            return blockBelow == Blocks.SOUL_SOIL ? fallback : replacements;
+        if (type == GeneratorType.BASALT) return blockBelow == Blocks.SOUL_SOIL ? fallback : replacements;
 
         if (replacements == null || replacements.isEmpty()) {
             replacements = fallback;
@@ -102,14 +89,9 @@ public class BlockGenerator
     public @Nullable BlockState getReplacement() {
         String replacementId = null;
         if (expectedBlocks != null && !expectedBlocks.isEmpty())
-            replacementId = randomizeBlockId(
-                    expectedBlocks,
-                    getCompat().getDimension(world),
-                    pos.getY()
-            );
+            replacementId = randomizeBlockId(expectedBlocks, getCompat().getDimension(world), pos.getY());
 
-        if (replacementId == null)
-            return null;
+        if (replacementId == null) return null;
 
         return getCompat().getBlock(new Identifier(replacementId)).getDefaultState();
     }

@@ -28,7 +28,14 @@ public class WeightedBlock
         this(id, weight, dimIds, excludedDimensions, null, null);
     }
 
-    public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions, Integer maxY, Integer minY) {
+    public WeightedBlock(
+            String id,
+            Double weight,
+            List<String> dimIds,
+            List<String> excludedDimensions,
+            Integer maxY,
+            Integer minY
+    ) {
         this.id = id;
         this.weight = weight;
         this.dimensions = dimIds;

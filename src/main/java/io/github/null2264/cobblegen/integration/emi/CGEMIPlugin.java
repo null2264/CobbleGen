@@ -15,13 +15,27 @@ import java.util.Map;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
-public class CGEMIPlugin implements EmiPlugin {
+public class CGEMIPlugin implements EmiPlugin
+{
     public static final String ID_PREFIX = "fluid_interaction_";
-    public static final Map<String, EmiRecipeCategory> FLUID_INTERACTION
-            = Map.of(
-            "COBBLE", new EmiRecipeCategory(Util.identifierOf(ID_PREFIX + "cobble"), EmiStack.of(Blocks.COBBLESTONE)),
-            "STONE", new EmiRecipeCategory(Util.identifierOf(ID_PREFIX + "stone"), EmiStack.of(Blocks.STONE)),
-            "BASALT", new EmiRecipeCategory(Util.identifierOf(ID_PREFIX + "basalt"), EmiStack.of(Blocks.BASALT))
+    public static final Map<String, EmiRecipeCategory> FLUID_INTERACTION = Map.of("COBBLE",
+                                                                                  new EmiRecipeCategory(Util.identifierOf(
+                                                                                          ID_PREFIX + "cobble"),
+                                                                                                        EmiStack.of(
+                                                                                                                Blocks.COBBLESTONE)
+                                                                                  ),
+                                                                                  "STONE",
+                                                                                  new EmiRecipeCategory(Util.identifierOf(
+                                                                                          ID_PREFIX + "stone"),
+                                                                                                        EmiStack.of(
+                                                                                                                Blocks.STONE)
+                                                                                  ),
+                                                                                  "BASALT",
+                                                                                  new EmiRecipeCategory(Util.identifierOf(
+                                                                                          ID_PREFIX + "basalt"),
+                                                                                                        EmiStack.of(
+                                                                                                                Blocks.BASALT)
+                                                                                  )
     );
 
     @Override
@@ -31,10 +45,9 @@ public class CGEMIPlugin implements EmiPlugin {
         for (GeneratorType type : GeneratorType.values()) {
             val config = Util.configFromType(type);
             for (WeightedBlock block : config.getLeft()) {
-                registry.addRecipe(new FluidInteractionCategory(
-                        block,
-                        type,
-                        type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null
+                registry.addRecipe(new FluidInteractionCategory(block,
+                                                                type,
+                                                                type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null
                 ));
             }
             try {
