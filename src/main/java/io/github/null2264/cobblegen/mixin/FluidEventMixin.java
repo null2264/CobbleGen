@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -25,7 +26,7 @@ public abstract class FluidEventMixin
     }
 
     @ModifyArgs(method = "receiveNeighborFluids", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", ordinal = 0))
-    private void cobble$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
+    private void cobble$receiveNeighborFluids(@NotNull Args args, World world, BlockPos pos, BlockState fluidBlockState) {
         if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN)) return;
 
         BlockGenerator generator = new BlockGenerator(world, pos, GeneratorType.COBBLE);
@@ -33,7 +34,7 @@ public abstract class FluidEventMixin
     }
 
     @ModifyExpressionValue(method = "receiveNeighborFluids(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z", ordinal = 0))
-    private boolean soulSoil$receiveNeighborFluid(boolean original, World world, BlockPos pos, BlockState state) {
+    private boolean soulSoil$receiveNeighborFluid(boolean original, World world, BlockPos pos, BlockState ignoredState) {
         return shouldBasaltGenerate(world, pos) || original;
     }
 

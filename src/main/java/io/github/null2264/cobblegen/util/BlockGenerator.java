@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
-import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 
 public class BlockGenerator
 {

@@ -24,7 +24,7 @@ public class CGMixinPlugin implements IMixinConfigPlugin
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.endsWith("CreateFluidReactionsMixin"))
             return FabricLoader.getInstance().isModLoaded("create");
-        return false;
+        return true;
     }
 
     @Override
