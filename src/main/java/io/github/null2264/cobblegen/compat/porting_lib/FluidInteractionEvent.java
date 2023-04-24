@@ -10,7 +10,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.LavaFluid;
 import net.minecraft.fluid.WaterFluid;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -56,5 +55,9 @@ public class FluidInteractionEvent
 
     public static void register() {
         FluidPlaceBlockCallback.EVENT.register(FluidInteractionEvent::whenFluidsMeet);
+    }
+
+    public static BlockState invoke(WorldAccess world, BlockPos pos, BlockState state) {
+        return FluidPlaceBlockCallback.EVENT.invoker().onFluidPlaceBlock(world, pos, state);
     }
 }

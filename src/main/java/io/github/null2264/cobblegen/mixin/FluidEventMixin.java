@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.github.fabricators_of_create.porting_lib.event.common.FluidPlaceBlockCallback;
+import io.github.null2264.cobblegen.compat.porting_lib.FluidInteractionEvent;
 import io.github.null2264.cobblegen.util.BlockGenerator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import net.fabricmc.loader.api.FabricLoader;
@@ -23,7 +23,7 @@ public abstract class FluidEventMixin
 
     private boolean shouldBasaltGenerate(World world, BlockPos pos, BlockState state, Boolean canGenerate) {
         if (FabricLoader.getInstance().isModLoaded("porting_lib") && canGenerate)
-            basaltReplacement = FluidPlaceBlockCallback.EVENT.invoker().onFluidPlaceBlock(world, pos, state);
+            basaltReplacement = FluidInteractionEvent.invoke(world, pos, state);
 
         if (basaltReplacement == null) {
             BlockGenerator basaltGenerator = new BlockGenerator(world, pos, GeneratorType.BASALT);
