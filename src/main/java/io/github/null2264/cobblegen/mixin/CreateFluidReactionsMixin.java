@@ -21,14 +21,13 @@ public abstract class CreateFluidReactionsMixin
 {
     private static void handleReaction(@NotNull Args args, World world, BlockPos pos) {
         BlockState state = args.get(1);
-        if (!state.getFluidState().isEmpty()) return;
-        if (state.isOf(Blocks.OBSIDIAN)) return;
-        BlockGenerator generator = new BlockGenerator(world,
-                                                      pos,
-                                                      state.isOf(Blocks.STONE) ? GeneratorType.STONE
-                                                                               : GeneratorType.COBBLE
-        );
-        generator.tryReplace(args);
+        if (state.isOf(Blocks.STONE) || state.isOf(Blocks.COBBLESTONE)) {
+            BlockGenerator generator = new BlockGenerator(world,
+                                                          pos,
+                                                          state.isOf(Blocks.STONE) ? GeneratorType.STONE : GeneratorType.COBBLE
+            );
+            generator.tryReplace(args);
+        }
     }
 
     @ModifyArgs(method = "handlePipeFlowCollision(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z"))
