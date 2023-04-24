@@ -38,19 +38,17 @@ public class FluidInteractionEvent
             if (direction == Direction.UP) continue;
 
             FluidState metFluidState = fluidState.isStill() ? fluidState : world.getFluidState(pos.offset(direction));
-            if (metFluidState.isIn(FluidTags.WATER)) {
+            BlockPos blockPos = pos.offset(direction.getOpposite());
+            if (metFluidState.getFluid() instanceof WaterFluid) {
                 val generator = new BlockGenerator(
                         (World) world,
                         pos,
                         GeneratorType.COBBLE
                 );
                 return generator.getReplacement();
-            } else {
-                BlockPos blockPos = pos.offset(direction.getOpposite());
-                if (world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
-                    val generator = new BlockGenerator((World) world, pos, GeneratorType.BASALT);
-                    return generator.getReplacement();
-                }
+            } else if (world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
+                val generator = new BlockGenerator((World) world, pos, GeneratorType.BASALT);
+                return generator.getReplacement();
             }
         }
         return null;
