@@ -21,10 +21,15 @@ public abstract class FluidEventMixin
 {
     private BlockState basaltReplacement;
 
-    private boolean shouldBasaltGenerate(World world, BlockPos pos) {
-        BlockGenerator basaltGenerator = new BlockGenerator(world, pos, GeneratorType.BASALT);
-        basaltReplacement = basaltGenerator.getReplacement();
-        return basaltReplacement != null;
+    private boolean shouldBasaltGenerate(World world, BlockPos pos, BlockState state, Boolean canGenerate) {
+        if (FabricLoader.getInstance().isModLoaded("porting_lib") && canGenerate)
+            basaltReplacement = FluidPlaceBlockCallback.EVENT.invoker().onFluidPlaceBlock(world, pos, state);
+
+        if (basaltReplacement == null) {
+            BlockGenerator basaltGenerator = new BlockGenerator(world, pos, GeneratorType.BASALT);
+            basaltReplacement = basaltGenerator.getReplacement();
+        }
+        return basaltReplacement != null || canGenerate;
     }
 
     /**
@@ -50,15 +55,13 @@ public abstract class FluidEventMixin
             boolean original,
             World world,
             BlockPos pos,
-            BlockState ignoredState
+            BlockState state
     ) {
-        return shouldBasaltGenerate(world, pos) || original;
+        return shouldBasaltGenerate(world, pos, state, original);
     }
 
     @ModifyArgs(method = "receiveNeighborFluids", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", ordinal = 1))
     private void basalt$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
-        BlockState replacement = basaltReplacement;
-
-        if (replacement != null) args.set(1, replacement);
+        if (basaltReplacement != null) args.set(1, basaltReplacement);
     }
 }

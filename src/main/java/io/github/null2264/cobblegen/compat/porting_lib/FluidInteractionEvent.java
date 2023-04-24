@@ -5,6 +5,7 @@ import io.github.null2264.cobblegen.util.BlockGenerator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.LavaFluid;
@@ -37,14 +38,20 @@ public class FluidInteractionEvent
             if (direction == Direction.UP) continue;
 
             FluidState metFluidState = fluidState.isStill() ? fluidState : world.getFluidState(pos.offset(direction));
-            if (!metFluidState.isIn(FluidTags.WATER)) continue;
-
-            val generator = new BlockGenerator(
-                    (World) world,
-                    pos,
-                    GeneratorType.COBBLE
-            );
-            return generator.getReplacement();
+            if (metFluidState.isIn(FluidTags.WATER)) {
+                val generator = new BlockGenerator(
+                        (World) world,
+                        pos,
+                        GeneratorType.COBBLE
+                );
+                return generator.getReplacement();
+            } else {
+                BlockPos blockPos = pos.offset(direction.getOpposite());
+                if (world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
+                    val generator = new BlockGenerator((World) world, pos, GeneratorType.BASALT);
+                    return generator.getReplacement();
+                }
+            }
         }
         return null;
     }
