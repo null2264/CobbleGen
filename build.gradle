@@ -163,8 +163,6 @@ if (System.getenv("CURSEFORGE")) {
             }
             addGameVersion "Fabric"
             addGameVersion "Quilt"
-            addGameVersion "Client"
-            addGameVersion "Server"
             addGameVersion "Java 17"
             mainArtifact(remapJar.archiveFile) {
                 displayName = "v${project.mod_version}-${project.version_stage}"
