@@ -62,6 +62,9 @@ public abstract class FluidEventMixin
 
     @ModifyArgs(method = "receiveNeighborFluids", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", ordinal = 1))
     private void basalt$receiveNeighborFluids(Args args, World world, BlockPos pos, BlockState fluidBlockState) {
-        if (basaltReplacement != null) args.set(1, basaltReplacement);
+        if (basaltReplacement != null) {
+            args.set(1, basaltReplacement);
+            basaltReplacement = null;
+        }
     }
 }
