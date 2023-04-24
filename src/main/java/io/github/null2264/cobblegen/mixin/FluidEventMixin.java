@@ -1,8 +1,10 @@
 package io.github.null2264.cobblegen.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import io.github.fabricators_of_create.porting_lib.event.common.FluidPlaceBlockCallback;
 import io.github.null2264.cobblegen.util.BlockGenerator;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -25,6 +27,10 @@ public abstract class FluidEventMixin
         return basaltReplacement != null;
     }
 
+    /**
+     * Handle fluid interactions (for cobblestone generator).
+     * If Porting Lib is installed, fluid interactions will be handled by {@link io.github.null2264.cobblegen.compat.porting_lib.FluidInteractionEvent}
+     */
     @ModifyArgs(method = "receiveNeighborFluids", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z", ordinal = 0))
     private void cobble$receiveNeighborFluids(
             @NotNull Args args,
@@ -32,6 +38,7 @@ public abstract class FluidEventMixin
             BlockPos pos,
             BlockState fluidBlockState
     ) {
+        if (FabricLoader.getInstance().isModLoaded("porting_lib")) return;
         if (((BlockState) args.get(1)).isOf(Blocks.OBSIDIAN)) return;
 
         BlockGenerator generator = new BlockGenerator(world, pos, GeneratorType.COBBLE);

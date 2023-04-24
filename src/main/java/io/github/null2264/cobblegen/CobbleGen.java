@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen;
 
+import io.github.null2264.cobblegen.compat.porting_lib.FluidInteractionEvent;
 import io.github.null2264.cobblegen.config.ConfigHelper;
 import io.github.null2264.cobblegen.util.Compat;
 import net.fabricmc.api.ModInitializer;
@@ -22,5 +23,9 @@ public class CobbleGen implements ModInitializer
     public void onInitialize() {
         LOGGER.info("Loading config...");
         ConfigHelper.loadAndSaveDefault();
+        if (FabricLoader.getInstance().isModLoaded("porting_lib")) {
+            LOGGER.info("Porting Lib is found, registering event...");
+            FluidInteractionEvent.register();
+        }
     }
 }
