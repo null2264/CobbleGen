@@ -6,6 +6,7 @@ import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.LavaFluid;
 import net.minecraft.fluid.WaterFluid;
 import net.minecraft.tag.FluidTags;
@@ -20,7 +21,7 @@ public class FluidInteractionEvent
 {
     public static BlockState whenFluidsMeet(WorldAccess world, BlockPos pos, BlockState state) {
         FluidState fluidState = state.getFluidState();
-        if (fluidState.isEmpty()) return null;
+        if (fluidState.isEmpty() || (fluidState.isStill() && fluidState.isOf(Fluids.LAVA))) return null;
 
         FluidState fluidStateAbove = world.getFluidState(pos.up());
         if (fluidState.getFluid() instanceof WaterFluid && fluidStateAbove.getFluid() instanceof LavaFluid) {
