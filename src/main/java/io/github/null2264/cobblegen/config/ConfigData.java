@@ -88,4 +88,6 @@ public class ConfigData
                     )
             )
     );
+
+    public Map<String, Map<String, Map<String, List<WeightedBlock>>>> advanced = Map.of();
 }

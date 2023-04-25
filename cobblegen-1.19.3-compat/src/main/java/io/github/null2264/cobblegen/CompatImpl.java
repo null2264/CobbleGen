@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen;
 
 import io.github.null2264.cobblegen.util.Compat;
 import net.minecraft.block.Block;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -75,6 +76,11 @@ public class CompatImpl implements Compat
             }
         }));
         return blockIds;
+    }
+
+    @Override
+    public Identifier getFluidId(Fluid fluid) {
+        return Registries.FLUID.getId(fluid);
     }
 
     @Override

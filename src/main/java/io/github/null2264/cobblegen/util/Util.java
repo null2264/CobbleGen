@@ -64,8 +64,8 @@ public class Util
 
     @NotNull
     public static Pair<List<WeightedBlock>, Map<String, List<WeightedBlock>>> configFromType(GeneratorType type) {
-        Map<String, List<WeightedBlock>> customGen = null;
-        List<WeightedBlock> fallback = null;
+        Map<String, List<WeightedBlock>> customGen;
+        List<WeightedBlock> fallback;
         switch (type) {
             case COBBLE -> {
                 customGen = CONFIG.customGen.cobbleGen;
@@ -78,6 +78,10 @@ public class Util
             case BASALT -> {
                 customGen = CONFIG.customGen.basaltGen;
                 fallback = CONFIG.basaltGen;
+            }
+            default -> {
+                customGen = Map.of();
+                fallback = List.of();
             }
         }
         return new Pair<>(fallback, customGen);

@@ -24,8 +24,16 @@ public class BlockGenerator
     private final World world;
     private final BlockPos pos;
 
+    public BlockGenerator(World world, BlockPos pos, List<WeightedBlock> advancedConfig) {
+        this(world, pos, GeneratorType.ADVANCED, advancedConfig);
+    }
+
     public BlockGenerator(World world, BlockPos pos, GeneratorType type) {
-        this.expectedBlocks = getCustomReplacement(world, pos, type);
+        this(world, pos, type, List.of());
+    }
+
+    public BlockGenerator(World world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
+        this.expectedBlocks = getCustomReplacement(world, pos, type, advancedConfig);
         this.world = world;
         this.pos = pos;
     }
@@ -68,12 +76,18 @@ public class BlockGenerator
         return filteredBlockIds.get(idx).id;
     }
 
-    public static List<WeightedBlock> getCustomReplacement(World world, BlockPos pos, GeneratorType type) {
+    public static List<WeightedBlock> getCustomReplacement(World world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
         List<WeightedBlock> replacements = null;
         Block blockBelow = world.getBlockState(pos.down()).getBlock();
-        val config = Util.configFromType(type);
-        Map<String, List<WeightedBlock>> customGen = config.getRight();
-        List<WeightedBlock> fallback = config.getLeft();
+        Map<String, List<WeightedBlock>> customGen = Map.of();
+        List<WeightedBlock> fallback;
+        if (type != GeneratorType.ADVANCED) {
+            val config = Util.configFromType(type);
+            customGen = config.getRight();
+            fallback = config.getLeft();
+        } else {
+            fallback = advancedConfig;
+        }
 
         if (customGen != null) replacements = customGen.get(getCompat().getBlockId(blockBelow).toString());
 

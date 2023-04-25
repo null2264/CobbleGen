@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.util;
 
 
 import net.minecraft.block.Block;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -27,6 +28,8 @@ public interface Compat
     Identifier getBlockId(Block block);
 
     List<Identifier> getTaggedBlockIds(Identifier tagId);
+
+    Identifier getFluidId(Fluid fluid);
 
     String getDimension(World world);
 }
