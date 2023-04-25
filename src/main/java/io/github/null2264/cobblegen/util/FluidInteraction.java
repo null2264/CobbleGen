@@ -22,7 +22,7 @@ import static net.minecraft.client.render.WorldRenderer.DIRECTIONS;
 
 public class FluidInteraction
 {
-    public static boolean doInteraction(World world, BlockPos pos, BlockState state, FlowableFluid fluid) {
+    public static boolean doInteraction(World world, BlockPos pos, FlowableFluid fluid) {
         if (CONFIG.advanced == null || CONFIG.advanced.isEmpty()) return false;
 
         Identifier flowingId;

@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.Comment;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -89,5 +90,6 @@ public class ConfigData
             )
     );
 
-    public Map<String, Map<String, Map<String, List<WeightedBlock>>>> advanced = Map.of();
+    @Nullable
+    public Map<String, Map<String, Map<String, List<WeightedBlock>>>> advanced;
 }

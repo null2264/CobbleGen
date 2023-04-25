@@ -41,7 +41,7 @@ public abstract class FluidEventMixin
 
     @Inject(method = "receiveNeighborFluids", at = @At("HEAD"), cancellable = true)
     private void customInteraction(World world, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        val success = FluidInteraction.doInteraction(world, pos, state, fluid);
+        val success = FluidInteraction.doInteraction(world, pos, fluid);
         if (success)
             cir.setReturnValue(false);
     }
