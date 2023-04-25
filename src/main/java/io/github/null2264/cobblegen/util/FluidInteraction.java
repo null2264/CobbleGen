@@ -72,7 +72,8 @@ public class FluidInteraction
             val replacement = new BlockGenerator(world, pos, possibleGens).getReplacement();
             if (replacement != null) {
                 world.setBlockState(pos, replacement, 3);
-                world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
+                if (!rootConfig.silent)
+                    world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
                 return true;
             }
         }
