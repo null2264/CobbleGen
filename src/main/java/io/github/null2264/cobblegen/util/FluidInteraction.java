@@ -55,7 +55,10 @@ public class FluidInteraction
             }
 
             val rootConfig = flowingConfig.getOrDefault((isFluid ? "" : "b:") + id.toString(), Map.of());
-            val possibleGens = rootConfig.get(getCompat().getBlockId(blockBelow).toString());
+            val possibleGens = rootConfig.getOrDefault(
+                    getCompat().getBlockId(blockBelow).toString(),
+                    rootConfig.get("*")
+            );
             if (possibleGens == null) continue;
 
             val replacement = new BlockGenerator(world, pos, possibleGens).getReplacement();
