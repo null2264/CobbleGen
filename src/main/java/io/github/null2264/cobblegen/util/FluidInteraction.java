@@ -45,7 +45,8 @@ public class FluidInteraction
             Identifier id;
             boolean isFluid = false;
 
-            FluidState fluidState = world.getFluidState(blockPos);
+            BlockState blockState = world.getBlockState(blockPos);
+            FluidState fluidState = blockState.getFluidState();
             if (!fluidState.isEmpty()) {
                 Fluid curFluid = fluidState.getFluid();
                 if (curFluid instanceof FlowableFluid) curFluid = ((FlowableFluid) curFluid).getStill();
@@ -54,7 +55,6 @@ public class FluidInteraction
                 isFluid = true;
             } else {
                 if (fromTop) return false;
-                BlockState blockState = world.getBlockState(blockPos);
                 id = getCompat().getBlockId(blockState.getBlock());
             }
 
