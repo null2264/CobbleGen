@@ -29,41 +29,41 @@ public class FluidInteraction
     public static boolean doInteraction(WorldAccess world, BlockPos pos, FlowableFluid fluid, boolean fromTop) {
         if (CONFIG.advanced == null || CONFIG.advanced.isEmpty()) return false;
 
-        Identifier flowingId;
-        flowingId = getCompat().getFluidId(fluid.getStill());
+        Identifier flowingId = getCompat().getFluidId(fluid.getStill());
 
         val flowingConfig = CONFIG.advanced.get(flowingId.toString());
         if (flowingConfig == null) return false;
 
         Block blockBelow = world.getBlockState(pos.down()).getBlock();
         for (Direction direction : DIRECTIONS) {
-            if (direction == Direction.UP) continue;
-            if (fromTop && direction != Direction.DOWN) continue;
+            if (direction == Direction.UP || (fromTop && direction != Direction.DOWN)) continue;
 
             BlockPos blockPos = fromTop ? pos : pos.offset(direction.getOpposite());
 
             Identifier id;
-            boolean isFluid = false;
+            boolean isFluid;
 
             BlockState blockState = world.getBlockState(blockPos);
             FluidState fluidState = blockState.getFluidState();
-            if (!fluidState.isEmpty()) {
+            if (fluidState.isEmpty()) {
+                if (fromTop) return false;
+
+                id = getCompat().getBlockId(blockState.getBlock());
+                isFluid = false;
+            } else {
                 Fluid curFluid = fluidState.getFluid();
                 if (curFluid instanceof FlowableFluid) curFluid = ((FlowableFluid) curFluid).getStill();
 
                 id = getCompat().getFluidId(curFluid);
                 isFluid = true;
-            } else {
-                if (fromTop) return false;
-                id = getCompat().getBlockId(blockState.getBlock());
             }
 
             val rootConfig = flowingConfig.get((isFluid ? "" : "b:") + id.toString());
             if (rootConfig == null) continue;
 
             Map<String, List<WeightedBlock>> results;
-            if (!isFluid) results = rootConfig.results;
-            else results = fromTop ? rootConfig.resultsFromTop : rootConfig.results;
+            if (isFluid) results = fromTop ? rootConfig.resultsFromTop : rootConfig.results;
+            else results = rootConfig.results;
             if (results == null) continue;
 
             val possibleGens = results.getOrDefault(getCompat().getBlockId(blockBelow).toString(), results.get("*"));
