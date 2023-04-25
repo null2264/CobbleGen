@@ -12,4 +12,4 @@ CobbleGen
 
 ## License 
 
-This mod is licensed under the [MIT License](./LICENSE)
+This mod is licensed under [GNU LGPLv3 License](./LICENSE)
