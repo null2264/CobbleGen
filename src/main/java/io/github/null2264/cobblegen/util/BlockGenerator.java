@@ -7,7 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -21,18 +21,18 @@ import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 public class BlockGenerator
 {
     private final List<WeightedBlock> expectedBlocks;
-    private final World world;
+    private final WorldAccess world;
     private final BlockPos pos;
 
-    public BlockGenerator(World world, BlockPos pos, List<WeightedBlock> advancedConfig) {
+    public BlockGenerator(WorldAccess world, BlockPos pos, List<WeightedBlock> advancedConfig) {
         this(world, pos, GeneratorType.ADVANCED, advancedConfig);
     }
 
-    public BlockGenerator(World world, BlockPos pos, GeneratorType type) {
+    public BlockGenerator(WorldAccess world, BlockPos pos, GeneratorType type) {
         this(world, pos, type, List.of());
     }
 
-    public BlockGenerator(World world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
+    public BlockGenerator(WorldAccess world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
         this.expectedBlocks = getCustomReplacement(world, pos, type, advancedConfig);
         this.world = world;
         this.pos = pos;
@@ -76,7 +76,7 @@ public class BlockGenerator
         return filteredBlockIds.get(idx).id;
     }
 
-    public static List<WeightedBlock> getCustomReplacement(World world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
+    public static List<WeightedBlock> getCustomReplacement(WorldAccess world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
         List<WeightedBlock> replacements = null;
         Block blockBelow = world.getBlockState(pos.down()).getBlock();
         Map<String, List<WeightedBlock>> customGen = Map.of();

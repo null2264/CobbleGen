@@ -91,5 +91,5 @@ public class ConfigData
     );
 
     @Nullable
-    public Map<String, Map<String, Map<String, List<WeightedBlock>>>> advanced;
+    public Map<String, Map<String, AdvancedGen>> advanced;
 }

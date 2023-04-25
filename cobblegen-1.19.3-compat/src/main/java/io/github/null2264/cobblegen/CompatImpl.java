@@ -11,7 +11,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +84,8 @@ public class CompatImpl implements Compat
     }
 
     @Override
-    public String getDimension(World world) {
-        return world.getRegistryKey().getValue().toString();
+    public String getDimension(WorldAccess world) {
+        Identifier dim = world.getRegistryManager().get(RegistryKeys.DIMENSION_TYPE).getId(world.getDimension());
+        return dim != null ? dim.toString() : "minecraft:overworld";
     }
 }
