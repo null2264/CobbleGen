@@ -7,8 +7,12 @@
     "authors": [
         "null2264"
     ],
-    "contact": {},
-    "license": "MIT",
+    "contact": {
+        "homepage": "https://github.com/null2264/CobbleGen",
+        "sources": "https://github.com/null2264/CobbleGen",
+        "issues": "https://github.com/null2264/CobbleGen/issues"
+    },
+    "license": "LGPL-3.0-only",
     "icon": "assets/cobblegen/icon.png",
     "environment": "*",
     "entrypoints": {
