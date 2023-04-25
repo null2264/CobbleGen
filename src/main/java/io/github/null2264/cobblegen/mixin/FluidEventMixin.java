@@ -22,10 +22,9 @@ public abstract class FluidEventMixin
     private BlockState basaltReplacement;
 
     private boolean shouldBasaltGenerate(World world, BlockPos pos, BlockState state, Boolean canGenerate) {
-        if (FabricLoader.getInstance().isModLoaded("porting_lib") && canGenerate)
+        if (FabricLoader.getInstance().isModLoaded("porting_lib"))
             basaltReplacement = FluidInteractionEvent.invoke(world, pos, state);
-
-        if (basaltReplacement == null) {
+        else {
             BlockGenerator basaltGenerator = new BlockGenerator(world, pos, GeneratorType.BASALT);
             basaltReplacement = basaltGenerator.getReplacement();
         }
