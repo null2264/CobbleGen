@@ -166,6 +166,9 @@ if (System.getenv("CURSEFORGE")) {
             addGameVersion "Java 17"
             mainArtifact(remapJar.archiveFile) {
                 displayName = "v${project.mod_version}-${project.version_stage}"
+                relations {
+                    embeddedLibrary "jankson"
+                }
             }
         }
         options {
