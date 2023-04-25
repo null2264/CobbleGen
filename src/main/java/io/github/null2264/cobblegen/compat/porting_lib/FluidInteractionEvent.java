@@ -21,7 +21,7 @@ public class FluidInteractionEvent
 {
     public static BlockState whenFluidsMeet(WorldAccess world, BlockPos pos, BlockState state) {
         FluidState fluidState = state.getFluidState();
-        if (fluidState.isEmpty() || (fluidState.isStill() && fluidState.isOf(Fluids.LAVA))) return null;
+        if (fluidState.isStill() && fluidState.isOf(Fluids.LAVA)) return null;
 
         FluidState fluidStateAbove = world.getFluidState(pos.up());
         if (fluidState.getFluid() instanceof WaterFluid && fluidStateAbove.getFluid() instanceof LavaFluid) {
