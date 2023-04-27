@@ -1,5 +1,6 @@
-package io.github.null2264.cobblegen.util;
+package io.github.null2264.cobblegen.data;
 
+import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.util.Identifier;
 
 public class Constants

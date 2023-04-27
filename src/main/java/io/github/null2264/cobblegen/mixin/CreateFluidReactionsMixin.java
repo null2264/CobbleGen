@@ -2,7 +2,7 @@ package io.github.null2264.cobblegen.mixin;
 
 import com.simibubi.create.content.contraptions.fluids.FluidReactions;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
-import io.github.null2264.cobblegen.util.BlockGenerator;
+import io.github.null2264.cobblegen.data.BlockGenerator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
