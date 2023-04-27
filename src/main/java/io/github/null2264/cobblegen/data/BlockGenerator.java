@@ -26,15 +26,20 @@ public class BlockGenerator
     private final WorldAccess world;
     private final BlockPos pos;
 
-    public BlockGenerator(WorldAccess world, BlockPos pos, List<WeightedBlock> advancedConfig) {
+    public BlockGenerator(WorldAccess world, BlockPos pos, Map<String, List<WeightedBlock>> advancedConfig) {
         this(world, pos, GeneratorType.ADVANCED, advancedConfig);
     }
 
     public BlockGenerator(WorldAccess world, BlockPos pos, GeneratorType type) {
-        this(world, pos, type, List.of());
+        this(world, pos, type, Map.of());
     }
 
-    public BlockGenerator(WorldAccess world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
+    public BlockGenerator(
+            WorldAccess world,
+            BlockPos pos,
+            GeneratorType type,
+            Map<String, List<WeightedBlock>> advancedConfig
+    ) {
         this.expectedBlocks = getCustomReplacement(world, pos, type, advancedConfig);
         this.world = world;
         this.pos = pos;
@@ -78,24 +83,34 @@ public class BlockGenerator
         return filteredBlockIds.get(idx).id;
     }
 
-    public static List<WeightedBlock> getCustomReplacement(WorldAccess world, BlockPos pos, GeneratorType type, List<WeightedBlock> advancedConfig) {
-        List<WeightedBlock> replacements = null;
+    public static List<WeightedBlock> getCustomReplacement(
+            WorldAccess world,
+            BlockPos pos,
+            GeneratorType type,
+            Map<String, List<WeightedBlock>> advancedConfig
+    ) {
         Block blockBelow = world.getBlockState(pos.down()).getBlock();
-        Map<String, List<WeightedBlock>> customGen = Map.of();
-        List<WeightedBlock> fallback;
+
+        List<WeightedBlock> replacements = List.of();
+
+        Map<String, List<WeightedBlock>> customGen;
+        List<WeightedBlock> fallback = List.of();
         if (type != GeneratorType.ADVANCED) {
             val config = Util.configFromType(type);
             customGen = config.getRight();
             fallback = config.getLeft();
         } else {
-            fallback = advancedConfig;
+            customGen = advancedConfig;
         }
 
-        if (customGen != null) replacements = customGen.get(getCompat().getBlockId(blockBelow).toString());
+        if (customGen != null) replacements = customGen.getOrDefault(
+                getCompat().getBlockId(blockBelow).toString(),
+                type == GeneratorType.ADVANCED ? customGen.getOrDefault("*", List.of()) : List.of()
+        );
 
         if (type == GeneratorType.BASALT) return blockBelow == Blocks.SOUL_SOIL ? fallback : replacements;
 
-        if (replacements == null || replacements.isEmpty()) {
+        if (replacements.isEmpty()) {
             replacements = fallback;
         }
 

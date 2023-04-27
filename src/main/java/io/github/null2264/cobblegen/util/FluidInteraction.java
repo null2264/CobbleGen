@@ -2,11 +2,10 @@ package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.config.AdvancedGen;
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.data.GeneratorData;
 import io.github.null2264.cobblegen.data.BlockGenerator;
+import io.github.null2264.cobblegen.data.GeneratorData;
 import io.github.null2264.cobblegen.data.GeneratorResult;
 import lombok.val;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -33,14 +32,10 @@ public class FluidInteraction
     @Nullable
     public static GeneratorResult doAdvancedInteraction(
             WorldAccess world,
-            BlockPos pos,
-            Block blockBelow,
-            Map<String, AdvancedGen> config,
+            BlockPos pos, Map<String, AdvancedGen> config,
             Direction direction,
             boolean fromTop
     ) {
-        if (fromTop && direction != Direction.DOWN) return null;
-
         BlockPos blockPos = fromTop ? pos : pos.offset(direction.getOpposite());
 
         Identifier id;
@@ -71,42 +66,60 @@ public class FluidInteraction
         else results = rootConfig.results;
         if (results == null) return null;
 
-        val possibleGens = results.getOrDefault(getCompat().getBlockId(blockBelow).toString(), results.get("*"));
-        if (possibleGens == null) return null;
-
-        val replacement = new BlockGenerator(world, pos, possibleGens).getReplacement();
+        val replacement = new BlockGenerator(world, pos, results).getReplacement();
         if (replacement != null)
             return new GeneratorResult(replacement, rootConfig.silent);
         return null;
     }
 
+    private static Fluid getStillFluid(FluidState fluidState) {
+        try {
+            return ((FlowableFluid) fluidState.getFluid()).getStill();
+        } catch (ClassCastException ignore) {
+            return fluidState.getFluid();
+        }
+    }
+
     @Nullable
     public static GeneratorResult doInteraction(WorldAccess world, BlockPos pos, BlockState state, GeneratorData generatorData) {
         FluidState fluidState = state.getFluidState();
-        if (fluidState.isEmpty()) return null;
+        Fluid fluid = getStillFluid(fluidState);
+        Identifier fluidId = getCompat().getFluidId(fluid);
 
-        boolean canTryAdvanced = CONFIG.advanced != null && !CONFIG.advanced.isEmpty();
+        val config = CONFIG.advanced.get(fluidId.toString());
+        boolean shouldTryAdvanced = config != null;
 
         boolean fromTop = generatorData.isFromTop();
 
-        FlowableFluid fluid = (FlowableFluid) fluidState.getFluid();
-        Identifier fluidId = getCompat().getFluidId(fluid.getStill());
-        val config = CONFIG.advanced.get(fluidId.toString());
+        if (fromTop && !fluidState.isEmpty()) {  // Try "stone generators" first when fluid is coming from the top
+            GeneratorResult result = null;
+            if (shouldTryAdvanced) {
+                result = doAdvancedInteraction(world, pos, config, Direction.DOWN, true);
+                shouldTryAdvanced = false;
+            }
 
-        Block blockBelow = world.getBlockState(pos.down()).getBlock();
+            if (result == null) {
+                FluidState fluidStateAbove = world.getFluidState(pos.up());
+                if (fluidStateAbove.isIn(FluidTags.LAVA)) {
+                    val generator = new BlockGenerator(world, pos, GeneratorType.STONE);
+                    result = new GeneratorResult(generator.getReplacement(), false);
+                }
+            }
+
+            if (result != null)
+                return result;
+        }
 
         for (Direction direction : FluidBlock.FLOW_DIRECTIONS) {
             GeneratorResult result = null;
-            if (canTryAdvanced && config != null)
-                result = doAdvancedInteraction(world, pos, blockBelow, config, direction, fromTop);
+            if (shouldTryAdvanced)
+                result = doAdvancedInteraction(world, pos, config, direction, false);
 
             if (result == null) {
                 BlockGenerator generator = null;
                 BlockPos blockPos = pos.offset(direction.getOpposite());
 
-                if (fromTop) {
-                    generator = new BlockGenerator(world, pos, GeneratorType.STONE);
-                } else if (fluid.getStill() == Fluids.LAVA && !fluidState.isStill()){
+                if (fluid == Fluids.LAVA && !fluidState.isStill()){
                     if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
                         generator = new BlockGenerator(world, pos, GeneratorType.COBBLE);
                     } else if (world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
