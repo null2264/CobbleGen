@@ -6,6 +6,7 @@ import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FluidBlock;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.LavaFluid;
@@ -14,8 +15,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-
-import static net.minecraft.client.render.WorldRenderer.DIRECTIONS;
 
 public class FluidInteractionEvent
 {
@@ -33,9 +32,7 @@ public class FluidInteractionEvent
             return generator.getReplacement();
         }
 
-        for (Direction direction : DIRECTIONS) {
-            if (direction == Direction.UP) continue;
-
+        for (Direction direction : FluidBlock.FLOW_DIRECTIONS) {
             FluidState metFluidState = fluidState.isStill() ? fluidState : world.getFluidState(pos.offset(direction));
             BlockPos blockPos = pos.offset(direction.getOpposite());
             if (metFluidState.getFluid() instanceof WaterFluid) {
