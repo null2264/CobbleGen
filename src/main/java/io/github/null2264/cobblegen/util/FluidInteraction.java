@@ -76,17 +76,15 @@ public class FluidInteraction
         }
     }
 
-    public static Pair<Boolean, @Nullable GeneratorResult> tryInteractionFromTop(
+    @Nullable
+    public static GeneratorResult tryInteractionFromTop(
             WorldAccess world,
             BlockPos pos,
             Map<String, AdvancedGen> config
     ) {
         GeneratorResult result = null;
-        boolean shouldTryAdvanced = config != null;
-        if (shouldTryAdvanced) {
+        if (config != null)
             result = tryAdvancedInteraction(world, pos, config, Direction.DOWN, true);
-            shouldTryAdvanced = false;
-        }
 
         if (result == null) {
             FluidState fluidStateAbove = world.getFluidState(pos.up());
@@ -96,7 +94,7 @@ public class FluidInteraction
             }
         }
 
-        return new Pair(shouldTryAdvanced, result);
+        return result;
     }
 
     @Nullable
@@ -151,15 +149,13 @@ public class FluidInteraction
         Identifier fluidId = getCompat().getFluidId(fluid);
 
         Map<String, AdvancedGen> config = CONFIG.advanced.get(fluidId.toString());
-        boolean shouldTryAdvanced = config != null;
 
-        if (fromTop && !fluidState.isEmpty()) {  // Try "stone generators" first when fluid is coming from the top
-            val result = tryInteractionFromTop(world, pos, config);
-            if (result.getRight() != null) return result.getRight();
-            shouldTryAdvanced = result.getLeft();
-        }
+        if (fromTop && !fluidState.isEmpty())
+            // Since "stone generators" is handled in separate function (LavaFluid.flow(...)),
+            // should be fine to just return this.
+            return tryInteractionFromTop(world, pos, config);
 
-        return tryInteraction(world, pos, fluidState, fluid, config, shouldTryAdvanced);
+        return tryInteraction(world, pos, fluidState, fluid, config, config != null);
     }
 
     public static boolean interact(WorldAccess world, BlockPos pos, BlockState state) {
