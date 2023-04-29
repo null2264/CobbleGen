@@ -23,7 +23,7 @@ public class ReloadCommandMixin
     ) throws CommandSyntaxException {
         try {
             source.getPlayer().sendMessage(Text.of("Reloading config file..."), false);
-            ConfigHelper.load();
+            ConfigHelper.load(true);
         } catch (Exception e) {
             source.getPlayer().sendMessage(Text.of("Failed to reload config file!"), false);
         }

@@ -64,12 +64,17 @@ public class ConfigHelper
     }
 
     public static void load() throws SyntaxError, IOException {
+        load(false);
+    }
+
+    public static void load(boolean reload) throws SyntaxError, IOException {
+        String string = reload ? "reload" : "load";
         try {
-            LOGGER.info("Trying to (re)load config file...");
+            LOGGER.info("Trying to " + string + " config file...");
             JsonObject json = jankson.load(configFile);
             CONFIG = gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
         } catch (Exception e) {
-            LOGGER.error("There was an error while (re)loading the config file!", e);
+            LOGGER.error("There was an error while " + string + "ing the config file!", e);
             throw e;
         }
     }

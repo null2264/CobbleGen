@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin;
 
-import io.github.null2264.cobblegen.data.GeneratorData;
 import io.github.null2264.cobblegen.util.FluidInteraction;
 import lombok.val;
 import net.minecraft.block.BlockState;
@@ -28,7 +27,7 @@ public abstract class LavaEventMixin
     ) {
         if (direction != Direction.DOWN) return;
 
-        val success = FluidInteraction.interact(world, pos, state, new GeneratorData(true));
+        val success = FluidInteraction.interact(world, pos, state, true);
 
         if (success)
             ci.cancel();
