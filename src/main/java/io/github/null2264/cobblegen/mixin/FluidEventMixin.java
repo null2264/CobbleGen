@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin;
 
-import io.github.null2264.cobblegen.util.FluidInteraction;
 import lombok.val;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidBlock;
@@ -14,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
+
 @Mixin(FluidBlock.class)
 public abstract class FluidEventMixin
 {
@@ -21,7 +22,7 @@ public abstract class FluidEventMixin
 
     @Inject(method = "receiveNeighborFluids", at = @At("HEAD"), cancellable = true)
     private void fluidInteraction$receiveNeighborFluids(World world, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        val success = FluidInteraction.interact(world, pos, state);
+        val success = FLUID_INTERACTION.interact(world, pos, state);
 
         if (success)
             cir.setReturnValue(false);

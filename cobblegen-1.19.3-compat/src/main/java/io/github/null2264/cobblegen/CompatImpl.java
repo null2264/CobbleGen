@@ -79,6 +79,11 @@ public class CompatImpl implements Compat
     }
 
     @Override
+    public Fluid getFluid(Identifier id) {
+        return Registries.FLUID.get(id);
+    }
+
+    @Override
     public Identifier getFluidId(Fluid fluid) {
         return Registries.FLUID.getId(fluid);
     }

@@ -12,6 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collection;
 
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
+
 @Mixin(ReloadCommand.class)
 public class ReloadCommandMixin
 {
@@ -23,7 +25,7 @@ public class ReloadCommandMixin
     ) throws CommandSyntaxException {
         try {
             source.getPlayer().sendMessage(Text.of("Reloading config file..."), false);
-            ConfigHelper.load(true);
+            FLUID_INTERACTION.reload();
         } catch (Exception e) {
             source.getPlayer().sendMessage(Text.of("Failed to reload config file!"), false);
         }

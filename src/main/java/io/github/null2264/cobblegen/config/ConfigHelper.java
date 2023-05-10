@@ -14,13 +14,14 @@ import java.nio.file.Path;
 import static io.github.null2264.cobblegen.CobbleGen.LOGGER;
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
+@Deprecated
 public class ConfigHelper
 {
     private static final Path configPath = FabricLoader.getInstance().getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     private static final Jankson jankson = Jankson.builder().build();
     private static final Gson gson = new Gson();
-    public static ConfigData CONFIG;
+    public static ConfigData CONFIG = new ConfigData();
 
     public static void loadAndSaveDefault() {
         ConfigHelper.loadOrDefault();

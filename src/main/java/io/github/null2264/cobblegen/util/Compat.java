@@ -29,6 +29,8 @@ public interface Compat
 
     List<Identifier> getTaggedBlockIds(Identifier tagId);
 
+    Fluid getFluid(Identifier id);
+
     Identifier getFluidId(Fluid fluid);
 
     String getDimension(WorldAccess world);

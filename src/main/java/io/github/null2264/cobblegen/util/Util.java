@@ -17,6 +17,7 @@ import static io.github.null2264.cobblegen.config.ConfigHelper.CONFIG;
 public class Util
 {
     // https://stackoverflow.com/a/6737362
+    @Deprecated
     public static String randomizeBlockId(List<WeightedBlock> blockIds, String dim, Integer yLevel) {
         if (blockIds.size() == 1) return blockIds.get(0).id;
 
@@ -63,6 +64,7 @@ public class Util
     }
 
     @NotNull
+    @Deprecated
     public static Pair<List<WeightedBlock>, Map<String, List<WeightedBlock>>> configFromType(GeneratorType type) {
         Map<String, List<WeightedBlock>> customGen;
         List<WeightedBlock> fallback;
