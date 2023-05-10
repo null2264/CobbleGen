@@ -24,7 +24,7 @@ import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
-public class FluidInteractionCategory implements DisplayCategory<FluidInteractionRecipeHolderDisplay>
+public class FluidInteractionCategory implements DisplayCategory<FluidInteractionRecipe>
 {
     public static String ID_PREFIX = "fluid_interaction_";
     private final Renderer icon;
@@ -44,7 +44,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         type = generatorType;
     }
 
-    public static CategoryIdentifier<? extends FluidInteractionRecipeHolderDisplay> generateIdentifier(GeneratorType type) {
+    public static CategoryIdentifier<? extends FluidInteractionRecipe> generateIdentifier(GeneratorType type) {
         return CategoryIdentifier.of(Util.identifierOf(ID_PREFIX + type.name().toLowerCase()));
     }
 
@@ -69,7 +69,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
     }
 
     @Override
-    public List<Widget> setupDisplay(FluidInteractionRecipeHolderDisplay display, Rectangle bounds) {
+    public List<Widget> setupDisplay(FluidInteractionRecipe display, Rectangle bounds) {
         val offset = Constants.SLOT_SIZE;
         val gap = 2;
         val gapAgainstBound = gap * 3;
@@ -184,7 +184,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
     }
 
     @Override
-    public CategoryIdentifier<? extends FluidInteractionRecipeHolderDisplay> getCategoryIdentifier() {
+    public CategoryIdentifier<? extends FluidInteractionRecipe> getCategoryIdentifier() {
         return generateIdentifier(type);
     }
 }

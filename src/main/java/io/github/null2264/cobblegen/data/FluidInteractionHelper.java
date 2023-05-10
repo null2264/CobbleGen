@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
 
@@ -83,8 +84,10 @@ public class FluidInteractionHelper
 
     public void apply() {
         if (shouldReload) {
+            LOGGER.info((firstInit ? "L" : "Rel") + "oading config...");
             generatorMap.clear();
 
+            AtomicInteger count = new AtomicInteger();
             val config = loadConfig(!firstInit);
 
             val stoneGen = config.customGen.stoneGen;
@@ -104,8 +107,10 @@ public class FluidInteractionHelper
                         boolean isNeighbourBlock = neighbour.startsWith("b:");
                         if (isNeighbourBlock) neighbour = neighbour.substring(2);
 
-                        if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty())
-                                addToInternalMap(actualFluid, new StoneGenerator(gen.resultsFromTop, getFluidFromString(neighbour), gen.silent));
+                        if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
+                            addToInternalMap(actualFluid, new StoneGenerator(gen.resultsFromTop, getFluidFromString(neighbour), gen.silent));
+                            count.getAndIncrement();
+                        }
 
                         if (!results.isEmpty()) {
                             Generator generator;
@@ -115,6 +120,7 @@ public class FluidInteractionHelper
                                 generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent);
 
                             addToInternalMap(actualFluid, generator);
+                            count.getAndIncrement();
                         }
                     });
                 });
@@ -122,11 +128,16 @@ public class FluidInteractionHelper
             addToInternalMap(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
             addToInternalMap(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false));
             addToInternalMap(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
+            count.getAndAdd(3);
 
-            externalMap.forEach(this::addAllToInternalMap);
+            externalMap.forEach((fluid, generators) -> {
+                addAllToInternalMap(fluid, generators);
+                count.getAndIncrement();
+            });
 
             if (firstInit) firstInit = false;
             shouldReload = false;
+            LOGGER.info(count.get() + " generators has been " + (firstInit ? "" : "re") + "loaded");
         }
     }
 

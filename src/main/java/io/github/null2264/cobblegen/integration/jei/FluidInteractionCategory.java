@@ -95,13 +95,15 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public void setRecipe(IRecipeLayoutBuilder builder, FluidInteractionRecipeHolder recipe, IFocusGroup focuses) {
         val output = recipe.getResult();
         val modifier = recipe.getModifier();
+        val source = recipe.getSourceFluid();
+        val neighbourFluid = recipe.getNeighbourFluid();
+        val neighbourBlock = recipe.getNeighbourBlock();
 
         val offset = Constants.SLOT_SIZE;
         var x = 0;
         var y = 0;
         val gap = 2;
 
-        var isBasaltGen = type == GeneratorType.BASALT;
         var coldY = y;
 
         var lavaX = x + (2 * (offset + gap));
@@ -118,9 +120,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
 
         val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
-        if (isBasaltGen) coldBuilder.addItemStack(Blocks.BLUE_ICE.asItem().getDefaultStack());
-        else coldBuilder.addFluidStack(Fluids.WATER, full);
-        builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(Fluids.LAVA, full);
+        if (neighbourBlock != null) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultStack());
+        else coldBuilder.addFluidStack(neighbourFluid, full);
+        builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(source, full);
         builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY)
                 .addItemStack(output.getBlock().asItem().getDefaultStack());
         if (modifier != null) builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY)

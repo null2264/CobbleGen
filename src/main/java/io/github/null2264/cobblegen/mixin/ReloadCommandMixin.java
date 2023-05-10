@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.mixin;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.null2264.cobblegen.config.ConfigHelper;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
