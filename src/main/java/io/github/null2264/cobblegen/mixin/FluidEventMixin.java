@@ -18,10 +18,17 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 @Mixin(FluidBlock.class)
 public abstract class FluidEventMixin
 {
-    @Shadow @Final protected FlowableFluid fluid;
+    @Shadow
+    @Final
+    protected FlowableFluid fluid;
 
     @Inject(method = "receiveNeighborFluids", at = @At("HEAD"), cancellable = true)
-    private void fluidInteraction$receiveNeighborFluids(World world, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
+    private void fluidInteraction$receiveNeighborFluids(
+            World world,
+            BlockPos pos,
+            BlockState state,
+            CallbackInfoReturnable<Boolean> cir
+    ) {
         val success = FLUID_INTERACTION.interact(world, pos, state);
 
         if (success)

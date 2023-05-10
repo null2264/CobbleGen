@@ -19,6 +19,26 @@ import java.util.Optional;
 
 public interface Generator
 {
+    static Fluid getStillFluid(FluidState fluidState) {
+        try {
+            return ((FlowableFluid) fluidState.getFluid()).getStill();
+        } catch (ClassCastException ignore) {
+            return getStillFluid(fluidState.getFluid());
+        }
+    }
+
+    static Fluid getStillFluid(Fluid fluid) {
+        if (fluid == Fluids.FLOWING_LAVA)
+            return Fluids.LAVA;
+        else if (fluid == Fluids.FLOWING_WATER)
+            return Fluids.WATER;
+        else if (fluid instanceof FlowableFluid)
+            return ((FlowableFluid) fluid).getStill();
+        return fluid;
+    }
+
+    ;
+
     Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state);
 
     /**
@@ -26,7 +46,7 @@ public interface Generator
      */
     default Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, FluidState source, FluidState neighbour) {
         return Optional.empty();
-    };
+    }
 
     @NotNull
     Map<String, List<WeightedBlock>> getOutput();
@@ -53,23 +73,5 @@ public interface Generator
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     default boolean check(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
         return true;
-    }
-
-    static Fluid getStillFluid(FluidState fluidState) {
-        try {
-            return ((FlowableFluid) fluidState.getFluid()).getStill();
-        } catch (ClassCastException ignore) {
-            return getStillFluid(fluidState.getFluid());
-        }
-    }
-
-    static Fluid getStillFluid(Fluid fluid) {
-        if (fluid == Fluids.FLOWING_LAVA)
-            return Fluids.LAVA;
-        else if (fluid == Fluids.FLOWING_WATER)
-            return Fluids.WATER;
-        else if (fluid instanceof FlowableFluid)
-            return ((FlowableFluid) fluid).getStill();
-        return fluid;
     }
 }

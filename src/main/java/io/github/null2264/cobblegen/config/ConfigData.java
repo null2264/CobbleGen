@@ -62,7 +62,8 @@ public class ConfigData
             // Cobble Gen
             Map.of(
                     "minecraft:bedrock",
-                    List.of(new WeightedBlock("minecraft:emerald_ore", 2.0),
+                    List.of(
+                            new WeightedBlock("minecraft:emerald_ore", 2.0),
                             new WeightedBlock("minecraft:diamond_ore", 5.0),
                             new WeightedBlock("minecraft:lapis_ore", 8.0),
                             new WeightedBlock("minecraft:gold_ore", 10.0),
@@ -74,7 +75,8 @@ public class ConfigData
             // Stone Gen
             Map.of(
                     "minecraft:bedrock",
-                    List.of(new WeightedBlock("minecraft:stone", 40.0),
+                    List.of(
+                            new WeightedBlock("minecraft:stone", 40.0),
                             new WeightedBlock("minecraft:diorite", 20.0),
                             new WeightedBlock("minecraft:andesite", 20.0),
                             new WeightedBlock("minecraft:granite", 20.0)

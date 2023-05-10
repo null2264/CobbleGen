@@ -67,10 +67,11 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
     public List<EmiIngredient> getInputs() {
         EmiStack source = EmiStack.of(getSourceFluid(), 81_000);
         EmiStack neighbour = EmiStack.of(getNeighbourFluid() != null ? getNeighbourFluid() : Fluids.EMPTY, 81_000);
-        return List.of(source.copy().setRemainder(source),
-                       getType().equals(GeneratorType.BASALT) ? EmiStack.of(getNeighbourBlock() != null ? getNeighbourBlock() : Blocks.AIR)
-                                                              : neighbour.copy().setRemainder(neighbour),
-                       EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
+        return List.of(
+                source.copy().setRemainder(source),
+                getType().equals(GeneratorType.BASALT) ? EmiStack.of(getNeighbourBlock() != null ? getNeighbourBlock() : Blocks.AIR)
+                        : neighbour.copy().setRemainder(neighbour),
+                EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
         );
     }
 
@@ -114,15 +115,19 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
         var maxY = getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(getCompat().translatableAppendingText("cobblegen.info.weight",
-                                                                         Text.of(getResult().weight.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.minY",
-                                                                         Text.of(minY.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.maxY",
-                                                                         Text.of(maxY.toString())
-                                   )
+        List<Text> texts = List.of(
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.weight",
+                        Text.of(getResult().weight.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.minY",
+                        Text.of(minY.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.maxY",
+                        Text.of(maxY.toString())
+                )
         );
         var y = base.y;
         for (Text text : texts) {

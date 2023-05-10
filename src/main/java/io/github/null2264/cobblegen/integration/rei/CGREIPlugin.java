@@ -28,21 +28,22 @@ public class CGREIPlugin implements REIClientPlugin
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
-        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach((modifierId, blocks) -> {
-            Block modifier = null;
-            if (!Objects.equals(modifierId, "*"))
-                modifier = getCompat().getBlock(new Identifier(modifierId));
-            for (WeightedBlock block : blocks)
-                registry.add(
-                        new FluidInteractionRecipe(
-                                fluid,
-                                generator.getFluid(),
-                                generator.getBlock(),
-                                block,
-                                generator.getType(),
-                                modifier
-                        )
-                );
-        })));
+        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
+                (modifierId, blocks) -> {
+                    Block modifier = null;
+                    if (!Objects.equals(modifierId, "*"))
+                        modifier = getCompat().getBlock(new Identifier(modifierId));
+                    for (WeightedBlock block : blocks)
+                        registry.add(
+                                new FluidInteractionRecipe(
+                                        fluid,
+                                        generator.getFluid(),
+                                        generator.getBlock(),
+                                        block,
+                                        generator.getType(),
+                                        modifier
+                                )
+                        );
+                })));
     }
 }

@@ -17,16 +17,18 @@ public class CreateFluidInteraction implements CobbleGenPlugin
         if (!FabricLoader.getInstance().isModLoaded("create")) return;
         FLUID_INTERACTION.addGenerator(
                 Fluids.LAVA,
-                new CobbleGenerator(List.of(new WeightedBlock("create:limestone", 1.0)),
-                                    AllFluids.HONEY.get(),
-                                    false
+                new CobbleGenerator(
+                        List.of(new WeightedBlock("create:limestone", 1.0)),
+                        AllFluids.HONEY.get(),
+                        false
                 )
         );
         FLUID_INTERACTION.addGenerator(
                 Fluids.LAVA,
-                new CobbleGenerator(List.of(new WeightedBlock("create:scoria", 1.0)),
-                                    AllFluids.CHOCOLATE.get(),
-                                    false
+                new CobbleGenerator(
+                        List.of(new WeightedBlock("create:scoria", 1.0)),
+                        AllFluids.CHOCOLATE.get(),
+                        false
                 )
         );
     }

@@ -47,12 +47,13 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             IGuiHelper guiHelper, IPlatformFluidHelper<?> fluidHelper, GeneratorType generatorType
     ) {
         initialHeight = generatorType.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
-                                                                  : Constants.JEI_RECIPE_HEIGHT;
-        background = guiHelper.createBlankDrawable(Constants.JEI_RECIPE_WIDTH,
-                                                   initialHeight + (2 * 9) // Dimensions Title's gaps (top and bottom)
-                                                           + 20 // Dimension Icon's height
-                                                           + 9
-                                                   // Another gap
+                : Constants.JEI_RECIPE_HEIGHT;
+        background = guiHelper.createBlankDrawable(
+                Constants.JEI_RECIPE_WIDTH,
+                initialHeight + (2 * 9) // Dimensions Title's gaps (top and bottom)
+                        + 20 // Dimension Icon's height
+                        + 9
+                // Another gap
         );
         full = 10 * fluidHelper.bucketVolume();
         ItemStack iconStack = Items.AIR.getDefaultStack();
@@ -142,15 +143,19 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
         var maxY = recipe.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(getCompat().translatableAppendingText("cobblegen.info.weight",
-                                                                         Text.of(recipe.getResult().weight.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.minY",
-                                                                         Text.of(minY.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.maxY",
-                                                                         Text.of(maxY.toString())
-                                   )
+        List<Text> texts = List.of(
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.weight",
+                        Text.of(recipe.getResult().weight.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.minY",
+                        Text.of(minY.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.maxY",
+                        Text.of(maxY.toString())
+                )
         );
         TextRenderer textRenderer = minecraft.textRenderer;
         var y = 0;
@@ -161,11 +166,12 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
         Text text = getCompat().translatableText("cobblegen.info.dimensions");
         var deepestY = initialHeight + 9;
-        minecraft.textRenderer.draw(stack,
-                                    text,
-                                    ((float) getBackground().getWidth() / 2) - ((float) textRenderer.getWidth(text) / 2),
-                                    deepestY,
-                                    0xFF808080
+        minecraft.textRenderer.draw(
+                stack,
+                text,
+                ((float) getBackground().getWidth() / 2) - ((float) textRenderer.getWidth(text) / 2),
+                deepestY,
+                0xFF808080
         );
         deepestY = deepestY + textRenderer.fontHeight + 9;
         dimensionIconsY = deepestY;

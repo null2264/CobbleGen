@@ -57,6 +57,59 @@ public class FluidInteractionHelper
         shouldReload = true;
     }
 
+    /**
+     * @deprecated Removed when Jankson released their proper null filter
+     */
+    @Deprecated
+    @Nullable
+    private static JsonElement filter(JsonElement json) {
+        JsonElement result = null;
+        if (json instanceof JsonObject finalResult) {
+            finalResult.keySet().forEach(key -> {
+                JsonElement element = finalResult.get(key);
+                if (!(element instanceof JsonNull) && element != null) filter(element);
+                else finalResult.remove(key);
+            });
+            result = finalResult;
+        } else if (json instanceof JsonArray finalResult) {
+            finalResult.forEach(element -> {
+                if (element instanceof JsonObject) filter(element);
+            });
+            result = finalResult;
+        }
+        return result;
+    }
+
+    private static ConfigData loadConfig(boolean reload) {
+        String string = reload ? "reload" : "load";
+        try {
+            LOGGER.info("Trying to " + string + " config file...");
+            JsonObject json = jankson.load(configFile);
+            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
+        } catch (Exception e) {
+            LOGGER.error("There was an error while " + string + "ing the config file!", e);
+            val config = new ConfigData();
+            if (!configFile.exists()) {
+                saveConfig(config);
+            }
+            LOGGER.warn("Falling back to default config...");
+            return config;
+        }
+    }
+
+    private static void saveConfig(ConfigData config) {
+        try {
+            LOGGER.info("Trying to create config file...");
+            FileWriter fw = new FileWriter(configFile);
+            JsonElement jsonElement = Jankson.builder().build().toJson(config);
+            JsonElement filteredElement = filter(jsonElement);
+            fw.write((filteredElement != null ? filteredElement : jsonElement).toJson(JsonGrammar.JSON5));
+            fw.close();
+        } catch (IOException e) {
+            LOGGER.error("There was an error while creating the config file!", e);
+        }
+    }
+
     private Fluid getFluidFromString(String string) {
         return getCompat().getFluid(new Identifier(string));
     }
@@ -108,7 +161,13 @@ public class FluidInteractionHelper
                         if (isNeighbourBlock) neighbour = neighbour.substring(2);
 
                         if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
-                            addToInternalMap(actualFluid, new StoneGenerator(gen.resultsFromTop, getFluidFromString(neighbour), gen.silent));
+                            addToInternalMap(
+                                    actualFluid,
+                                    new StoneGenerator(gen.resultsFromTop,
+                                                       getFluidFromString(neighbour),
+                                                       gen.silent
+                                    )
+                            );
                             count.getAndIncrement();
                         }
 
@@ -196,58 +255,5 @@ public class FluidInteractionHelper
             }
         }
         return false;
-    }
-
-    /**
-     * @deprecated Removed when Jankson released their proper null filter
-     */
-    @Deprecated
-    @Nullable
-    private static JsonElement filter(JsonElement json) {
-        JsonElement result = null;
-        if (json instanceof JsonObject finalResult) {
-            finalResult.keySet().forEach(key -> {
-                JsonElement element = finalResult.get(key);
-                if (!(element instanceof JsonNull) && element != null) filter(element);
-                else finalResult.remove(key);
-            });
-            result = finalResult;
-        } else if (json instanceof JsonArray finalResult) {
-            finalResult.forEach(element -> {
-                if (element instanceof JsonObject) filter(element);
-            });
-            result = finalResult;
-        }
-        return result;
-    }
-
-    private static ConfigData loadConfig(boolean reload) {
-        String string = reload ? "reload" : "load";
-        try {
-            LOGGER.info("Trying to " + string + " config file...");
-            JsonObject json = jankson.load(configFile);
-            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
-        } catch (Exception e) {
-            LOGGER.error("There was an error while " + string + "ing the config file!", e);
-            val config = new ConfigData();
-            if (!configFile.exists()) {
-                saveConfig(config);
-            }
-            LOGGER.warn("Falling back to default config...");
-            return config;
-        }
-    }
-
-    private static void saveConfig(ConfigData config) {
-        try {
-            LOGGER.info("Trying to create config file...");
-            FileWriter fw = new FileWriter(configFile);
-            JsonElement jsonElement = Jankson.builder().build().toJson(config);
-            JsonElement filteredElement = filter(jsonElement);
-            fw.write((filteredElement != null ? filteredElement : jsonElement).toJson(JsonGrammar.JSON5));
-            fw.close();
-        } catch (IOException e) {
-            LOGGER.error("There was an error while creating the config file!", e);
-        }
     }
 }

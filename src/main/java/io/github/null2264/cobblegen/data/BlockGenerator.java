@@ -18,7 +18,8 @@ abstract class BlockGenerator implements BuiltInGenerator
     public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state) {
         for (val direction : FLOW_DIRECTIONS) {
             val candidate = tryGenerate(world, pos, state, direction);
-            if (candidate.isEmpty()) continue;;
+            if (candidate.isEmpty()) continue;
+            ;
             return candidate;
         }
 

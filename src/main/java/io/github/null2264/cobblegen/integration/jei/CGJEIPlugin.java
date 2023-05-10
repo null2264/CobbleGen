@@ -45,23 +45,27 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach((modifierId, blocks) -> {
-            val recipes = new ArrayList<FluidInteractionRecipeHolder>();
-            Block modifier = null;
-            if (!Objects.equals(modifierId, "*"))
-                modifier = getCompat().getBlock(new Identifier(modifierId));
-            for (WeightedBlock block : blocks)
-                recipes.add(
-                        new FluidInteractionRecipeHolder(
-                                fluid,
-                                generator.getFluid(),
-                                generator.getBlock(),
-                                block,
-                                generator.getType(),
-                                modifier
-                        )
-                );
-            registration.addRecipes(new RecipeType<>(identifierOf(generator.getType()), FluidInteractionRecipeHolder.class), recipes);
-        })));
+        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
+                (modifierId, blocks) -> {
+                    val recipes = new ArrayList<FluidInteractionRecipeHolder>();
+                    Block modifier = null;
+                    if (!Objects.equals(modifierId, "*"))
+                        modifier = getCompat().getBlock(new Identifier(modifierId));
+                    for (WeightedBlock block : blocks)
+                        recipes.add(
+                                new FluidInteractionRecipeHolder(
+                                        fluid,
+                                        generator.getFluid(),
+                                        generator.getBlock(),
+                                        block,
+                                        generator.getType(),
+                                        modifier
+                                )
+                        );
+                    registration.addRecipes(new RecipeType<>(
+                            identifierOf(generator.getType()),
+                            FluidInteractionRecipeHolder.class
+                    ), recipes);
+                })));
     }
 }

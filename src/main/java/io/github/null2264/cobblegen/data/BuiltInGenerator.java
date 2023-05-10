@@ -19,7 +19,10 @@ interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
     private String randomizeBlockId(Block key, String dim, Integer yLevel) {
-        val blockIds = getOutput().getOrDefault(getCompat().getBlockId(key).toString(), getOutput().getOrDefault("*", List.of()));
+        val blockIds = getOutput().getOrDefault(
+                getCompat().getBlockId(key).toString(),
+                getOutput().getOrDefault("*", List.of())
+        );
 
         if (blockIds.isEmpty()) return null;
 
@@ -60,7 +63,11 @@ interface BuiltInGenerator extends Generator
     }
 
     default Optional<BlockState> getBlockCandidate(WorldAccess world, BlockPos pos) {
-        val replacementId = randomizeBlockId(world.getBlockState(pos.down()).getBlock(), getCompat().getDimension(world), pos.getY());
+        val replacementId = randomizeBlockId(
+                world.getBlockState(pos.down()).getBlock(),
+                getCompat().getDimension(world),
+                pos.getY()
+        );
 
         if (replacementId == null) return Optional.empty();
 
