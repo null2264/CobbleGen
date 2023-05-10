@@ -35,7 +35,7 @@ public abstract class CreateFluidReactionsMixin
     private static void generator$handlePipeSpillCollision(
             World world, BlockPos pos, Fluid pipeFluid, FluidState worldFluid, CallbackInfo ci
     ) {
-        val success = handleReaction(world, pos, Generator.getStillFluid(pipeFluid), Generator.getStillFluid(worldFluid));
+        val success = handleReaction(world, pos, Generator.getStillFluid(pipeFluid), worldFluid.getFluid());
         if (success)
             ci.cancel();
     }
