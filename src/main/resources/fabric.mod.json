@@ -30,6 +30,9 @@
         ],
         "emi": [
             "io.github.null2264.cobblegen.integration.emi.CGEMIPlugin"
+        ],
+        "cobblegen_plugin": [
+            "io.github.null2264.cobblegen.integration.create.CreateFluidInteraction"
         ]
     },
     "mixins": [

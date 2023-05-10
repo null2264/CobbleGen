@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.Comment;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,8 @@ public class ConfigData
             // Cobble Gen
             Map.of(
                     "minecraft:bedrock",
-                    List.of(new WeightedBlock("minecraft:emerald_ore", 2.0),
+                    List.of(
+                            new WeightedBlock("minecraft:emerald_ore", 2.0),
                             new WeightedBlock("minecraft:diamond_ore", 5.0),
                             new WeightedBlock("minecraft:lapis_ore", 8.0),
                             new WeightedBlock("minecraft:gold_ore", 10.0),
@@ -73,7 +75,8 @@ public class ConfigData
             // Stone Gen
             Map.of(
                     "minecraft:bedrock",
-                    List.of(new WeightedBlock("minecraft:stone", 40.0),
+                    List.of(
+                            new WeightedBlock("minecraft:stone", 40.0),
                             new WeightedBlock("minecraft:diorite", 20.0),
                             new WeightedBlock("minecraft:andesite", 20.0),
                             new WeightedBlock("minecraft:granite", 20.0)
@@ -88,4 +91,7 @@ public class ConfigData
                     )
             )
     );
+
+    @Nullable
+    public Map<String, Map<String, AdvancedGen>> advanced;
 }

@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.mixin;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.null2264.cobblegen.config.ConfigHelper;
 import net.minecraft.server.command.ReloadCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -11,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Collection;
+
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 @Mixin(ReloadCommand.class)
 public class ReloadCommandMixin
@@ -23,7 +24,7 @@ public class ReloadCommandMixin
     ) throws CommandSyntaxException {
         try {
             source.getPlayer().sendMessage(Text.of("Reloading config file..."), false);
-            ConfigHelper.load();
+            FLUID_INTERACTION.reload();
         } catch (Exception e) {
             source.getPlayer().sendMessage(Text.of("Failed to reload config file!"), false);
         }

@@ -2,45 +2,41 @@ package io.github.null2264.cobblegen.mixin;
 
 import com.simibubi.create.content.contraptions.fluids.FluidReactions;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
-import io.github.null2264.cobblegen.util.BlockGenerator;
-import io.github.null2264.cobblegen.util.GeneratorType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import io.github.null2264.cobblegen.data.Generator;
+import lombok.val;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 @Mixin(FluidReactions.class)
 public abstract class CreateFluidReactionsMixin
 {
-    private static void handleReaction(@NotNull Args args, World world, BlockPos pos) {
-        BlockState state = args.get(1);
-        if (state.isOf(Blocks.STONE) || state.isOf(Blocks.COBBLESTONE)) {
-            BlockGenerator generator = new BlockGenerator(world,
-                                                          pos,
-                                                          state.isOf(Blocks.STONE) ? GeneratorType.STONE : GeneratorType.COBBLE
-            );
-            generator.tryReplace(args);
-        }
+    private static boolean handleReaction(World world, BlockPos pos, Fluid fluid1, Fluid fluid2) {
+        return FLUID_INTERACTION.interactFromPipe(world, pos, fluid1, fluid2);
     }
 
-    @ModifyArgs(method = "handlePipeFlowCollision(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z"))
+    @Inject(method = "handlePipeFlowCollision", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/BlockHelper;destroyBlock(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;F)V", shift = At.Shift.AFTER), cancellable = true)
     private static void generator$handlePipeFlowCollision(
-            Args args, World world, BlockPos pos, FluidStack fluid, FluidStack fluid1
+            World world, BlockPos pos, FluidStack fluid1, FluidStack fluid2, CallbackInfo ci
     ) {
-        handleReaction(args, world, pos);
+        val success = handleReaction(world, pos, fluid1.getFluid(), fluid2.getFluid());
+        if (success)
+            ci.cancel();
     }
 
-    @ModifyArgs(method = "handlePipeSpillCollision(Lnet/minecraft/world/World;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/fluid/Fluid;Lnet/minecraft/fluid/FluidState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;setBlockState(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)Z"))
+    @Inject(method = "handlePipeSpillCollision", at = @At(value = "HEAD"), cancellable = true)
     private static void generator$handlePipeSpillCollision(
-            Args args, World world, BlockPos pos, Fluid fluid, FluidState state
+            World world, BlockPos pos, Fluid pipeFluid, FluidState worldFluid, CallbackInfo ci
     ) {
-        handleReaction(args, world, pos);
+        val success = handleReaction(world, pos, Generator.getStillFluid(pipeFluid), worldFluid.getFluid());
+        if (success)
+            ci.cancel();
     }
 }

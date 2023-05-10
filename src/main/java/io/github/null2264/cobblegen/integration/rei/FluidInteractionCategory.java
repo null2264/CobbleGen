@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.integration.rei;
 
-import io.github.null2264.cobblegen.util.Constants;
+import io.github.null2264.cobblegen.data.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
@@ -24,7 +24,7 @@ import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
-public class FluidInteractionCategory implements DisplayCategory<FluidInteractionRecipeHolderDisplay>
+public class FluidInteractionCategory implements DisplayCategory<FluidInteractionRecipe>
 {
     public static String ID_PREFIX = "fluid_interaction_";
     private final Renderer icon;
@@ -33,7 +33,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
 
     public FluidInteractionCategory(GeneratorType generatorType) {
         initialHeight = generatorType.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
-                                                                  : Constants.JEI_RECIPE_HEIGHT;
+                : Constants.JEI_RECIPE_HEIGHT;
         ItemStack iconStack = Items.AIR.getDefaultStack();
         switch (generatorType) {
             case COBBLE -> iconStack = Items.COBBLESTONE.getDefaultStack();
@@ -44,7 +44,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         type = generatorType;
     }
 
-    public static CategoryIdentifier<? extends FluidInteractionRecipeHolderDisplay> generateIdentifier(GeneratorType type) {
+    public static CategoryIdentifier<? extends FluidInteractionRecipe> generateIdentifier(GeneratorType type) {
         return CategoryIdentifier.of(Util.identifierOf(ID_PREFIX + type.name().toLowerCase()));
     }
 
@@ -69,7 +69,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
     }
 
     @Override
-    public List<Widget> setupDisplay(FluidInteractionRecipeHolderDisplay display, Rectangle bounds) {
+    public List<Widget> setupDisplay(FluidInteractionRecipe display, Rectangle bounds) {
         val offset = Constants.SLOT_SIZE;
         val gap = 2;
         val gapAgainstBound = gap * 3;
@@ -112,15 +112,19 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
         var maxY = display.getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(getCompat().translatableAppendingText("cobblegen.info.weight",
-                                                                         Text.of(display.getResult().weight.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.minY",
-                                                                         Text.of(minY.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.maxY",
-                                                                         Text.of(maxY.toString())
-                                   )
+        List<Text> texts = List.of(
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.weight",
+                        Text.of(display.getResult().weight.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.minY",
+                        Text.of(minY.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.maxY",
+                        Text.of(maxY.toString())
+                )
         );
         var y = base.y;
         for (Text text : texts) {
@@ -160,12 +164,13 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         // Blacklisted Dimensions
         val blacklistBounds = dimensionBounds.clone();
         blacklistBounds.x += bounds.width - 15 - 18 - (2 * gapAgainstBound);
-        val blacklistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT,
-                                                         blacklistBounds,
-                                                         15F,
-                                                         0F,
-                                                         256,
-                                                         256
+        val blacklistIcon = Widgets.createTexturedWidget(
+                Constants.JEI_UI_COMPONENT,
+                blacklistBounds,
+                15F,
+                0F,
+                256,
+                256
         );
 
         val blacklist = new ArrayList<Text>();
@@ -184,7 +189,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
     }
 
     @Override
-    public CategoryIdentifier<? extends FluidInteractionRecipeHolderDisplay> getCategoryIdentifier() {
+    public CategoryIdentifier<? extends FluidInteractionRecipe> getCategoryIdentifier() {
         return generateIdentifier(type);
     }
 }
