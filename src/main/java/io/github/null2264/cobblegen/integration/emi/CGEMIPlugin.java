@@ -19,44 +19,49 @@ import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 public class CGEMIPlugin implements EmiPlugin
 {
     public static final String ID_PREFIX = "fluid_interaction_";
-    public static final Map<String, EmiRecipeCategory> FLUID_INTERACTION_CATEGORIES = Map.of("COBBLE",
-                                                                                  new EmiRecipeCategory(Util.identifierOf(
-                                                                                          ID_PREFIX + "cobble"),
-                                                                                                        EmiStack.of(
-                                                                                                                Blocks.COBBLESTONE)
-                                                                                  ),
-                                                                                  "STONE",
-                                                                                  new EmiRecipeCategory(Util.identifierOf(
-                                                                                          ID_PREFIX + "stone"),
-                                                                                                        EmiStack.of(
-                                                                                                                Blocks.STONE)
-                                                                                  ),
-                                                                                  "BASALT",
-                                                                                  new EmiRecipeCategory(Util.identifierOf(
-                                                                                          ID_PREFIX + "basalt"),
-                                                                                                        EmiStack.of(
-                                                                                                                Blocks.BASALT)
-                                                                                  )
+    public static final Map<String, EmiRecipeCategory> FLUID_INTERACTION_CATEGORIES = Map.of(
+            "COBBLE",
+            new EmiRecipeCategory(
+                    Util.identifierOf(
+                            ID_PREFIX + "cobble"),
+                    EmiStack.of(
+                            Blocks.COBBLESTONE)
+            ),
+            "STONE",
+            new EmiRecipeCategory(
+                    Util.identifierOf(
+                            ID_PREFIX + "stone"),
+                    EmiStack.of(
+                            Blocks.STONE)
+            ),
+            "BASALT",
+            new EmiRecipeCategory(
+                    Util.identifierOf(
+                            ID_PREFIX + "basalt"),
+                    EmiStack.of(
+                            Blocks.BASALT)
+            )
     );
 
     @Override
     public void register(EmiRegistry registry) {
         FLUID_INTERACTION_CATEGORIES.forEach((ignored, category) -> registry.addCategory(category));
-        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach((modifierId, blocks) -> {
-            Block modifier = null;
-            if (!Objects.equals(modifierId, "*"))
-                modifier = getCompat().getBlock(new Identifier(modifierId));
-            for (WeightedBlock block : blocks)
-                registry.addRecipe(
-                        new FluidInteractionRecipe(
-                                fluid,
-                                generator.getFluid(),
-                                generator.getBlock(),
-                                block,
-                                generator.getType(),
-                                modifier
-                        )
-                );
-        })));
+        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
+                (modifierId, blocks) -> {
+                    Block modifier = null;
+                    if (!Objects.equals(modifierId, "*"))
+                        modifier = getCompat().getBlock(new Identifier(modifierId));
+                    for (WeightedBlock block : blocks)
+                        registry.addRecipe(
+                                new FluidInteractionRecipe(
+                                        fluid,
+                                        generator.getFluid(),
+                                        generator.getBlock(),
+                                        block,
+                                        generator.getType(),
+                                        modifier
+                                )
+                        );
+                })));
     }
 }

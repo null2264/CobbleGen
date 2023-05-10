@@ -1,5 +1,7 @@
 package io.github.null2264.cobblegen.data;
 
+import com.tterrag.registrate.fabric.SimpleFlowableFluid;
+import com.tterrag.registrate.util.entry.FluidEntry;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import net.minecraft.block.Block;
