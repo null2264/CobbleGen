@@ -4,6 +4,7 @@ import blue.endless.jankson.*;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import io.github.null2264.cobblegen.config.ConfigData;
+import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
+import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 /**
  * Replacement for BlockGenerator. This will act like Vanilla's registry system
@@ -128,7 +130,14 @@ public class FluidInteractionHelper
     }
 
     private void addAllToInternalMap(Fluid fluid, List<Generator> generators) {
-        generatorMap.computeIfAbsent(fluid, g -> new ArrayList<>()).addAll(generators);
+        for (Generator generator : generators) {
+            val genFluid = generator.getFluid();
+            if (genFluid != null && genFluid == Fluids.EMPTY) {
+                LOGGER.error("EMPTY fluid is detected! Skipping...");
+                continue;
+            }
+            addToInternalMap(fluid, generator);
+        }
     }
 
     public Map<Fluid, List<Generator>> getGenerators() {
@@ -143,13 +152,19 @@ public class FluidInteractionHelper
             AtomicInteger count = new AtomicInteger();
             val config = loadConfig(!firstInit);
 
-            val stoneGen = config.customGen.stoneGen;
-            val cobbleGen = config.customGen.cobbleGen;
-            val basaltGen = config.customGen.basaltGen;
+            Map<String, List<WeightedBlock>> stoneGen = new HashMap<>();
+            if (config.customGen != null && config.customGen.stoneGen != null)
+                stoneGen = config.customGen.stoneGen;
+            Map<String, List<WeightedBlock>> cobbleGen = new HashMap<>();
+            if (config.customGen != null && config.customGen.cobbleGen != null)
+                cobbleGen = config.customGen.cobbleGen;
+            Map<String, List<WeightedBlock>> basaltGen = new HashMap<>();
+            if (config.customGen != null && config.customGen.basaltGen != null)
+                basaltGen = config.customGen.basaltGen;
 
-            stoneGen.put("*", config.stoneGen);
-            cobbleGen.put("*", config.cobbleGen);
-            basaltGen.put("*", config.basaltGen);
+            stoneGen.put("*", notNullOr(config.stoneGen, new ArrayList<>()));
+            cobbleGen.put("*", notNullOr(config.cobbleGen, new ArrayList<>()));
+            basaltGen.put("*", notNullOr(config.basaltGen, new ArrayList<>()));
 
             if (config.advanced != null)
                 config.advanced.forEach((fluid, value) -> {
@@ -163,9 +178,10 @@ public class FluidInteractionHelper
                         if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
                             addToInternalMap(
                                     actualFluid,
-                                    new StoneGenerator(gen.resultsFromTop,
-                                                       getFluidFromString(neighbour),
-                                                       gen.silent
+                                    new StoneGenerator(
+                                            gen.resultsFromTop,
+                                            getFluidFromString(neighbour),
+                                            gen.silent
                                     )
                             );
                             count.getAndIncrement();

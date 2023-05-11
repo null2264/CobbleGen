@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.config;
 
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 
@@ -42,6 +43,22 @@ public class WeightedBlock
         this.excludedDimensions = excludedDimensions;
         this.maxY = maxY;
         this.minY = minY;
+    }
+
+    public static WeightedBlock fromBlock(Block block, Double weight) {
+        return fromBlock(block, weight, null, null, null, null);
+    }
+
+    public static WeightedBlock fromBlock(
+            Block block,
+            Double weight,
+            List<String> dimIds,
+            List<String> excludedDimensions,
+            Integer maxY,
+            Integer minY
+    ) {
+        val id = getCompat().getBlockId(block).toString();
+        return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY);
     }
 
     public Block getBlock() {

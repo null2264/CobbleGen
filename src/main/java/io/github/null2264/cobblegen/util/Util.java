@@ -1,6 +1,8 @@
 package io.github.null2264.cobblegen.util;
 
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
@@ -14,4 +16,10 @@ public class Util
         return new Identifier(MOD_ID, id);
     }
 
+    @NotNull
+    public static <T> T notNullOr(@Nullable T nullable, @NotNull T notNull) {
+        if (nullable == null)
+            return notNull;
+        return nullable;
+    }
 }

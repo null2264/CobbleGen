@@ -19,7 +19,7 @@ public class CreateFluidInteraction implements CobbleGenPlugin
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(new WeightedBlock("create:limestone", 1.0)),
-                        AllFluids.HONEY.get(),
+                        AllFluids.HONEY.get().getStill(),
                         false
                 )
         );
@@ -27,7 +27,7 @@ public class CreateFluidInteraction implements CobbleGenPlugin
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(new WeightedBlock("create:scoria", 1.0)),
-                        AllFluids.CHOCOLATE.get(),
+                        AllFluids.CHOCOLATE.get().getStill(),
                         false
                 )
         );

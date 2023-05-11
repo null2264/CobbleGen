@@ -8,6 +8,7 @@ import java.util.Map;
 
 public class ConfigData
 {
+    @Nullable
     @Comment(value = """
             Default Generators
             {
@@ -33,10 +34,13 @@ public class ConfigData
             0
     ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null));
 
+    @Nullable
     public List<WeightedBlock> stoneGen = List.of(new WeightedBlock("minecraft:stone", 100.0));
 
+    @Nullable
     public List<WeightedBlock> basaltGen = List.of(new WeightedBlock("minecraft:basalt", 100.0));
 
+    @Nullable
     @Comment(value = """
             Custom Generators
             <stoneGen|cobbleGen|basaltGen>: {
