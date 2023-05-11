@@ -193,7 +193,7 @@ if (System.getenv("MODRINTH")) {
         token = System.getenv("MODRINTH")
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
         projectId = project.modrinth_project
-        versionName = "v${project.mod_version}"
+        versionName = "v${project.mod_version}-${project.version_stage}"
         versionNumber = version as String
         versionType = mrReleaseType
         uploadFile = remapJar
