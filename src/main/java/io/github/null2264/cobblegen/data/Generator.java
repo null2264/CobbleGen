@@ -10,6 +10,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -59,6 +60,9 @@ public interface Generator
      */
     @Nullable
     Fluid getFluid();
+
+    @ApiStatus.Internal
+    default void setFluid(Fluid fluid) {};
 
     /**
      * The neighbour {@link Block}, for Basalt-like generators.

@@ -17,7 +17,7 @@
     "environment": "*",
     "entrypoints": {
         "preLaunch": [
-            "io.github.null2264.cobblegen.CobbleGenPreLaunch"
+            "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
         ],
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"

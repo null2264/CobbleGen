@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.integration.create;
 
 import com.simibubi.create.AllFluids;
+import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CobbleGenerator;
 import io.github.null2264.cobblegen.util.CobbleGenPlugin;
@@ -10,6 +11,7 @@ import net.minecraft.fluid.Fluids;
 import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
+import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class CreateFluidInteraction implements CobbleGenPlugin
 {
@@ -19,7 +21,7 @@ public class CreateFluidInteraction implements CobbleGenPlugin
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(new WeightedBlock("create:limestone", 1.0)),
-                        AllFluids.HONEY.get().getStill(),
+                        getCompat().getFluid(AllFluids.HONEY.getId()),
                         false
                 )
         );
@@ -27,7 +29,7 @@ public class CreateFluidInteraction implements CobbleGenPlugin
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(new WeightedBlock("create:scoria", 1.0)),
-                        AllFluids.CHOCOLATE.get().getStill(),
+                        getCompat().getFluid(AllFluids.CHOCOLATE.getId()),
                         false
                 )
         );

@@ -129,15 +129,20 @@ public class FluidInteractionHelper
         generatorMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
     }
 
-    private void addAllToInternalMap(Fluid fluid, List<Generator> generators) {
+    private int addAllToInternalMap(Fluid fluid, List<Generator> generators) {
+        int count = 0;
         for (Generator generator : generators) {
-            val genFluid = generator.getFluid();
+            Fluid genFluid = generator.getFluid();
             if (genFluid != null && genFluid == Fluids.EMPTY) {
-                LOGGER.error("EMPTY fluid is detected! Skipping...");
+                LOGGER.warn("EMPTY fluid is detected! Skipping...");
                 continue;
             }
+            if (genFluid instanceof FlowableFluid)
+                generator.setFluid(((FlowableFluid) genFluid).getStill());
             addToInternalMap(fluid, generator);
+            count++;
         }
+        return count;
     }
 
     public Map<Fluid, List<Generator>> getGenerators() {
@@ -205,10 +210,7 @@ public class FluidInteractionHelper
             addToInternalMap(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
             count.getAndAdd(3);
 
-            externalMap.forEach((fluid, generators) -> {
-                addAllToInternalMap(fluid, generators);
-                count.getAndIncrement();
-            });
+            externalMap.forEach((fluid, generators) -> count.getAndAdd(addAllToInternalMap(fluid, generators)));
 
             if (firstInit) firstInit = false;
             shouldReload = false;

@@ -21,7 +21,7 @@ import java.util.Optional;
 public class CobbleGenerator extends BlockGenerator
 {
     private final Map<String, List<WeightedBlock>> possibleBlocks;
-    private final Fluid fluid;
+    private Fluid fluid;
     private final boolean silent;
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
@@ -47,6 +47,11 @@ public class CobbleGenerator extends BlockGenerator
     @Override
     public Fluid getFluid() {
         return fluid;
+    }
+
+    @Override
+    public void setFluid(Fluid fluid) {
+        this.fluid = fluid;
     }
 
     @Override
