@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.data;
+package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -8,6 +8,7 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.ApiStatus;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface Generator
+public interface Generator extends PacketSerializable<Generator>
 {
     static Fluid getStillFluid(FluidState fluidState) {
         try {
@@ -77,5 +78,11 @@ public interface Generator
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     default boolean check(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
         return true;
+    }
+
+    class Factory {
+        public static Generator fromPacket(PacketByteBuf buf) {
+            return null;
+        }
     }
 }

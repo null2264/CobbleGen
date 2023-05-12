@@ -1,19 +1,20 @@
 package io.github.null2264.cobblegen.data;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
@@ -65,5 +66,47 @@ public class BasaltGenerator extends BlockGenerator
         if (world.getBlockState(blockPos).getBlock() == getBlock())
             return getBlockCandidate(world, pos);
         return Optional.empty();
+    }
+
+    @Override
+    public void toPacket(PacketByteBuf buf) {
+        val outMap = getOutput();
+        buf.writeInt(outMap.size());
+
+        for (Map.Entry<String, List<WeightedBlock>> out : outMap.entrySet()) {
+            buf.writeString(out.getKey());
+
+            val blocks = out.getValue();
+            buf.writeInt(blocks.size());
+
+            for (WeightedBlock block : blocks) {
+                block.toPacket(buf);
+            }
+        }
+
+        buf.writeIdentifier(getCompat().getBlockId(block));
+        buf.writeBoolean(silent);
+    }
+
+    static class Factory {
+        public Generator fromPacket(PacketByteBuf buf) {
+            val _outSize = buf.readInt();
+            val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
+            for (int i = 0; i < _outSize; i++) {
+                val key = buf.readString();
+
+                val _blocksSize = buf.readInt();
+                val blocks = new ArrayList<WeightedBlock>(_blocksSize);
+
+                for (int j = 0; j < _blocksSize; j++) {
+                    blocks.add(WeightedBlock.fromPacket(buf));
+                }
+                outMap.put(key, blocks);
+            }
+
+            val block = getCompat().getBlock(buf.readIdentifier());
+            val silent = buf.readBoolean();
+            return new BasaltGenerator(outMap, block, silent);
+        }
     }
 }

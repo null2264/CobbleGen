@@ -1,14 +1,18 @@
 package io.github.null2264.cobblegen.config;
 
+import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import lombok.val;
 import net.minecraft.block.Block;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
-public class WeightedBlock
+public class WeightedBlock implements PacketSerializable<WeightedBlock>
 {
     public String id;
     public Double weight;
@@ -63,5 +67,39 @@ public class WeightedBlock
 
     public Block getBlock() {
         return getCompat().getBlock(Identifier.tryParse(id));
+    }
+
+    @Override
+    public void toPacket(PacketByteBuf buf) {
+        buf.writeString(id);
+        buf.writeDouble(weight);
+        buf.writeInt(dimensions.size());
+        for (String dimId : dimensions) {
+            buf.writeString(dimId);
+        }
+        buf.writeInt(excludedDimensions.size());
+        for (String dimId : excludedDimensions) {
+            buf.writeString(dimId);
+        }
+        buf.writeInt(maxY);
+        buf.writeInt(minY);
+    }
+
+    public static WeightedBlock fromPacket(PacketByteBuf buf) {
+        val id = buf.readString();
+        val weight = buf.readDouble();
+        val _dimSize = buf.readInt();
+        val dimensions = new ArrayList<String>(_dimSize);
+        for (int i = 0; i < _dimSize; i++) {
+            dimensions.add(buf.readString());
+        }
+        val _exDimSize = buf.readInt();
+        val excludedDimensions = new ArrayList<String>(_exDimSize);
+        for (int i = 0; i < _dimSize; i++) {
+            excludedDimensions.add(buf.readString());
+        }
+        val maxY = buf.readInt();
+        val minY = buf.readInt();
+        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY);
     }
 }

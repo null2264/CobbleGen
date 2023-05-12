@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,6 +16,7 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -147,6 +149,39 @@ public class FluidInteractionHelper
 
     public Map<Fluid, List<Generator>> getGenerators() {
         return generatorMap;
+    }
+
+    public void writeGeneratorsToPacket(PacketByteBuf buf) {
+        val genMap = getGenerators();
+        buf.writeInt(genMap.size());
+
+        for (Map.Entry<Fluid, List<Generator>> entry : genMap.entrySet()) {
+            buf.writeIdentifier(getCompat().getFluidId(entry.getKey()));
+
+            val gens = entry.getValue();
+            buf.writeInt(gens.size());
+
+            for (Generator generator : gens) {
+                generator.toPacket(buf);
+            }
+        }
+    }
+
+    public Map<Fluid, List<Generator>> readGeneratorsFromPacket(PacketByteBuf buf) {
+        val _genSize = buf.readInt();
+        val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
+
+        for (int i = 0; i < _genSize; i++) {
+            val key = getCompat().getFluid(buf.readIdentifier());
+
+            val _gensSize = buf.readInt();
+            val gens = new ArrayList<Generator>(_gensSize);
+            for (int j = 0; i < _gensSize; i++) {
+                gens.add(Generator.Factory.fromPacket(buf));
+            }
+            genMap.put(key, gens);
+        }
+        return genMap;
     }
 
     public void apply() {
