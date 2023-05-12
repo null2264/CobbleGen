@@ -70,6 +70,7 @@ public class BasaltGenerator extends BlockGenerator
 
     @Override
     public void toPacket(PacketByteBuf buf) {
+        buf.writeString(this.getClass().getName());
         val outMap = getOutput();
         buf.writeInt(outMap.size());
 
@@ -88,25 +89,24 @@ public class BasaltGenerator extends BlockGenerator
         buf.writeBoolean(silent);
     }
 
-    static class Factory {
-        public Generator fromPacket(PacketByteBuf buf) {
-            val _outSize = buf.readInt();
-            val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
-            for (int i = 0; i < _outSize; i++) {
-                val key = buf.readString();
+    @SuppressWarnings("unused")
+    public static Generator fromPacket(PacketByteBuf buf) {
+        val _outSize = buf.readInt();
+        val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
+        for (int i = 0; i < _outSize; i++) {
+            val key = buf.readString();
 
-                val _blocksSize = buf.readInt();
-                val blocks = new ArrayList<WeightedBlock>(_blocksSize);
+            val _blocksSize = buf.readInt();
+            val blocks = new ArrayList<WeightedBlock>(_blocksSize);
 
-                for (int j = 0; j < _blocksSize; j++) {
-                    blocks.add(WeightedBlock.fromPacket(buf));
-                }
-                outMap.put(key, blocks);
+            for (int j = 0; j < _blocksSize; j++) {
+                blocks.add(WeightedBlock.fromPacket(buf));
             }
-
-            val block = getCompat().getBlock(buf.readIdentifier());
-            val silent = buf.readBoolean();
-            return new BasaltGenerator(outMap, block, silent);
+            outMap.put(key, blocks);
         }
+
+        val block = getCompat().getBlock(buf.readIdentifier());
+        val silent = buf.readBoolean();
+        return new BasaltGenerator(outMap, block, silent);
     }
 }

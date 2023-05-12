@@ -5,8 +5,8 @@ import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,33 +73,45 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
     public void toPacket(PacketByteBuf buf) {
         buf.writeString(id);
         buf.writeDouble(weight);
-        buf.writeInt(dimensions.size());
-        for (String dimId : dimensions) {
-            buf.writeString(dimId);
-        }
-        buf.writeInt(excludedDimensions.size());
-        for (String dimId : excludedDimensions) {
-            buf.writeString(dimId);
-        }
-        buf.writeInt(maxY);
-        buf.writeInt(minY);
+        if (dimensions != null) {
+            buf.writeInt(dimensions.size());
+            for (String dimId : dimensions) {
+                buf.writeString(dimId);
+            }
+        } else buf.writeInt(0);
+        if (excludedDimensions != null) {
+            buf.writeInt(excludedDimensions.size());
+            for (String dimId : excludedDimensions) {
+                buf.writeString(dimId);
+            }
+        } else buf.writeInt(0);
+        buf.writeInt(maxY == null ? World.MAX_Y : maxY);
+        buf.writeInt(minY == null ? World.MIN_Y : minY);
     }
 
     public static WeightedBlock fromPacket(PacketByteBuf buf) {
         val id = buf.readString();
         val weight = buf.readDouble();
         val _dimSize = buf.readInt();
-        val dimensions = new ArrayList<String>(_dimSize);
-        for (int i = 0; i < _dimSize; i++) {
-            dimensions.add(buf.readString());
+        List<String> dimensions = null;
+        if (_dimSize > 0) {
+            dimensions = new ArrayList<>(_dimSize);
+            for (int i = 0; i < _dimSize; i++) {
+                dimensions.add(buf.readString());
+            }
         }
         val _exDimSize = buf.readInt();
-        val excludedDimensions = new ArrayList<String>(_exDimSize);
-        for (int i = 0; i < _dimSize; i++) {
-            excludedDimensions.add(buf.readString());
+        List<String> excludedDimensions = null;
+        if (_exDimSize > 0) {
+            excludedDimensions = new ArrayList<>(_exDimSize);
+            for (int i = 0; i < _dimSize; i++) {
+                excludedDimensions.add(buf.readString());
+            }
         }
-        val maxY = buf.readInt();
-        val minY = buf.readInt();
+        Integer maxY = buf.readInt();
+        if (maxY == World.MAX_Y) maxY = null;
+        Integer minY = buf.readInt();
+        if (minY == World.MIN_Y) minY = null;
         return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY);
     }
 }

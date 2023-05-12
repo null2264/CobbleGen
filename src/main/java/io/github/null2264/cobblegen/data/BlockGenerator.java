@@ -25,4 +25,5 @@ abstract class BlockGenerator implements BuiltInGenerator
 
         return Optional.empty();
     }
+
 }

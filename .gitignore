@@ -111,8 +111,9 @@ gradle-app.setting
 
 **/build/
 
-# Common working directory
+# Working directory
 run/
+run-server/
 !run/config/fabric_loader_dependencies.json
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)

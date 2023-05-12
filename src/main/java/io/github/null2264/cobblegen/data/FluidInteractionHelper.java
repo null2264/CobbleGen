@@ -23,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -52,6 +53,7 @@ public class FluidInteractionHelper
     private static final Gson gson = new Gson();
 
     private final Map<Fluid, List<Generator>> generatorMap = new HashMap<>();
+    private @Nullable Map<Fluid, List<Generator>> serverGeneratorMap = null;
     private final Map<Fluid, List<Generator>> externalMap = new HashMap<>();  // temporary map to hold 3rd party mods' generators
 
     private boolean firstInit = true;
@@ -147,15 +149,15 @@ public class FluidInteractionHelper
         return count;
     }
 
+    @NotNull
     public Map<Fluid, List<Generator>> getGenerators() {
-        return generatorMap;
+        return notNullOr(serverGeneratorMap, generatorMap);
     }
 
     public void writeGeneratorsToPacket(PacketByteBuf buf) {
-        val genMap = getGenerators();
-        buf.writeInt(genMap.size());
+        buf.writeInt(generatorMap.size());
 
-        for (Map.Entry<Fluid, List<Generator>> entry : genMap.entrySet()) {
+        for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
             buf.writeIdentifier(getCompat().getFluidId(entry.getKey()));
 
             val gens = entry.getValue();
@@ -167,7 +169,7 @@ public class FluidInteractionHelper
         }
     }
 
-    public Map<Fluid, List<Generator>> readGeneratorsFromPacket(PacketByteBuf buf) {
+    public void readGeneratorsFromPacket(PacketByteBuf buf) {
         val _genSize = buf.readInt();
         val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
 
@@ -176,12 +178,22 @@ public class FluidInteractionHelper
 
             val _gensSize = buf.readInt();
             val gens = new ArrayList<Generator>(_gensSize);
-            for (int j = 0; i < _gensSize; i++) {
-                gens.add(Generator.Factory.fromPacket(buf));
+            for (int j = 0; j < _gensSize; j++) {
+                val generator = Generator.fromPacket(buf);
+                if (generator == null) {
+                    // Shouldn't be possible, but just in case... it's Java Reflection API after all.
+                    LOGGER.warn("Failed to retrieve a generator, skipping...");
+                    continue;
+                }
+                gens.add(generator);
             }
             genMap.put(key, gens);
         }
-        return genMap;
+        serverGeneratorMap = genMap;
+    }
+
+    public void disconnect() {
+        serverGeneratorMap = null;
     }
 
     public void apply() {

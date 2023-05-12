@@ -2,13 +2,11 @@ package io.github.null2264.cobblegen.integration.rei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
-import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;

@@ -6,6 +6,7 @@ import io.github.null2264.cobblegen.util.Compat;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Logger;
@@ -15,6 +16,7 @@ public class CobbleGen implements ModInitializer
 {
     public static final Logger LOGGER = (Logger) LogManager.getLogger("CobbleGen");
     public static final String MOD_ID = "cobblegen";
+    public static final Identifier SYNC_CHANNEL = new Identifier(MOD_ID, "sync");
     public static final FluidInteractionHelper FLUID_INTERACTION = new FluidInteractionHelper();
     private static Compat compat;
 

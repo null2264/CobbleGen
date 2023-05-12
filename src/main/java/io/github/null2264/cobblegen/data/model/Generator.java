@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FlowableFluid;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,9 +82,13 @@ public interface Generator extends PacketSerializable<Generator>
         return true;
     }
 
-    class Factory {
-        public static Generator fromPacket(PacketByteBuf buf) {
-            return null;
+    static Generator fromPacket(PacketByteBuf buf) {
+        val className = buf.readString();
+        try {
+            Method method = Class.forName(className).getMethod("fromPacket", PacketByteBuf.class);
+            return (Generator) method.invoke(null, buf);
+        } catch (Exception ignored) {
         }
+        return null;
     }
 }
