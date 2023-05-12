@@ -6,6 +6,7 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CobbleGenerator;
 import io.github.null2264.cobblegen.util.CobbleGenPlugin;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 
 import java.util.List;
@@ -17,19 +18,32 @@ public class CreateFluidInteraction implements CobbleGenPlugin
 {
     public void registerInteraction() {
         if (!FabricLoader.getInstance().isModLoaded("create")) return;
+        Fluid honey;
+        try {
+            honey = AllFluids.HONEY.get().getStill();
+        } catch (Exception ignore) {
+            honey = getCompat().getFluid(AllFluids.HONEY.getId());
+        }
         FLUID_INTERACTION.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(new WeightedBlock("create:limestone", 1.0)),
-                        getCompat().getFluid(AllFluids.HONEY.getId()),
+                        honey,
                         false
                 )
         );
+
+        Fluid chocolate;
+        try {
+            chocolate = AllFluids.CHOCOLATE.get().getStill();
+        } catch (Exception ignored) {
+            chocolate = getCompat().getFluid(AllFluids.CHOCOLATE.getId());
+        }
         FLUID_INTERACTION.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(new WeightedBlock("create:scoria", 1.0)),
-                        getCompat().getFluid(AllFluids.CHOCOLATE.getId()),
+                        chocolate,
                         false
                 )
         );
