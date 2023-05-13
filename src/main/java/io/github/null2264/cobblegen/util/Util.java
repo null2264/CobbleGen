@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.util;
 
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,5 +22,9 @@ public class Util
         if (nullable == null)
             return notNull;
         return nullable;
+    }
+
+    public static boolean isPortingLibLoaded() {
+        return FabricLoader.getInstance().isModLoaded("porting_lib");
     }
 }
