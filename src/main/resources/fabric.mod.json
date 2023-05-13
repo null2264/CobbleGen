@@ -19,12 +19,6 @@
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ],
-        "client": [
-            "io.github.null2264.cobblegen.CobbleGenClient"
-        ],
-        "server": [
-            "io.github.null2264.cobblegen.CobbleGenServer"
-        ],
         "jei_mod_plugin": [
             "io.github.null2264.cobblegen.integration.jei.CGJEIPlugin"
         ],

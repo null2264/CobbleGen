@@ -23,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -124,7 +125,7 @@ public class FluidInteractionHelper
         return getCompat().getBlock(new Identifier(string));
     }
 
-    @SuppressWarnings("unused")
+    @ApiStatus.AvailableSince("4.0")
     public void addGenerator(Fluid fluid, Generator generator) {
         externalMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
     }
@@ -154,6 +155,17 @@ public class FluidInteractionHelper
         return notNullOr(serverGeneratorMap, generatorMap);
     }
 
+    @ApiStatus.Internal
+    public Map<Fluid, List<Generator>> getRawGenerators() {
+        return generatorMap;
+    }
+
+    @ApiStatus.Internal
+    public boolean isSync() {
+        return serverGeneratorMap != null;
+    }
+
+    @ApiStatus.Internal
     public void writeGeneratorsToPacket(PacketByteBuf buf) {
         buf.writeInt(generatorMap.size());
 
@@ -169,6 +181,7 @@ public class FluidInteractionHelper
         }
     }
 
+    @ApiStatus.Internal
     public void readGeneratorsFromPacket(PacketByteBuf buf) {
         val _genSize = buf.readInt();
         val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
@@ -192,10 +205,12 @@ public class FluidInteractionHelper
         serverGeneratorMap = genMap;
     }
 
+    @ApiStatus.Internal
     public void disconnect() {
         serverGeneratorMap = null;
     }
 
+    @ApiStatus.Internal
     public void apply() {
         if (shouldReload) {
             LOGGER.info((firstInit ? "L" : "Rel") + "oading config...");
@@ -265,15 +280,18 @@ public class FluidInteractionHelper
         }
     }
 
+    @ApiStatus.Internal
     public void reload() {
         shouldReload = true;
         this.apply();
     }
 
+    @ApiStatus.Internal
     public boolean interact(WorldAccess world, BlockPos pos, BlockState state) {
         return interact(world, pos, state, false);
     }
 
+    @ApiStatus.Internal
     public boolean interact(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
         FluidState fluidState = state.getFluidState();
         Fluid fluid = Generator.getStillFluid(fluidState);
@@ -294,6 +312,7 @@ public class FluidInteractionHelper
         return false;
     }
 
+    @ApiStatus.Internal
     public boolean interactFromPipe(World world, BlockPos pos, Fluid fluid1, Fluid fluid2) {
         Fluid source;
         Fluid neighbour;

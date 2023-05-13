@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.mixin;
+package io.github.null2264.cobblegen.mixin.fluid;
 
 import com.simibubi.create.content.contraptions.fluids.FluidReactions;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;

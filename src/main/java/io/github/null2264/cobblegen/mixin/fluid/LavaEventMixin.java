@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.mixin;
+package io.github.null2264.cobblegen.mixin.fluid;
 
 import lombok.val;
 import net.minecraft.block.BlockState;
