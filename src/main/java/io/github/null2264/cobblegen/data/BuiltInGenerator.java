@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.data;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.model.Generator;
 import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

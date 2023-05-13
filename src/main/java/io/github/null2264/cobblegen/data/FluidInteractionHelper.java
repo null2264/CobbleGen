@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.Gson;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
@@ -15,12 +16,15 @@ import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -50,6 +54,7 @@ public class FluidInteractionHelper
     private static final Gson gson = new Gson();
 
     private final Map<Fluid, List<Generator>> generatorMap = new HashMap<>();
+    private @Nullable Map<Fluid, List<Generator>> serverGeneratorMap = null;
     private final Map<Fluid, List<Generator>> externalMap = new HashMap<>();  // temporary map to hold 3rd party mods' generators
 
     private boolean firstInit = true;
@@ -120,7 +125,7 @@ public class FluidInteractionHelper
         return getCompat().getBlock(new Identifier(string));
     }
 
-    @SuppressWarnings("unused")
+    @ApiStatus.AvailableSince("4.0")
     public void addGenerator(Fluid fluid, Generator generator) {
         externalMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
     }
@@ -145,10 +150,67 @@ public class FluidInteractionHelper
         return count;
     }
 
+    @NotNull
     public Map<Fluid, List<Generator>> getGenerators() {
+        return notNullOr(serverGeneratorMap, generatorMap);
+    }
+
+    @ApiStatus.Internal
+    public Map<Fluid, List<Generator>> getRawGenerators() {
         return generatorMap;
     }
 
+    @ApiStatus.Internal
+    public boolean isSync() {
+        return serverGeneratorMap != null;
+    }
+
+    @ApiStatus.Internal
+    public void writeGeneratorsToPacket(PacketByteBuf buf) {
+        buf.writeInt(generatorMap.size());
+
+        for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
+            buf.writeIdentifier(getCompat().getFluidId(entry.getKey()));
+
+            val gens = entry.getValue();
+            buf.writeInt(gens.size());
+
+            for (Generator generator : gens) {
+                generator.toPacket(buf);
+            }
+        }
+    }
+
+    @ApiStatus.Internal
+    public void readGeneratorsFromPacket(PacketByteBuf buf) {
+        val _genSize = buf.readInt();
+        val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
+
+        for (int i = 0; i < _genSize; i++) {
+            val key = getCompat().getFluid(buf.readIdentifier());
+
+            val _gensSize = buf.readInt();
+            val gens = new ArrayList<Generator>(_gensSize);
+            for (int j = 0; j < _gensSize; j++) {
+                val generator = Generator.fromPacket(buf);
+                if (generator == null) {
+                    // Shouldn't be possible, but just in case... it's Java Reflection API after all.
+                    LOGGER.warn("Failed to retrieve a generator, skipping...");
+                    continue;
+                }
+                gens.add(generator);
+            }
+            genMap.put(key, gens);
+        }
+        serverGeneratorMap = genMap;
+    }
+
+    @ApiStatus.Internal
+    public void disconnect() {
+        serverGeneratorMap = null;
+    }
+
+    @ApiStatus.Internal
     public void apply() {
         if (shouldReload) {
             LOGGER.info((firstInit ? "L" : "Rel") + "oading config...");
@@ -218,15 +280,18 @@ public class FluidInteractionHelper
         }
     }
 
+    @ApiStatus.Internal
     public void reload() {
         shouldReload = true;
         this.apply();
     }
 
+    @ApiStatus.Internal
     public boolean interact(WorldAccess world, BlockPos pos, BlockState state) {
         return interact(world, pos, state, false);
     }
 
+    @ApiStatus.Internal
     public boolean interact(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
         FluidState fluidState = state.getFluidState();
         Fluid fluid = Generator.getStillFluid(fluidState);
@@ -247,6 +312,7 @@ public class FluidInteractionHelper
         return false;
     }
 
+    @ApiStatus.Internal
     public boolean interactFromPipe(World world, BlockPos pos, Fluid fluid1, Fluid fluid2) {
         Fluid source;
         Fluid neighbour;

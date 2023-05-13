@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.mixin;
+package io.github.null2264.cobblegen.mixin.core;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;

@@ -16,9 +16,6 @@
     "icon": "assets/cobblegen/icon.png",
     "environment": "*",
     "entrypoints": {
-        "preLaunch": [
-            "com.llamalad7.mixinextras.MixinExtrasBootstrap::init"
-        ],
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ],
