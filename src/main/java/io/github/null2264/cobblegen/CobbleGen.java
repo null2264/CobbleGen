@@ -17,6 +17,7 @@ public class CobbleGen implements ModInitializer
     public static final Logger LOGGER = (Logger) LogManager.getLogger("CobbleGen");
     public static final String MOD_ID = "cobblegen";
     public static final Identifier SYNC_CHANNEL = new Identifier(MOD_ID, "sync");
+    public static final Identifier SYNC_PING_CHANNEL = new Identifier(MOD_ID, "sync_ping");
     public static final FluidInteractionHelper FLUID_INTERACTION = new FluidInteractionHelper();
     private static Compat compat;
 
@@ -30,5 +31,10 @@ public class CobbleGen implements ModInitializer
         Configurator.setAllLevels(LOGGER.getName(), Level.ALL);
         PluginFinder.getModPlugins().forEach(CobbleGenPlugin::registerInteraction);
         FLUID_INTERACTION.apply();
+    }
+
+    public enum Channel {
+        PING,
+        SYNC,
     }
 }

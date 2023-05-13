@@ -27,7 +27,7 @@ public abstract class ServerPlayNetworkHandlerMixin
         }
         //noinspection DataFlowIssue
         handlerCG = new CGServerPlayNetworkHandler((ServerPlayNetworkHandler) (Object) this);
-        handlerCG.sync();
+        handlerCG.trySync();
     }
 
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)

@@ -27,4 +27,10 @@ public class Util
     public static boolean isPortingLibLoaded() {
         return FabricLoader.getInstance().isModLoaded("porting_lib");
     }
+
+    public static boolean isAnyRecipeViewerLoaded() {
+        return FabricLoader.getInstance().isModLoaded("roughlyenoughitems") ||
+               FabricLoader.getInstance().isModLoaded("jei") ||
+               FabricLoader.getInstance().isModLoaded("emi");
+    }
 }
