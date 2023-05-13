@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.integration.create;
 
 import com.simibubi.create.AllFluids;
-import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CobbleGenerator;
 import io.github.null2264.cobblegen.util.CobbleGenPlugin;
@@ -20,7 +19,7 @@ public class CreateFluidInteraction implements CobbleGenPlugin
         if (!FabricLoader.getInstance().isModLoaded("create")) return;
         Fluid honey;
         try {
-            honey = AllFluids.HONEY.get().getStill();
+            honey = AllFluids.HONEY.get().getFlowing();
         } catch (Exception ignore) {
             honey = getCompat().getFluid(AllFluids.HONEY.getId());
         }
@@ -35,7 +34,7 @@ public class CreateFluidInteraction implements CobbleGenPlugin
 
         Fluid chocolate;
         try {
-            chocolate = AllFluids.CHOCOLATE.get().getStill();
+            chocolate = AllFluids.CHOCOLATE.get().getFlowing();
         } catch (Exception ignored) {
             chocolate = getCompat().getFluid(AllFluids.CHOCOLATE.getId());
         }
