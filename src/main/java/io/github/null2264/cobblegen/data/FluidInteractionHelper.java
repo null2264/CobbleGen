@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.Generator;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
@@ -90,30 +91,30 @@ public class FluidInteractionHelper
     private static ConfigData loadConfig(boolean reload) {
         String string = reload ? "reload" : "load";
         try {
-            LOGGER.info("Trying to " + string + " config file...");
+            CGLog.info("Trying to " + string + " config file...");
             JsonObject json = jankson.load(configFile);
             return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
         } catch (Exception e) {
-            LOGGER.error("There was an error while " + string + "ing the config file!", e);
+            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
             val config = new ConfigData();
             if (!configFile.exists()) {
                 saveConfig(config);
             }
-            LOGGER.warn("Falling back to default config...");
+            CGLog.warn("Falling back to default config...");
             return config;
         }
     }
 
     private static void saveConfig(ConfigData config) {
         try {
-            LOGGER.info("Trying to create config file...");
+            CGLog.info("Trying to create config file...");
             FileWriter fw = new FileWriter(configFile);
             JsonElement jsonElement = Jankson.builder().build().toJson(config);
             JsonElement filteredElement = filter(jsonElement);
             fw.write((filteredElement != null ? filteredElement : jsonElement).toJson(JsonGrammar.JSON5));
             fw.close();
         } catch (IOException e) {
-            LOGGER.error("There was an error while creating the config file!", e);
+            CGLog.error("There was an error while creating the config file!\n" + e);
         }
     }
 
@@ -139,7 +140,7 @@ public class FluidInteractionHelper
         for (Generator generator : generators) {
             Fluid genFluid = generator.getFluid();
             if (genFluid != null && genFluid == Fluids.EMPTY) {
-                LOGGER.warn("EMPTY fluid is detected! Skipping...");
+                CGLog.warn("EMPTY fluid is detected! Skipping...");
                 continue;
             }
             if (genFluid instanceof FlowableFluid)
@@ -195,7 +196,7 @@ public class FluidInteractionHelper
                 val generator = Generator.fromPacket(buf);
                 if (generator == null) {
                     // Shouldn't be possible, but just in case... it's Java Reflection API after all.
-                    LOGGER.warn("Failed to retrieve a generator, skipping...");
+                    CGLog.warn("Failed to retrieve a generator, skipping...");
                     continue;
                 }
                 gens.add(generator);
@@ -213,7 +214,7 @@ public class FluidInteractionHelper
     @ApiStatus.Internal
     public void apply() {
         if (shouldReload) {
-            LOGGER.info((firstInit ? "L" : "Rel") + "oading config...");
+            CGLog.info((firstInit ? "L" : "Rel") + "oading config...");
             generatorMap.clear();
 
             AtomicInteger count = new AtomicInteger();
@@ -276,7 +277,7 @@ public class FluidInteractionHelper
 
             if (firstInit) firstInit = false;
             shouldReload = false;
-            LOGGER.info(count.get() + " generators has been " + (firstInit ? "" : "re") + "loaded");
+            CGLog.info(count.get() + " generators has been " + (firstInit ? "" : "re") + "loaded");
         }
     }
 

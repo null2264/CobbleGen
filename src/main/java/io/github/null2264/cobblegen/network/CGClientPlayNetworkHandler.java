@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.network;
 
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import io.netty.buffer.Unpooled;
 import lombok.val;
@@ -25,7 +26,7 @@ public class CGClientPlayNetworkHandler
 
             val isSync = FLUID_INTERACTION.isSync();
             if (isSync)
-                LOGGER.info("CobbleGen config has been retrieved from the server");
+                CGLog.info("CobbleGen config has been retrieved from the server");
             val buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeBoolean(isSync);
             handler.sendPacket(createC2SPacket(Channel.SYNC, buf));
