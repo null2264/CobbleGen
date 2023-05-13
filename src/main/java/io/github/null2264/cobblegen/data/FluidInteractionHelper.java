@@ -232,7 +232,7 @@ public class FluidInteractionHelper
 
             stoneGen.put("*", notNullOr(config.stoneGen, new ArrayList<>()));
             cobbleGen.put("*", notNullOr(config.cobbleGen, new ArrayList<>()));
-            basaltGen.put("*", notNullOr(config.basaltGen, new ArrayList<>()));
+            basaltGen.put("minecraft:soul_soil", notNullOr(config.basaltGen, new ArrayList<>()));
 
             if (config.advanced != null)
                 config.advanced.forEach((fluid, value) -> {
