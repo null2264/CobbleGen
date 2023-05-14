@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.mixin;
+package io.github.null2264.cobblegen.mixin.network;
 
 import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
 import net.fabricmc.api.Environment;

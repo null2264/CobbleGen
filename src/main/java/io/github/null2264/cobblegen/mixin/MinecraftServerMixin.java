@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
+//Environment(COMMON)
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin
 {
