@@ -2,6 +2,8 @@ package io.github.null2264.cobblegen.integration;
 
 import blue.endless.jankson.*;
 import com.google.gson.Gson;
+import com.simibubi.create.AllFluids;
+import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
@@ -108,9 +110,33 @@ public class BuiltInPlugin implements CobbleGenPlugin
         FLUID_INTERACTION.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
         FLUID_INTERACTION.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false));
         FLUID_INTERACTION.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
+        count.addAndGet(3);
 
         CGLog.info(String.valueOf(count.get()), "generators has been added from config");
         if (firstInit) firstInit = false;
+
+        tryRegisterCreate();
+    }
+
+    private void tryRegisterCreate() {
+        if (!FabricLoader.getInstance().isModLoaded("create")) return;
+
+        FLUID_INTERACTION.addGenerator(
+                Fluids.LAVA,
+                new CobbleGenerator(
+                        List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.LIMESTONE.getBaseBlock().get(), 1.0)),
+                        AllFluids.HONEY.get().getStill(),
+                        false
+                )
+        );
+        FLUID_INTERACTION.addGenerator(
+                Fluids.LAVA,
+                new CobbleGenerator(
+                        List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.SCORIA.getBaseBlock().get(), 1.0)),
+                        AllFluids.CHOCOLATE.get().getStill(),
+                        false
+                )
+        );
     }
 
     /**

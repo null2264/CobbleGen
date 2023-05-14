@@ -21,7 +21,7 @@ public class CobbleGen implements ModInitializer
 
     @Override
     public void onInitialize() {
-        FLUID_INTERACTION.apply();
+        //FLUID_INTERACTION.apply();
     }
 
     public enum Channel {

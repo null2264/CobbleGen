@@ -45,12 +45,7 @@ public class FluidInteractionHelper
     private @Nullable Map<Fluid, List<Generator>> serverGeneratorMap = null;
 
     private boolean firstInit = true;
-    private boolean shouldReload;
     private final AtomicInteger count = new AtomicInteger();
-
-    public FluidInteractionHelper() {
-        shouldReload = true;
-    }
 
     @ApiStatus.AvailableSince("4.0")
     public void addGenerator(Fluid fluid, Generator generator) {
@@ -122,33 +117,24 @@ public class FluidInteractionHelper
 
     @ApiStatus.Internal
     public void apply() {
-        if (shouldReload) {
-            CGLog.info((firstInit ? "L" : "Rel") + "oading generators...");
-            generatorMap.clear();
-            count.set(0);
-            for (EntrypointContainer<CobbleGenPlugin> plugin : PluginFinder.getModPlugins()) {
-                String id = plugin.getProvider().getMetadata().getId();
-                CGLog.info("Loading plugin from", id);
-                try {
-                    plugin.getEntrypoint().registerInteraction();
-                } catch (Throwable err) {
-                    CGLog.warn("Something went wrong while loading plugin provided by", id);
-                    CGLog.error(String.valueOf(err));
-                    continue;
-                }
-                CGLog.info("Loaded plugin from", id);
+        CGLog.info(firstInit ? "Loading" : "Reloading", "generators...");
+        generatorMap.clear();
+        count.set(0);
+        for (EntrypointContainer<CobbleGenPlugin> plugin : PluginFinder.getModPlugins()) {
+            String id = plugin.getProvider().getMetadata().getId();
+            CGLog.info("Loading plugin from", id);
+            try {
+                plugin.getEntrypoint().registerInteraction();
+            } catch (Throwable err) {
+                CGLog.warn("Something went wrong while loading plugin provided by", id);
+                CGLog.error(String.valueOf(err));
+                continue;
             }
-
-            shouldReload = false;
-            CGLog.info(String.valueOf(count.get()), "generators has been", (firstInit ? "" : "re") + "loaded");
-            if (firstInit) firstInit = false;
+            CGLog.info("Loaded plugin from", id);
         }
-    }
 
-    @ApiStatus.Internal
-    public void reload() {
-        shouldReload = true;
-        this.apply();
+        CGLog.info(String.valueOf(count.get()), "generators has been", firstInit ? "loaded" : "reloaded");
+        if (firstInit) firstInit = false;
     }
 
     @ApiStatus.Internal
