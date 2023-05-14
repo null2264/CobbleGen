@@ -21,6 +21,6 @@ public abstract class MinecraftServerMixin
 
     @Inject(method = "reloadResources", at = @At("HEAD"))
     public void reloadConfig(CallbackInfoReturnable<CompletableFuture<Void>> cir) {
-        FLUID_INTERACTION.apply();
+        FLUID_INTERACTION.reload();
     }
 }

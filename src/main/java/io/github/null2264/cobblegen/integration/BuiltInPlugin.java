@@ -26,10 +26,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
@@ -41,8 +38,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     private static final Jankson jankson = Jankson.builder().build();
     private static final Gson gson = new Gson();
+    private static ConfigData config = loadConfig(false);
 
-    private boolean firstInit = true;
+    private boolean isReload = false;
 
     private Fluid getFluidFromString(String string) {
         return getCompat().getFluid(new Identifier(string));
@@ -54,10 +52,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
     @Override
     public void registerInteraction() {
-        CGLog.info((firstInit ? "L" : "Rel") + "oading config...");
+        CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
 
         AtomicInteger count = new AtomicInteger();
-        val config = loadConfig(!firstInit);
 
         Map<String, List<WeightedBlock>> stoneGen = new HashMap<>();
         if (config.customGen != null && config.customGen.stoneGen != null)
@@ -113,14 +110,22 @@ public class BuiltInPlugin implements CobbleGenPlugin
         count.addAndGet(3);
 
         CGLog.info(String.valueOf(count.get()), "generators has been added from config");
-        if (firstInit) firstInit = false;
+        if (isReload) isReload = false;
 
         tryRegisterCreate();
+    }
+
+    @Override
+    public void onReload() {
+        CGLog.info("Reloading built-in plugin...");
+        isReload = true;
+        config = loadConfig(true);
     }
 
     private void tryRegisterCreate() {
         if (!FabricLoader.getInstance().isModLoaded("create")) return;
 
+        CGLog.info("Create mod detected, loading integration...");
         FLUID_INTERACTION.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
@@ -170,12 +175,18 @@ public class BuiltInPlugin implements CobbleGenPlugin
             return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
         } catch (Exception e) {
             CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
-            val config = new ConfigData();
+
+            if (reload) {
+                CGLog.warn("Falling back to previously working config...");
+                return config;
+            }
+
+            val newConfig = new ConfigData();
             if (!configFile.exists()) {
-                saveConfig(config);
+                saveConfig(newConfig);
             }
             CGLog.warn("Falling back to default config...");
-            return config;
+            return newConfig;
         }
     }
 
