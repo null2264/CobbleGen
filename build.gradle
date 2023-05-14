@@ -47,8 +47,6 @@ allprojects {
     group = project.maven_group
 
     dependencies {
-        include modImplementation("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-        annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
         include modImplementation("blue.endless:jankson:${project.jankson_version}")
     }
 
