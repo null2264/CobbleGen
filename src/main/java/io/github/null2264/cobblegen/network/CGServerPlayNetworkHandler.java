@@ -13,20 +13,14 @@ import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGServerPlayNetworkHandler
 {
-    private final ServerPlayNetworkHandler handler;
-
-    public CGServerPlayNetworkHandler(ServerPlayNetworkHandler handler) {
-        this.handler = handler;
-    }
-
-    public void trySync() {
+    public static void trySync(ServerPlayNetworkHandler handler) {
         CGLog.info("A player joined, checking for recipe viewer...");
         val buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeString("ping");  // Basically "do you want this?"
         handler.sendPacket(createS2CPacket(Channel.PING, buf));
     }
 
-    public boolean handlePacket(CustomPayloadC2SPacket packet) {
+    public static boolean handlePacket(ServerPlayNetworkHandler handler, CustomPayloadC2SPacket packet) {
         if (packet.getChannel().equals(SYNC_CHANNEL)) {
             val received = packet.getData().readBoolean();
             if (received)
@@ -36,20 +30,20 @@ public class CGServerPlayNetworkHandler
             val status = packet.getData().readBoolean();
             if (status) {
                 CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
-                sync();
+                sync(handler);
             }
             return true;
         }
         return false;
     }
 
-    public void sync() {
+    public static void sync(ServerPlayNetworkHandler handler) {
         val buf = new PacketByteBuf(Unpooled.buffer());
         FLUID_INTERACTION.writeGeneratorsToPacket(buf);
         handler.sendPacket(createS2CPacket(Channel.SYNC, buf));
     }
 
-    private CustomPayloadS2CPacket createS2CPacket(Channel channel, PacketByteBuf buf) {
+    private static CustomPayloadS2CPacket createS2CPacket(Channel channel, PacketByteBuf buf) {
         Identifier channelId;
         switch (channel) {
             case PING -> channelId = SYNC_PING_CHANNEL;

@@ -17,24 +17,20 @@ import static net.fabricmc.api.EnvType.CLIENT;
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin
 {
-    @Unique
-    private CGClientPlayNetworkHandler handlerCG;
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(CallbackInfo ci) {
-        //noinspection DataFlowIssue
-        this.handlerCG = new CGClientPlayNetworkHandler((ClientPlayNetworkHandler) (Object) this);
+    @SuppressWarnings("DataFlowIssue")
+    private ClientPlayNetworkHandler getHandler() {
+        return (ClientPlayNetworkHandler) (Object) this;
     }
 
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void handleCustomPayload(CustomPayloadS2CPacket packet, CallbackInfo ci) {
-        if (handlerCG.handlePacket(packet)) {
+        if (CGClientPlayNetworkHandler.handlePacket(getHandler(), packet)) {
             ci.cancel();
         }
     }
 
     @Inject(method = "onDisconnected", at = @At("HEAD"))
     private void handleDisconnect(Text reason, CallbackInfo ci) {
-        handlerCG.onDisconnect();
+        CGClientPlayNetworkHandler.onDisconnect();
     }
 }

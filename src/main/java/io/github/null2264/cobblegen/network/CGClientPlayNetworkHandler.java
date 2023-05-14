@@ -14,13 +14,7 @@ import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGClientPlayNetworkHandler
 {
-    private final ClientPlayNetworkHandler handler;
-
-    public CGClientPlayNetworkHandler(ClientPlayNetworkHandler handler) {
-        this.handler = handler;
-    }
-
-    public boolean handlePacket(CustomPayloadS2CPacket packet) {
+    public static boolean handlePacket(ClientPlayNetworkHandler handler, CustomPayloadS2CPacket packet) {
         if (packet.getChannel().equals(SYNC_CHANNEL)) {
             FLUID_INTERACTION.readGeneratorsFromPacket(packet.getData());
 
@@ -40,11 +34,11 @@ public class CGClientPlayNetworkHandler
         return false;
     }
 
-    public void onDisconnect() {
+    public static void onDisconnect() {
         FLUID_INTERACTION.disconnect();
     }
 
-    private CustomPayloadC2SPacket createC2SPacket(Channel channel, PacketByteBuf buf) {
+    private static CustomPayloadC2SPacket createC2SPacket(Channel channel, PacketByteBuf buf) {
         Identifier channelId;
         switch (channel) {
             case PING -> channelId = SYNC_PING_CHANNEL;

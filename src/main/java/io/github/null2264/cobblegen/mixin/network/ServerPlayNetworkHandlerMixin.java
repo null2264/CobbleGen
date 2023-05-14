@@ -18,24 +18,24 @@ import static net.fabricmc.api.EnvType.SERVER;
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin
 {
-    @Unique
-    private CGServerPlayNetworkHandler handlerCG;
+    @SuppressWarnings("DataFlowIssue")
+    private ServerPlayNetworkHandler getHandler() {
+        return (ServerPlayNetworkHandler) (Object) this;
+    }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        //noinspection DataFlowIssue
-        val self = (ServerPlayNetworkHandler) (Object) this;
+        val self = getHandler();
         if (Util.isPortingLibLoaded()) {
             // Just in case
             if (self.connection instanceof io.github.fabricators_of_create.porting_lib.fake_players.FakeConnection) return;
         }
-        handlerCG = new CGServerPlayNetworkHandler(self);
-        handlerCG.trySync();
+        CGServerPlayNetworkHandler.trySync(self);
     }
 
     @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
     private void handleCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo ci) {
-        if (handlerCG.handlePacket(packet)) {
+        if (CGServerPlayNetworkHandler.handlePacket(getHandler(), packet)) {
             ci.cancel();
         }
     }

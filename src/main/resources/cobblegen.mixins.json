@@ -13,6 +13,7 @@
         "network.ClientPlayNetworkHandlerMixin"
     ],
     "server": [
+        "PlayerManagerMixin",
         "network.ServerPlayNetworkHandlerMixin"
     ],
     "injectors": {
