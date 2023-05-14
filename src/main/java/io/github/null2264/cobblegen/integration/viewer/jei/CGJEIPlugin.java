@@ -1,7 +1,7 @@
-package io.github.null2264.cobblegen.integration.jei;
+package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
+import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import mezz.jei.api.IModPlugin;

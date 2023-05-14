@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.integration.emi;
+package io.github.null2264.cobblegen.integration.viewer.emi;
 
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;

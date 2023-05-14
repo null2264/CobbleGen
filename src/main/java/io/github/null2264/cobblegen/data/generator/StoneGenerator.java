@@ -1,6 +1,7 @@
-package io.github.null2264.cobblegen.data;
+package io.github.null2264.cobblegen.data.generator;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.model.BuiltInGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;

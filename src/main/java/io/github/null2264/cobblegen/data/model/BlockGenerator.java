@@ -1,18 +1,20 @@
-package io.github.null2264.cobblegen.data;
+package io.github.null2264.cobblegen.data.model;
 
 import lombok.val;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
 import static io.github.null2264.cobblegen.data.FluidInteractionHelper.FLOW_DIRECTIONS;
 
-abstract class BlockGenerator implements BuiltInGenerator
+@ApiStatus.Internal
+public abstract class BlockGenerator implements BuiltInGenerator
 {
-    abstract Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state, Direction direction);
+    protected abstract Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state, Direction direction);
 
     @Override
     public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state) {

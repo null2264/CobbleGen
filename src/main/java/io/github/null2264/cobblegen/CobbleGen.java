@@ -1,9 +1,7 @@
 package io.github.null2264.cobblegen;
 
 import io.github.null2264.cobblegen.data.FluidInteractionHelper;
-import io.github.null2264.cobblegen.util.CobbleGenPlugin;
 import io.github.null2264.cobblegen.util.Compat;
-import io.github.null2264.cobblegen.util.PluginFinder;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.util.Identifier;
@@ -23,7 +21,6 @@ public class CobbleGen implements ModInitializer
 
     @Override
     public void onInitialize() {
-        PluginFinder.getModPlugins().forEach(CobbleGenPlugin::registerInteraction);
         FLUID_INTERACTION.apply();
     }
 

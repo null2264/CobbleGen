@@ -1,6 +1,6 @@
-package io.github.null2264.cobblegen.integration.rei;
+package io.github.null2264.cobblegen.integration.viewer.rei;
 
-import io.github.null2264.cobblegen.data.Constants;
+import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;

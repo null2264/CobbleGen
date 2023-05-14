@@ -1,7 +1,7 @@
-package io.github.null2264.cobblegen.integration.jei;
+package io.github.null2264.cobblegen.integration.viewer.jei;
 
-import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
-import io.github.null2264.cobblegen.data.Constants;
+import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
+import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
@@ -15,11 +15,9 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.text.Text;

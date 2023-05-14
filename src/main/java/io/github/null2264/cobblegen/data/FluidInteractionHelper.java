@@ -1,24 +1,19 @@
 package io.github.null2264.cobblegen.data;
 
-import blue.endless.jankson.*;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.Gson;
-import io.github.null2264.cobblegen.config.ConfigData;
-import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
+import io.github.null2264.cobblegen.util.CobbleGenPlugin;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.PluginFinder;
 import lombok.val;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
+import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -28,17 +23,13 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.null2264.cobblegen.CobbleGen.*;
+import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 /**
@@ -49,116 +40,34 @@ public class FluidInteractionHelper
     public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
             Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
     );
-    private static final Path configPath = FabricLoader.getInstance().getConfigDir();
-    private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
-    private static final Jankson jankson = Jankson.builder().build();
-    private static final Gson gson = new Gson();
 
     private final Map<Fluid, List<Generator>> generatorMap = new HashMap<>();
     private @Nullable Map<Fluid, List<Generator>> serverGeneratorMap = null;
-    private final Map<Fluid, List<Generator>> externalMap = new HashMap<>();  // temporary map to hold 3rd party mods' generators
 
     private boolean firstInit = true;
     private boolean shouldReload;
+    private final AtomicInteger count = new AtomicInteger();
 
     public FluidInteractionHelper() {
         shouldReload = true;
     }
 
-    /**
-     * @deprecated Removed when Jankson released their proper null filter
-     */
-    @Deprecated
-    @Nullable
-    private static JsonElement filter(JsonElement json) {
-        JsonElement result = null;
-        if (json instanceof JsonObject finalResult) {
-            finalResult.keySet().forEach(key -> {
-                JsonElement element = finalResult.get(key);
-                if (!(element instanceof JsonNull) && element != null) filter(element);
-                else finalResult.remove(key);
-            });
-            result = finalResult;
-        } else if (json instanceof JsonArray finalResult) {
-            finalResult.forEach(element -> {
-                if (element instanceof JsonObject) filter(element);
-            });
-            result = finalResult;
-        }
-        return result;
-    }
-
-    private static ConfigData loadConfig(boolean reload) {
-        String string = reload ? "reload" : "load";
-        try {
-            CGLog.info("Trying to " + string + " config file...");
-            JsonObject json = jankson.load(configFile);
-            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
-        } catch (Exception e) {
-            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
-            val config = new ConfigData();
-            if (!configFile.exists()) {
-                saveConfig(config);
-            }
-            CGLog.warn("Falling back to default config...");
-            return config;
-        }
-    }
-
-    private static void saveConfig(ConfigData config) {
-        try {
-            CGLog.info("Trying to create config file...");
-            FileWriter fw = new FileWriter(configFile);
-            JsonElement jsonElement = Jankson.builder().build().toJson(config);
-            JsonElement filteredElement = filter(jsonElement);
-            fw.write((filteredElement != null ? filteredElement : jsonElement).toJson(JsonGrammar.JSON5));
-            fw.close();
-        } catch (IOException e) {
-            CGLog.error("There was an error while creating the config file!\n" + e);
-        }
-    }
-
-    private Fluid getFluidFromString(String string) {
-        return getCompat().getFluid(new Identifier(string));
-    }
-
-    private Block getBlockFromString(String string) {
-        return getCompat().getBlock(new Identifier(string));
-    }
-
     @ApiStatus.AvailableSince("4.0")
     public void addGenerator(Fluid fluid, Generator generator) {
-        externalMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
-    }
-
-    private void addToInternalMap(Fluid fluid, Generator generator) {
-        generatorMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
-    }
-
-    private int addAllToInternalMap(Fluid fluid, List<Generator> generators) {
-        int count = 0;
-        for (Generator generator : generators) {
-            Fluid genFluid = generator.getFluid();
-            if (genFluid != null && genFluid == Fluids.EMPTY) {
-                CGLog.warn("EMPTY fluid is detected! Skipping...");
-                continue;
-            }
-            if (genFluid instanceof FlowableFluid)
-                generator.setFluid(((FlowableFluid) genFluid).getStill());
-            addToInternalMap(fluid, generator);
-            count++;
+        Fluid genFluid = generator.getFluid();
+        if (genFluid != null && genFluid == Fluids.EMPTY) {
+            CGLog.warn("EMPTY fluid is detected! Skipping...");
+            return;
         }
-        return count;
+        if (genFluid instanceof FlowableFluid)
+            generator.setFluid(((FlowableFluid) genFluid).getStill());
+        generatorMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
+        count.incrementAndGet();
     }
 
     @NotNull
     public Map<Fluid, List<Generator>> getGenerators() {
         return notNullOr(serverGeneratorMap, generatorMap);
-    }
-
-    @ApiStatus.Internal
-    public Map<Fluid, List<Generator>> getRawGenerators() {
-        return generatorMap;
     }
 
     @ApiStatus.Internal
@@ -214,70 +123,25 @@ public class FluidInteractionHelper
     @ApiStatus.Internal
     public void apply() {
         if (shouldReload) {
-            CGLog.info((firstInit ? "L" : "Rel") + "oading config...");
+            CGLog.info((firstInit ? "L" : "Rel") + "oading generators...");
             generatorMap.clear();
-
-            AtomicInteger count = new AtomicInteger();
-            val config = loadConfig(!firstInit);
-
-            Map<String, List<WeightedBlock>> stoneGen = new HashMap<>();
-            if (config.customGen != null && config.customGen.stoneGen != null)
-                stoneGen = config.customGen.stoneGen;
-            Map<String, List<WeightedBlock>> cobbleGen = new HashMap<>();
-            if (config.customGen != null && config.customGen.cobbleGen != null)
-                cobbleGen = config.customGen.cobbleGen;
-            Map<String, List<WeightedBlock>> basaltGen = new HashMap<>();
-            if (config.customGen != null && config.customGen.basaltGen != null)
-                basaltGen = config.customGen.basaltGen;
-
-            stoneGen.put("*", notNullOr(config.stoneGen, new ArrayList<>()));
-            cobbleGen.put("*", notNullOr(config.cobbleGen, new ArrayList<>()));
-            basaltGen.put("minecraft:soul_soil", notNullOr(config.basaltGen, new ArrayList<>()));
-
-            if (config.advanced != null)
-                config.advanced.forEach((fluid, value) -> {
-                    Fluid actualFluid = getFluidFromString(fluid);
-                    value.forEach((neighbour, gen) -> {
-                        val results = gen.results;
-
-                        boolean isNeighbourBlock = neighbour.startsWith("b:");
-                        if (isNeighbourBlock) neighbour = neighbour.substring(2);
-
-                        if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
-                            addToInternalMap(
-                                    actualFluid,
-                                    new StoneGenerator(
-                                            gen.resultsFromTop,
-                                            getFluidFromString(neighbour),
-                                            gen.silent
-                                    )
-                            );
-                            count.getAndIncrement();
-                        }
-
-                        if (!results.isEmpty()) {
-                            Generator generator;
-                            if (isNeighbourBlock)
-                                generator = new BasaltGenerator(results, getBlockFromString(neighbour), gen.silent);
-                            else
-                                generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent);
-
-                            addToInternalMap(actualFluid, generator);
-                            count.getAndIncrement();
-                        }
-                    });
-                });
-
-            addToInternalMap(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-            addToInternalMap(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false));
-            addToInternalMap(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
-            count.getAndAdd(3);
-
-            externalMap.forEach((fluid, generators) -> count.getAndAdd(addAllToInternalMap(fluid, generators)));
+            count.set(0);
+            for (EntrypointContainer<CobbleGenPlugin> plugin : PluginFinder.getModPlugins()) {
+                String id = plugin.getProvider().getMetadata().getId();
+                CGLog.info("Loading plugin from", id);
+                try {
+                    plugin.getEntrypoint().registerInteraction();
+                } catch (Throwable err) {
+                    CGLog.warn("Something went wrong while loading plugin provided by", id);
+                    CGLog.error(String.valueOf(err));
+                    continue;
+                }
+                CGLog.info("Loaded plugin from", id);
+            }
 
             if (firstInit) firstInit = false;
             shouldReload = false;
-            CGLog.info(count.get() + " generators has been " + (firstInit ? "" : "re") + "loaded");
+            CGLog.info(String.valueOf(count.get()), "generators has been", (firstInit ? "" : "re") + "loaded");
         }
     }
 

@@ -1,13 +1,13 @@
-package io.github.null2264.cobblegen.data;
+package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.data.model.Generator;
 import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
-interface BuiltInGenerator extends Generator
+@ApiStatus.Internal
+public interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
     private String randomizeBlockId(Block key, String dim, Integer yLevel) {

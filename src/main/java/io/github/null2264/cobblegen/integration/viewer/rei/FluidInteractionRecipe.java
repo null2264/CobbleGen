@@ -1,7 +1,7 @@
-package io.github.null2264.cobblegen.integration.rei;
+package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
+import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;

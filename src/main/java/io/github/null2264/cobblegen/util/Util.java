@@ -5,6 +5,8 @@ import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
 public class Util
