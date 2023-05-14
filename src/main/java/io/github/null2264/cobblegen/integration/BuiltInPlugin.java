@@ -10,6 +10,7 @@ import io.github.null2264.cobblegen.data.generator.StoneGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.CobbleGenPlugin;
+import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
@@ -66,9 +67,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
         if (config.customGen != null && config.customGen.basaltGen != null)
             basaltGen = config.customGen.basaltGen;
 
-        stoneGen.put("*", notNullOr(config.stoneGen, new ArrayList<>()));
-        cobbleGen.put("*", notNullOr(config.cobbleGen, new ArrayList<>()));
-        basaltGen.put("minecraft:soul_soil", notNullOr(config.basaltGen, new ArrayList<>()));
+        stoneGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.stoneGen, new ArrayList<>()));
+        cobbleGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.cobbleGen, new ArrayList<>()));
+        basaltGen.put(CGBlocks.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ArrayList<>()));
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {
