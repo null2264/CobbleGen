@@ -29,7 +29,8 @@
             "io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"
         ],
         "cobblegen_plugin": [
-            "io.github.null2264.cobblegen.integration.BuiltInPlugin"
+            "io.github.null2264.cobblegen.integration.BuiltInPlugin",
+            "io.github.null2264.cobblegen.integration.CreatePlugin"
         ]
     },
     "mixins": [

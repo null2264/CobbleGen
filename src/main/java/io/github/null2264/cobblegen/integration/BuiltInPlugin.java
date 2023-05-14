@@ -2,8 +2,6 @@ package io.github.null2264.cobblegen.integration;
 
 import blue.endless.jankson.*;
 import com.google.gson.Gson;
-import com.simibubi.create.AllFluids;
-import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
@@ -26,7 +24,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
@@ -111,8 +112,6 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
         CGLog.info(String.valueOf(count.get()), "generators has been added from config");
         if (isReload) isReload = false;
-
-        tryRegisterCreate();
     }
 
     @Override
@@ -120,28 +119,6 @@ public class BuiltInPlugin implements CobbleGenPlugin
         CGLog.info("Reloading built-in plugin...");
         isReload = true;
         config = loadConfig(true);
-    }
-
-    private void tryRegisterCreate() {
-        if (!FabricLoader.getInstance().isModLoaded("create")) return;
-
-        CGLog.info("Create mod detected, loading integration...");
-        FLUID_INTERACTION.addGenerator(
-                Fluids.LAVA,
-                new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.LIMESTONE.getBaseBlock().get(), 1.0)),
-                        AllFluids.HONEY.get().getStill(),
-                        false
-                )
-        );
-        FLUID_INTERACTION.addGenerator(
-                Fluids.LAVA,
-                new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.SCORIA.getBaseBlock().get(), 1.0)),
-                        AllFluids.CHOCOLATE.get().getStill(),
-                        false
-                )
-        );
     }
 
     /**
