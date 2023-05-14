@@ -139,9 +139,9 @@ public class FluidInteractionHelper
                 CGLog.info("Loaded plugin from", id);
             }
 
-            if (firstInit) firstInit = false;
             shouldReload = false;
             CGLog.info(String.valueOf(count.get()), "generators has been", (firstInit ? "" : "re") + "loaded");
+            if (firstInit) firstInit = false;
         }
     }
 
