@@ -9,8 +9,7 @@ dependencies {
 
     modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
-    if (project.run_with_create.toLowerCase(Locale.ROOT) == "yes")
-        modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+    modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
     switch (project.recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "rei": modLocalRuntime("me.shedaniel:RoughlyEnoughItems-fabric:$project.rei_version_1_18_2"); break
         case "emi": modLocalRuntime("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}"); break
