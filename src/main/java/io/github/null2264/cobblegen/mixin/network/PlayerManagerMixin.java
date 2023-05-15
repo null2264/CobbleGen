@@ -22,7 +22,7 @@ public abstract class PlayerManagerMixin
     public void syncOnReload(CallbackInfo ci) {
         //noinspection DataFlowIssue
         for (ServerPlayerEntity player : ((PlayerManager) (Object) this).getPlayerList()) {
-            CGServerPlayNetworkHandler.trySync(player.networkHandler);
+            CGServerPlayNetworkHandler.trySync(player.networkHandler, true);
         }
     }
 }

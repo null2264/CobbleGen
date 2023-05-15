@@ -14,8 +14,16 @@ import static io.github.null2264.cobblegen.CobbleGen.*;
 public class CGServerPlayNetworkHandler
 {
     public static void trySync(ServerPlayNetworkHandler handler) {
-        CGLog.info("A player joined, checking for recipe viewer...");
+        trySync(handler, false);
+    }
+
+    public static void trySync(ServerPlayNetworkHandler handler, boolean isReload) {
+        if (isReload)
+            CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
+        else
+            CGLog.info("A player joined, checking for recipe viewer...");
         val buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeBoolean(isReload);
         buf.writeString("ping");  // Basically "do you want this?"
         handler.sendPacket(createS2CPacket(Channel.PING, buf));
     }
@@ -24,21 +32,24 @@ public class CGServerPlayNetworkHandler
         if (packet.getChannel().equals(SYNC_CHANNEL)) {
             val received = packet.getData().readBoolean();
             if (received)
-                CGLog.info("A client has received the server's CobbleGen config");
+                CGLog.info("Player has received the server's newest CobbleGen config");
             return true;
         } else if (packet.getChannel().equals(SYNC_PING_CHANNEL)) {
+            val isReload = packet.getData().readBoolean();
             val status = packet.getData().readBoolean();
             if (status) {
-                CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
-                sync(handler);
+                if (!isReload)
+                    CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
+                sync(handler, isReload);
             }
             return true;
         }
         return false;
     }
 
-    public static void sync(ServerPlayNetworkHandler handler) {
+    public static void sync(ServerPlayNetworkHandler handler, boolean isReload) {
         val buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeBoolean(isReload);
         FLUID_INTERACTION.writeGeneratorsToPacket(buf);
         handler.sendPacket(createS2CPacket(Channel.SYNC, buf));
     }

@@ -16,17 +16,20 @@ public class CGClientPlayNetworkHandler
 {
     public static boolean handlePacket(ClientPlayNetworkHandler handler, CustomPayloadS2CPacket packet) {
         if (packet.getChannel().equals(SYNC_CHANNEL)) {
-            FLUID_INTERACTION.readGeneratorsFromPacket(packet.getData());
+            val packetData = packet.getData();
+            val isReload = packetData.readBoolean();
+            FLUID_INTERACTION.readGeneratorsFromPacket(packetData);
 
             val isSync = FLUID_INTERACTION.isSync();
             if (isSync)
-                CGLog.info("CobbleGen config has been retrieved from the server");
+                CGLog.info("CobbleGen config has been", isReload ? "re-synced" : "retrieved from the server");
             val buf = new PacketByteBuf(Unpooled.buffer());
             buf.writeBoolean(isSync);
             handler.sendPacket(createC2SPacket(Channel.SYNC, buf));
             return true;
         } if (packet.getChannel().equals(SYNC_PING_CHANNEL)) {
             val buf = new PacketByteBuf(Unpooled.buffer());
+            buf.writeBoolean(packet.getData().readBoolean());
             buf.writeBoolean(Util.isAnyRecipeViewerLoaded());  // Reply "yes I need those data"
             handler.sendPacket(createC2SPacket(Channel.PING, buf));
             return true;
