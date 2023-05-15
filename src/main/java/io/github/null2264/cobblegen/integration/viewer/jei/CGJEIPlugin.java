@@ -1,9 +1,8 @@
-package io.github.null2264.cobblegen.integration.jei;
+package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
+import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
-import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -13,12 +12,14 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.Block;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
@@ -44,26 +45,27 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        for (GeneratorType type : GeneratorType.values()) {
-            val config = Util.configFromType(type);
-            val recipes = new ArrayList<FluidInteractionRecipeHolder>();
-            for (WeightedBlock block : config.getLeft()) {
-                recipes.add(new FluidInteractionRecipeHolder(
-                        block,
-                        type,
-                        type == GeneratorType.BASALT ? Blocks.SOUL_SOIL : null
-                ));
-            }
-            try {
-                config.getRight().forEach((modifierId, blocks) -> {
-                    val modifier = getCompat().getBlock(new Identifier(modifierId));
-                    for (WeightedBlock block : blocks) {
-                        recipes.add(new FluidInteractionRecipeHolder(block, type, modifier));
-                    }
-                });
-            } catch (NullPointerException ignored) {
-            }
-            registration.addRecipes(new RecipeType<>(identifierOf(type), FluidInteractionRecipeHolder.class), recipes);
-        }
+        FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
+                (modifierId, blocks) -> {
+                    val recipes = new ArrayList<FluidInteractionRecipeHolder>();
+                    Block modifier = null;
+                    if (!Objects.equals(modifierId, "*"))
+                        modifier = getCompat().getBlock(new Identifier(modifierId));
+                    for (WeightedBlock block : blocks)
+                        recipes.add(
+                                new FluidInteractionRecipeHolder(
+                                        fluid,
+                                        generator.getFluid(),
+                                        generator.getBlock(),
+                                        block,
+                                        generator.getType(),
+                                        modifier
+                                )
+                        );
+                    registration.addRecipes(new RecipeType<>(
+                            identifierOf(generator.getType()),
+                            FluidInteractionRecipeHolder.class
+                    ), recipes);
+                })));
     }
 }

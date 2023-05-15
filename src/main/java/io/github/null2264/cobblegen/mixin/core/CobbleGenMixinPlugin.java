@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.mixin;
+package io.github.null2264.cobblegen.mixin.core;
 
 import net.fabricmc.loader.api.FabricLoader;
 import org.objectweb.asm.tree.ClassNode;
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-public class CGMixinPlugin implements IMixinConfigPlugin
+public class CobbleGenMixinPlugin implements IMixinConfigPlugin
 {
     @Override
     public void onLoad(String mixinPackage) {

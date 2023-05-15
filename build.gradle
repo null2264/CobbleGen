@@ -47,10 +47,6 @@ allprojects {
     group = project.maven_group
 
     dependencies {
-        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-        include modImplementation("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
-        annotationProcessor("com.github.LlamaLad7:MixinExtras:${project.mixin_extras_version}")
         include modImplementation("blue.endless:jankson:${project.jankson_version}")
     }
 
@@ -112,10 +108,12 @@ dependencies {
     include project(path: ':cobblegen-1.19-compat', configuration: 'namedElements')
     include project(path: ':cobblegen-1.19.3-compat', configuration: 'namedElements')
 
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version_1_18_2}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings_1_18_2}:v2"
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
     modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
 
+    modCompileOnlyApi("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
     modCompileOnlyApi("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
     modCompileOnlyApi("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
     modCompileOnlyApi("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}:api")
@@ -192,7 +190,7 @@ if (System.getenv("MODRINTH")) {
         token = System.getenv("MODRINTH")
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
         projectId = project.modrinth_project
-        versionName = "v${project.mod_version}"
+        versionName = "v${project.mod_version}-${project.version_stage}"
         versionNumber = version as String
         versionType = mrReleaseType
         uploadFile = remapJar

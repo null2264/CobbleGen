@@ -1,12 +1,14 @@
 package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.Comment;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 
 public class ConfigData
 {
+    @Nullable
     @Comment(value = """
             Default Generators
             {
@@ -32,10 +34,13 @@ public class ConfigData
             0
     ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null));
 
+    @Nullable
     public List<WeightedBlock> stoneGen = List.of(new WeightedBlock("minecraft:stone", 100.0));
 
+    @Nullable
     public List<WeightedBlock> basaltGen = List.of(new WeightedBlock("minecraft:basalt", 100.0));
 
+    @Nullable
     @Comment(value = """
             Custom Generators
             <stoneGen|cobbleGen|basaltGen>: {
@@ -61,7 +66,8 @@ public class ConfigData
             // Cobble Gen
             Map.of(
                     "minecraft:bedrock",
-                    List.of(new WeightedBlock("minecraft:emerald_ore", 2.0),
+                    List.of(
+                            new WeightedBlock("minecraft:emerald_ore", 2.0),
                             new WeightedBlock("minecraft:diamond_ore", 5.0),
                             new WeightedBlock("minecraft:lapis_ore", 8.0),
                             new WeightedBlock("minecraft:gold_ore", 10.0),
@@ -73,7 +79,8 @@ public class ConfigData
             // Stone Gen
             Map.of(
                     "minecraft:bedrock",
-                    List.of(new WeightedBlock("minecraft:stone", 40.0),
+                    List.of(
+                            new WeightedBlock("minecraft:stone", 40.0),
                             new WeightedBlock("minecraft:diorite", 20.0),
                             new WeightedBlock("minecraft:andesite", 20.0),
                             new WeightedBlock("minecraft:granite", 20.0)
@@ -88,4 +95,7 @@ public class ConfigData
                     )
             )
     );
+
+    @Nullable
+    public Map<String, Map<String, AdvancedGen>> advanced;
 }

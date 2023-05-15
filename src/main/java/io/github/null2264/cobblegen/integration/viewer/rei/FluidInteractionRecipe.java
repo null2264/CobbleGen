@@ -1,25 +1,29 @@
-package io.github.null2264.cobblegen.integration.rei;
+package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
+import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.fluid.Fluid;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FluidInteractionRecipeHolderDisplay extends FluidInteractionRecipeHolder implements Display
+public class FluidInteractionRecipe extends FluidInteractionRecipeHolder implements Display
 {
-    public FluidInteractionRecipeHolderDisplay(
-            WeightedBlock result, GeneratorType type, @Nullable Block modifier
+    public FluidInteractionRecipe(
+            Fluid sourceFluid,
+            @Nullable Fluid neighbourFluid,
+            @Nullable Block neighbourBlock,
+            WeightedBlock result,
+            GeneratorType type,
+            @Nullable Block modifier
     ) {
-        super(result, type, modifier);
+        super(sourceFluid, neighbourFluid, neighbourBlock, result, type, modifier);
     }
 
     @Override
@@ -27,15 +31,15 @@ public class FluidInteractionRecipeHolderDisplay extends FluidInteractionRecipeH
         switch (getType()) {
             case COBBLE, STONE -> {
                 return List.of(
-                        EntryIngredient.of(EntryStacks.of(Fluids.LAVA)),
-                        EntryIngredient.of(EntryStacks.of(Fluids.WATER)),
+                        EntryIngredient.of(EntryStacks.of(getSourceFluid())),
+                        EntryIngredient.of(EntryStacks.of(getNeighbourFluid())),
                         EntryIngredient.of(EntryStacks.of(getModifier()))
                 );
             }
             case BASALT -> {
                 return List.of(
-                        EntryIngredient.of(EntryStacks.of(Fluids.LAVA)),
-                        EntryIngredient.of(EntryStacks.of(Blocks.BLUE_ICE)),
+                        EntryIngredient.of(EntryStacks.of(getSourceFluid())),
+                        EntryIngredient.of(EntryStacks.of(getNeighbourBlock())),
                         EntryIngredient.of(EntryStacks.of(getModifier()))
                 );
             }

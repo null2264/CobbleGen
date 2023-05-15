@@ -16,20 +16,21 @@
     "icon": "assets/cobblegen/icon.png",
     "environment": "*",
     "entrypoints": {
-        "preLaunch": [
-            "io.github.null2264.cobblegen.CobbleGenPreLaunch"
-        ],
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ],
         "jei_mod_plugin": [
-            "io.github.null2264.cobblegen.integration.jei.CGJEIPlugin"
+            "io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"
         ],
         "rei_client": [
-            "io.github.null2264.cobblegen.integration.rei.CGREIPlugin"
+            "io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"
         ],
         "emi": [
-            "io.github.null2264.cobblegen.integration.emi.CGEMIPlugin"
+            "io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"
+        ],
+        "cobblegen_plugin": [
+            "io.github.null2264.cobblegen.integration.BuiltInPlugin",
+            "io.github.null2264.cobblegen.integration.CreatePlugin"
         ]
     },
     "mixins": [

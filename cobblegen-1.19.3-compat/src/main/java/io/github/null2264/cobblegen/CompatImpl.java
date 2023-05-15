@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen;
 
 import io.github.null2264.cobblegen.util.Compat;
 import net.minecraft.block.Block;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -10,7 +11,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,18 @@ public class CompatImpl implements Compat
     }
 
     @Override
-    public String getDimension(World world) {
-        return world.getRegistryKey().getValue().toString();
+    public Fluid getFluid(Identifier id) {
+        return Registries.FLUID.get(id);
+    }
+
+    @Override
+    public Identifier getFluidId(Fluid fluid) {
+        return Registries.FLUID.getId(fluid);
+    }
+
+    @Override
+    public String getDimension(WorldAccess world) {
+        Identifier dim = world.getRegistryManager().get(RegistryKeys.DIMENSION_TYPE).getId(world.getDimension());
+        return dim != null ? dim.toString() : "minecraft:overworld";
     }
 }

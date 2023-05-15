@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.integration.emi;
+package io.github.null2264.cobblegen.integration.viewer.emi;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -6,7 +6,7 @@ import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.integration.FluidInteractionRecipeHolder;
+import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
@@ -16,6 +16,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -27,14 +28,19 @@ import java.util.List;
 
 import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
-public class FluidInteractionCategory extends FluidInteractionRecipeHolder implements EmiRecipe
+public class FluidInteractionRecipe extends FluidInteractionRecipeHolder implements EmiRecipe
 {
     private final int initialHeight;
 
-    public FluidInteractionCategory(
-            WeightedBlock result, GeneratorType type, @Nullable Block modifier
+    public FluidInteractionRecipe(
+            Fluid sourceFluid,
+            @Nullable Fluid neighbourFluid,
+            @Nullable Block neighbourBlock,
+            WeightedBlock result,
+            GeneratorType type,
+            @Nullable Block modifier
     ) {
-        super(result, type, modifier);
+        super(sourceFluid, neighbourFluid, neighbourBlock, result, type, modifier);
         initialHeight =
                 type.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE : Constants.JEI_RECIPE_HEIGHT;
     }
@@ -54,17 +60,18 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
 
     @Override
     public EmiRecipeCategory getCategory() {
-        return CGEMIPlugin.FLUID_INTERACTION.get(getType().name());
+        return CGEMIPlugin.FLUID_INTERACTION_CATEGORIES.get(getType().name());
     }
 
     @Override
     public List<EmiIngredient> getInputs() {
-        EmiStack lava = EmiStack.of(Fluids.LAVA, 81_000);
-        EmiStack water = EmiStack.of(Fluids.WATER, 81_000);
-        return List.of(lava.copy().setRemainder(lava),
-                       getType().equals(GeneratorType.BASALT) ? EmiStack.of(Blocks.BLUE_ICE)
-                                                              : water.copy().setRemainder(water),
-                       EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
+        EmiStack source = EmiStack.of(getSourceFluid(), 81_000);
+        EmiStack neighbour = EmiStack.of(getNeighbourFluid() != null ? getNeighbourFluid() : Fluids.EMPTY, 81_000);
+        return List.of(
+                source.copy().setRemainder(source),
+                getType().equals(GeneratorType.BASALT) ? EmiStack.of(getNeighbourBlock() != null ? getNeighbourBlock() : Blocks.AIR)
+                        : neighbour.copy().setRemainder(neighbour),
+                EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
         );
     }
 
@@ -108,15 +115,19 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
         if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
         var maxY = getResult().maxY;
         if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(getCompat().translatableAppendingText("cobblegen.info.weight",
-                                                                         Text.of(getResult().weight.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.minY",
-                                                                         Text.of(minY.toString())
-                                   ),
-                                   getCompat().translatableAppendingText("cobblegen.info.maxY",
-                                                                         Text.of(maxY.toString())
-                                   )
+        List<Text> texts = List.of(
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.weight",
+                        Text.of(getResult().weight.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.minY",
+                        Text.of(minY.toString())
+                ),
+                getCompat().translatableAppendingText(
+                        "cobblegen.info.maxY",
+                        Text.of(maxY.toString())
+                )
         );
         var y = base.y;
         for (Text text : texts) {
@@ -184,11 +195,16 @@ public class FluidInteractionCategory extends FluidInteractionRecipeHolder imple
     @Override
     public Identifier getId() {
         Identifier resultId = new Identifier(getResult().id);
+        Identifier source = getCompat().getFluidId(getSourceFluid());
+        Identifier neighbour;
+        if (getNeighbourBlock() != null)
+            neighbour = getCompat().getBlockId(getNeighbourBlock());
+        else
+            neighbour = getCompat().getFluidId(getNeighbourFluid());
         Identifier modifierId = Util.identifierOf("none");
-        if (getModifier() != null) {
-            modifierId = getModifier().getLootTableId();
-        }
+        if (getModifier() != null)
+            modifierId = getCompat().getBlockId(getModifier());
         return Util.identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
-                .toLowerCase() + "_" + resultId.getNamespace() + "-" + resultId.getPath() + "_" + modifierId.getNamespace() + "-" + modifierId.getPath());
+                .toLowerCase() + "-" + source.toUnderscoreSeparatedString() + "-" + resultId.toUnderscoreSeparatedString() + "-" + neighbour.toUnderscoreSeparatedString() + "-" + modifierId.toUnderscoreSeparatedString());
     }
 }

@@ -1,14 +1,15 @@
 archivesBaseName += "-1.19-compat"
 
 dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version_1_19_2}"
+
     minecraft "com.mojang:minecraft:${project.minecraft_version_1_19_2}"
     //noinspection GradlePackageVersionRange
     mappings "net.fabricmc:yarn:${project.yarn_mappings_1_19_2}:v2"
 
     modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_19_2}")
 
-    if (project.run_with_create.toLowerCase(Locale.ROOT) == "yes")
-        modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_19_2}:${project.create_version_1_19_2}")
+    modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_19_2}:${project.create_version_1_19_2}")
     switch (project.recipe_viewer.toLowerCase(Locale.ROOT)) {
         case "rei": {
             modLocalRuntime("dev.architectury:architectury-fabric:${project.architectury_version_1_19_2}")
