@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.util;
 
+import io.github.null2264.cobblegen.CobbleGenPlugin;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 

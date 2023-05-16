@@ -7,9 +7,10 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.generator.StoneGenerator;
+import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.util.CobbleGenPlugin;
+import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
@@ -30,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.null2264.cobblegen.CobbleGen.*;
+import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
+import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 public class BuiltInPlugin implements CobbleGenPlugin
@@ -52,7 +54,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     }
 
     @Override
-    public void registerInteraction() {
+    public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
 
         AtomicInteger count = new AtomicInteger();
@@ -81,7 +83,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);
 
                     if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
-                        FLUID_INTERACTION.addGenerator(
+                        registry.addGenerator(
                                 actualFluid,
                                 new StoneGenerator(
                                         gen.resultsFromTop,
@@ -99,15 +101,15 @@ public class BuiltInPlugin implements CobbleGenPlugin
                         else
                             generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent);
 
-                        FLUID_INTERACTION.addGenerator(actualFluid, generator);
+                        registry.addGenerator(actualFluid, generator);
                         count.getAndIncrement();
                     }
                 });
             });
 
-        FLUID_INTERACTION.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        FLUID_INTERACTION.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false));
-        FLUID_INTERACTION.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
+        registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false));
+        registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 
         CGLog.info(String.valueOf(count.get()), "generators has been added from config");

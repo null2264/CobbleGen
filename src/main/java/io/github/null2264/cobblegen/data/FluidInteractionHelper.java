@@ -1,9 +1,10 @@
 package io.github.null2264.cobblegen.data;
 
 import com.google.common.collect.ImmutableList;
+import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.util.CobbleGenPlugin;
+import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import lombok.val;
@@ -122,12 +123,14 @@ public class FluidInteractionHelper
             CGLog.info(firstInit ? "Loading" : "Reloading", "generators...");
             generatorMap.clear();
             count.set(0);
+
+            CGRegistry registry = new CGRegistryImpl();
             for (EntrypointContainer<CobbleGenPlugin> plugin : PluginFinder.getModPlugins()) {
                 String id = plugin.getProvider().getMetadata().getId();
                 CGLog.info(firstInit ? "Loading" : "Reloading", "plugin from", id);
                 try {
                     if (!firstInit) plugin.getEntrypoint().onReload();
-                    plugin.getEntrypoint().registerInteraction();
+                    plugin.getEntrypoint().registerInteraction(registry);
                 } catch (Throwable err) {
                     CGLog.warn("Something went wrong while", firstInit ? "loading" : "reloading", "plugin provided by", id);
                     CGLog.error(String.valueOf(err));
