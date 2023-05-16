@@ -126,6 +126,18 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
+loom {
+    runs {
+        gametest {
+            inherit server
+            name "Gametest"
+            vmArg "-Dfabric-api.gametest"
+            vmArg "-Dfabric-api.gametest.report-file=${project.buildDir}/junit.xml"
+            runDir "build/gametest"
+        }
+    }
+}
+
 processResources {
     from("${rootDir}/assets/icon.png") {
         into "assets/cobblegen/"
