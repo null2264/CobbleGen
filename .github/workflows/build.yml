@@ -8,26 +8,23 @@ on: [pull_request, push]
 
 jobs:
   build:
-    strategy:
-      matrix:
-        java: [17]  # Current Java LTS & minimum supported by Minecraft
     runs-on: ubuntu-latest
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v2
-      - name: validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk ${{ matrix.java }}
+      - uses: actions/checkout@v3
+      - uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ matrix.java }}
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: build
+          java-version: 17
+      - run: chmod +x ./gradlew
+      - name: Build with Gradle
         run: ./gradlew build
-      - name: capture build artifacts
-        if: ${{ matrix.java == '17' }} # Only upload artifacts built from latest java on one OS
-        uses: actions/upload-artifact@v2
+      - name: Archive build results
+        run: tar -I zstd -cf build.tar.zst build/libs
+      - name: Upload build folder
+        uses: actions/upload-artifact@v3
         with:
-          name: Artifacts
-          path: build/libs/
+          name: build-artifacts
+          path: build.tar.zst
+          if-no-files-found: error
+          retention-days: 3
