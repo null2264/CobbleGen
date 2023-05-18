@@ -30,4 +30,14 @@ public class CGLog {
         }
         LOG.error(rt.toString());
     }
+
+    public static void error(Throwable t) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(t.toString());
+
+        StackTraceElement[] trace = t.getStackTrace();
+        for (StackTraceElement traceElement : trace)
+            builder.append("\n\tat ").append(traceElement);
+        error(builder.toString());
+    }
 }

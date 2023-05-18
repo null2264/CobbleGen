@@ -133,7 +133,7 @@ public class FluidInteractionHelper
                     plugin.getEntrypoint().registerInteraction(registry);
                 } catch (Throwable err) {
                     CGLog.warn("Something went wrong while", firstInit ? "loading" : "reloading", "plugin provided by", id);
-                    CGLog.error(String.valueOf(err));
+                    CGLog.error(err);
                     continue;
                 }
                 CGLog.info(firstInit ? "Loaded" : "Reloaded", "plugin from", id);

@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.integration;
 
 import blue.endless.jankson.*;
 import com.google.gson.Gson;
+import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
@@ -10,7 +11,6 @@ import io.github.null2264.cobblegen.data.generator.StoneGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
@@ -41,7 +41,8 @@ public class BuiltInPlugin implements CobbleGenPlugin
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     private static final Jankson jankson = Jankson.builder().build();
     private static final Gson gson = new Gson();
-    private static ConfigData config = loadConfig(false);
+    @Nullable
+    private static ConfigData config = null;
 
     private boolean isReload = false;
 
@@ -56,18 +57,20 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Override
     public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
+        if (config == null) config = loadConfig(isReload);
+        if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();
 
         Map<String, List<WeightedBlock>> stoneGen = new HashMap<>();
         if (config.customGen != null && config.customGen.stoneGen != null)
-            stoneGen = config.customGen.stoneGen;
+            stoneGen = new HashMap<>(config.customGen.stoneGen);
         Map<String, List<WeightedBlock>> cobbleGen = new HashMap<>();
         if (config.customGen != null && config.customGen.cobbleGen != null)
-            cobbleGen = config.customGen.cobbleGen;
+            cobbleGen = new HashMap<>(config.customGen.cobbleGen);
         Map<String, List<WeightedBlock>> basaltGen = new HashMap<>();
         if (config.customGen != null && config.customGen.basaltGen != null)
-            basaltGen = config.customGen.basaltGen;
+            basaltGen = new HashMap<>(config.customGen.basaltGen);
 
         stoneGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.stoneGen, new ArrayList<>()));
         cobbleGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.cobbleGen, new ArrayList<>()));
@@ -120,7 +123,6 @@ public class BuiltInPlugin implements CobbleGenPlugin
     public void onReload() {
         CGLog.info("Reloading built-in plugin...");
         isReload = true;
-        config = loadConfig(true);
     }
 
     /**
