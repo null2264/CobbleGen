@@ -2,8 +2,8 @@
     "schemaVersion": 1,
     "id": "cobblegen-1_19_3-compat",
     "version": "${version}",
-    "name": "CobbleGen 1.19.3 Compat",
-    "description": "1.19.3 Compatibility Layer for CobbleGen",
+    "name": "CobbleGen 1.19.3+ Compat",
+    "description": "1.19.3+ Compatibility Layer for CobbleGen",
     "environment": "*",
     "entrypoints": {
         "cobblegen-compat": [
