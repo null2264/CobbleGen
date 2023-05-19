@@ -103,6 +103,17 @@ subprojects {
     }
 }
 
+loom {
+    runConfigs.configure {
+        client {
+            ideConfigGenerated = false
+        }
+        server {
+            ideConfigGenerated = false
+        }
+    }
+}
+
 dependencies {
     include project(path: ':cobblegen-1.18.2-compat', configuration: 'namedElements')
     include project(path: ':cobblegen-1.19-compat', configuration: 'namedElements')
