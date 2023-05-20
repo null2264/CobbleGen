@@ -148,15 +148,6 @@ processResources {
     }
 }
 
-def supportedVersions = [
-        "1.18.2",
-        "1.19",
-        "1.19.1",
-        "1.19.2",
-        "1.19.3",
-        "1.19.4"
-]
-
 if (System.getenv("CURSEFORGE")) {
     def cfReleaseType = "release"
     if (ext.isAlpha) {
@@ -172,7 +163,7 @@ if (System.getenv("CURSEFORGE")) {
             changelogType = "markdown"
             changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
             releaseType = cfReleaseType
-            for (final def mcVersion in supportedVersions) {
+            for (final def mcVersion in project.cf_versions.split(",")) {
                 addGameVersion mcVersion
             }
             addGameVersion "Fabric"
@@ -210,7 +201,7 @@ if (System.getenv("MODRINTH")) {
         versionNumber = version as String
         versionType = mrReleaseType
         uploadFile = remapJar
-        gameVersions = supportedVersions
+        gameVersions = project.mr_versions.split(",")
         loaders = [ "fabric", "quilt" ]
     }
 }
