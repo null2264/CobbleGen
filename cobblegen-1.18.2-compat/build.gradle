@@ -23,13 +23,13 @@ loom {
         clientVersioned {
             client()
             name = "Minecraft Client 1.18.2"
-            runDir = "run/client"
+            runDir = "../run/client"
             ideConfigGenerated = true
         }
         serverVersioned {
             server()
             name = "Minecraft Server 1.18.2"
-            runDir = "run/server"
+            runDir = "../run/server"
             ideConfigGenerated = true
         }
     }
