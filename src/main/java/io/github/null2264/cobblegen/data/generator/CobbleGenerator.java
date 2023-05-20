@@ -7,8 +7,10 @@ import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -74,8 +76,12 @@ public class CobbleGenerator extends BlockGenerator
 
     @Override
     public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, FluidState source, FluidState neighbour) {
-        if (Generator.getStillFluid(neighbour) == getFluid())
+        if (Generator.getStillFluid(neighbour) == getFluid()) {
+            if (source.getFluid() == Fluids.LAVA && source.isStill())
+                return Optional.of(Blocks.OBSIDIAN.getDefaultState());
+
             return getBlockCandidate(world, pos);
+        }
         return Optional.empty();
     }
 
