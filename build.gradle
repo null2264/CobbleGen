@@ -95,6 +95,11 @@ if (System.getenv("GITHUB_ENV")) {
 }
 
 subprojects {
+    configurations {
+        // Fix dev env runtime
+        modLocalRuntime.exclude group: 'net.fabricmc', module: 'fabric-loader'
+    }
+
     dependencies {
         implementation(project(path: ":", configuration: "namedElements")) {
             // having 2 floaders from the sub project and root project causes issues so we get rid of one.
