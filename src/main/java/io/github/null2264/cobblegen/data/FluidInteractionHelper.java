@@ -184,6 +184,8 @@ public class FluidInteractionHelper
         List<Generator> generators = generatorMap.get(fluid1);
         if (generators == null) {
             generators = generatorMap.get(fluid2);
+            if (generators == null)
+                return false;
             source = fluid2;
             neighbour = fluid1;
         } else {
@@ -196,6 +198,9 @@ public class FluidInteractionHelper
             if (neighbour instanceof FlowableFluid)
                 fromTop = neighbour == ((FlowableFluid) neighbour).getStill();
             if (!generator.check(world, pos, source.getDefaultState().getBlockState(), fromTop)) continue;
+
+            if (source == Fluids.LAVA)  // prevent obsidian from generating
+                source = ((FlowableFluid) source).getFlowing();
 
             val result = generator.tryGenerate(world, pos, source.getDefaultState(), neighbour.getDefaultState());
             if (result.isPresent()) {
