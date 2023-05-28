@@ -201,7 +201,7 @@ if (System.getenv("MODRINTH")) {
         versionNumber = version as String
         versionType = mrReleaseType
         uploadFile = remapJar
-        gameVersions = project.mr_versions.split(",")
+        gameVersions = project.mr_versions.split(",").toList()
         loaders = [ "fabric", "quilt" ]
     }
 }
