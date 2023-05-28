@@ -36,6 +36,13 @@
     "mixins": [
         "cobblegen.mixins.json"
     ],
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/sP9xRy6"
+            }
+        }
+    },
     "depends": {
         "fabricloader": "*",
         "minecraft": ">=1.18.2"
