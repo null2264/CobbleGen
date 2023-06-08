@@ -156,6 +156,15 @@ processResources {
     }
 }
 
+if (isFabric) {
+    tasks.remapJar {
+        addNestedDependencies.set(true)
+        afterEvaluate {
+            archiveClassifier.set('obf')
+        }
+    }
+}
+
 /*
 if (System.getenv("CURSEFORGE")) {
     def cfReleaseType = "release"
