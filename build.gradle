@@ -4,6 +4,7 @@ plugins {
     //id "com.modrinth.minotaur" version "2.+"
 }
 
+def isFabric = project.name.endsWith("fabric")
 def mcVersion
 def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
 mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
@@ -47,6 +48,19 @@ ext.isBeta = project.version_stage == "BETA"
 
 group = project.maven_group
 
+loom {
+    silentMojangMappingsLicense()
+
+    runConfigs.configure {
+        client {
+            ideConfigGenerated = false
+        }
+        server {
+            ideConfigGenerated = false
+        }
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:"  + [
             11802: "1.18.2",
@@ -58,6 +72,9 @@ dependencies {
             12000: "1.20.0-rc1",
     ][mcVersion]
 
+    mappings loom.officialMojangMappings()
+
+    /*
     mappings "net.fabricmc:yarn:"  + [
             11802: "1.18.2+build.4:v2",
             11900: "1.19+build.2:v2",
@@ -67,6 +84,7 @@ dependencies {
             11904: "1.19.4+build.1:v2",
             12000: "1.20-rc1+build.2:v2",
     ][mcVersion]
+     */
 
     include modImplementation("blue.endless:jankson:${project.jankson_version}")
 
@@ -76,7 +94,7 @@ dependencies {
             11802: "0.76.0+1.18.2",
             11900: "0.58.0+1.19",
             11901: "0.58.5+1.19.1",
-            11902: "0.58.5+1.19.2",
+            11902: "0.76.0+1.19.2",
             11903: "0.76.1+1.19.3",
             11904: "0.83.0+1.19.4",
             12000: "0.83.0+1.20",
@@ -142,17 +160,6 @@ jar {
 if (System.getenv("GITHUB_ENV")) {
     def envFile = new File(System.getenv("GITHUB_ENV"))
     envFile.append("VERSION=${version}")
-}
-
-loom {
-    runConfigs.configure {
-        client {
-            ideConfigGenerated = false
-        }
-        server {
-            ideConfigGenerated = false
-        }
-    }
 }
 
 processResources {
