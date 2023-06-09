@@ -116,7 +116,6 @@ shadowJar {
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
 
-    configurations = [project.configurations.shadowCommon]
     archiveClassifier.set "dev-shadow"
 }
 
