@@ -61,10 +61,6 @@ loom {
     }
 }
 
-configurations {
-    shade
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:"  + [
             11802: "1.18.2",
@@ -78,7 +74,7 @@ dependencies {
 
     mappings loom.officialMojangMappings()
 
-    shade modImplementation("blue.endless:jankson:${project.jankson_version}")
+    shadow modImplementation("blue.endless:jankson:${project.jankson_version}")
 
     modImplementation "net.fabricmc:fabric-loader:0.14.21"
 
@@ -117,6 +113,7 @@ shadowJar {
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
 
+    configurations = [project.configurations.shadow]
     archiveClassifier.set "dev-shadow"
 }
 
