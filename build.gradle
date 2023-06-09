@@ -112,6 +112,7 @@ dependencies {
 }
 
 shadowJar {
+    zip64 true
     relocate "blue.endless.jankson", "io.github.null2264.cobblegen.shadowed.blue.endless.jankson"
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
