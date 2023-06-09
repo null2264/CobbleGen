@@ -9,6 +9,7 @@ pluginManagement {
     }
     plugins {
         id("com.github.johnrengelman.shadow") version("8.1.1")
+        id("xyz.deftu.gradle.preprocess-root") version("0.1.0")
     }
 }
 
