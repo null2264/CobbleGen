@@ -36,6 +36,8 @@ repositories {
     maven { url = "https://maven.tterrag.com/" }
 }
 
+apply plugin: "com.github.johnrengelman.shadow"
+
 archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
