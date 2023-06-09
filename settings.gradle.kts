@@ -7,9 +7,6 @@ pluginManagement {
         maven("https://repo.essential.gg/repository/maven-public")
         gradlePluginPortal()
     }
-    plugins {
-        id("xyz.deftu.gradle.multiversion-root") version("1.17.0")
-    }
 }
 
 rootProject.name = "CobbleGen"
