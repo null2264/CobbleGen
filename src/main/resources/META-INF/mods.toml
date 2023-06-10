@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[40.2.9,)"
+license = "LGPL-3.0-only"
+issueTrackerURL = "https://github.com/null2264/CobbleGen/issues"
+
+[[mods]]
+modId = "cobblegen"
+version = "${version}"
+displayName = "CobbleGen"
+displayURL = "https://github.com/null2264/CobbleGen"
+logoFile = "assets/cobblegen/icon.png"
+authors = "null2264"
+description = "A fabric mod that allows you to customize cobblestone (stone and basalt) generators"
+
+[[dependencies.cobblegen]]
+modId = "forge"
+mandatory = true
+versionRange = "[40.2.9,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.cobblegen]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${mcversion},)"
+ordering = "NONE"
+side = "BOTH"
