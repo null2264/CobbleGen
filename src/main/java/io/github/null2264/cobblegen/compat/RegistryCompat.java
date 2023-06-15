@@ -11,7 +11,7 @@ public class RegistryCompat {
         return Registry.FLUID;
         //#else
         //$$ net.minecraft.core.registries.BuiltInRegistries.FLUID;
-        //$endif
+        //#endif
     }
 
     public static DefaultedRegistry<Block> block() {
@@ -19,6 +19,6 @@ public class RegistryCompat {
         return Registry.BLOCK;
         //#else
         //$$ net.minecraft.core.registries.BuiltInRegistries.BLOCK;
-        //$endif
+        //#endif
     }
 }
