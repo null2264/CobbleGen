@@ -17,7 +17,8 @@ public abstract class PlayerManagerMixin
 {
     @Inject(
             method = "reloadResources",
-            at = @At(value = "INVOKE", target = "net/minecraft/network/protocol/game/ClientboundUpdateTagsPacket.<init>(Ljava/util/Map;)V")
+            at = @At(value = "HEAD")
+            //at = @At(value = "INVOKE", target = "net/minecraft/network/protocol/game/ClientboundUpdateTagsPacket.<init>(Ljava/util/Map;)V")
     )
     public void syncOnReload(CallbackInfo ci) {
         //noinspection DataFlowIssue
