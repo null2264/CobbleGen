@@ -1,7 +1,7 @@
 plugins {
     id "dev.architectury.loom" version "1.1-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
-    id "xyz.deftu.gradle.preprocess"
+    id "com.github.null2264.preprocess"
 }
 
 def isFabric = project.name.endsWith("fabric")
