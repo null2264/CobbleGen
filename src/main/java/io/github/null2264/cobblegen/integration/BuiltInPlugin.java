@@ -12,13 +12,14 @@ import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Constants.CGBlocks;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -32,7 +33,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 public class BuiltInPlugin implements CobbleGenPlugin
@@ -47,11 +47,11 @@ public class BuiltInPlugin implements CobbleGenPlugin
     private boolean isReload = false;
 
     private Fluid getFluidFromString(String string) {
-        return getCompat().getFluid(new Identifier(string));
+        return Util.getFluid(new ResourceLocation(string));
     }
 
     private Block getBlockFromString(String string) {
-        return getCompat().getBlock(new Identifier(string));
+        return Util.getBlock(new ResourceLocation(string));
     }
 
     @Override

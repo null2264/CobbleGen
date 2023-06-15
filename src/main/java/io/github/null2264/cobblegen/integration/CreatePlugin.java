@@ -8,7 +8,7 @@ import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class CreatePlugin implements CobbleGenPlugin
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.LIMESTONE.getBaseBlock().get(), 1.0)),
-                        AllFluids.HONEY.get().getStill(),
+                        AllFluids.HONEY.get().getSource(),
                         false
                 )
         );
@@ -33,7 +33,7 @@ public class CreatePlugin implements CobbleGenPlugin
                 Fluids.LAVA,
                 new CobbleGenerator(
                         List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.SCORIA.getBaseBlock().get(), 1.0)),
-                        AllFluids.CHOCOLATE.get().getStill(),
+                        AllFluids.CHOCOLATE.get().getSource(),
                         false
                 )
         );

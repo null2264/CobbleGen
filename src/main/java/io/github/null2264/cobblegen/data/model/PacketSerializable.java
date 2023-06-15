@@ -1,8 +1,8 @@
 package io.github.null2264.cobblegen.data.model;
 
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 
 public interface PacketSerializable<T>
 {
-    void toPacket(PacketByteBuf buf);
+    void toPacket(FriendlyByteBuf buf);
 }

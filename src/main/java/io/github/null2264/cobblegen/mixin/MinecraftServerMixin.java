@@ -15,7 +15,7 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin
 {
-    @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;setupServer()Z"))
+    @Inject(method = "runServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;initServer()Z"))
     public void applyConfig(CallbackInfo ci) {
         FLUID_INTERACTION.apply();
     }

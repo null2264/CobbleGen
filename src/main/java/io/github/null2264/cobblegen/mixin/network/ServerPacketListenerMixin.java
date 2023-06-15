@@ -4,10 +4,9 @@ import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,17 +14,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static net.fabricmc.api.EnvType.SERVER;
 
 @Environment(SERVER)
-@Mixin(ServerPlayNetworkHandler.class)
-public abstract class ServerPlayNetworkHandlerMixin
+@Mixin(ServerGamePacketListenerImpl.class)
+public abstract class ServerPacketListenerMixin
 {
     @SuppressWarnings("DataFlowIssue")
-    private ServerPlayNetworkHandler getHandler() {
-        return (ServerPlayNetworkHandler) (Object) this;
+    private ServerGamePacketListenerImpl getListener() {
+        return (ServerGamePacketListenerImpl) (Object) this;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        val self = getHandler();
+        val self = getListener();
         if (Util.isPortingLibLoaded()) {
             // Just in case
             if (self.connection instanceof io.github.fabricators_of_create.porting_lib.fake_players.FakeConnection) return;
@@ -33,9 +32,9 @@ public abstract class ServerPlayNetworkHandlerMixin
         CGServerPlayNetworkHandler.trySync(self);
     }
 
-    @Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
-    private void handleCustomPayload(CustomPayloadC2SPacket packet, CallbackInfo ci) {
-        if (CGServerPlayNetworkHandler.handlePacket(getHandler(), packet)) {
+    @Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
+    private void handleCustomPayload(ServerboundCustomPayloadPacket packet, CallbackInfo ci) {
+        if (CGServerPlayNetworkHandler.handlePacket(getListener(), packet)) {
             ci.cancel();
         }
     }

@@ -10,6 +10,10 @@ def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
 mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
 def mcVersionStr = "${(int)(mcVersion/10000)}.${(int)(mcVersion/100)%100}" + (mcVersion%100==0 ? '' : ".${mcVersion%100}")
 
+preprocess {
+    patternAnnotation.set("io.github.null2264.gradle.Pattern")
+}
+
 repositories {
     maven { url 'https://jitpack.io' }
     maven {

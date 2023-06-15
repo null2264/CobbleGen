@@ -4,23 +4,22 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class CobbleGenerator extends BlockGenerator
 {
@@ -69,29 +68,29 @@ public class CobbleGenerator extends BlockGenerator
     }
 
     @Override
-    public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state, Direction direction) {
-        BlockPos blockPos = pos.offset(direction.getOpposite());
-        return tryGenerate(world, pos, state.getFluidState(), world.getFluidState(blockPos));
+    public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction) {
+        BlockPos blockPos = pos.relative(direction.getOpposite());
+        return tryGenerate(level, pos, state.getFluidState(), level.getFluidState(blockPos));
     }
 
     @Override
-    public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, FluidState source, FluidState neighbour) {
+    public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         if (Generator.getStillFluid(neighbour) == getFluid()) {
-            if (source.getFluid() == Fluids.LAVA && source.isStill())
-                return Optional.of(Blocks.OBSIDIAN.getDefaultState());
+            if (source.getType() == Fluids.LAVA && source.isSource())
+                return Optional.of(Blocks.OBSIDIAN.defaultBlockState());
 
-            return getBlockCandidate(world, pos);
+            return getBlockCandidate(level, pos);
         }
         return Optional.empty();
     }
 
-    public void toPacket(PacketByteBuf buf) {
-        buf.writeString(this.getClass().getName());
+    public void toPacket(FriendlyByteBuf buf) {
+        buf.writeUtf(this.getClass().getName());
         val outMap = getOutput();
         buf.writeInt(outMap.size());
 
         for (Map.Entry<String, List<WeightedBlock>> out : outMap.entrySet()) {
-            buf.writeString(out.getKey());
+            buf.writeUtf(out.getKey());
 
             val blocks = out.getValue();
             buf.writeInt(blocks.size());
@@ -101,16 +100,16 @@ public class CobbleGenerator extends BlockGenerator
             }
         }
 
-        buf.writeIdentifier(getCompat().getFluidId(fluid));
+        buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
     }
 
     @SuppressWarnings("unused")
-    public static Generator fromPacket(PacketByteBuf buf) {
+    public static Generator fromPacket(FriendlyByteBuf buf) {
         val _outSize = buf.readInt();
         val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
         for (int i = 0; i < _outSize; i++) {
-            val key = buf.readString();
+            val key = buf.readUtf();
 
             val _blocksSize = buf.readInt();
             val blocks = new ArrayList<WeightedBlock>(_blocksSize);
@@ -121,7 +120,7 @@ public class CobbleGenerator extends BlockGenerator
             outMap.put(key, blocks);
         }
 
-        val fluid = getCompat().getFluid(buf.readIdentifier());
+        val fluid = Util.getFluid(buf.readResourceLocation());
         val silent = buf.readBoolean();
         return new CobbleGenerator(outMap, fluid, silent);
     }

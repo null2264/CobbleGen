@@ -1,5 +1,7 @@
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -15,19 +17,17 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionRecipeHolder>
@@ -54,11 +54,11 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                 // Another gap
         );
         full = 10 * fluidHelper.bucketVolume();
-        ItemStack iconStack = Items.AIR.getDefaultStack();
+        ItemStack iconStack = Items.AIR.getDefaultInstance();
         switch (generatorType) {
-            case COBBLE -> iconStack = Items.COBBLESTONE.getDefaultStack();
-            case STONE -> iconStack = Items.STONE.getDefaultStack();
-            case BASALT -> iconStack = Items.BASALT.getDefaultStack();
+            case COBBLE -> iconStack = Items.COBBLESTONE.getDefaultInstance();
+            case STONE -> iconStack = Items.STONE.getDefaultInstance();
+            case BASALT -> iconStack = Items.BASALT.getDefaultInstance();
         }
         icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, iconStack);
         type = generatorType;
@@ -74,8 +74,8 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
 
     @NotNull
     @Override
-    public Text getTitle() {
-        return getCompat().translatableText("cobblegen.generators." + type.name().toLowerCase());
+    public Component getTitle() {
+        return TextCompat.translatable("cobblegen.generators." + type.name().toLowerCase());
     }
 
     @NotNull
@@ -119,59 +119,54 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
 
         val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
-        if (neighbourBlock != null) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultStack());
+        if (neighbourBlock != null) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultInstance());
         else coldBuilder.addFluidStack(neighbourFluid, full);
         builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(source, full);
         builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY)
-                .addItemStack(output.getBlock().asItem().getDefaultStack());
+                .addItemStack(output.getBlock().asItem().getDefaultInstance());
         if (modifier != null) builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY)
-                .addItemStack(modifier.asItem().getDefaultStack());
+                .addItemStack(modifier.asItem().getDefaultInstance());
     }
 
     @Override
     public void draw(
             FluidInteractionRecipeHolder recipe,
             IRecipeSlotsView recipeSlotsView,
-            MatrixStack stack,
+            PoseStack stack,
             double mouseX,
             double mouseY
     ) {
-        MinecraftClient minecraft = MinecraftClient.getInstance();
+        Minecraft minecraft = Minecraft.getInstance();
+        Font textRenderer = minecraft.font;
         var minY = recipe.getResult().minY;
-        if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
+        if (minY == null) minY = minecraft.level != null ? minecraft.level.getMinBuildHeight() : 0;
         var maxY = recipe.getResult().maxY;
-        if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(
-                getCompat().translatableAppendingText(
-                        "cobblegen.info.weight",
-                        Text.of(recipe.getResult().weight.toString())
-                ),
-                getCompat().translatableAppendingText(
-                        "cobblegen.info.minY",
-                        Text.of(minY.toString())
-                ),
-                getCompat().translatableAppendingText(
-                        "cobblegen.info.maxY",
-                        Text.of(maxY.toString())
-                )
+        if (maxY == null) maxY = minecraft.level != null ? minecraft.level.getMaxBuildHeight() : 256;
+        List<Component> texts = List.of(
+                TextCompat.translatable("cobblegen.info.weight")
+                        .append(Component.nullToEmpty(recipe.getResult().weight.toString())),
+                TextCompat.translatable("cobblegen.info.minY")
+                        .append(Component.nullToEmpty(minY.toString())),
+                TextCompat.translatable("cobblegen.info.maxY")
+                        .append(Component.nullToEmpty(maxY.toString()))
         );
-        TextRenderer textRenderer = minecraft.textRenderer;
+
         var y = 0;
-        for (Text text : texts) {
-            int width = textRenderer.getWidth(text);
-            minecraft.textRenderer.draw(stack, text, getBackground().getWidth() - width, y, 0xFF808080);
-            y += textRenderer.fontHeight;
+        for (Component text : texts) {
+            int width = textRenderer.width(text);
+            textRenderer.draw(stack, text, getBackground().getWidth() - width, y, 0xFF808080);
+            y += textRenderer.lineHeight;
         }
-        Text text = getCompat().translatableText("cobblegen.info.dimensions");
+        Component text = TextCompat.translatable("cobblegen.info.dimensions");
         var deepestY = initialHeight + 9;
-        minecraft.textRenderer.draw(
+        textRenderer.draw(
                 stack,
                 text,
-                ((float) getBackground().getWidth() / 2) - ((float) textRenderer.getWidth(text) / 2),
+                ((float) getBackground().getWidth() / 2) - ((float) textRenderer.width(text) / 2),
                 deepestY,
                 0xFF808080
         );
-        deepestY = deepestY + textRenderer.fontHeight + 9;
+        deepestY = deepestY + textRenderer.lineHeight + 9;
         dimensionIconsY = deepestY;
         whitelistIcon.draw(stack, 18, deepestY);
         blacklistIcon.draw(stack, getBackground().getWidth() - 15 - 18, deepestY);
@@ -179,38 +174,38 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
 
     @NotNull
     @Override
-    public List<Text> getTooltipStrings(
+    public List<Component> getTooltipStrings(
             FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY
     ) {
         if ((mouseX > 18 && mouseX < 18 + 15) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
-            ArrayList<Text> biomeList = new ArrayList<>();
-            biomeList.add(getCompat().translatableText("cobblegen.info.whitelistedDim"));
+            ArrayList<Component> biomeList = new ArrayList<>();
+            biomeList.add(TextCompat.translatable("cobblegen.info.whitelistedDim"));
 
-            List<String> recipeBiomeList = recipe.getResult().dimensions;
+            List<String> recipeDimList = recipe.getResult().dimensions;
             try {
-                for (String biome : recipeBiomeList) {
-                    Identifier id = new Identifier(biome);
-                    biomeList.add(getCompat().text("- " + id));
+                for (String dim : recipeDimList) {
+                    ResourceLocation id = new ResourceLocation(dim);
+                    biomeList.add(TextCompat.literal("- " + id));
                 }
             } catch (NullPointerException ignored) {
-                biomeList.add(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.any")));
+                biomeList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.any")));
             }
             return biomeList;
         }
 
         val aetherX = getBackground().getWidth() - 18;
         if ((mouseX > aetherX - 15 && mouseX < aetherX) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
-            ArrayList<Text> biomeList = new ArrayList<>();
-            biomeList.add(getCompat().translatableText("cobblegen.info.blacklistedDim"));
+            ArrayList<Component> biomeList = new ArrayList<>();
+            biomeList.add(TextCompat.translatable("cobblegen.info.blacklistedDim"));
 
-            List<String> recipeBiomeList = recipe.getResult().excludedDimensions;
+            List<String> recipeDimList = recipe.getResult().excludedDimensions;
             try {
-                for (String biome : recipeBiomeList) {
-                    Identifier id = new Identifier(biome);
-                    biomeList.add(getCompat().text("- " + id));
+                for (String dim : recipeDimList) {
+                    ResourceLocation id = new ResourceLocation(dim);
+                    biomeList.add(TextCompat.literal("- " + id));
                 }
             } catch (NullPointerException ignored) {
-                biomeList.add(getCompat().appendingText("- ", getCompat().translatableText("cobblegen.dim.none")));
+                biomeList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.none")));
             }
             return biomeList;
         }
@@ -221,7 +216,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     @Deprecated
     @NotNull
     @Override
-    public Identifier getUid() {
+    public ResourceLocation getUid() {
         return Util.identifierOf("fluid_interaction");
     }
 

@@ -1,10 +1,10 @@
 package io.github.null2264.cobblegen.data.model;
 
 import lombok.val;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
@@ -14,14 +14,13 @@ import static io.github.null2264.cobblegen.data.FluidInteractionHelper.FLOW_DIRE
 @ApiStatus.Internal
 public abstract class BlockGenerator implements BuiltInGenerator
 {
-    protected abstract Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state, Direction direction);
+    protected abstract Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction);
 
     @Override
-    public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state) {
+    public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state) {
         for (val direction : FLOW_DIRECTIONS) {
-            val candidate = tryGenerate(world, pos, state, direction);
+            val candidate = tryGenerate(level, pos, state, direction);
             if (candidate.isEmpty()) continue;
-            ;
             return candidate;
         }
 

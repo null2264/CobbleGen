@@ -1,9 +1,8 @@
 package io.github.null2264.cobblegen.util;
 
-import net.minecraft.block.Block;
-import net.minecraft.util.Identifier;
-
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 public class Constants
 {
@@ -11,7 +10,7 @@ public class Constants
     public static final int JEI_RECIPE_WIDTH = 136;
     public static final int JEI_RECIPE_HEIGHT = 36;
     public static final int JEI_RECIPE_HEIGHT_STONE = 56;
-    public static final Identifier JEI_UI_COMPONENT = Util.identifierOf("textures/gui/jei.png");
+    public static final ResourceLocation JEI_UI_COMPONENT = Util.identifierOf("textures/gui/jei.png");
 
     /**
      * Just a helper class to make the code more "readable"
@@ -30,12 +29,15 @@ public class Constants
             return text;
         }
 
-        public static String fromId(Identifier id) {
+        public static String fromId(ResourceLocation id) {
             return id.toString();
         }
 
         public static String fromBlock(Block block) {
-            return fromId(getCompat().getBlockId(block));
+            //#if MC<11903
+            return fromId(Registry.BLOCK.getKey(block));
+            //#else
+            //$$ net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block)
         }
     }
 }
