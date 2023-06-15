@@ -58,11 +58,11 @@ loom {
 
     runConfigs.configure {
         client {
-            runDir = "../run/client"
+            runDir = "../../run/client"
             ideConfigGenerated = true
         }
         server {
-            runDir = "../run/server"
+            runDir = "../../run/server"
             ideConfigGenerated = true
         }
     }
