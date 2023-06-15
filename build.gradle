@@ -102,10 +102,10 @@ dependencies {
 
     modCompileOnlyApi("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
     modCompileOnlyApi("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
-    if (isFabric)
+    //if (isFabric)
         modCompileOnlyApi("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
-    else
-        modCompileOnlyApi("com.simibubi.create:create-${project.minecraft_version_1_18_2}:0.5.0.i-249:slim")
+    //else
+    //    modCompileOnlyApi("com.simibubi.create:create-${project.minecraft_version_1_18_2}:0.5.0.i-249:slim")
     modCompileOnlyApi("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}:api")
     modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2")
     modCompileOnlyApi("mezz.jei:${project.jei_version_1_18_2}") {
