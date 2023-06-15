@@ -1,5 +1,5 @@
 plugins {
-    id("xyz.deftu.gradle.preprocess-root")
+    id("xyz.deftu.gradle.preprocess")
 }
 
 preprocess {
