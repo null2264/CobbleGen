@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.util;
 
-import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
@@ -34,10 +33,7 @@ public class Constants
         }
 
         public static String fromBlock(Block block) {
-            //#if MC<11903
-            return fromId(Registry.BLOCK.getKey(block));
-            //#else
-            //$$ net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block)
+            return fromId(Util.getBlockId(block));
         }
     }
 }
