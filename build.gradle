@@ -11,6 +11,9 @@ mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" a
 def mcVersionStr = "${(int)(mcVersion/10000)}.${(int)(mcVersion/100)%100}" + (mcVersion%100==0 ? '' : ".${mcVersion%100}")
 
 preprocess {
+    vars.put("MC", mcVersion)
+    vars.put("FABRIC", isFabric ? 1 : 0)
+
     patternAnnotation.set("io.github.null2264.gradle.Pattern")
 }
 
