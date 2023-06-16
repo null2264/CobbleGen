@@ -19,5 +19,5 @@
     "injectors": {
         "defaultRequire": 1
     },
-    "plugin": "io.github.null2264.cobblegen.mixin.core.CobbleGenMixinPlugin",
+    "plugin": "io.github.null2264.cobblegen.mixin.core.CobbleGenMixinPlugin"
 }
