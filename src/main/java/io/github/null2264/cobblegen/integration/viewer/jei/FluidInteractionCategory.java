@@ -212,11 +212,10 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         return List.of();
     }
 
-    //#if MC<11802
+    //#if MC<11900
     @SuppressWarnings("removal")
     @Deprecated
     @NotNull
-    @Override
     public ResourceLocation getUid() {
         return Util.identifierOf("fluid_interaction");
     }
@@ -224,7 +223,6 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     @SuppressWarnings("removal")
     @Deprecated
     @NotNull
-    @Override
     public Class<? extends FluidInteractionRecipeHolder> getRecipeClass() {
         return FluidInteractionRecipeHolder.class;
     }
