@@ -5,7 +5,10 @@ public class Loader {
         //#if FABRIC>=1
         return net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded(mod);
         //#else
-        //$$ return net.minecraftforge.fml.ModList.get().isLoaded(mod);
+        //$$ net.minecraftforge.fml.ModList modlist = net.minecraftforge.fml.ModList.get();
+        //$$ if (modlist == null)  // mainly for MixinConfigPlugin
+        //$$     return net.minecraftforge.fml.loading.LoadingModList.get().getModFileById(mod) != null;
+        //$$ return modlist.isLoaded(mod);
         //#endif
     }
 }
