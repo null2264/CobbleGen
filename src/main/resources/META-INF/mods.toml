@@ -10,7 +10,7 @@ displayName = "CobbleGen"
 displayURL = "https://github.com/null2264/CobbleGen"
 logoFile = "icon.png"
 authors = "null2264"
-description = "A fabric mod that allows you to customize cobblestone (stone and basalt) generators"
+description = "An MC mod that allows you to customize cobblestone (stone and basalt) generators"
 
 [[dependencies.cobblegen]]
 modId = "forge"
