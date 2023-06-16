@@ -4,6 +4,7 @@ import blue.endless.jankson.*;
 import com.google.gson.Gson;
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
+import io.github.null2264.cobblegen.compat.Loader;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
@@ -15,11 +16,6 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-//#if FABRIC>=1
-import net.fabricmc.loader.api.FabricLoader;
-//#else
-//$$ import net.minecraftforge.fml.loading.FMLConfig;
-//#endif
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -43,12 +39,7 @@ import static io.github.null2264.cobblegen.util.Util.notNullOr;
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
 {
-    private static final Path configPath =
-            //#if FABRIC>=1
-            FabricLoader.getInstance().getConfigDir();
-            //#else
-            //$$ Path.of(FMLConfig.defaultConfigPath());
-            //#endif
+    private static final Path configPath = Loader.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     private static final Jankson jankson = Jankson.builder().build();
     private static final Gson gson = new Gson();

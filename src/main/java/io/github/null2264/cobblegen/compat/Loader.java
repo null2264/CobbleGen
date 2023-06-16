@@ -1,5 +1,13 @@
 package io.github.null2264.cobblegen.compat;
 
+//#if FABRIC>=1
+import net.fabricmc.loader.api.FabricLoader;
+//#else
+//$$ import net.minecraftforge.fml.loading.FMLPaths;
+//#endif
+
+import java.nio.file.Path;
+
 public class Loader {
     public static boolean isModLoaded(String mod) {
         //#if FABRIC>=1
@@ -9,6 +17,14 @@ public class Loader {
         //$$ if (modlist == null)  // mainly for MixinConfigPlugin
         //$$     return net.minecraftforge.fml.loading.LoadingModList.get().getModFileById(mod) != null;
         //$$ return modlist.isLoaded(mod);
+        //#endif
+    }
+
+    public static Path getConfigDir() {
+        //#if FABRIC>=1
+        return FabricLoader.getInstance().getConfigDir();
+        //#else
+        //$$ return FMLPaths.CONFIGDIR.get();
         //#endif
     }
 }

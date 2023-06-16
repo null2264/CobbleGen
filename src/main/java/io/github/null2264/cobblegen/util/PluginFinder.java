@@ -6,16 +6,14 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-
 //#if FABRIC>=1
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 //#else
 //$$ import java.lang.reflect.Constructor;
 //$$ import io.github.null2264.cobblegen.CGPlugin;
-//$$ import lombok.val;
 //$$ import net.minecraftforge.fml.ModList;
+//$$ import net.minecraftforge.forgespi.language.IModInfo;
 //$$ import net.minecraftforge.forgespi.language.ModFileScanData;
 //$$ import org.objectweb.asm.Type;
 //#endif
@@ -27,51 +25,41 @@ public class PluginFinder
         return FabricLoader.getInstance()
                 .getEntrypointContainers("cobblegen_plugin", CobbleGenPlugin.class)
                 .stream()
-                .sorted(Comparator.comparingInt(PluginFinder::priorityEntrypoint))
                 .map(entrypoint -> new PlugInContainer(entrypoint.getProvider().getMetadata().getId(), entrypoint.getEntrypoint()))
                 .toList();
         //#else
-        //$$ val plugins = AnnotatedFinder.getInstances(CGPlugin.class, CobbleGenPlugin.class);
-        //$$ List<PlugInContainer> rt = new ArrayList<>();
-        //$$ for (val plugin : plugins) {
-        //$$     rt.add(new PlugInContainer("Placeholder", plugin));
-        //$$ }
-        //$$ return rt;
+        //$$ return AnnotatedFinder.getInstances(CGPlugin.class, CobbleGenPlugin.class);
         //#endif
     }
 
-    //#if FABRIC>=1
-    private static int priorityEntrypoint(EntrypointContainer<CobbleGenPlugin> plugin) {
-        return plugin.getProvider().getMetadata().getId().equals(MOD_ID) ? 0 : 1;
-    }
-    //#else
-    //#endif
-
     //#if FABRIC<=0
     //$$ static class AnnotatedFinder {
-    //$$     public static <T> List<T> getInstances(Class<?> annotationClass, Class<T> instanceClass) {
+    //$$     public static <T> List<PlugInContainer> getInstances(Class<?> annotationClass, Class<T> instanceClass) {
     //$$         Type annotationType = Type.getType(annotationClass);
     //$$         List<ModFileScanData> allScanData = ModList.get().getAllScanData();
-    //$$         Set<String> pluginClassNames = new LinkedHashSet<>();
-    //$$         for (ModFileScanData scanData : allScanData) {
-    //$$             Iterable<ModFileScanData.AnnotationData> annotations = scanData.getAnnotations();
+    //$$         List<PlugInContainer> instances = new ArrayList<>();
+    //$$         for (ModFileScanData data : allScanData) {
+    //$$             List<String> modIds = data.getIModInfoData().stream()
+    //$$                     .flatMap(info -> info.getMods().stream())
+    //$$                     .map(IModInfo::getModId)
+    //$$                     .toList();
+    //$$             String modId = "[" + String.join(", ", modIds) + "]";
+    //$$
+    //$$             Iterable<ModFileScanData.AnnotationData> annotations = data.getAnnotations();
     //$$             for (ModFileScanData.AnnotationData a : annotations) {
-    //$$                 if (Objects.equals(a.annotationType(), annotationType)) {
-    //$$                     String memberName = a.memberName();
-    //$$                     pluginClassNames.add(memberName);
+    //$$                 if (!(Objects.equals(a.annotationType(), annotationType)))
+    //$$                     continue;
+    //$$
+    //$$                 String className = a.memberName();
+    //$$                 try {
+    //$$                     Class<?> asmClass = Class.forName(className);
+    //$$                     Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
+    //$$                     Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
+    //$$                     T instance = constructor.newInstance();
+    //$$                     instances.add(new PlugInContainer(modId, (CobbleGenPlugin) instance));
+    //$$                 } catch (Throwable t) {
+    //$$                     CGLog.error("Failed to load: " + className + " ", t);
     //$$                 }
-    //$$             }
-    //$$         }
-    //$$         List<T> instances = new ArrayList<>();
-    //$$         for (String className : pluginClassNames) {
-    //$$             try {
-    //$$                 Class<?> asmClass = Class.forName(className);
-    //$$                 Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
-    //$$                 Constructor<? extends T> constructor = asmInstanceClass.getDeclaredConstructor();
-    //$$                 T instance = constructor.newInstance();
-    //$$                 instances.add(instance);
-    //$$             } catch (ReflectiveOperationException | LinkageError e) {
-    //$$                 CGLog.error("Failed to load: ", e);
     //$$             }
     //$$         }
     //$$         return instances;
