@@ -48,7 +48,7 @@ public class PluginFinder
     //#endif
 
     //#if FABRIC<=0
-    //$$ public class AnnotatedFinder {
+    //$$ static class AnnotatedFinder {
     //$$     public static <T> List<T> getInstances(Class<?> annotationClass, Class<T> instanceClass) {
     //$$         Type annotationType = Type.getType(annotationClass);
     //$$         List<ModFileScanData> allScanData = ModList.get().getAllScanData();
@@ -71,7 +71,7 @@ public class PluginFinder
     //$$                 T instance = constructor.newInstance();
     //$$                 instances.add(instance);
     //$$             } catch (ReflectiveOperationException | LinkageError e) {
-    //$$                 CGLog.error("Failed to load: ", className, e.getMessage());
+    //$$                 CGLog.error("Failed to load: ", e);
     //$$             }
     //$$         }
     //$$         return instances;

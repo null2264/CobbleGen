@@ -69,6 +69,11 @@ loom {
         }
 }
 
+configurations {
+    shade
+    modImplementation.extendsFrom(shade)
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${mcVersionStr}"
 
@@ -89,7 +94,9 @@ dependencies {
         ][mcVersion]
     }
 
-    shadow modImplementation("blue.endless:jankson:${project.jankson_version}")
+    shade("blue.endless:jankson:${project.jankson_version}")
+    if (!isFabric)
+        forgeRuntimeLibrary("blue.endless:jankson:${project.jankson_version}")
 
     // These act like a dummy, technically only here to provide their modules/packages
     if (isFabric) {
@@ -153,17 +160,21 @@ dependencies {
 
 shadowJar {
     zip64 true
-    relocate "blue.endless.jankson", "io.github.null2264.cobblegen.shadowed.blue.endless.jankson"
+    relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
 
-    configurations = [project.configurations.shadow]
-    archiveClassifier.set "dev-shadow"
+    configurations = [project.configurations.shade]
+    archiveClassifier.set "dev-shade"
+}
+
+artifacts {
+    archives shadowJar
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
     dependsOn shadowJar
+    input.set shadowJar.archiveFile
 }
 
 processResources {
