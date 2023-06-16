@@ -13,7 +13,7 @@
         "issues": "https://github.com/null2264/CobbleGen/issues"
     },
     "license": "LGPL-3.0-only",
-    "icon": "assets/cobblegen/icon.png",
+    "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [

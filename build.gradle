@@ -103,9 +103,10 @@ dependencies {
     }
 
     // EMI
-    if (mcVersion <= 11802) {
+    if (mcVersion <= 11802 && isFabric) {
         modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
-        modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
+        if (project.recipe_viewer == "emi")
+            modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
     } else {
         // EMI support multiple platform since 1.0.0
         // EMI seems to also skip 1.19 and 1.19.1
