@@ -1,7 +1,11 @@
 package io.github.null2264.cobblegen.mixin.fluid;
 
 import com.simibubi.create.content.contraptions.fluids.FluidReactions;
+//#if FABRIC>=1
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
+//#else
+//$$ import net.minecraftforge.fluids.FluidStack;
+//#endif
 import io.github.null2264.cobblegen.data.model.Generator;
 import lombok.val;
 import net.minecraft.core.BlockPos;

@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.mixin.network;
 import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,9 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static net.fabricmc.api.EnvType.SERVER;
-
-@Environment(SERVER)
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPacketListenerMixin
 {
@@ -25,10 +21,12 @@ public abstract class ServerPacketListenerMixin
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         val self = getListener();
+        //#if FABRIC>=1
         if (Util.isPortingLibLoaded()) {
             // Just in case
             if (self.connection instanceof io.github.fabricators_of_create.porting_lib.fake_players.FakeConnection) return;
         }
+        //#endif
         CGServerPlayNetworkHandler.trySync(self);
     }
 

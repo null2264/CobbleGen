@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.util;
 
+import io.github.null2264.cobblegen.compat.Loader;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -36,13 +36,13 @@ public class Util
     }
 
     public static boolean isPortingLibLoaded() {
-        return FabricLoader.getInstance().isModLoaded("porting_lib");
+        return Loader.isModLoaded("porting_lib");
     }
 
     public static boolean isAnyRecipeViewerLoaded() {
-        return FabricLoader.getInstance().isModLoaded("roughlyenoughitems") ||
-               FabricLoader.getInstance().isModLoaded("jei") ||
-               FabricLoader.getInstance().isModLoaded("emi");
+        return Loader.isModLoaded("roughlyenoughitems") ||
+               Loader.isModLoaded("jei") ||
+               Loader.isModLoaded("emi");
     }
 
     public static Fluid getFluid(ResourceLocation id) {

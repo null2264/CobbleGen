@@ -18,32 +18,21 @@ preprocess {
 }
 
 repositories {
-    maven { url 'https://jitpack.io' }
+    maven { url = "https://jitpack.io" }
     maven {
         url = "https://maven.blamejared.com/"
         content {
             includeGroup "mezz.jei"
         }
     }
-    maven {
-        name = "Shedaniel Maven"
-        url = "https://maven.shedaniel.me/"
-    }
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
-    }
-    maven {
-        name = "Modrinth Maven"
-        url = "https://api.modrinth.com/maven"
-    }
-    maven {
-        name = "CurseMaven"
-        url = "https://cursemaven.com"
-    }
+    maven { url = "https://maven.shedaniel.me/" }
+    maven { url = "https://maven.terraformersmc.com/" }
+    maven { url = "https://api.modrinth.com/maven/" }
+    maven { url = "https://cursemaven.com/" }
     maven { url = "https://mvn.devos.one/snapshots/" }
     maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
     maven { url = "https://maven.tterrag.com/" }
+    maven { url = "https://maven.theillusivec4.top/" }
 }
 
 archivesBaseName = project.archives_base_name
@@ -58,6 +47,8 @@ group = project.maven_group
 
 loom {
     silentMojangMappingsLicense()
+
+    mixin.defaultRefmapName.set("mixins.cobblegen.refmap.json")
 
     runConfigs.configure {
         client {
@@ -101,9 +92,15 @@ dependencies {
     shadow modImplementation("blue.endless:jankson:${project.jankson_version}")
 
     // These act like a dummy, technically only here to provide their modules/packages
-    modCompileOnly("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
-    modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
-    modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+    if (isFabric) {
+        modCompileOnly("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
+        modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+        modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+    } else {
+        modCompileOnly("com.jozufozu.flywheel:flywheel-forge-1.18.2:0.6.8.a-99")
+        modCompileOnly("com.simibubi.create:create-1.18.2:0.5.0.i-249:slim") { transitive = false }
+        modCompileOnly("com.tterrag.registrate:Registrate:MC1.18.2-1.1.3")
+    }
 
     // EMI
     if (mcVersion <= 11802) {
@@ -124,7 +121,10 @@ dependencies {
             11904: "11.0.621",
             12001: "12.0.625",
     ]
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
+    if (isFabric)
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
+    else  // I need the full package since for whatever reason @REIPluginClient is not included in API, thanks REI
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${reiVersions[mcVersion]}")
     if (project.recipe_viewer == "rei")
         modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
 

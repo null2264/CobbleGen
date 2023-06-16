@@ -2,11 +2,15 @@ package io.github.null2264.cobblegen;
 
 import io.github.null2264.cobblegen.data.FluidInteractionHelper;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
 
-public class CobbleGen implements ModInitializer
+//#if FABRIC<=0
+//$$ @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
+//$$ public class CobbleGen
+//#else
+public class CobbleGen implements net.fabricmc.api.ModInitializer
+//#endif
 {
     public static final String MOD_ID = "cobblegen";
     public static final ResourceLocation SYNC_CHANNEL = new ResourceLocation(MOD_ID, "sync");
@@ -18,10 +22,10 @@ public class CobbleGen implements ModInitializer
     @ApiStatus.Internal
     public static final FluidInteractionHelper FLUID_INTERACTION = new FluidInteractionHelper();
 
+    //#if FABRIC>=1
     @Override
-    public void onInitialize() {
-        //FLUID_INTERACTION.apply();
-    }
+    public void onInitialize() {}
+    //#endif
 
     public enum Channel {
         PING,

@@ -3,11 +3,11 @@ package io.github.null2264.cobblegen.integration;
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
+import io.github.null2264.cobblegen.compat.Loader;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public class CreatePlugin implements CobbleGenPlugin
 
     @Override
     public void registerInteraction(CGRegistry registry) {
-        if (!FabricLoader.getInstance().isModLoaded("create")) return;
+        if (!Loader.isModLoaded("create")) return;
 
         CGLog.info("Create mod detected,", firstInit ? "loading" : "reloading", "integration...");
         registry.addGenerator(

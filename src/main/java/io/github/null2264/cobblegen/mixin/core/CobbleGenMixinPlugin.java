@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.mixin.core;
 
-import net.fabricmc.loader.api.FabricLoader;
+import io.github.null2264.cobblegen.compat.Loader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -23,7 +23,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.endsWith("CreateFluidReactionsMixin"))
-            return FabricLoader.getInstance().isModLoaded("create");
+            return Loader.isModLoaded("create");
         return true;
     }
 

@@ -1,3 +1,4 @@
+//#if FABRIC>=1 && MC<=11802 || MC>=11900
 package io.github.null2264.cobblegen.integration.viewer.emi;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -203,3 +204,4 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
                 .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName());
     }
 }
+//#endif
