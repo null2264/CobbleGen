@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.integration;
 
 import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
+import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.Loader;
 import io.github.null2264.cobblegen.config.WeightedBlock;
@@ -12,6 +13,7 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
 
+@CGPlugin
 public class CreatePlugin implements CobbleGenPlugin
 {
     private boolean firstInit = true;
