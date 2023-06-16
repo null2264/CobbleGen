@@ -10,7 +10,7 @@ public class RegistryCompat {
         //#if MC<=11902
         return Registry.FLUID;
         //#else
-        //$$ net.minecraft.core.registries.BuiltInRegistries.FLUID;
+        //$$ return net.minecraft.core.registries.BuiltInRegistries.FLUID;
         //#endif
     }
 
@@ -18,7 +18,7 @@ public class RegistryCompat {
         //#if MC<=11902
         return Registry.BLOCK;
         //#else
-        //$$ net.minecraft.core.registries.BuiltInRegistries.BLOCK;
+        //$$ return net.minecraft.core.registries.BuiltInRegistries.BLOCK;
         //#endif
     }
 }
