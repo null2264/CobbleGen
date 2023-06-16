@@ -2,6 +2,7 @@ plugins {
     id "dev.architectury.loom" version "1.1-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
     id "com.github.null2264.preprocess"
+    id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
 def isFabric = project.name.endsWith("fabric")
@@ -91,6 +92,7 @@ dependencies {
     } else {
         forge "net.minecraftforge:forge:" + [
                 11802: "1.18.2-40.2.9",
+                11902: "1.19.2-43.2.14",
         ][mcVersion]
     }
 
@@ -221,62 +223,44 @@ if (System.getenv("GITHUB_ENV")) {
     envFile.append("VERSION=${version}")
 }
 
-/*
-if (System.getenv("CURSEFORGE")) {
-    def cfReleaseType = "release"
-    if (ext.isAlpha) {
-        cfReleaseType = "alpha"
-    } else if (ext.isBeta) {
-        cfReleaseType = "beta"
-    }
-
-    curseforge {
-        apiKey = System.getenv("CURSEFORGE")
-        project {
-            id = project.curseforge_project
-            changelogType = "markdown"
-            changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-            releaseType = cfReleaseType
-            for (final def ver in project.cf_versions.split(",")) {
-                addGameVersion ver
-            }
-            addGameVersion "Fabric"
-            addGameVersion "Quilt"
-            addGameVersion "Java 17"
-            mainArtifact(remapJar.archiveFile) {
-                displayName = "v${project.mod_version}-${project.version_stage}"
-                relations {
-                    embeddedLibrary "jankson"
-                }
-            }
-        }
-        options {
-            forgeGradleIntegration = false
-        }
-        afterEvaluate {
-            tasks.getByName("curseforge${project.curseforge_project}").dependsOn remapJar
-        }
-    }
+def _releaseType = "release"
+if (ext.isAlpha) {
+    _releaseType = "alpha"
+} else if (ext.isBeta) {
+    _releaseType = "beta"
 }
 
-if (System.getenv("MODRINTH")) {
-    def mrReleaseType = "release"
-    if (ext.isAlpha) {
-        mrReleaseType = "alpha"
-    } else if (ext.isBeta) {
-        mrReleaseType = "beta"
-    }
-
-    modrinth {
-        token = System.getenv("MODRINTH")
+unifiedPublishing {
+    project {
+        releaseType = _releaseType
+        displayName = "v${project.mod_version}-${project.version_stage}"
+        version = version as String
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-        projectId = project.modrinth_project
-        versionName = "v${project.mod_version}-${project.version_stage}"
-        versionNumber = version as String
-        versionType = mrReleaseType
-        uploadFile = remapJar
-        gameVersions = project.mr_versions.split(",").toList()
-        loaders = [ "fabric", "quilt" ]
+        gameVersions = ["1.18.2"]  // TODO
+        gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
+
+        mainPublication tasks.remapJar
+
+        relations {
+            includes {
+                curseforge = "jankson"
+            }
+        }
+
+        var cfToken = System.getenv("CURSEFORGE")
+        if (cfToken != null) {
+            curseforge {
+                token = cfToken
+                id = project.curseforge_project
+            }
+        }
+
+        var mrToken = System.getenv("MODRINTH")
+        if (mrToken != null) {
+            modrinth {
+                token = mrToken
+                id = project.modrinth_project
+            }
+        }
     }
 }
- */
