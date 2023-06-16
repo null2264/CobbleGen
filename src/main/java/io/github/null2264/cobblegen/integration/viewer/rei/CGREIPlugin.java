@@ -14,6 +14,9 @@ import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
+//#if FABRIC<=0
+//$$ @me.shedaniel.rei.forge.REIPluginClient
+//#endif
 public class CGREIPlugin implements REIClientPlugin
 {
     @Override
