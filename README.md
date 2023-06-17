@@ -1,9 +1,9 @@
 <h1 align="center">
-<img src="./assets/icon.png" alt="CobbleGen" width="150"/><br/>
+<img src="./src/main/resources/icon.png" alt="CobbleGen" width="150"/><br/>
 CobbleGen
 </h1>
 
-<p align="center">A fabric/quilt mod that allows you to customize/randomize cobblestone (basalt and stone) generator.</p>
+<p align="center">An MC mod that allows you to customize/randomize cobblestone (basalt and stone) generator.</p>
 
 <p align="center">
 <a href="https://www.curseforge.com/minecraft/mc-mods/cobblegen"><img src="https://cf.way2muchnoise.eu/581293.svg" alt="CurseForge"/></a>
