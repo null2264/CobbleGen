@@ -120,6 +120,7 @@ dependencies {
         // EMI support multiple platform since 1.0.0
         // EMI seems to also skip 1.19 and 1.19.1
         modCompileOnly("dev.emi:emi-xplat-intermediary:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}:api")
+        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}:api")
         if (project.recipe_viewer == "emi")
             modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}")
     }
