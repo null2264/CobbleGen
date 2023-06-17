@@ -1,12 +1,12 @@
 package io.github.null2264.cobblegen.mixin.fluid;
 
 import lombok.val;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.LavaFluid;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.LavaFluid;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,16 +17,16 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 @Mixin(LavaFluid.class)
 public abstract class LavaEventMixin
 {
-    @Inject(method = "flow", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldAccess;getFluidState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/fluid/FluidState;"), cancellable = true)
+    @Inject(method = "spreadTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelAccessor;getFluidState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/material/FluidState;"), cancellable = true)
     public void fluidInteraction$flow(
-            WorldAccess world,
+            LevelAccessor level,
             BlockPos pos,
             BlockState state,
             Direction direction,
             FluidState fluidState,
             CallbackInfo ci
     ) {
-        val success = FLUID_INTERACTION.interact(world, pos, world.getBlockState(pos.up()), true);
+        val success = FLUID_INTERACTION.interact(level, pos, level.getBlockState(pos.above()), true);
 
         if (success)
             ci.cancel();

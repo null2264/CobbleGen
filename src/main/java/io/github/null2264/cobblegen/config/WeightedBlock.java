@@ -1,16 +1,15 @@
 package io.github.null2264.cobblegen.config;
 
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class WeightedBlock implements PacketSerializable<WeightedBlock>
 {
@@ -61,43 +60,43 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
             Integer maxY,
             Integer minY
     ) {
-        val id = getCompat().getBlockId(block).toString();
+        val id = Util.getBlockId(block).toString();
         return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY);
     }
 
     public Block getBlock() {
-        return getCompat().getBlock(Identifier.tryParse(id));
+        return Util.getBlock(ResourceLocation.tryParse(id));
     }
 
     @Override
-    public void toPacket(PacketByteBuf buf) {
-        buf.writeString(id);
+    public void toPacket(FriendlyByteBuf buf) {
+        buf.writeUtf(id);
         buf.writeDouble(weight);
         if (dimensions != null) {
             buf.writeInt(dimensions.size());
             for (String dimId : dimensions) {
-                buf.writeString(dimId);
+                buf.writeUtf(dimId);
             }
         } else buf.writeInt(0);
         if (excludedDimensions != null) {
             buf.writeInt(excludedDimensions.size());
             for (String dimId : excludedDimensions) {
-                buf.writeString(dimId);
+                buf.writeUtf(dimId);
             }
         } else buf.writeInt(0);
-        buf.writeInt(maxY == null ? World.MAX_Y : maxY);
-        buf.writeInt(minY == null ? World.MIN_Y : minY);
+        buf.writeInt(maxY == null ? Level.MAX_ENTITY_SPAWN_Y : maxY);
+        buf.writeInt(minY == null ? Level.MIN_ENTITY_SPAWN_Y : minY);
     }
 
-    public static WeightedBlock fromPacket(PacketByteBuf buf) {
-        val id = buf.readString();
+    public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
+        val id = buf.readUtf();
         val weight = buf.readDouble();
         val _dimSize = buf.readInt();
         List<String> dimensions = null;
         if (_dimSize > 0) {
             dimensions = new ArrayList<>(_dimSize);
             for (int i = 0; i < _dimSize; i++) {
-                dimensions.add(buf.readString());
+                dimensions.add(buf.readUtf());
             }
         }
         val _exDimSize = buf.readInt();
@@ -105,13 +104,13 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
         if (_exDimSize > 0) {
             excludedDimensions = new ArrayList<>(_exDimSize);
             for (int i = 0; i < _dimSize; i++) {
-                excludedDimensions.add(buf.readString());
+                excludedDimensions.add(buf.readUtf());
             }
         }
         Integer maxY = buf.readInt();
-        if (maxY == World.MAX_Y) maxY = null;
+        if (maxY == Level.MAX_ENTITY_SPAWN_Y) maxY = null;
         Integer minY = buf.readInt();
-        if (minY == World.MIN_Y) minY = null;
+        if (minY == Level.MIN_ENTITY_SPAWN_Y) minY = null;
         return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY);
     }
 }

@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.data;
 
 import lombok.Data;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 
 @Data
 public class GeneratorResult

@@ -1,25 +1,25 @@
 package io.github.null2264.cobblegen.data;
 
 import com.google.common.collect.ImmutableList;
+import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.PluginFinder;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.WorldEvents;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 /**
@@ -56,8 +55,8 @@ public class FluidInteractionHelper
             CGLog.warn("EMPTY fluid is detected! Skipping...");
             return;
         }
-        if (genFluid instanceof FlowableFluid)
-            generator.setFluid(((FlowableFluid) genFluid).getStill());
+        if (genFluid instanceof FlowingFluid)
+            generator.setFluid(((FlowingFluid) genFluid).getSource());
         generatorMap.computeIfAbsent(fluid, g -> new ArrayList<>()).add(generator);
         count.incrementAndGet();
     }
@@ -73,11 +72,11 @@ public class FluidInteractionHelper
     }
 
     @ApiStatus.Internal
-    public void writeGeneratorsToPacket(PacketByteBuf buf) {
+    public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
         buf.writeInt(generatorMap.size());
 
         for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
-            buf.writeIdentifier(getCompat().getFluidId(entry.getKey()));
+            buf.writeResourceLocation(Util.getFluidId(entry.getKey()));
 
             val gens = entry.getValue();
             buf.writeInt(gens.size());
@@ -89,12 +88,12 @@ public class FluidInteractionHelper
     }
 
     @ApiStatus.Internal
-    public void readGeneratorsFromPacket(PacketByteBuf buf) {
+    public void readGeneratorsFromPacket(FriendlyByteBuf buf) {
         val _genSize = buf.readInt();
         val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
 
         for (int i = 0; i < _genSize; i++) {
-            val key = getCompat().getFluid(buf.readIdentifier());
+            val key = Util.getFluid(buf.readResourceLocation());
 
             val _gensSize = buf.readInt();
             val gens = new ArrayList<Generator>(_gensSize);
@@ -125,12 +124,13 @@ public class FluidInteractionHelper
             count.set(0);
 
             CGRegistry registry = new CGRegistryImpl();
-            for (EntrypointContainer<CobbleGenPlugin> plugin : PluginFinder.getModPlugins()) {
-                String id = plugin.getProvider().getMetadata().getId();
+            for (PluginFinder.PlugInContainer container : PluginFinder.getModPlugins()) {
+                String id = container.getModId();
+                CobbleGenPlugin plugin = container.getPlugin();
                 CGLog.info(firstInit ? "Loading" : "Reloading", "plugin from", id);
                 try {
-                    if (!firstInit) plugin.getEntrypoint().onReload();
-                    plugin.getEntrypoint().registerInteraction(registry);
+                    if (!firstInit) plugin.onReload();
+                    plugin.registerInteraction(registry);
                 } catch (Throwable err) {
                     CGLog.warn("Something went wrong while", firstInit ? "loading" : "reloading", "plugin provided by", id);
                     CGLog.error(err);
@@ -152,25 +152,25 @@ public class FluidInteractionHelper
     }
 
     @ApiStatus.Internal
-    public boolean interact(WorldAccess world, BlockPos pos, BlockState state) {
-        return interact(world, pos, state, false);
+    public boolean interact(LevelAccessor level, BlockPos pos, BlockState state) {
+        return interact(level, pos, state, false);
     }
 
     @ApiStatus.Internal
-    public boolean interact(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
+    public boolean interact(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
         FluidState fluidState = state.getFluidState();
         Fluid fluid = Generator.getStillFluid(fluidState);
         val generators = generatorMap.getOrDefault(fluid, List.of());
 
         for (Generator generator : generators) {
-            if (!generator.check(world, pos, state, fromTop)) continue;
+            if (!generator.check(level, pos, state, fromTop)) continue;
             if (fromTop && generator.getType() != GeneratorType.STONE) continue;
 
-            val result = generator.tryGenerate(world, pos, state);
+            val result = generator.tryGenerate(level, pos, state);
             if (result.isPresent()) {
-                world.setBlockState(pos, result.get(), 3);
+                level.setBlock(pos, result.get(), 3);
                 if (!generator.isSilent())
-                    world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
+                    level.levelEvent(LevelEvent.LAVA_FIZZ, pos, 0);
                 return true;
             }
         }
@@ -178,7 +178,7 @@ public class FluidInteractionHelper
     }
 
     @ApiStatus.Internal
-    public boolean interactFromPipe(World world, BlockPos pos, Fluid fluid1, Fluid fluid2) {
+    public boolean interactFromPipe(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
         Fluid source;
         Fluid neighbour;
         List<Generator> generators = generatorMap.get(fluid1);
@@ -195,16 +195,16 @@ public class FluidInteractionHelper
 
         for (Generator generator : generators) {
             boolean fromTop = false;
-            if (neighbour instanceof FlowableFluid)
-                fromTop = neighbour == ((FlowableFluid) neighbour).getStill();
-            if (!generator.check(world, pos, source.getDefaultState().getBlockState(), fromTop)) continue;
+            if (neighbour instanceof FlowingFluid)
+                fromTop = neighbour == ((FlowingFluid) neighbour).getSource();
+            if (!generator.check(level, pos, source.defaultFluidState().createLegacyBlock(), fromTop)) continue;
 
             if (source == Fluids.LAVA)  // prevent obsidian from generating
-                source = ((FlowableFluid) source).getFlowing();
+                source = ((FlowingFluid) source).getFlowing();
 
-            val result = generator.tryGenerate(world, pos, source.getDefaultState(), neighbour.getDefaultState());
+            val result = generator.tryGenerate(level, pos, source.defaultFluidState(), neighbour.defaultFluidState());
             if (result.isPresent()) {
-                world.setBlockState(pos, result.get());
+                level.setBlockAndUpdate(pos, result.get());
                 return true;
             }
         }

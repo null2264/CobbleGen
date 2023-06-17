@@ -19,9 +19,9 @@ jobs:
           java-version: 17
       - run: chmod +x ./gradlew
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --stacktrace
       - name: Archive build results
-        run: tar -I zstd -cf build.tar.zst build/libs
+        run: tar -I zstd -cf build.tar.zst versions/*/build/libs
       - name: Upload build folder
         uses: actions/upload-artifact@v3
         with:

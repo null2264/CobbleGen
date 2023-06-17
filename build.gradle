@@ -1,91 +1,242 @@
 plugins {
-    id "fabric-loom" apply false
-    id "com.matthewprenger.cursegradle" version "1.4.0"
-    id "com.modrinth.minotaur" version "2.+"
+    id "dev.architectury.loom" version "1.1-SNAPSHOT"
+    id "com.github.johnrengelman.shadow"
+    id "com.github.null2264.preprocess"
+    id "me.shedaniel.unified-publishing" version "0.1.+"
 }
 
-allprojects {
-    apply plugin: "fabric-loom"
+def isFabric = project.name.endsWith("fabric")
+def mcVersion
+def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
+mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
+static def String stringifyVersion(int ver) {
+    return "${(int)(ver/10000)}.${(int)(ver/100)%100}" + (ver%100==0 ? '' : ".${ver%100}")
+}
+def mcVersionStr = stringifyVersion(mcVersion)
+def supportedVersionRange = [
+        11802: [null, "1.18.2"],
+        11902: ["1.19", "1.19.2"],
+        11904: ["1.19.3", "1.19.4"],
+        12001: ["1.20", null],
+][mcVersion]
 
-    repositories {
-        maven { url 'https://jitpack.io' }
-        maven {
-            url = "https://maven.blamejared.com/"
-            content {
-                includeGroup "mezz.jei"
-            }
-        }
-        maven {
-            name = "Shedaniel Maven"
-            url = "https://maven.shedaniel.me/"
-        }
-        maven {
-            name = "TerraformersMC"
-            url = "https://maven.terraformersmc.com/"
-        }
-        maven {
-            name = "Modrinth Maven"
-            url = "https://api.modrinth.com/maven"
-        }
-        maven {
-            name = "CurseMaven"
-            url = "https://cursemaven.com"
-        }
-        maven { url = "https://mvn.devos.one/snapshots/" }
-        maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
-        maven { url = "https://maven.tterrag.com/" }
-    }
+preprocess {
+    vars.put("MC", mcVersion)
+    vars.put("FABRIC", isFabric ? 1 : 0)
 
-    archivesBaseName = project.archives_base_name
+    patternAnnotation.set("io.github.null2264.gradle.Pattern")
+}
 
-    ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-    version = project.mod_version + (buildNumber != null ? "+${buildNumber}-" : "-") + project.version_stage
-
-    ext.isAlpha = project.version_stage == "ALPHA"
-    ext.isBeta = project.version_stage == "BETA"
-
-    group = project.maven_group
-
-    dependencies {
-        include modImplementation("blue.endless:jankson:${project.jankson_version}")
-    }
-
-    processResources {
-        inputs.property "version", project.version
-        filteringCharset "UTF-8"
-
-        filesMatching("fabric.mod.json") {
-            expand "version": project.version
+repositories {
+    maven { url = "https://jitpack.io" }
+    maven {
+        url = "https://maven.blamejared.com/"
+        content {
+            includeGroup "mezz.jei"
         }
     }
+    maven { url = "https://maven.shedaniel.me/" }
+    maven { url = "https://maven.terraformersmc.com/" }
+    maven { url = "https://api.modrinth.com/maven/" }
+    maven { url = "https://cursemaven.com/" }
+    maven { url = "https://mvn.devos.one/snapshots/" }
+    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" }
+    maven { url = "https://maven.tterrag.com/" }
+    maven { url = "https://maven.theillusivec4.top/" }
+}
 
-    def targetJavaVersion = 17
-    tasks.withType(JavaCompile).configureEach {
-        // ensure that the encoding is set to UTF-8, no matter what the system default is
-        // this fixes some edge cases with special characters not displaying correctly
-        // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-        // If Javadoc is generated, this must be specified in that task too.
-        it.options.encoding = "UTF-8"
-        if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-            it.options.release = targetJavaVersion
+archivesBaseName = project.archives_base_name
+
+ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage
+
+ext.isAlpha = project.version_stage == "ALPHA"
+ext.isBeta = project.version_stage == "BETA"
+
+group = project.maven_group
+
+loom {
+    silentMojangMappingsLicense()
+
+    mixin.defaultRefmapName.set("mixins.cobblegen.refmap.json")
+
+    runConfigs.configure {
+        client {
+            runDir = "../../run/client"
+            ideConfigGenerated = true
+        }
+        server {
+            runDir = "../../run/server"
+            ideConfigGenerated = true
         }
     }
 
-    java {
-        def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-        if (JavaVersion.current() < javaVersion) {
-            toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    if (!isFabric)
+        forge {
+            mixinConfigs = [
+                    "cobblegen.mixins.json"
+            ]
         }
-        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-        // if it is present.
-        // If you remove this line, sources will not be generated.
-        withSourcesJar()
+}
+
+configurations {
+    shade
+    modImplementation.extendsFrom(shade)
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${mcVersionStr}"
+
+    mappings loom.officialMojangMappings()
+
+    if (isFabric) {
+        modImplementation "net.fabricmc:fabric-loader:0.14.21"
+
+        modLocalRuntime modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:" + [
+                11802: "0.76.0+1.18.2",
+                11902: "0.76.0+1.19.2",
+                11904: "0.83.0+1.19.4",
+                12001: "0.83.1+1.20.1",
+        ][mcVersion])
+    } else {
+        forge "net.minecraftforge:forge:" + [
+                11802: "1.18.2-40.2.9",
+                11902: "1.19.2-43.2.14",
+                11904: "1.19.4-45.1.0",
+                12001: "1.20.1-47.0.3",
+        ][mcVersion]
     }
 
-    jar {
-        from("LICENSE") {
-            rename { "${it}_${archivesBaseName}" }
-        }
+    shade("blue.endless:jankson:${project.jankson_version}")
+    if (!isFabric)
+        forgeRuntimeLibrary("blue.endless:jankson:${project.jankson_version}")
+
+    // These act like a dummy, technically only here to provide their modules/packages
+    if (isFabric) {
+        modCompileOnly("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
+        modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+        modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+    } else {
+        modCompileOnly("com.jozufozu.flywheel:flywheel-forge-1.18.2:0.6.8.a-99")
+        modCompileOnly("com.simibubi.create:create-1.18.2:0.5.0.i-249:slim") { transitive = false }
+        modCompileOnly("com.tterrag.registrate:Registrate:MC1.18.2-1.1.3")
+    }
+
+    // EMI
+    if (mcVersion <= 11802 && isFabric) {
+        modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
+        if (project.recipe_viewer == "emi")
+            modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
+    } else {
+        // EMI support multiple platform since 1.0.0
+        // EMI seems to also skip 1.19 and 1.19.1
+        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}:api")
+        if (project.recipe_viewer == "emi")
+            modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}")
+    }
+
+    // REI
+    def reiVersions = [
+            11802: "8.3.618",
+            11902: "9.1.619",
+            11904: "11.0.621",
+            12001: "12.0.625",
+    ]
+    if (isFabric)
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
+    else  // I need the full package since for whatever reason @REIPluginClient is not included in API, thanks REI
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${reiVersions[mcVersion]}")
+    if (project.recipe_viewer == "rei") {
+        if (mcVersion == 11902)  // REI's stupid dep bug
+            modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
+        modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
+    }
+
+    // JEI
+    def jeiVersions = [
+            11802: "10.2.1.1004",
+            11902: "11.6.0.1015",
+            11904: "13.1.0.13",
+            12001: "15.0.0.12",
+    ]
+    modCompileOnly("mezz.jei:jei-${mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
+    modCompileOnly("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
+    if (project.recipe_viewer == "jei")
+        modLocalRuntime("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
+
+    if (mcVersion == 11802 && isFabric) {
+        modLocalRuntime("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
+        modLocalRuntime("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+        modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+    }
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
+
+shadowJar {
+    zip64 true
+    relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
+    exclude "fabric.mod.json"
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shade]
+    archiveClassifier.set "dev-shade"
+}
+
+artifacts {
+    archives shadowJar
+}
+
+remapJar {
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile
+}
+
+processResources {
+    def metadataMCVersion =
+            supportedVersionRange[0] != null ? (
+            (isFabric ? ">=" : "[") +
+            supportedVersionRange[0] +
+            (supportedVersionRange[1] == null
+                    ? (isFabric ? "" : ",)")
+                    : ((isFabric ? ", <=" : ",") + supportedVersionRange[1] + (isFabric ? "" : "]")))
+            ) : (isFabric ? supportedVersionRange[1] : "[${supportedVersionRange[1]}]")
+    inputs.property "version", project.version
+    inputs.property "mcversion", metadataMCVersion
+    filteringCharset "UTF-8"
+
+    filesMatching(isFabric ? "fabric.mod.json" : "META-INF/mods.toml") {
+        expand "version": project.version, 'mcversion': metadataMCVersion
+    }
+}
+
+def targetJavaVersion = 17
+tasks.withType(JavaCompile).configureEach {
+    // ensure that the encoding is set to UTF-8, no matter what the system default is
+    // this fixes some edge cases with special characters not displaying correctly
+    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+    // If Javadoc is generated, this must be specified in that task too.
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release = targetJavaVersion
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+    // if it is present.
+    // If you remove this line, sources will not be generated.
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${archivesBaseName}" }
     }
 }
 
@@ -94,114 +245,51 @@ if (System.getenv("GITHUB_ENV")) {
     envFile.append("VERSION=${version}")
 }
 
-subprojects {
-    configurations {
-        // Fix dev env runtime
-        modLocalRuntime.exclude group: 'net.fabricmc', module: 'fabric-loader'
-    }
-
-    dependencies {
-        implementation(project(path: ":", configuration: "namedElements")) {
-            // having 2 floaders from the sub project and root project causes issues so we get rid of one.
-            exclude group: "net.fabricmc", module: "fabric-loader"
-        }
-    }
+def _releaseType = "release"
+if (ext.isAlpha) {
+    _releaseType = "alpha"
+} else if (ext.isBeta) {
+    _releaseType = "beta"
 }
 
-loom {
-    runConfigs.configure {
-        client {
-            ideConfigGenerated = false
-        }
-        server {
-            ideConfigGenerated = false
-        }
-    }
-}
+def mcReleaseVersions = [
+        11802: ["1.18.2"],
+        11902: ["1.19", "1.19.1", "1.19.2"],
+        11904: ["1.19.3", "1.19.4"],
+        12001: ["1.20", "1.20.1"],
+][mcVersion]
 
-dependencies {
-    include project(path: ':cobblegen-1.18.2-compat', configuration: 'namedElements')
-    include project(path: ':cobblegen-1.19-compat', configuration: 'namedElements')
-    include project(path: ':cobblegen-1.19.3-compat', configuration: 'namedElements')
-
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version_1_18_2}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings_1_18_2}:v2"
-    minecraft "com.mojang:minecraft:${project.minecraft_version_1_18_2}"
-    modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_version_1_18_2}")
-
-    modCompileOnlyApi("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
-    modCompileOnlyApi("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
-    modCompileOnlyApi("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
-    modCompileOnlyApi("dev.emi:emi:${project.emi_version}+${project.minecraft_version_1_18_2}:api")
-    modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api-fabric:$project.rei_version_1_18_2")
-    modCompileOnlyApi("mezz.jei:${project.jei_version_1_18_2}") {
-        transitive = false
-    }
-
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-}
-
-processResources {
-    from("${rootDir}/assets/icon.png") {
-        into "assets/cobblegen/"
-    }
-}
-
-if (System.getenv("CURSEFORGE")) {
-    def cfReleaseType = "release"
-    if (ext.isAlpha) {
-        cfReleaseType = "alpha"
-    } else if (ext.isBeta) {
-        cfReleaseType = "beta"
-    }
-
-    curseforge {
-        apiKey = System.getenv("CURSEFORGE")
-        project {
-            id = project.curseforge_project
-            changelogType = "markdown"
-            changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-            releaseType = cfReleaseType
-            for (final def mcVersion in project.cf_versions.split(",")) {
-                addGameVersion mcVersion
-            }
-            addGameVersion "Fabric"
-            addGameVersion "Quilt"
-            addGameVersion "Java 17"
-            mainArtifact(remapJar.archiveFile) {
-                displayName = "v${project.mod_version}-${project.version_stage}"
-                relations {
-                    embeddedLibrary "jankson"
-                }
-            }
-        }
-        options {
-            forgeGradleIntegration = false
-        }
-        afterEvaluate {
-            tasks.getByName("curseforge${project.curseforge_project}").dependsOn remapJar
-        }
-    }
-}
-
-if (System.getenv("MODRINTH")) {
-    def mrReleaseType = "release"
-    if (ext.isAlpha) {
-        mrReleaseType = "alpha"
-    } else if (ext.isBeta) {
-        mrReleaseType = "beta"
-    }
-
-    modrinth {
-        token = System.getenv("MODRINTH")
+unifiedPublishing {
+    project {
+        releaseType = _releaseType
+        displayName = "v${project.mod_version}-${project.version_stage} for MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}"
+        version = project.version as String
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-        projectId = project.modrinth_project
-        versionName = "v${project.mod_version}-${project.version_stage}"
-        versionNumber = version as String
-        versionType = mrReleaseType
-        uploadFile = remapJar
-        gameVersions = project.mr_versions.split(",").toList()
-        loaders = [ "fabric", "quilt" ]
+        gameVersions = mcReleaseVersions
+        gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
+
+        mainPublication tasks.remapJar
+
+        relations {
+            includes {
+                curseforge = "jankson"
+            }
+        }
+
+        var cfToken = System.getenv("CURSEFORGE")
+        if (cfToken != null) {
+            curseforge {
+                token = cfToken
+                id = project.curseforge_project
+            }
+        }
+
+        var mrToken = System.getenv("MODRINTH")
+        if (mrToken != null) {
+            modrinth {
+                token = mrToken
+                id = project.modrinth_project
+            }
+        }
     }
 }

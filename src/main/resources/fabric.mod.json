@@ -3,7 +3,7 @@
     "id": "cobblegen",
     "version": "${version}",
     "name": "CobbleGen",
-    "description": "A fabric mod that allows you to customize cobblestone (stone and basalt) generators",
+    "description": "An MC mod that allows you to customize cobblestone (stone and basalt) generators",
     "authors": [
         "null2264"
     ],
@@ -13,7 +13,7 @@
         "issues": "https://github.com/null2264/CobbleGen/issues"
     },
     "license": "LGPL-3.0-only",
-    "icon": "assets/cobblegen/icon.png",
+    "icon": "icon.png",
     "environment": "*",
     "entrypoints": {
         "main": [
@@ -45,6 +45,6 @@
     },
     "depends": {
         "fabricloader": "*",
-        "minecraft": ">=1.18.2"
+        "minecraft": "${mcversion}"
     }
 }

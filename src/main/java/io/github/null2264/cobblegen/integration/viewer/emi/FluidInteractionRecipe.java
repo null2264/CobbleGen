@@ -1,3 +1,4 @@
+//#if FABRIC>=1 && MC<=11802 || MC>=11900
 package io.github.null2264.cobblegen.integration.viewer.emi;
 
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -5,28 +6,27 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
+import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class FluidInteractionRecipe extends FluidInteractionRecipeHolder implements EmiRecipe
 {
@@ -109,37 +109,31 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         widgets.addSlot(getInputs().get(2), resultMod.x, resultMod.y).catalyst(true);
 
         // Additional Info
-        MinecraftClient minecraft = MinecraftClient.getInstance();
-        TextRenderer textRenderer = minecraft.textRenderer;
+        Minecraft minecraft = Minecraft.getInstance();
+        Font textRenderer = minecraft.font;
         var minY = getResult().minY;
-        if (minY == null) minY = minecraft.world != null ? minecraft.world.getBottomY() : 0;
+        if (minY == null) minY = minecraft.level != null ? minecraft.level.getMinBuildHeight() : 0;
         var maxY = getResult().maxY;
-        if (maxY == null) maxY = minecraft.world != null ? minecraft.world.getTopY() : 256;
-        List<Text> texts = List.of(
-                getCompat().translatableAppendingText(
-                        "cobblegen.info.weight",
-                        Text.of(getResult().weight.toString())
-                ),
-                getCompat().translatableAppendingText(
-                        "cobblegen.info.minY",
-                        Text.of(minY.toString())
-                ),
-                getCompat().translatableAppendingText(
-                        "cobblegen.info.maxY",
-                        Text.of(maxY.toString())
-                )
+        if (maxY == null) maxY = minecraft.level != null ? minecraft.level.getMaxBuildHeight() : 256;
+        List<Component> texts = List.of(
+                TextCompat.translatable("cobblegen.info.weight")
+                        .append(Component.nullToEmpty(getResult().weight.toString())),
+                TextCompat.translatable("cobblegen.info.minY")
+                        .append(Component.nullToEmpty(minY.toString())),
+                TextCompat.translatable("cobblegen.info.maxY")
+                        .append(Component.nullToEmpty(maxY.toString()))
         );
         var y = base.y;
-        for (Text text : texts) {
-            val labelPoint = new Point(getDisplayWidth() - textRenderer.getWidth(text), y);
+        for (Component text : texts) {
+            val labelPoint = new Point(getDisplayWidth() - textRenderer.width(text), y);
             widgets.addText(text, labelPoint.x, labelPoint.y, 0xFFFFFFFF, true);
             y += 9;
         }
 
         // Dimensions
-        Text text = getCompat().translatableText("cobblegen.info.dimensions");
+        Component text = TextCompat.translatable("cobblegen.info.dimensions");
         val dimensionTitlePoint = new Point(
-                (getDisplayWidth() / 2) - (textRenderer.getWidth(text) / 2),
+                (getDisplayWidth() / 2) - (textRenderer.width(text) / 2),
                 resultMod.y + offset + 9
         );
         widgets.addText(text, dimensionTitlePoint.x, dimensionTitlePoint.y, 0xFFFFFFFF, true);
@@ -151,20 +145,21 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         val whitelistBounds = (Point) dimensionBounds.clone();
         whitelistBounds.x += 18;
 
-        val whitelist = new ArrayList<TooltipComponent>();
-        whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().translatableText(
-                "cobblegen.info.whitelistedDim"))));
+        val whitelist = new ArrayList<ClientTooltipComponent>();
+        whitelist.add(ClientTooltipComponent.create(TextCompat.translatable("cobblegen.info.whitelistedDim")
+                .getVisualOrderText()));
         List<String> recipeWhitelist = getResult().dimensions;
         try {
-            for (String biome : recipeWhitelist) {
-                Identifier id = new Identifier(biome);
-                whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().text("- " + id))));
+            for (String dim : recipeWhitelist) {
+                ResourceLocation id = new ResourceLocation(dim);
+                whitelist.add(ClientTooltipComponent.create(TextCompat.literal("- " + id).getVisualOrderText()));
             }
         } catch (NullPointerException ignored) {
-            whitelist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().appendingText(
-                    "- ",
-                    getCompat().translatableText("cobblegen.dim.any")
-            ))));
+            whitelist.add(
+                    ClientTooltipComponent.create(TextCompat.literal("- ")
+                                    .append(TextCompat.translatable("cobblegen.dim.any"))
+                                    .getVisualOrderText()
+            ));
         }
         widgets.addTexture(Constants.JEI_UI_COMPONENT, whitelistBounds.x, whitelistBounds.y, 15, 20, 0, 0)
                 .tooltip((mouseX, mouseY) -> whitelist);
@@ -173,38 +168,40 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         val blacklistBounds = (Point) dimensionBounds.clone();
         blacklistBounds.x += getDisplayWidth() - 15 - 18;
 
-        val blacklist = new ArrayList<TooltipComponent>();
-        blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().translatableText(
-                "cobblegen.info.blacklistedDim"))));
+        val blacklist = new ArrayList<ClientTooltipComponent>();
+        blacklist.add(ClientTooltipComponent.create(TextCompat.translatable(
+                "cobblegen.info.blacklistedDim").getVisualOrderText()));
         List<String> recipeBlacklist = getResult().excludedDimensions;
         try {
-            for (String biome : recipeBlacklist) {
-                Identifier id = new Identifier(biome);
-                blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().text("- " + id))));
+            for (String dim : recipeBlacklist) {
+                ResourceLocation id = new ResourceLocation(dim);
+                blacklist.add(ClientTooltipComponent.create(TextCompat.literal("- " + id).getVisualOrderText()));
             }
         } catch (NullPointerException ignored) {
-            blacklist.add(TooltipComponent.of(getCompat().toOrderedText(getCompat().appendingText(
-                    "- ",
-                    getCompat().translatableText("cobblegen.dim.none")
-            ))));
+            blacklist.add(
+                    ClientTooltipComponent.create(TextCompat.literal("- ")
+                                    .append(TextCompat.translatable("cobblegen.dim.none"))
+                                    .getVisualOrderText()
+            ));
         }
         widgets.addTexture(Constants.JEI_UI_COMPONENT, blacklistBounds.x, blacklistBounds.y, 15, 20, 15, 0)
                 .tooltip((mouseX, mouseY) -> blacklist);
     }
 
     @Override
-    public Identifier getId() {
-        Identifier resultId = new Identifier(getResult().id);
-        Identifier source = getCompat().getFluidId(getSourceFluid());
-        Identifier neighbour;
+    public ResourceLocation getId() {
+        ResourceLocation resultId = new ResourceLocation(getResult().id);
+        ResourceLocation source = Util.getFluidId(getSourceFluid());
+        ResourceLocation neighbour;
         if (getNeighbourBlock() != null)
-            neighbour = getCompat().getBlockId(getNeighbourBlock());
+            neighbour = Util.getBlockId(getNeighbourBlock());
         else
-            neighbour = getCompat().getFluidId(getNeighbourFluid());
-        Identifier modifierId = Util.identifierOf("none");
+            neighbour = Util.getFluidId(getNeighbourFluid());
+        ResourceLocation modifierId = Util.identifierOf("none");
         if (getModifier() != null)
-            modifierId = getCompat().getBlockId(getModifier());
+            modifierId = Util.getBlockId(getModifier());
         return Util.identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
-                .toLowerCase() + "-" + source.toUnderscoreSeparatedString() + "-" + resultId.toUnderscoreSeparatedString() + "-" + neighbour.toUnderscoreSeparatedString() + "-" + modifierId.toUnderscoreSeparatedString());
+                .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName());
     }
 }
+//#endif

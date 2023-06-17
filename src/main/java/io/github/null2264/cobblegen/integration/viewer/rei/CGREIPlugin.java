@@ -2,18 +2,21 @@ package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
+//#if FABRIC<=0
+//$$ @me.shedaniel.rei.forge.REIPluginClient
+//#endif
 public class CGREIPlugin implements REIClientPlugin
 {
     @Override
@@ -30,7 +33,7 @@ public class CGREIPlugin implements REIClientPlugin
                 (modifierId, blocks) -> {
                     Block modifier = null;
                     if (!Objects.equals(modifierId, "*"))
-                        modifier = getCompat().getBlock(new Identifier(modifierId));
+                        modifier = Util.getBlock(new ResourceLocation(modifierId));
                     for (WeightedBlock block : blocks)
                         registry.add(
                                 new FluidInteractionRecipe(

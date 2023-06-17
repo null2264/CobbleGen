@@ -1,12 +1,13 @@
 package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -14,15 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
-
 @ApiStatus.Internal
 public interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
     private String randomizeBlockId(Block key, String dim, Integer yLevel) {
         val blockIds = getOutput().getOrDefault(
-                getCompat().getBlockId(key).toString(),
+                Util.getBlockId(key).toString(),
                 getOutput().getOrDefault("*", List.of())
         );
 
@@ -43,8 +42,8 @@ public interface BuiltInGenerator extends Generator
             if (block.minY != null && block.minY >= yLevel) continue;
 
             if (block.id.startsWith("#")) {
-                List<Identifier> taggedBlocks = getCompat().getTaggedBlockIds(new Identifier(block.id.substring(1)));
-                for (Identifier taggedBlock : taggedBlocks) {
+                List<ResourceLocation> taggedBlocks = Util.getTaggedBlockIds(new ResourceLocation(block.id.substring(1)));
+                for (ResourceLocation taggedBlock : taggedBlocks) {
                     filteredBlockIds.add(new WeightedBlock(taggedBlock.toString(), block.weight));
                     totalWeight.updateAndGet(v -> v + block.weight);
                 }
@@ -64,15 +63,15 @@ public interface BuiltInGenerator extends Generator
         return filteredBlockIds.get(idx).id;
     }
 
-    default Optional<BlockState> getBlockCandidate(WorldAccess world, BlockPos pos) {
+    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos) {
         val replacementId = randomizeBlockId(
-                world.getBlockState(pos.down()).getBlock(),
-                getCompat().getDimension(world),
+                level.getBlockState(pos.below()).getBlock(),
+                Util.getDimension(level),
                 pos.getY()
         );
 
         if (replacementId == null) return Optional.empty();
 
-        return Optional.of(getCompat().getBlock(new Identifier(replacementId)).getDefaultState());
+        return Optional.of(Util.getBlock(new ResourceLocation(replacementId)).defaultBlockState());
     }
 }

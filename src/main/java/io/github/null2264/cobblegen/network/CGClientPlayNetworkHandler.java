@@ -4,18 +4,17 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import io.netty.buffer.Unpooled;
 import lombok.val;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.resources.ResourceLocation;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGClientPlayNetworkHandler
 {
-    public static boolean handlePacket(ClientPlayNetworkHandler handler, CustomPayloadS2CPacket packet) {
-        if (packet.getChannel().equals(SYNC_CHANNEL)) {
+    public static boolean handlePacket(ClientPacketListener listener, ClientboundCustomPayloadPacket packet) {
+        if (packet.getIdentifier().equals(SYNC_CHANNEL)) {
             val packetData = packet.getData();
             val isReload = packetData.readBoolean();
             FLUID_INTERACTION.readGeneratorsFromPacket(packetData);
@@ -23,15 +22,15 @@ public class CGClientPlayNetworkHandler
             val isSync = FLUID_INTERACTION.isSync();
             if (isSync)
                 CGLog.info("CobbleGen config has been", isReload ? "re-synced" : "retrieved from the server");
-            val buf = new PacketByteBuf(Unpooled.buffer());
+            val buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeBoolean(isSync);
-            handler.sendPacket(createC2SPacket(Channel.SYNC, buf));
+            listener.send(createC2SPacket(Channel.SYNC, buf));
             return true;
-        } if (packet.getChannel().equals(SYNC_PING_CHANNEL)) {
-            val buf = new PacketByteBuf(Unpooled.buffer());
+        } if (packet.getIdentifier().equals(SYNC_PING_CHANNEL)) {
+            val buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeBoolean(packet.getData().readBoolean());
             buf.writeBoolean(Util.isAnyRecipeViewerLoaded());  // Reply "yes I need those data"
-            handler.sendPacket(createC2SPacket(Channel.PING, buf));
+            listener.send(createC2SPacket(Channel.PING, buf));
             return true;
         }
         return false;
@@ -41,12 +40,12 @@ public class CGClientPlayNetworkHandler
         FLUID_INTERACTION.disconnect();
     }
 
-    private static CustomPayloadC2SPacket createC2SPacket(Channel channel, PacketByteBuf buf) {
-        Identifier channelId;
+    private static ClientboundCustomPayloadPacket createC2SPacket(Channel channel, FriendlyByteBuf buf) {
+        ResourceLocation channelId;
         switch (channel) {
             case PING -> channelId = SYNC_PING_CHANNEL;
             default -> channelId = SYNC_CHANNEL;
         }
-        return new CustomPayloadC2SPacket(channelId, buf);
+        return new ClientboundCustomPayloadPacket(channelId, buf);
     }
 }
