@@ -63,6 +63,8 @@ jobs:
         with:
           java-version: 17  # Current Java LTS
       - run: chmod +x ./gradlew
+      - name: Build with Gradle
+        run: ./gradlew build --stacktrace
       - name: Upload to CurseForge and Modrinth
         env:
           CHANGELOG: ${{ github.event.release.body }}
