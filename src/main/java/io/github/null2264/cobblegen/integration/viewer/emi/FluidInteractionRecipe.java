@@ -19,10 +19,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -34,11 +31,11 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     public FluidInteractionRecipe(
             Fluid sourceFluid,
-            @Nullable Fluid neighbourFluid,
-            @Nullable Block neighbourBlock,
+            Fluid neighbourFluid,
+            Block neighbourBlock,
             WeightedBlock result,
             GeneratorType type,
-            @Nullable Block modifier
+            Block modifier
     ) {
         super(sourceFluid, neighbourFluid, neighbourBlock, result, type, modifier);
         initialHeight =
@@ -66,12 +63,12 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
     @Override
     public List<EmiIngredient> getInputs() {
         EmiStack source = EmiStack.of(getSourceFluid(), 81_000);
-        EmiStack neighbour = EmiStack.of(getNeighbourFluid() != null ? getNeighbourFluid() : Fluids.EMPTY, 81_000);
+        EmiStack neighbour = EmiStack.of(getNeighbourFluid(), 81_000);
         return List.of(
                 source.copy().setRemainder(source),
-                getType().equals(GeneratorType.BASALT) ? EmiStack.of(getNeighbourBlock() != null ? getNeighbourBlock() : Blocks.AIR)
+                getType().equals(GeneratorType.BASALT) ? EmiStack.of(getNeighbourBlock())
                         : neighbour.copy().setRemainder(neighbour),
-                EmiStack.of(getModifier() != null ? getModifier() : Blocks.AIR)
+                EmiStack.of(getModifier())
         );
     }
 

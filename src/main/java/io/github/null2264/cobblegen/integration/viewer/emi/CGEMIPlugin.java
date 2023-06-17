@@ -10,6 +10,7 @@ import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.Map;
 import java.util.Objects;
@@ -58,11 +59,11 @@ public class CGEMIPlugin implements EmiPlugin
                         registry.addRecipe(
                                 new FluidInteractionRecipe(
                                         fluid,
-                                        generator.getFluid(),
-                                        generator.getBlock(),
+                                        Util.notNullOr(generator.getFluid(), Fluids.EMPTY),
+                                        Util.notNullOr(generator.getBlock(), Blocks.AIR),
                                         block,
                                         generator.getType(),
-                                        modifier
+                                        Util.notNullOr(modifier, Blocks.AIR)
                                 )
                         );
                 })));

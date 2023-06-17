@@ -99,9 +99,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
                             .entries(display.getOutputEntries().get(0))
                             .markOutput()
                             .disableBackground());
-        val modifier = display.getInputEntries().get(2).get(0);
-        if (modifier != null)
-            widgets.add(Widgets.createSlot(resultMod).entry(modifier).markInput().disableBackground());
+        widgets.add(Widgets.createSlot(resultMod).entry(display.getInputEntries().get(2).get(0)).markInput().disableBackground());
 
         // Additional Info
         Minecraft minecraft = Minecraft.getInstance();

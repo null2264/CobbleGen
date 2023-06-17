@@ -48,7 +48,7 @@ repositories {
 archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + isFabric ? "-fabric" : "-forge"
+project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + (isFabric ? "-fabric" : "-forge")
 
 ext.isAlpha = project.version_stage == "ALPHA"
 ext.isBeta = project.version_stage == "BETA"

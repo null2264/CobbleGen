@@ -110,7 +110,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var resultY = y;
         var resultModY = y + offset + gap;
 
-        if (type == GeneratorType.STONE) {
+        if (type.equals(GeneratorType.STONE)) {
             lavaX = x + offset + gap;
             coldY = y + offset + gap;
             resultY = resultModY;
@@ -118,12 +118,12 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
 
         val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
-        if (neighbourBlock != null) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultInstance());
+        if (type.equals(GeneratorType.BASALT)) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultInstance());
         else coldBuilder.addFluidStack(neighbourFluid, full);
         builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(source, full);
         builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY)
                 .addItemStack(output.getBlock().asItem().getDefaultInstance());
-        if (modifier != null) builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY)
+        builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY)
                 .addItemStack(modifier.asItem().getDefaultInstance());
     }
 

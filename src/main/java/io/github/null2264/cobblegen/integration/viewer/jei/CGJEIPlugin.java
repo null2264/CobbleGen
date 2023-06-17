@@ -15,6 +15,8 @@ import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -55,11 +57,11 @@ public class CGJEIPlugin implements IModPlugin
                         recipes.add(
                                 new FluidInteractionRecipeHolder(
                                         fluid,
-                                        generator.getFluid(),
-                                        generator.getBlock(),
+                                        Util.notNullOr(generator.getFluid(), Fluids.EMPTY),
+                                        Util.notNullOr(generator.getBlock(), Blocks.AIR),
                                         block,
                                         generator.getType(),
-                                        modifier
+                                        Util.notNullOr(modifier, Blocks.AIR)
                                 )
                         );
                     registration.addRecipes(new RecipeType<>(

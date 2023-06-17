@@ -9,6 +9,8 @@ import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 
 import java.util.Objects;
 
@@ -38,11 +40,11 @@ public class CGREIPlugin implements REIClientPlugin
                         registry.add(
                                 new FluidInteractionRecipe(
                                         fluid,
-                                        generator.getFluid(),
-                                        generator.getBlock(),
+                                        Util.notNullOr(generator.getFluid(), Fluids.EMPTY),
+                                        Util.notNullOr(generator.getBlock(), Blocks.AIR),
                                         block,
                                         generator.getType(),
-                                        modifier
+                                        Util.notNullOr(modifier, Blocks.AIR)
                                 )
                         );
                 })));
