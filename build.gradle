@@ -193,6 +193,7 @@ remapJar {
 }
 
 processResources {
+    def metadataVersion = "${project.mod_version}-${project.version_stage}"
     def metadataMCVersion =
             supportedVersionRange[0] != null ? (
             (isFabric ? ">=" : "[") +
@@ -201,12 +202,12 @@ processResources {
                     ? (isFabric ? "" : ",)")
                     : ((isFabric ? ", <=" : ",") + supportedVersionRange[1] + (isFabric ? "" : "]")))
             ) : (isFabric ? supportedVersionRange[1] : "[${supportedVersionRange[1]}]")
-    inputs.property "version", project.version
+    inputs.property "version", metadataVersion
     inputs.property "mcversion", metadataMCVersion
     filteringCharset "UTF-8"
 
     filesMatching(isFabric ? "fabric.mod.json" : "META-INF/mods.toml") {
-        expand "version": project.version, 'mcversion': metadataMCVersion
+        expand "version": metadataVersion, 'mcversion': metadataMCVersion
     }
 }
 
