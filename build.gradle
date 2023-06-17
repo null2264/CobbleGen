@@ -200,7 +200,7 @@ processResources {
             supportedVersionRange[0] +
             (supportedVersionRange[1] == null
                     ? (isFabric ? "" : ",)")
-                    : ((isFabric ? ", <=" : ",") + supportedVersionRange[1] + (isFabric ? "" : "]")))
+                    : ((isFabric ? " <=" : ",") + supportedVersionRange[1] + (isFabric ? "" : "]")))
             ) : (isFabric ? supportedVersionRange[1] : "[${supportedVersionRange[1]}]")
     inputs.property "version", metadataVersion
     inputs.property "mcversion", metadataMCVersion
