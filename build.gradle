@@ -190,11 +190,13 @@ remapJar {
 
 processResources {
     def metadataMCVersion =
+            supportedVersionRange[0] != null ? (
             (isFabric ? ">=" : "[") +
             supportedVersionRange[0] +
             (supportedVersionRange[1] == null
                     ? (isFabric ? "" : ",)")
                     : ((isFabric ? ", " : ",") + supportedVersionRange[1] + (isFabric ? "" : "]")))
+            ) : (isFabric ? supportedVersionRange[1] : "[${supportedVersionRange[1]}]")
     inputs.property "version", project.version
     inputs.property "mcversion", metadataMCVersion
     filteringCharset "UTF-8"
