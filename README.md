@@ -1,5 +1,5 @@
 <h1 align="center">
-<img src="./icon.png" alt="CobbleGen" width="150"/><br/>
+<img src="./src/main/resources/icon.png" alt="CobbleGen" width="150"/><br/>
 CobbleGen
 </h1>
 
