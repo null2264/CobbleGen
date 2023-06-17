@@ -146,8 +146,11 @@ dependencies {
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
     else  // I need the full package since for whatever reason @REIPluginClient is not included in API, thanks REI
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${reiVersions[mcVersion]}")
-    if (project.recipe_viewer == "rei")
+    if (project.recipe_viewer == "rei") {
+        if (mcVersion == 11902)  // REI's stupid dep bug
+            modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
         modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
+    }
 
     // JEI
     def jeiVersions = [
