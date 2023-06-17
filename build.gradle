@@ -252,18 +252,20 @@ if (ext.isAlpha) {
     _releaseType = "beta"
 }
 
+def mcReleaseVersions = [
+        11802: ["1.18.2"],
+        11902: ["1.19", "1.19.1", "1.19.2"],
+        11904: ["1.19.3", "1.19.4"],
+        12001: ["1.20", "1.20.1"],
+][mcVersion]
+
 unifiedPublishing {
     project {
         releaseType = _releaseType
-        displayName = "v${project.mod_version}-${project.version_stage}"
+        displayName = "v${project.mod_version}-${project.version_stage} for MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}"
         version = project.version as String
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-        gameVersions = [
-                11802: ["1.18.2"],
-                11902: ["1.19", "1.19.1", "1.19.2"],
-                11904: ["1.19.3", "1.19.4"],
-                12001: ["1.20", "1.20.1"],
-        ][mcVersion]
+        gameVersions = mcReleaseVersions
         gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
 
         mainPublication tasks.remapJar
