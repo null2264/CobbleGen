@@ -9,7 +9,16 @@ def isFabric = project.name.endsWith("fabric")
 def mcVersion
 def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
 mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
-def mcVersionStr = "${(int)(mcVersion/10000)}.${(int)(mcVersion/100)%100}" + (mcVersion%100==0 ? '' : ".${mcVersion%100}")
+static def String stringifyVersion(int ver) {
+    return "${(int)(ver/10000)}.${(int)(ver/100)%100}" + (ver%100==0 ? '' : ".${ver%100}")
+}
+def mcVersionStr = stringifyVersion(mcVersion)
+def supportedVersionRange = [
+        11802: [null, "1.18.2"],
+        11902: ["1.19", "1.19.2"],
+        11904: ["1.19.3", "1.19.4"],
+        12001: ["1.20", null],
+][mcVersion]
 
 preprocess {
     vars.put("MC", mcVersion)
@@ -39,7 +48,7 @@ repositories {
 archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-version = project.mod_version + (buildNumber != null ? "+${buildNumber}-" : "-") + project.version_stage
+project.version = project.mod_version + "mc${mcVersionStr}" + (buildNumber != null ? "+${buildNumber}-" : "-") + project.version_stage
 
 ext.isAlpha = project.version_stage == "ALPHA"
 ext.isBeta = project.version_stage == "BETA"
@@ -180,12 +189,18 @@ remapJar {
 }
 
 processResources {
+    def metadataMCVersion =
+            (isFabric ? ">=" : "[") +
+            supportedVersionRange[0] +
+            (supportedVersionRange[1] == null
+                    ? (isFabric ? "" : ",)")
+                    : ((isFabric ? ", " : ",") + supportedVersionRange[1] + (isFabric ? "" : "]")))
     inputs.property "version", project.version
-    inputs.property 'mcversion', { mcVersionStr }
+    inputs.property "mcversion", metadataMCVersion
     filteringCharset "UTF-8"
 
-    filesMatching(["fabric.mod.json", "META-INF/mods.toml"]) {
-        expand "version": project.version, 'mcversion': mcVersionStr
+    filesMatching(isFabric ? "fabric.mod.json" : "META-INF/mods.toml") {
+        expand "version": project.version, 'mcversion': metadataMCVersion
     }
 }
 
@@ -234,9 +249,14 @@ unifiedPublishing {
     project {
         releaseType = _releaseType
         displayName = "v${project.mod_version}-${project.version_stage}"
-        version = version as String
+        version = project.version as String
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-        gameVersions = ["1.18.2"]  // TODO
+        gameVersions = [
+                11802: ["1.18.2"],
+                11902: ["1.19", "1.19.1", "1.19.2"],
+                11904: ["1.19.3", "1.19.4"],
+                12000: ["1.20"],
+        ][mcVersion]
         gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
 
         mainPublication tasks.remapJar
