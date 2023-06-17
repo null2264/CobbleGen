@@ -48,7 +48,7 @@ repositories {
 archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage
+project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + isFabric ? "-fabric" : "-forge"
 
 ext.isAlpha = project.version_stage == "ALPHA"
 ext.isBeta = project.version_stage == "BETA"
@@ -239,11 +239,6 @@ jar {
     }
 }
 
-if (System.getenv("GITHUB_ENV")) {
-    def envFile = new File(System.getenv("GITHUB_ENV"))
-    envFile.append("VERSION=${version}")
-}
-
 def _releaseType = "release"
 if (ext.isAlpha) {
     _releaseType = "alpha"
@@ -261,7 +256,7 @@ def mcReleaseVersions = [
 unifiedPublishing {
     project {
         releaseType = _releaseType
-        displayName = "v${project.mod_version}-${project.version_stage} for MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}"
+        displayName = "[${isFabric ? "Fabric" : "Forge"} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
         version = project.version as String
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
         gameVersions = mcReleaseVersions
