@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
@@ -132,12 +131,16 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public void draw(
             FluidInteractionRecipeHolder recipe,
             IRecipeSlotsView recipeSlotsView,
-            PoseStack stack,
+            //#if MC<12000
+            com.mojang.blaze3d.vertex.PoseStack stack,
+            //#else
+            //$$ net.minecraft.client.gui.GuiGraphics graphics,
+            //#endif
             double mouseX,
             double mouseY
     ) {
         Minecraft minecraft = Minecraft.getInstance();
-        Font textRenderer = minecraft.font;
+        Font font = minecraft.font;
         var minY = recipe.getResult().minY;
         if (minY == null) minY = minecraft.level != null ? minecraft.level.getMinBuildHeight() : 0;
         var maxY = recipe.getResult().maxY;
@@ -153,23 +156,57 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
 
         var y = 0;
         for (Component text : texts) {
-            int width = textRenderer.width(text);
-            textRenderer.draw(stack, text, getBackground().getWidth() - width, y, 0xFF808080);
-            y += textRenderer.lineHeight;
+            int width = font.width(text);
+            //#if MC<12000
+            font.draw(
+                    stack,
+            //#else
+            //$$ graphics.drawString(
+            //$$         font,
+            //#endif
+                    text,
+                    getBackground().getWidth() - width, y,
+                    0xFF808080
+            );
+            y += font.lineHeight;
         }
         Component text = TextCompat.translatable("cobblegen.info.dimensions");
         var deepestY = initialHeight + 9;
-        textRenderer.draw(
+        //#if MC<12000
+        font.draw(
                 stack,
+        //#else
+        //$$ graphics.drawString(
+        //$$         font,
+        //#endif
                 text,
-                ((float) getBackground().getWidth() / 2) - ((float) textRenderer.width(text) / 2),
+                //#if MC>=12000
+                //$$ (int)
+                //#endif
+                (((float) getBackground().getWidth() / 2) - ((float) font.width(text) / 2)),
                 deepestY,
                 0xFF808080
         );
-        deepestY = deepestY + textRenderer.lineHeight + 9;
+        deepestY = deepestY + font.lineHeight + 9;
         dimensionIconsY = deepestY;
-        whitelistIcon.draw(stack, 18, deepestY);
-        blacklistIcon.draw(stack, getBackground().getWidth() - 15 - 18, deepestY);
+        whitelistIcon.draw(
+                //#if MC<12000
+                stack,
+                //#else
+                //$$ graphics,
+                //#endif
+                18,
+                deepestY
+        );
+        blacklistIcon.draw(
+                //#if MC<12000
+                stack,
+                //#else
+                //$$ graphics,
+                //#endif
+                getBackground().getWidth() - 15 - 18,
+                deepestY
+        );
     }
 
     @NotNull
