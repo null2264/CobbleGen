@@ -157,6 +157,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var y = 0;
         for (Component text : texts) {
             int width = font.width(text);
+            // TODO: Move this to `compat.GraphicsCompat` class
             //#if MC<12000
             font.draw(
                     stack,
@@ -166,15 +167,16 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             //#endif
                     text,
                     getBackground().getWidth() - width, y,
-                    0xFF808080,
+                    0xFF808080
                     //#if MC>=12000
-                    //$$ false // Don't add shadow
+                    //$$ ,false // Don't add shadow
                     //#endif
             );
             y += font.lineHeight;
         }
         Component text = TextCompat.translatable("cobblegen.info.dimensions");
         var deepestY = initialHeight + 9;
+        // TODO: Move this to `compat.GraphicsCompat` class
         //#if MC<12000
         font.draw(
                 stack,
@@ -188,9 +190,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                 //#endif
                 (((float) getBackground().getWidth() / 2) - ((float) font.width(text) / 2)),
                 deepestY,
-                0xFF808080,
+                0xFF808080
                 //#if MC>=12000
-                //$$ false // Don't add shadow
+                //$$ ,false // Don't add shadow
                 //#endif
         );
         deepestY = deepestY + font.lineHeight + 9;
