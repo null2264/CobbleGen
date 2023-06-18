@@ -166,7 +166,10 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             //#endif
                     text,
                     getBackground().getWidth() - width, y,
-                    0xFF808080
+                    0xFF808080,
+                    //#if MC>=12000
+                    //$$ false // Don't add shadow
+                    //#endif
             );
             y += font.lineHeight;
         }
@@ -185,7 +188,10 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                 //#endif
                 (((float) getBackground().getWidth() / 2) - ((float) font.width(text) / 2)),
                 deepestY,
-                0xFF808080
+                0xFF808080,
+                //#if MC>=12000
+                //$$ false // Don't add shadow
+                //#endif
         );
         deepestY = deepestY + font.lineHeight + 9;
         dimensionIconsY = deepestY;
