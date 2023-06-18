@@ -59,7 +59,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Override
     public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
-        if (config == null) config = loadConfig(isReload);
+        if (config == null || isReload) config = loadConfig(isReload);
         if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();
@@ -155,6 +155,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
         try {
             CGLog.info("Trying to " + string + " config file...");
             JsonObject json = jankson.load(configFile);
+            System.out.println(json.toJson(JsonGrammar.COMPACT));
             return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
         } catch (Exception e) {
             CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
