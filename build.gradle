@@ -167,11 +167,13 @@ dependencies {
     if (project.recipe_viewer == "jei")
         modLocalRuntime("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
 
+    /* FIXME: Broken, somehow
     if (mcVersion == 11802 && isFabric) {
         modLocalRuntime("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
         modLocalRuntime("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
         modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
     }
+     */
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
