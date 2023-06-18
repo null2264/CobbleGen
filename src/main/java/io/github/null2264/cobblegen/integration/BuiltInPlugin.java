@@ -155,7 +155,6 @@ public class BuiltInPlugin implements CobbleGenPlugin
         try {
             CGLog.info("Trying to " + string + " config file...");
             JsonObject json = jankson.load(configFile);
-            System.out.println(json.toJson(JsonGrammar.COMPACT));
             return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
         } catch (Exception e) {
             CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
@@ -165,7 +164,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
                 return config;
             }
 
-            val newConfig = new ConfigData();
+            val newConfig = ConfigData.defaultConfig();
             if (!configFile.exists()) {
                 saveConfig(newConfig);
             }
