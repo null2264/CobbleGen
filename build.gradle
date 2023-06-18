@@ -90,8 +90,8 @@ dependencies {
     mappings loom.officialMojangMappings()
 
     if (isFabric) {
-        if (mcVersion == 11902)
-            modImplementation "net.fabricmc:fabric-loader:0.14.14"  // I don't get it, REI hate 0.14.21, wtf?
+        if (mcVersion <= 11902)
+            modImplementation "net.fabricmc:fabric-loader:0.14.14"  // I don't get it, REI hate 0.14.21 in 1.19.2 or lower, wtf?
         else
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
 
