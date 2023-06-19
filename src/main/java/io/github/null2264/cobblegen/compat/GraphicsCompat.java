@@ -16,7 +16,7 @@ public class GraphicsCompat {
         //#if MC<12000
         return font.draw(pose, text, x, y, colour);
         //#else
-        //$$ return graphics.drawString(font, pose, text, x, y, colour, false);
+        //$$ return graphics.drawString(font, graphics, text, x, y, colour, false);
         //#endif
     }
 }

@@ -167,20 +167,12 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         deepestY = deepestY + font.lineHeight + 9;
         dimensionIconsY = deepestY;
         whitelistIcon.draw(
-                //#if MC<12000
                 graphicsTarget,
-                //#else
-                //$$ graphics,
-                //#endif
                 18,
                 deepestY
         );
         blacklistIcon.draw(
-                //#if MC<12000
                 graphicsTarget,
-                //#else
-                //$$ graphics,
-                //#endif
                 getBackground().getWidth() - 15 - 18,
                 deepestY
         );
