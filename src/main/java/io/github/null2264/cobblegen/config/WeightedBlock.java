@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class WeightedBlock implements PacketSerializable<WeightedBlock>
 {
@@ -72,45 +73,24 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(id);
         buf.writeDouble(weight);
-        if (dimensions != null) {
-            buf.writeInt(dimensions.size());
-            for (String dimId : dimensions) {
-                buf.writeUtf(dimId);
-            }
-        } else buf.writeInt(0);
-        if (excludedDimensions != null) {
-            buf.writeInt(excludedDimensions.size());
-            for (String dimId : excludedDimensions) {
-                buf.writeUtf(dimId);
-            }
-        } else buf.writeInt(0);
-        buf.writeInt(maxY == null ? Level.MAX_ENTITY_SPAWN_Y : maxY);
-        buf.writeInt(minY == null ? Level.MIN_ENTITY_SPAWN_Y : minY);
+
+        buf.writeCollection(Util.notNullOr(dimensions, List.of()), FriendlyByteBuf::writeUtf);
+        buf.writeCollection(Util.notNullOr(excludedDimensions, List.of()), FriendlyByteBuf::writeUtf);
+
+        buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
+        buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
     }
 
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
         val id = buf.readUtf();
         val weight = buf.readDouble();
-        val _dimSize = buf.readInt();
-        List<String> dimensions = null;
-        if (_dimSize > 0) {
-            dimensions = new ArrayList<>(_dimSize);
-            for (int i = 0; i < _dimSize; i++) {
-                dimensions.add(buf.readUtf());
-            }
-        }
-        val _exDimSize = buf.readInt();
-        List<String> excludedDimensions = null;
-        if (_exDimSize > 0) {
-            excludedDimensions = new ArrayList<>(_exDimSize);
-            for (int i = 0; i < _dimSize; i++) {
-                excludedDimensions.add(buf.readUtf());
-            }
-        }
-        Integer maxY = buf.readInt();
-        if (maxY == Level.MAX_ENTITY_SPAWN_Y) maxY = null;
-        Integer minY = buf.readInt();
-        if (minY == Level.MIN_ENTITY_SPAWN_Y) minY = null;
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY);
+
+        List<String> dimensions = buf.readList(FriendlyByteBuf::readUtf);
+        List<String> excludedDimensions = buf.readList(FriendlyByteBuf::readUtf);
+
+        Optional<Integer> maxY = buf.readOptional(FriendlyByteBuf::readInt);
+        Optional<Integer> minY = buf.readOptional(FriendlyByteBuf::readInt);
+
+        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY.orElse(null), minY.orElse(null));
     }
 }

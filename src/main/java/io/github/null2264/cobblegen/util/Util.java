@@ -35,6 +35,13 @@ public class Util
         return nullable;
     }
 
+    @NotNull
+    public static <T> Optional<T> optional(@Nullable T nullable) {
+        if (nullable == null)
+            return Optional.empty();
+        return Optional.of(nullable);
+    }
+
     public static boolean isPortingLibLoaded() {
         return Loader.isModLoaded("porting_lib");
     }

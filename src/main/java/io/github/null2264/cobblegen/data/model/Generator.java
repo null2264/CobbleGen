@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
 import net.minecraft.core.BlockPos;
@@ -87,7 +88,8 @@ public interface Generator extends PacketSerializable<Generator>
         try {
             Method method = Class.forName(className).getMethod("fromPacket", FriendlyByteBuf.class);
             return (Generator) method.invoke(null, buf);
-        } catch (Exception ignored) {
+        } catch (Throwable t) {
+            CGLog.error("Failed to get generator packet: " + className + " ", t);
         }
         return null;
     }

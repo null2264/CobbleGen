@@ -3,12 +3,14 @@ package io.github.null2264.cobblegen.data.generator;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -71,42 +73,25 @@ public class BasaltGenerator extends BlockGenerator
     @Override
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(this.getClass().getName());
-        val outMap = getOutput();
-        buf.writeInt(outMap.size());
 
-        for (Map.Entry<String, List<WeightedBlock>> out : outMap.entrySet()) {
-            buf.writeUtf(out.getKey());
-
-            val blocks = out.getValue();
-            buf.writeInt(blocks.size());
-
-            for (WeightedBlock block : blocks) {
-                block.toPacket(buf);
-            }
-        }
-
-        buf.writeResourceLocation(Util.getBlockId(block));
+        buf.writeUtf(Util.getBlockId(block).toString());
         buf.writeBoolean(silent);
+
+        val outMap = getOutput();
+        buf.writeMap(
+                outMap,
+                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+        );
     }
 
     @SuppressWarnings("unused")
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val _outSize = buf.readInt();
-        val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
-        for (int i = 0; i < _outSize; i++) {
-            val key = buf.readUtf();
-
-            val _blocksSize = buf.readInt();
-            val blocks = new ArrayList<WeightedBlock>(_blocksSize);
-
-            for (int j = 0; j < _blocksSize; j++) {
-                blocks.add(WeightedBlock.fromPacket(buf));
-            }
-            outMap.put(key, blocks);
-        }
-
         val block = Util.getBlock(buf.readResourceLocation());
         val silent = buf.readBoolean();
+
+        Map<String, List<WeightedBlock>> outMap =
+                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+
         return new BasaltGenerator(outMap, block, silent);
     }
 }

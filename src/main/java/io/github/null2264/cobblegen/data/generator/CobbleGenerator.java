@@ -84,44 +84,28 @@ public class CobbleGenerator extends BlockGenerator
         return Optional.empty();
     }
 
+    @Override
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(this.getClass().getName());
-        val outMap = getOutput();
-        buf.writeInt(outMap.size());
-
-        for (Map.Entry<String, List<WeightedBlock>> out : outMap.entrySet()) {
-            buf.writeUtf(out.getKey());
-
-            val blocks = out.getValue();
-            buf.writeInt(blocks.size());
-
-            for (WeightedBlock block : blocks) {
-                block.toPacket(buf);
-            }
-        }
 
         buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
+
+        val outMap = getOutput();
+        buf.writeMap(
+                outMap,
+                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+        );
     }
 
     @SuppressWarnings("unused")
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val _outSize = buf.readInt();
-        val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
-        for (int i = 0; i < _outSize; i++) {
-            val key = buf.readUtf();
-
-            val _blocksSize = buf.readInt();
-            val blocks = new ArrayList<WeightedBlock>(_blocksSize);
-
-            for (int j = 0; j < _blocksSize; j++) {
-                blocks.add(WeightedBlock.fromPacket(buf));
-            }
-            outMap.put(key, blocks);
-        }
-
         val fluid = Util.getFluid(buf.readResourceLocation());
         val silent = buf.readBoolean();
+
+        Map<String, List<WeightedBlock>> outMap =
+                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+
         return new CobbleGenerator(outMap, fluid, silent);
     }
 }
