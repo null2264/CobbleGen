@@ -4,6 +4,7 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -53,12 +54,12 @@ public class CGServerPlayNetworkHandler
         handler.send(createS2CPacket(Channel.SYNC, buf));
     }
 
-    private static ServerboundCustomPayloadPacket createS2CPacket(Channel channel, FriendlyByteBuf buf) {
+    private static ClientboundCustomPayloadPacket createS2CPacket(Channel channel, FriendlyByteBuf buf) {
         ResourceLocation channelId;
         switch (channel) {
             case PING -> channelId = SYNC_PING_CHANNEL;
             default -> channelId = SYNC_CHANNEL;
         }
-        return new ServerboundCustomPayloadPacket(channelId, buf);
+        return new ClientboundCustomPayloadPacket(channelId, buf);
     }
 }
