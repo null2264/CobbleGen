@@ -10,7 +10,7 @@ public class GraphicsCompat {
     //#if MC<12000
     public static int drawString(PoseStack pose, Component text, int x, int y, int colour) {
     //#else
-    //$$ public static int draw(net.minecraft.client.gui.GuiGraphics graphics, Component text, int x, int y, int colour) {
+    //$$ public static int drawString(net.minecraft.client.gui.GuiGraphics graphics, Component text, int x, int y, int colour) {
     //#endif
         Font font = Minecraft.getInstance().font;
         //#if MC<12000
