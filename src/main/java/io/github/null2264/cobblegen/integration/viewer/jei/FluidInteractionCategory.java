@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
+import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
@@ -132,9 +133,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             FluidInteractionRecipeHolder recipe,
             IRecipeSlotsView recipeSlotsView,
             //#if MC<12000
-            com.mojang.blaze3d.vertex.PoseStack stack,
+            com.mojang.blaze3d.vertex.PoseStack graphicsTarget,
             //#else
-            //$$ net.minecraft.client.gui.GuiGraphics graphics,
+            //$$ net.minecraft.client.gui.GuiGraphics graphicsTarget,
             //#endif
             double mouseX,
             double mouseY
@@ -157,49 +158,17 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var y = 0;
         for (Component text : texts) {
             int width = font.width(text);
-            // TODO: Move this to `compat.GraphicsCompat` class
-            //#if MC<12000
-            font.draw(
-                    stack,
-            //#else
-            //$$ graphics.drawString(
-            //$$         font,
-            //#endif
-                    text,
-                    getBackground().getWidth() - width, y,
-                    0xFF808080
-                    //#if MC>=12000
-                    //$$ ,false // Don't add shadow
-                    //#endif
-            );
+            GraphicsCompat.drawString(graphicsTarget, text, getBackground().getWidth() - width, y, 0xFF808080);
             y += font.lineHeight;
         }
         Component text = TextCompat.translatable("cobblegen.info.dimensions");
         var deepestY = initialHeight + 9;
-        // TODO: Move this to `compat.GraphicsCompat` class
-        //#if MC<12000
-        font.draw(
-                stack,
-        //#else
-        //$$ graphics.drawString(
-        //$$         font,
-        //#endif
-                text,
-                //#if MC>=12000
-                //$$ (int)
-                //#endif
-                (((float) getBackground().getWidth() / 2) - ((float) font.width(text) / 2)),
-                deepestY,
-                0xFF808080
-                //#if MC>=12000
-                //$$ ,false // Don't add shadow
-                //#endif
-        );
+        GraphicsCompat.drawString(graphicsTarget, text, (int) (((float) getBackground().getWidth() / 2) - ((float) font.width(text) / 2)), deepestY, 0xFF808080);
         deepestY = deepestY + font.lineHeight + 9;
         dimensionIconsY = deepestY;
         whitelistIcon.draw(
                 //#if MC<12000
-                stack,
+                graphicsTarget,
                 //#else
                 //$$ graphics,
                 //#endif
@@ -208,7 +177,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         );
         blacklistIcon.draw(
                 //#if MC<12000
-                stack,
+                graphicsTarget,
                 //#else
                 //$$ graphics,
                 //#endif
