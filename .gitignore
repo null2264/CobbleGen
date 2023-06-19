@@ -114,7 +114,8 @@ gradle-app.setting
 # Working directory
 run/
 run-server/
-!run/config/**/fabric_loader_dependencies.json
+!run/**/config/fabric_loader_dependencies.json
+!run/**/config/eula.txt
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
