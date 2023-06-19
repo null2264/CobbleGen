@@ -7,6 +7,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,13 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
 {
     public String id;
     public Double weight;
+    @Nullable
     public List<String> dimensions;
+    @Nullable
     public List<String> excludedDimensions;
+    @Nullable
     public Integer maxY;
+    @Nullable
     public Integer minY;
 
     public WeightedBlock(String id, Double weight) {
@@ -36,10 +41,10 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
     public WeightedBlock(
             String id,
             Double weight,
-            List<String> dimIds,
-            List<String> excludedDimensions,
-            Integer maxY,
-            Integer minY
+            @Nullable List<String> dimIds,
+            @Nullable List<String> excludedDimensions,
+            @Nullable Integer maxY,
+            @Nullable Integer minY
     ) {
         this.id = id;
         this.weight = weight;
@@ -74,8 +79,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
         buf.writeUtf(id);
         buf.writeDouble(weight);
 
-        buf.writeCollection(Util.notNullOr(dimensions, List.of()), FriendlyByteBuf::writeUtf);
-        buf.writeCollection(Util.notNullOr(excludedDimensions, List.of()), FriendlyByteBuf::writeUtf);
+        buf.writeOptional(Util.optional(dimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
 
         buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
         buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
@@ -85,12 +90,19 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
         val id = buf.readUtf();
         val weight = buf.readDouble();
 
-        List<String> dimensions = buf.readList(FriendlyByteBuf::readUtf);
-        List<String> excludedDimensions = buf.readList(FriendlyByteBuf::readUtf);
+        Optional<List<String>> dimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+        Optional<List<String>> excludedDimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
 
         Optional<Integer> maxY = buf.readOptional(FriendlyByteBuf::readInt);
         Optional<Integer> minY = buf.readOptional(FriendlyByteBuf::readInt);
 
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY.orElse(null), minY.orElse(null));
+        return new WeightedBlock(
+                id,
+                weight,
+                dimensions.orElse(null),
+                excludedDimensions.orElse(null),
+                maxY.orElse(null),
+                minY.orElse(null)
+        );
     }
 }
