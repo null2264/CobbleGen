@@ -26,7 +26,7 @@ public abstract class CreateFluidReactionsMixin
         return FLUID_INTERACTION.interactFromPipe(level, pos, fluid1, fluid2);
     }
 
-    @Inject(method = "handlePipeFlowCollision", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/BlockHelper;destroyBlock(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;F)V", shift = At.Shift.AFTER), cancellable = true)
+    @Inject(method = "handlePipeFlowCollision", at = @At(value = "INVOKE", target = "Lcom/simibubi/create/foundation/utility/BlockHelper;destroyBlock(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;F)V", shift = At.Shift.AFTER, remap = false), cancellable = true, remap = false)
     private static void generator$handlePipeFlowCollision(
             Level level, BlockPos pos, FluidStack fluid1, FluidStack fluid2, CallbackInfo ci
     ) {
@@ -35,7 +35,7 @@ public abstract class CreateFluidReactionsMixin
             ci.cancel();
     }
 
-    @Inject(method = "handlePipeSpillCollision", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "handlePipeSpillCollision", at = @At(value = "HEAD"), cancellable = true, remap = false)
     private static void generator$handlePipeSpillCollision(
             Level level, BlockPos pos, Fluid pipeFluid, FluidState worldFluid, CallbackInfo ci
     ) {
