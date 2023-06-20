@@ -66,7 +66,7 @@ public class BasaltGenerator extends BlockGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction) {
         BlockPos blockPos = pos.relative(direction.getOpposite());
         if (level.getBlockState(blockPos).getBlock() == getBlock())
-            return getBlockCandidate(level, pos);
+            return getBlockCandidate(level, pos, getOutput());
         return Optional.empty();
     }
 

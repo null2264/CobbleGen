@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -20,19 +21,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class CobbleGenerator extends BlockGenerator
 {
     private final Map<String, List<WeightedBlock>> possibleBlocks;
+    private final Map<String, List<WeightedBlock>> obsidianReplacements;
     private Fluid fluid;
     private final boolean silent;
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(Map.of("*", possibleBlocks), fluid, silent);
+        this(Map.of("*", possibleBlocks), fluid, silent, Map.of());
     }
 
-    public CobbleGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent) {
+    public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {
+        this(Map.of("*", possibleBlocks), fluid, silent, obsidianReplacements);
+    }
+
+    public CobbleGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {
         this.possibleBlocks = possibleBlocks;
+        this.obsidianReplacements = obsidianReplacements;
         this.fluid = fluid;
         this.silent = silent;
     }
@@ -40,6 +48,11 @@ public class CobbleGenerator extends BlockGenerator
     @Override
     public @NotNull Map<String, List<WeightedBlock>> getOutput() {
         return possibleBlocks;
+    }
+
+    @Override
+    public Map<String, List<WeightedBlock>> getObsidianOutput() {
+        return obsidianReplacements;
     }
 
     @Override
@@ -76,10 +89,15 @@ public class CobbleGenerator extends BlockGenerator
     @Override
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         if (Generator.getStillFluid(neighbour) == getFluid()) {
-            if (source.getType() == Fluids.LAVA && source.isSource())
+            AtomicReference<Boolean> isExperimentalEnabled = new AtomicReference<>(false);
+            Util.optional(CobbleGen.META_CONFIG).ifPresent((e) -> isExperimentalEnabled.set(e.enableExperimentalFeatures));
+            if (source.getType() == Fluids.LAVA && source.isSource()) {
+                if (isExperimentalEnabled.get())
+                    return getBlockCandidate(level, pos, getObsidianOutput(), Blocks.OBSIDIAN);
                 return Optional.of(Blocks.OBSIDIAN.defaultBlockState());
+            }
 
-            return getBlockCandidate(level, pos);
+            return getBlockCandidate(level, pos, getOutput());
         }
         return Optional.empty();
     }
@@ -91,9 +109,12 @@ public class CobbleGenerator extends BlockGenerator
         buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
 
-        val outMap = getOutput();
         buf.writeMap(
-                outMap,
+                getOutput(),
+                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+        );
+        buf.writeMap(
+                getObsidianOutput(),
                 FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
         );
     }
@@ -105,7 +126,9 @@ public class CobbleGenerator extends BlockGenerator
 
         Map<String, List<WeightedBlock>> outMap =
                 buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+        Map<String, List<WeightedBlock>> obiMap =
+                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
 
-        return new CobbleGenerator(outMap, fluid, silent);
+        return new CobbleGenerator(outMap, fluid, silent, obiMap);
     }
 }

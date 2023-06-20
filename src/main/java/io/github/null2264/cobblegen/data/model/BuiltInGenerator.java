@@ -12,6 +12,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -19,10 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
-    private String randomizeBlockId(Block key, String dim, Integer yLevel) {
-        val blockIds = getOutput().getOrDefault(
+    private String randomizeBlockId(Block key, String dim, Integer yLevel, Map<String, List<WeightedBlock>> candidates) {
+        val blockIds = candidates.getOrDefault(
                 Util.getBlockId(key).toString(),
-                getOutput().getOrDefault("*", List.of())
+                candidates.getOrDefault("*", List.of())
         );
 
         if (blockIds.isEmpty()) return null;
@@ -63,14 +64,23 @@ public interface BuiltInGenerator extends Generator
         return filteredBlockIds.get(idx).id;
     }
 
-    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos) {
+    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, Map<String, List<WeightedBlock>> candidates) {
+        return getBlockCandidate(level, pos, candidates, null);
+    }
+
+    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, Map<String, List<WeightedBlock>> candidates, Block defaultBlock) {
         val replacementId = randomizeBlockId(
                 level.getBlockState(pos.below()).getBlock(),
                 Util.getDimension(level),
-                pos.getY()
+                pos.getY(),
+                candidates
         );
 
-        if (replacementId == null) return Optional.empty();
+        if (replacementId == null) {
+            if (defaultBlock != null)
+                return Optional.of(defaultBlock.defaultBlockState());
+            return Optional.empty();
+        }
 
         return Optional.of(Util.getBlock(new ResourceLocation(replacementId)).defaultBlockState());
     }

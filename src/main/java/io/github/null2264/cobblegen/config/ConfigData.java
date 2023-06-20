@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigData
+public class ConfigData extends Config
 {
     @Nullable
     @Comment(value = """
@@ -59,6 +59,9 @@ public class ConfigData
 
     @Nullable
     public Map<String, Map<String, AdvancedGen>> advanced;
+
+    @Comment(value="Enable Experimental Features")
+    public Boolean enableExperimentalFeatures = false;
 
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();

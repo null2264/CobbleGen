@@ -54,7 +54,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Override
     public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
-        if (config == null || isReload) config = loadConfig(isReload, configFile, config);
+        if (config == null || isReload) config = loadConfig(isReload, configFile, config, ConfigData.defaultConfig(), ConfigData.class);
         if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();
@@ -78,6 +78,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
                 Fluid actualFluid = getFluidFromString(fluid);
                 value.forEach((neighbour, gen) -> {
                     val results = gen.results;
+                    val obi = gen.obsidian;
 
                     boolean isNeighbourBlock = neighbour.startsWith("b:");
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);
@@ -99,7 +100,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
                         if (isNeighbourBlock)
                             generator = new BasaltGenerator(results, getBlockFromString(neighbour), gen.silent);
                         else
-                            generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent);
+                            generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent, obi);
 
                         registry.addGenerator(actualFluid, generator);
                         count.getAndIncrement();
@@ -108,7 +109,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
             });
 
         registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, Map.of()));
         registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 
