@@ -12,10 +12,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    outputs:
-      ARTIFACT_PATH: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_PATH }}
-      ARTIFACT_NAME: ${{ steps.prepare_artifact_metadata.outputs.ARTIFACT_NAME }}
-
     steps:
       - uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v1
@@ -26,14 +22,9 @@ jobs:
           java-version: 17
       - run: chmod +x ./gradlew
       - name: Build with Gradle
-        run: ./gradlew build
-      - name: Prepare artifact metadata. Note that VERSION is set by the gradle script.
-        id: prepare_artifact_metadata
-        run: |
-          echo "ARTIFACT_PATH=./build/libs/cobblegen-${VERSION}.jar" >> $GITHUB_OUTPUT
-          echo "ARTIFACT_NAME=cobblegen-${VERSION}.jar" >> $GITHUB_OUTPUT
+        run: ./gradlew build --stacktrace
       - name: Archive build results
-        run: tar -I zstd -cf build.tar.zst .gradle build
+        run: tar -I zstd -cf build.tar.zst versions/*/build/libs
       - name: Upload build and gradle folders
         uses: actions/upload-artifact@v3
         with:
@@ -54,63 +45,29 @@ jobs:
       - name: Unpack build artifact
         run: tar axf build.tar.zst
       - name: Upload Release Artifact
-        uses: actions/upload-release-asset@v1.0.1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ${{ needs.build.outputs.ARTIFACT_PATH }}
-          asset_name: ${{ needs.build.outputs.ARTIFACT_NAME }}
-          asset_content_type: application/zip
+          files: |
+            versions/*/build/libs/!(*-dev-shade|*-sources).jar
 
-  deploy-curseforge:
-    name: Deploy to CurseForge
-    needs: build
+  deploy-mod:
+    name: Deploy Mod
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: gradle/wrapper-validation-action@v1
       - name: Setup JDK
         uses: actions/setup-java@v1
         with:
           java-version: 17  # Current Java LTS
       - run: chmod +x ./gradlew
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-      - name: Unpack build artifact
-        run: tar axf build.tar.zst
-      - name: Validate artifacts exist
-        run: test -d ./build && test -d ./.gradle
-      - name: Upload to Curseforge
+      - name: Build with Gradle
+        run: ./gradlew build --stacktrace
+      - name: Upload to CurseForge and Modrinth
         env:
           CHANGELOG: ${{ github.event.release.body }}
           CURSEFORGE: ${{ secrets.CURSEFORGE }}
-        run: ./gradlew curseforge --no-daemon --max-workers 1
-
-  deploy-modrinth:
-    name: Deploy to Modrinth
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: gradle/wrapper-validation-action@v1
-      - name: Setup JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 17  # Current Java LTS
-      - run: chmod +x ./gradlew
-      - name: Download build artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: build-artifacts
-      - name: Unpack build artifact
-        run: tar axf build.tar.zst
-      - name: Validate artifacts exist
-        run: test -d ./build && test -d ./.gradle
-      - name: Upload to Modrinth
-        env:
-          CHANGELOG: ${{ github.event.release.body }}
           MODRINTH: ${{ secrets.MODRINTH }}
-        run: ./gradlew modrinth --no-daemon --max-workers 1
+        run: ./gradlew publishUnified --stacktrace --no-daemon --max-workers 1

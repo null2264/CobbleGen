@@ -3,21 +3,22 @@ package io.github.null2264.cobblegen.data.generator;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class BasaltGenerator extends BlockGenerator
 {
@@ -26,7 +27,7 @@ public class BasaltGenerator extends BlockGenerator
     private final boolean silent;
 
     public BasaltGenerator(List<WeightedBlock> possibleBlocks, Block block, boolean silent) {
-        this(Map.of(getCompat().getBlockId(Blocks.SOUL_SOIL).toString(), possibleBlocks), block, silent);
+        this(Map.of(Util.getBlockId(Blocks.SOUL_SOIL).toString(), possibleBlocks), block, silent);
     }
 
     public BasaltGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Block block, boolean silent) {
@@ -62,52 +63,35 @@ public class BasaltGenerator extends BlockGenerator
     }
 
     @Override
-    public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state, Direction direction) {
-        BlockPos blockPos = pos.offset(direction.getOpposite());
-        if (world.getBlockState(blockPos).getBlock() == getBlock())
-            return getBlockCandidate(world, pos);
+    public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction) {
+        BlockPos blockPos = pos.relative(direction.getOpposite());
+        if (level.getBlockState(blockPos).getBlock() == getBlock())
+            return getBlockCandidate(level, pos);
         return Optional.empty();
     }
 
     @Override
-    public void toPacket(PacketByteBuf buf) {
-        buf.writeString(this.getClass().getName());
-        val outMap = getOutput();
-        buf.writeInt(outMap.size());
+    public void toPacket(FriendlyByteBuf buf) {
+        buf.writeUtf(this.getClass().getName());
 
-        for (Map.Entry<String, List<WeightedBlock>> out : outMap.entrySet()) {
-            buf.writeString(out.getKey());
-
-            val blocks = out.getValue();
-            buf.writeInt(blocks.size());
-
-            for (WeightedBlock block : blocks) {
-                block.toPacket(buf);
-            }
-        }
-
-        buf.writeIdentifier(getCompat().getBlockId(block));
+        buf.writeUtf(Util.getBlockId(block).toString());
         buf.writeBoolean(silent);
+
+        val outMap = getOutput();
+        buf.writeMap(
+                outMap,
+                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+        );
     }
 
     @SuppressWarnings("unused")
-    public static Generator fromPacket(PacketByteBuf buf) {
-        val _outSize = buf.readInt();
-        val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
-        for (int i = 0; i < _outSize; i++) {
-            val key = buf.readString();
-
-            val _blocksSize = buf.readInt();
-            val blocks = new ArrayList<WeightedBlock>(_blocksSize);
-
-            for (int j = 0; j < _blocksSize; j++) {
-                blocks.add(WeightedBlock.fromPacket(buf));
-            }
-            outMap.put(key, blocks);
-        }
-
-        val block = getCompat().getBlock(buf.readIdentifier());
+    public static Generator fromPacket(FriendlyByteBuf buf) {
+        val block = Util.getBlock(buf.readResourceLocation());
         val silent = buf.readBoolean();
+
+        Map<String, List<WeightedBlock>> outMap =
+                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+
         return new BasaltGenerator(outMap, block, silent);
     }
 }

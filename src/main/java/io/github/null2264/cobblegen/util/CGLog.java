@@ -31,13 +31,24 @@ public class CGLog {
         LOG.error(rt.toString());
     }
 
+    public static void error(String prefix, Throwable t) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(prefix);
+        builder.append(errorString(t));
+        error(builder.toString());
+    }
+
     public static void error(Throwable t) {
+        error(errorString(t));
+    }
+
+    public static String errorString(Throwable t) {
         StringBuilder builder = new StringBuilder();
         builder.append(t.toString());
 
         StackTraceElement[] trace = t.getStackTrace();
         for (StackTraceElement traceElement : trace)
             builder.append("\n\tat ").append(traceElement);
-        error(builder.toString());
+        return builder.toString();
     }
 }

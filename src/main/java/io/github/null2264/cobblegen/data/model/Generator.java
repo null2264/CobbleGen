@@ -1,17 +1,18 @@
 package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.FlowableFluid;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,9 +26,9 @@ public interface Generator extends PacketSerializable<Generator>
 {
     static Fluid getStillFluid(FluidState fluidState) {
         try {
-            return ((FlowableFluid) fluidState.getFluid()).getStill();
+            return ((FlowingFluid) fluidState.getType()).getSource();
         } catch (ClassCastException ignore) {
-            return getStillFluid(fluidState.getFluid());
+            return getStillFluid(fluidState.getType());
         }
     }
 
@@ -36,19 +37,19 @@ public interface Generator extends PacketSerializable<Generator>
             return Fluids.LAVA;
         else if (fluid == Fluids.FLOWING_WATER)
             return Fluids.WATER;
-        else if (fluid instanceof FlowableFluid)
-            return ((FlowableFluid) fluid).getStill();
+        else if (fluid instanceof FlowingFluid)
+            return ((FlowingFluid) fluid).getSource();
         return fluid;
     }
 
     ;
 
-    Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state);
+    Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state);
 
     /**
      * Only override if you want to support Create mod's pipe
      */
-    default Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, FluidState source, FluidState neighbour) {
+    default Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         return Optional.empty();
     }
 
@@ -78,16 +79,17 @@ public interface Generator extends PacketSerializable<Generator>
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    default boolean check(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
+    default boolean check(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
         return true;
     }
 
-    static Generator fromPacket(PacketByteBuf buf) {
-        val className = buf.readString();
+    static Generator fromPacket(FriendlyByteBuf buf) {
+        val className = buf.readUtf();
         try {
-            Method method = Class.forName(className).getMethod("fromPacket", PacketByteBuf.class);
+            Method method = Class.forName(className).getMethod("fromPacket", FriendlyByteBuf.class);
             return (Generator) method.invoke(null, buf);
-        } catch (Exception ignored) {
+        } catch (Throwable t) {
+            CGLog.error("Failed to get generator packet: " + className + " ", t);
         }
         return null;
     }

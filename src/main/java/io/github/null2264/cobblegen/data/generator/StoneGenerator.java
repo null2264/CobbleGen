@@ -4,20 +4,19 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BuiltInGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.FluidState;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 
 public class StoneGenerator implements BuiltInGenerator
 {
@@ -61,64 +60,47 @@ public class StoneGenerator implements BuiltInGenerator
     }
 
     @Override
-    public boolean check(WorldAccess world, BlockPos pos, BlockState state, boolean fromTop) {
+    public boolean check(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
         return fromTop;
     }
 
     @Override
-    public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, BlockState state) {
-        return tryGenerate(world, pos, state.getFluidState(), world.getFluidState(pos));
+    public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state) {
+        return tryGenerate(level, pos, state.getFluidState(), level.getFluidState(pos));
     }
 
     @Override
-    public Optional<BlockState> tryGenerate(WorldAccess world, BlockPos pos, FluidState source, FluidState neighbour) {
+    public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         Fluid fluid = Generator.getStillFluid(neighbour);
         if (getFluid() == fluid) {
-            return getBlockCandidate(world, pos);
+            return getBlockCandidate(level, pos);
         }
 
         return Optional.empty();
     }
 
     @Override
-    public void toPacket(PacketByteBuf buf) {
-        buf.writeString(this.getClass().getName());
-        val outMap = getOutput();
-        buf.writeInt(outMap.size());
+    public void toPacket(FriendlyByteBuf buf) {
+        buf.writeUtf(this.getClass().getName());
 
-        for (Map.Entry<String, List<WeightedBlock>> out : outMap.entrySet()) {
-            buf.writeString(out.getKey());
-
-            val blocks = out.getValue();
-            buf.writeInt(blocks.size());
-
-            for (WeightedBlock block : blocks) {
-                block.toPacket(buf);
-            }
-        }
-
-        buf.writeIdentifier(getCompat().getFluidId(fluid));
+        buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
+
+        val outMap = getOutput();
+        buf.writeMap(
+                outMap,
+                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+        );
     }
 
     @SuppressWarnings("unused")
-    public static Generator fromPacket(PacketByteBuf buf) {
-        val _outSize = buf.readInt();
-        val outMap = new HashMap<String, List<WeightedBlock>>(_outSize);
-        for (int i = 0; i < _outSize; i++) {
-            val key = buf.readString();
-
-            val _blocksSize = buf.readInt();
-            val blocks = new ArrayList<WeightedBlock>(_blocksSize);
-
-            for (int j = 0; j < _blocksSize; j++) {
-                blocks.add(WeightedBlock.fromPacket(buf));
-            }
-            outMap.put(key, blocks);
-        }
-
-        val fluid = getCompat().getFluid(buf.readIdentifier());
+    public static Generator fromPacket(FriendlyByteBuf buf) {
+        val fluid = Util.getFluid(buf.readResourceLocation());
         val silent = buf.readBoolean();
+
+        Map<String, List<WeightedBlock>> outMap =
+                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+
         return new StoneGenerator(outMap, fluid, silent);
     }
 }

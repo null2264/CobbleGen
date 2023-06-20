@@ -3,6 +3,7 @@ package io.github.null2264.cobblegen.integration.viewer.jei;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -12,22 +13,23 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.block.Block;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
-import static io.github.null2264.cobblegen.CobbleGen.getCompat;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 @JeiPlugin
 public class CGJEIPlugin implements IModPlugin
 {
     @Override
-    public @NotNull Identifier getPluginUid() {
+    public @NotNull ResourceLocation getPluginUid() {
         return identifierOf("plugin");
     }
 
@@ -50,16 +52,16 @@ public class CGJEIPlugin implements IModPlugin
                     val recipes = new ArrayList<FluidInteractionRecipeHolder>();
                     Block modifier = null;
                     if (!Objects.equals(modifierId, "*"))
-                        modifier = getCompat().getBlock(new Identifier(modifierId));
+                        modifier = Util.getBlock(new ResourceLocation(modifierId));
                     for (WeightedBlock block : blocks)
                         recipes.add(
                                 new FluidInteractionRecipeHolder(
                                         fluid,
-                                        generator.getFluid(),
-                                        generator.getBlock(),
+                                        Util.notNullOr(generator.getFluid(), Fluids.EMPTY),
+                                        Util.notNullOr(generator.getBlock(), Blocks.AIR),
                                         block,
                                         generator.getType(),
-                                        modifier
+                                        Util.notNullOr(modifier, Blocks.AIR)
                                 )
                         );
                     registration.addRecipes(new RecipeType<>(
