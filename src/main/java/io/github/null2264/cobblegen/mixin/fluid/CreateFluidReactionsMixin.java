@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin.fluid;
 
-import com.simibubi.create.content.contraptions.fluids.FluidReactions;
 //#if FABRIC>=1
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 //#else
@@ -13,13 +12,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
-@Mixin(FluidReactions.class)
+@Pseudo
+@Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
 public abstract class CreateFluidReactionsMixin
 {
     private static boolean handleReaction(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
