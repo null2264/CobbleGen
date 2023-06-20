@@ -8,7 +8,7 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;
 
-public class Loader {
+public class LoaderCompat {
     public static boolean isModLoaded(String mod) {
         //#if FABRIC>=1
         return net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded(mod);

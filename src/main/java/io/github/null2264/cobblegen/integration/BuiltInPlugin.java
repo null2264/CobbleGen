@@ -2,7 +2,7 @@ package io.github.null2264.cobblegen.integration;
 
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
-import io.github.null2264.cobblegen.compat.Loader;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
@@ -36,7 +36,7 @@ import static io.github.null2264.cobblegen.util.Util.notNullOr;
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
 {
-    private static final Path configPath = Loader.getConfigDir();
+    private static final Path configPath = LoaderCompat.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     @Nullable
     private static ConfigData config = null;
