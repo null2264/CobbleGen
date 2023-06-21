@@ -20,6 +20,7 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
 
 import java.awt.*;
@@ -191,12 +192,12 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         ResourceLocation resultId = new ResourceLocation(getResult().id);
         ResourceLocation source = Util.getFluidId(getSourceFluid());
         ResourceLocation neighbour;
-        if (getNeighbourBlock() != null)
-            neighbour = Util.getBlockId(getNeighbourBlock());
-        else
+        if (getNeighbourBlock().equals(Blocks.AIR))
             neighbour = Util.getFluidId(getNeighbourFluid());
+        else
+            neighbour = Util.getBlockId(getNeighbourBlock());
         ResourceLocation modifierId = Util.identifierOf("none");
-        if (getModifier() != null)
+        if (!(getModifier().equals(Blocks.AIR)))
             modifierId = Util.getBlockId(getModifier());
         return Util.identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
                 .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName());
