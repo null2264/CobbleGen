@@ -4,7 +4,7 @@ import com.simibubi.create.AllFluids;
 import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
-import io.github.null2264.cobblegen.compat.Loader;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
@@ -20,7 +20,7 @@ public class CreatePlugin implements CobbleGenPlugin
 
     @Override
     public void registerInteraction(CGRegistry registry) {
-        if (!Loader.isModLoaded("create")) return;
+        if (!LoaderCompat.isModLoaded("create")) return;
 
         CGLog.info("Create mod detected,", firstInit ? "loading" : "reloading", "integration...");
         registry.addGenerator(

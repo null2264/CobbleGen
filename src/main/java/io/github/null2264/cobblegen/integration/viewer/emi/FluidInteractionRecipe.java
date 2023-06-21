@@ -6,6 +6,7 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
@@ -62,8 +63,8 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     @Override
     public List<EmiIngredient> getInputs() {
-        EmiStack source = EmiStack.of(getSourceFluid(), 81_000);
-        EmiStack neighbour = EmiStack.of(getNeighbourFluid(), 81_000);
+        EmiStack source = EmiStack.of(getSourceFluid(), LoaderCompat.isForge() ? 1_000 : 81_000);
+        EmiStack neighbour = EmiStack.of(getNeighbourFluid(), LoaderCompat.isForge() ? 1_000 : 81_000);
         return List.of(
                 source.copy().setRemainder(source),
                 getType().equals(GeneratorType.BASALT) ? EmiStack.of(getNeighbourBlock())

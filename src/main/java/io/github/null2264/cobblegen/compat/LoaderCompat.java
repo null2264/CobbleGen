@@ -8,7 +8,7 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;
 
-public class Loader {
+public class LoaderCompat {
     public static boolean isModLoaded(String mod) {
         //#if FABRIC>=1
         return net.fabricmc.loader.api.FabricLoader.getInstance().isModLoaded(mod);
@@ -26,5 +26,28 @@ public class Loader {
         //#else
         //$$ return FMLPaths.CONFIGDIR.get();
         //#endif
+    }
+
+    public static LoaderType getType() {
+        //#if FABRIC==1
+        return LoaderType.FABRIC;
+        //#else
+        //#if FABRIC==2
+        //$$ return LoaderType.QUILT;
+        //#else
+        //$$ return LoaderType.FORGE;
+        //#endif
+        //#endif
+    }
+
+    public static Boolean isForge() {
+        return getType() == LoaderType.FORGE;
+    }
+
+    @SuppressWarnings("unused")
+    enum LoaderType {
+        FABRIC,
+        FORGE,
+        QUILT
     }
 }
