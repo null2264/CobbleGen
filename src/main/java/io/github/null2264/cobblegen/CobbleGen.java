@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen;
 
-import io.github.null2264.cobblegen.compat.Loader;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.FluidInteractionHelper;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
@@ -29,7 +29,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
     @Deprecated
     @ApiStatus.Internal
     public static final FluidInteractionHelper FLUID_INTERACTION = new FluidInteractionHelper();
-    private static final Path configPath = Loader.getConfigDir();
+    private static final Path configPath = LoaderCompat.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + "-meta.json5");
     @ApiStatus.Internal
     @Nullable
