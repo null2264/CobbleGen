@@ -60,9 +60,6 @@ public class ConfigData extends Config
     @Nullable
     public Map<String, Map<String, AdvancedGen>> advanced;
 
-    @Comment(value="Enable Experimental Features")
-    public Boolean enableExperimentalFeatures = false;
-
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
         config.cobbleGen = List.of(new WeightedBlock(
