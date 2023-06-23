@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.data.generator;
 
 import io.github.null2264.cobblegen.CobbleGen;
+import io.github.null2264.cobblegen.config.ConfigMetaData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -31,7 +32,7 @@ public class CobbleGenerator extends BlockGenerator
     private final boolean silent;
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(Map.of("*", possibleBlocks), fluid, silent, Map.of());
+        this(possibleBlocks, fluid, silent, Map.of());
     }
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {
@@ -89,10 +90,8 @@ public class CobbleGenerator extends BlockGenerator
     @Override
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         if (Generator.getStillFluid(neighbour) == getFluid()) {
-            AtomicReference<Boolean> isExperimentalEnabled = new AtomicReference<>(false);
-            Util.optional(CobbleGen.META_CONFIG).ifPresent((e) -> isExperimentalEnabled.set(e.enableExperimentalFeatures));
             if (source.getType() == Fluids.LAVA && source.isSource()) {
-                if (isExperimentalEnabled.get())
+                if (Util.optional(CobbleGen.META_CONFIG).orElse(new ConfigMetaData()).enableExperimentalFeatures)
                     return getBlockCandidate(level, pos, getObsidianOutput(), Blocks.OBSIDIAN);
                 return Optional.of(Blocks.OBSIDIAN.defaultBlockState());
             }
