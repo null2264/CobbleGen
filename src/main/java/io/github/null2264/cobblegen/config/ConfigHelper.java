@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.config;
 import blue.endless.jankson.*;
 import com.google.gson.Gson;
 import io.github.null2264.cobblegen.util.CGLog;
-import lombok.val;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -61,7 +60,7 @@ public class ConfigHelper {
         }
     }
 
-    private static <T extends Config> void saveConfig(T config, File configFile) {
+    private static void saveConfig(Config config, File configFile) {
         try {
             CGLog.info("Trying to create config file...");
             FileWriter fw = new FileWriter(configFile);

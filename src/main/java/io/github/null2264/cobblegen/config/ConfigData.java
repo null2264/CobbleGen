@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigData extends Config
+public class ConfigData implements Config
 {
     @Nullable
     @Comment(value = """
