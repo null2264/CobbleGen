@@ -58,6 +58,10 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
         return fromBlock(block, weight, null, null, null, null);
     }
 
+    public Optional<List<String>> getDimensions() {
+        return Util.optional(dimensions);
+    }
+
     public static WeightedBlock fromBlock(
             Block block,
             Double weight,
@@ -72,6 +76,18 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
 
     public Block getBlock() {
         return Util.getBlock(ResourceLocation.tryParse(id));
+    }
+
+    public Optional<List<String>> getExcludedDimensions() {
+        return Util.optional(excludedDimensions);
+    }
+
+    public Optional<Integer> getMaxY() {
+        return Util.optional(maxY);
+    }
+
+    public Optional<Integer> getMinY() {
+        return Util.optional(minY);
     }
 
     @Override
