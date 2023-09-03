@@ -25,10 +25,6 @@ public interface BuiltInGenerator extends Generator
                 getOutput().getOrDefault("*", List.of())
         );
 
-        if (blockIds.isEmpty()) return null;
-
-        if (blockIds.size() == 1) return blockIds.get(0).id;
-
         ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
         AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
 
@@ -53,13 +49,16 @@ public interface BuiltInGenerator extends Generator
             }
         }
 
+        if (filteredBlockIds.isEmpty()) return null;
+
+        if (filteredBlockIds.size() == 1) return filteredBlockIds.get(0).id;
+
         int idx = 0;
         for (double r = Math.random() * totalWeight.get(); idx < filteredBlockIds.size() - 1; ++idx) {
             r -= filteredBlockIds.get(idx).weight;
             if (r <= 0.0) break;
         }
 
-        if (filteredBlockIds.isEmpty()) return null;
         return filteredBlockIds.get(idx).id;
     }
 
