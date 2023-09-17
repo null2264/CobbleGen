@@ -1,7 +1,5 @@
 package io.github.null2264.cobblegen.integration;
 
-import com.simibubi.create.AllFluids;
-import com.simibubi.create.content.palettes.AllPaletteStoneTypes;
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
@@ -9,6 +7,8 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;
+import io.github.null2264.cobblegen.util.Util;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 
 import java.util.List;
@@ -26,16 +26,16 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.LIMESTONE.getBaseBlock().get(), 1.0)),
-                        AllFluids.HONEY.get().getSource(),
+                        List.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "limestone")), 1.0)),
+                        Util.getFluid(new ResourceLocation("create", "honey")),
                         false
                 )
         );
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(AllPaletteStoneTypes.SCORIA.getBaseBlock().get(), 1.0)),
-                        AllFluids.CHOCOLATE.get().getSource(),
+                        List.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "scoria")), 1.0)),
+                        Util.getFluid(new ResourceLocation("create", "chocolate")),
                         false
                 )
         );
