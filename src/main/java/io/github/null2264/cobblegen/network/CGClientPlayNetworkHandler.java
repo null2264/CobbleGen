@@ -6,14 +6,20 @@ import io.netty.buffer.Unpooled;
 import lombok.val;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
+//#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+//#else
+//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+//$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+//#endif
 import net.minecraft.resources.ResourceLocation;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGClientPlayNetworkHandler
 {
+    //#if MC<=1.20.1
     public static boolean handlePacket(ClientPacketListener listener, ClientboundCustomPayloadPacket packet) {
         if (packet.getIdentifier().equals(SYNC_CHANNEL)) {
             val packetData = packet.getData();
@@ -24,14 +30,16 @@ public class CGClientPlayNetworkHandler
             if (isSync)
                 CGLog.info("CobbleGen config has been", isReload ? "re-synced" : "retrieved from the server");
             val buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
             buf.writeBoolean(isSync);
-            listener.send(createC2SPacket(Channel.SYNC, buf));
+            listener.send(createC2SPacket(buf));
             return true;
         } if (packet.getIdentifier().equals(SYNC_PING_CHANNEL)) {
             val buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeResourceLocation(keyFromChannel(Channel.PING));
             buf.writeBoolean(packet.getData().readBoolean());
             buf.writeBoolean(Util.isAnyRecipeViewerLoaded());  // Reply "yes I need those data"
-            listener.send(createC2SPacket(Channel.PING, buf));
+            listener.send(createC2SPacket(buf));
             return true;
         }
         return false;
@@ -40,13 +48,24 @@ public class CGClientPlayNetworkHandler
     public static void onDisconnect() {
         FLUID_INTERACTION.disconnect();
     }
+    //#endif
 
-    private static ServerboundCustomPayloadPacket createC2SPacket(Channel channel, FriendlyByteBuf buf) {
-        ResourceLocation channelId;
+    private static ResourceLocation keyFromChannel(Channel channel) {
         switch (channel) {
-            case PING -> channelId = SYNC_PING_CHANNEL;
-            default -> channelId = SYNC_CHANNEL;
+            case PING -> {
+                return SYNC_PING_CHANNEL;
+            }
+            default -> {
+                return SYNC_CHANNEL;
+            }
         }
-        return new ServerboundCustomPayloadPacket(channelId, buf);
+    }
+
+    private static ServerboundCustomPayloadPacket createC2SPacket(FriendlyByteBuf buf) {
+        //#if MC<=1.20.1
+        return new ServerboundCustomPayloadPacket(buf.readResourceLocation(), buf);
+        //#else
+        //$$ return new ServerboundCustomPayloadPacket(buf);
+        //#endif
     }
 }

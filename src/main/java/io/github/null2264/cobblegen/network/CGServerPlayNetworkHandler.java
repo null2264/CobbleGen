@@ -4,8 +4,13 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
+//#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+//#else
+//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+//$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+//#endif
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
@@ -23,11 +28,13 @@ public class CGServerPlayNetworkHandler
         else
             CGLog.info("A player joined, checking for recipe viewer...");
         val buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.writeResourceLocation(keyFromChannel(Channel.PING));
         buf.writeBoolean(isReload);
         buf.writeUtf("ping");  // Basically "do you want this?"
-        listener.send(createS2CPacket(Channel.PING, buf));
+        listener.send(createS2CPacket(buf));
     }
 
+    //#if MC<=1.20.1
     public static boolean handlePacket(ServerGamePacketListenerImpl listener, ServerboundCustomPayloadPacket packet) {
         if (packet.getIdentifier().equals(SYNC_CHANNEL)) {
             val received = packet.getData().readBoolean();
@@ -49,17 +56,29 @@ public class CGServerPlayNetworkHandler
 
     public static void sync(ServerGamePacketListenerImpl handler, boolean isReload) {
         val buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
         buf.writeBoolean(isReload);
         FLUID_INTERACTION.writeGeneratorsToPacket(buf);
-        handler.send(createS2CPacket(Channel.SYNC, buf));
+        handler.send(createS2CPacket(buf));
+    }
+    //#endif
+
+    private static ResourceLocation keyFromChannel(Channel channel) {
+        switch (channel) {
+            case PING -> {
+                return SYNC_PING_CHANNEL;
+            }
+            default -> {
+                return SYNC_CHANNEL;
+            }
+        }
     }
 
-    private static ClientboundCustomPayloadPacket createS2CPacket(Channel channel, FriendlyByteBuf buf) {
-        ResourceLocation channelId;
-        switch (channel) {
-            case PING -> channelId = SYNC_PING_CHANNEL;
-            default -> channelId = SYNC_CHANNEL;
-        }
-        return new ClientboundCustomPayloadPacket(channelId, buf);
+    private static ClientboundCustomPayloadPacket createS2CPacket(FriendlyByteBuf buf) {
+        //#if MC<=1.20.1
+        return new ClientboundCustomPayloadPacket(buf.readResourceLocation(), buf);
+        //#else
+        //$$ return new ClientboundCustomPayloadPacket(buf);
+        //#endif
     }
 }
