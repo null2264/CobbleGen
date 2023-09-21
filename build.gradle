@@ -9,7 +9,7 @@ def isFabric = project.name.endsWith("fabric")
 def mcVersion
 def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
 mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
-static def String stringifyVersion(int ver) {
+static String stringifyVersion(int ver) {
     return "${(int)(ver/10000)}.${(int)(ver/100)%100}" + (ver%100==0 ? '' : ".${ver%100}")
 }
 def mcVersionStr = stringifyVersion(mcVersion)
@@ -17,7 +17,8 @@ def supportedVersionRange = [
         11802: [null, "1.18.2"],
         11902: ["1.19", "1.19.2"],
         11904: ["1.19.3", "1.19.4"],
-        12001: ["1.20", null],
+        12001: ["1.20", "1.20.1"],
+        12002: ["1.20.2", null],
 ][mcVersion]
 
 preprocess {
@@ -85,7 +86,10 @@ configurations {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${mcVersionStr}"
+    def mc = [
+            12002: "1.20.2-rc2",
+    ]
+    minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
     mappings loom.officialMojangMappings()
 
@@ -95,11 +99,13 @@ dependencies {
         else
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
 
+        // For testing
         modLocalRuntime modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:" + [
                 11802: "0.76.0+1.18.2",
                 11902: "0.76.0+1.19.2",
                 11904: "0.83.0+1.19.4",
                 12001: "0.83.1+1.20.1",
+                12002: "0.89.0+1.20.2",
         ][mcVersion])
     } else {
         forge "net.minecraftforge:forge:" + [
@@ -107,6 +113,7 @@ dependencies {
                 11902: "1.19.2-43.2.14",
                 11904: "1.19.4-45.1.0",
                 12001: "1.20.1-47.0.3",
+                // TODO: 1.20.2
         ][mcVersion]
     }
 
@@ -131,11 +138,17 @@ dependencies {
         if (project.recipe_viewer == "emi")
             modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
     } else {
+        def suffix = [
+                11902: "1.19.2",
+                11904: "1.19.4",
+                12001: "1.20.1",
+                12002: "1.20.1", // TODO: EMI for 1.20.2 is not yet released
+        ]
         // EMI support multiple platform since 1.0.0
         // EMI seems to also skip 1.19 and 1.19.1
-        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}:api")
+        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}:api")
         if (project.recipe_viewer == "emi")
-            modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}")
+            modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}")
     }
 
     // REI
@@ -144,6 +157,7 @@ dependencies {
             11902: "9.1.619",
             11904: "11.0.621",
             12001: "12.0.625",
+            12002: "12.0.625", // TODO: REI for 1.20.2 is not yet released
     ]
     if (isFabric)
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
@@ -161,11 +175,15 @@ dependencies {
             11902: "11.6.0.1015",
             11904: "13.1.0.13",
             12001: "15.0.0.12",
+            12002: "15.0.0.12", // TODO: JEI for 1.20.2 is not yet released
     ]
-    modCompileOnly("mezz.jei:jei-${mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
-    modCompileOnly("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
+    def jeiMc = [
+            12002: "1.20.1",
+    ]
+    modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
+    modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
     if (project.recipe_viewer == "jei")
-        modLocalRuntime("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
+        modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
 
     /* FIXME: Broken, somehow
     if (mcVersion == 11802 && isFabric) {
@@ -258,6 +276,7 @@ def mcReleaseVersions = [
         11902: ["1.19", "1.19.1", "1.19.2"],
         11904: ["1.19.3", "1.19.4"],
         12001: ["1.20", "1.20.1"],
+        12002: ["1.20.2"],
 ][mcVersion]
 
 unifiedPublishing {
