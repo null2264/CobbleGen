@@ -267,6 +267,7 @@ unifiedPublishing {
         version = project.version as String
         changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
         gameVersions = mcReleaseVersions
+        //gameLoaders = isFabric ? ["fabric", "quilt"] : mcVersion >= 12001 ? ["forge", "neoforge"] : ["forge"]
         gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
 
         mainPublication tasks.remapJar
