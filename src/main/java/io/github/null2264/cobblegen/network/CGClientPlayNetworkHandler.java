@@ -1,17 +1,20 @@
 package io.github.null2264.cobblegen.network;
 
+import io.github.null2264.cobblegen.CobbleGen;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import io.netty.buffer.Unpooled;
 import lombok.val;
-import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
 //#if MC<1.20.2
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#else
-//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+//$$ import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
 import net.minecraft.resources.ResourceLocation;
 
@@ -19,10 +22,28 @@ import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGClientPlayNetworkHandler
 {
-    //#if MC<=1.20.1
+    //#if MC<1.20.2
     public static boolean handlePacket(ClientPacketListener listener, ClientboundCustomPayloadPacket packet) {
-        if (packet.getIdentifier().equals(SYNC_CHANNEL)) {
+    //#else
+    //$$ @SuppressWarnings("UnstableApiUsage")
+    //$$ public static boolean handlePacket(ClientCommonPacketListenerImpl listener, CustomPacketPayload packet) {
+    //#endif
+        //#if MC>=1.20.2
+        //$$ if (LoaderCompat.isModLoaded("fabric") && packet instanceof net.fabricmc.fabric.impl.networking.payload.PacketByteBufPayload && packet.id().getNamespace().equals(MOD_ID))
+        //$$     packet = new PacketByteBufPayload(packet.id(), ((net.fabricmc.fabric.impl.networking.payload.PacketByteBufPayload) packet).data());
+        //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
+        //$$ ResourceLocation id = ((PacketByteBufPayload) packet).id();
+        //#else
+        ResourceLocation id = packet.getIdentifier();
+        //#endif
+
+        if (id.equals(SYNC_CHANNEL)) {
+            //#if MC<1.20.2
             val packetData = packet.getData();
+            //#else
+            //$$ val packetData = ((PacketByteBufPayload) packet).data();
+            //#endif
+
             val isReload = packetData.readBoolean();
             FLUID_INTERACTION.readGeneratorsFromPacket(packetData);
 
@@ -34,10 +55,16 @@ public class CGClientPlayNetworkHandler
             buf.writeBoolean(isSync);
             listener.send(createC2SPacket(buf));
             return true;
-        } if (packet.getIdentifier().equals(SYNC_PING_CHANNEL)) {
+        } if (id.equals(SYNC_PING_CHANNEL)) {
+            //#if MC<1.20.2
+            val packetData = packet.getData();
+            //#else
+            //$$ val packetData = ((PacketByteBufPayload) packet).data();
+            //#endif
+
             val buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeResourceLocation(keyFromChannel(Channel.PING));
-            buf.writeBoolean(packet.getData().readBoolean());
+            buf.writeBoolean(packetData.readBoolean());
             buf.writeBoolean(Util.isAnyRecipeViewerLoaded());  // Reply "yes I need those data"
             listener.send(createC2SPacket(buf));
             return true;
@@ -48,7 +75,6 @@ public class CGClientPlayNetworkHandler
     public static void onDisconnect() {
         FLUID_INTERACTION.disconnect();
     }
-    //#endif
 
     private static ResourceLocation keyFromChannel(Channel channel) {
         switch (channel) {

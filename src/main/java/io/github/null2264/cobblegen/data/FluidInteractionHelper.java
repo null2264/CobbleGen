@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.data;
 
 import com.google.common.collect.ImmutableList;
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -12,6 +13,7 @@ import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LevelEvent;
@@ -72,19 +74,9 @@ public class FluidInteractionHelper
     }
 
     @ApiStatus.Internal
+    @Deprecated(since = "5.1", forRemoval = true)
     public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
-        buf.writeInt(generatorMap.size());
-
-        for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
-            buf.writeResourceLocation(Util.getFluidId(entry.getKey()));
-
-            val gens = entry.getValue();
-            buf.writeInt(gens.size());
-
-            for (Generator generator : gens) {
-                generator.toPacket(buf);
-            }
-        }
+        write(buf);
     }
 
     @ApiStatus.Internal
@@ -209,5 +201,20 @@ public class FluidInteractionHelper
             }
         }
         return false;
+    }
+
+    public void write(FriendlyByteBuf buf) {
+        buf.writeInt(generatorMap.size());
+
+        for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
+            buf.writeResourceLocation(Util.getFluidId(entry.getKey()));
+
+            val gens = entry.getValue();
+            buf.writeInt(gens.size());
+
+            for (Generator generator : gens) {
+                generator.toPacket(buf);
+            }
+        }
     }
 }

@@ -10,11 +10,14 @@
         "fluid.LavaEventMixin"
     ],
     "client": [
-        "network.ClientPacketListenerMixin"
+        "network.ConnectionMixin",
+        "network.ClientboundCustomPayloadPacketMixin",
+        "network.ClientCommonPacketListenerMixin"
     ],
     "server": [
         "network.PlayerManagerMixin",
-        "network.ServerPacketListenerMixin"
+        "network.ServerboundCustomPayloadPacketMixin",
+        "network.ServerCommonPacketListenerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

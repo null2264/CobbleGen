@@ -14,7 +14,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
 {
     public static final String MOD_ID = "cobblegen";
     public static final ResourceLocation SYNC_CHANNEL = new ResourceLocation(MOD_ID, "sync");
-    public static final ResourceLocation SYNC_PING_CHANNEL = new ResourceLocation(MOD_ID, "sync_ping");
+    public static final ResourceLocation SYNC_PING_CHANNEL = new ResourceLocation(MOD_ID, "ping");
     /**
      * @deprecated Now only for internal usage. Use the parameter {@link CGRegistry registry} instead
      */
