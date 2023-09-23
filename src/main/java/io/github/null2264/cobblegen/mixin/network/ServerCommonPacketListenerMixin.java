@@ -40,10 +40,12 @@ public abstract class ServerCommonPacketListenerMixin
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         val self = getListener();
+        //#if FABRIC>=1
         if (Util.isPortingLibLoaded()) {
             // Just in case
             if (this.connection instanceof io.github.fabricators_of_create.porting_lib.fake_players.FakeConnection) return;
         }
+        //#endif
         CGServerPlayNetworkHandler.trySync(self);
     }
 
