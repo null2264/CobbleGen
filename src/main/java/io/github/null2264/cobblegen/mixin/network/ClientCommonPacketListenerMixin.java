@@ -30,7 +30,11 @@ public abstract class ClientCommonPacketListenerMixin
     }
 
     @SuppressWarnings("AmbiguousMixinReference")
+    //#if MC>=1.20.2
+    //$$ @Inject(method = "handleCustomPayload(Lnet/minecraft/network/protocol/common/ClientboundCustomPayloadPacket;)V", at = @At("HEAD"), cancellable = true)
+    //#else
     @Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
+    //#endif
     private void handleCustomPayload(ClientboundCustomPayloadPacket packet, CallbackInfo ci) {
         //#if MC<1.20.2
         if (CGClientPlayNetworkHandler.handlePacket(getListener(), packet)) {
