@@ -2,7 +2,7 @@ plugins {
     id "dev.architectury.loom" version "1.1-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
     id "com.github.null2264.preprocess"
-    id "me.shedaniel.unified-publishing" version "0.1.+"
+    id "me.modmuss50.mod-publish-plugin" version "0.3.5"
 }
 
 def isForge = project.name.endsWith("forge")
@@ -53,9 +53,6 @@ archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
 project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + (isFabric ? "-fabric" : "-forge")
-
-ext.isAlpha = project.version_stage == "ALPHA"
-ext.isBeta = project.version_stage == "BETA"
 
 group = project.maven_group
 
@@ -278,13 +275,6 @@ jar {
     }
 }
 
-def _releaseType = "release"
-if (ext.isAlpha) {
-    _releaseType = "alpha"
-} else if (ext.isBeta) {
-    _releaseType = "beta"
-}
-
 def mcReleaseVersions = [
         11802: ["1.18.2"],
         11902: ["1.19", "1.19.1", "1.19.2"],
@@ -293,37 +283,50 @@ def mcReleaseVersions = [
         12002: ["1.20.2"],
 ][mcVersion]
 
-unifiedPublishing {
-    project {
-        releaseType = _releaseType
-        displayName = "[${isFabric ? "Fabric" : "Forge"} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
-        version = project.version as String
-        changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-        gameVersions = mcReleaseVersions
-        //gameLoaders = isFabric ? ["fabric", "quilt"] : mcVersion >= 12001 ? ["forge", "neoforge"] : ["forge"]
-        gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
+publishMods {
+    file = tasks.remapJar.archiveFile
+    displayName = "[${isFabric ? "Fabric" : "Forge"} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
+    changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
+    version = project.version
+    if (isFabric) {
+        modLoaders.add("fabric")
+        modLoaders.add("quilt")
+    } else {
+        modLoaders.add("forge")
+        if (mcVersion >= 12001)
+            modLoaders.add("neoforge")
+    }
+    if (project.version_stage == "ALPHA")
+        type = ALPHA
+    else if (project.version_stage == "BETA")
+        type = BETA
+    else
+        type = RELEASE
 
-        mainPublication tasks.remapJar
+    var cfToken = System.getenv("CURSEFORGE")
+    if (cfToken != null) {
+        curseforge {
+            accessToken = cfToken
+            projectId = project.curseforge_project
 
-        relations {
-            includes {
-                curseforge = "jankson"
+            for (final def mcVer in mcReleaseVersions) {
+                minecraftVersions.add(mcVer)
+            }
+
+            embeds {
+                slug = "jankson"
             }
         }
+    }
 
-        var cfToken = System.getenv("CURSEFORGE")
-        if (cfToken != null) {
-            curseforge {
-                token = cfToken
-                id = project.curseforge_project
-            }
-        }
+    var mrToken = System.getenv("MODRINTH")
+    if (mrToken != null) {
+        modrinth {
+            accessToken = mrToken
+            projectId = project.modrinth_project
 
-        var mrToken = System.getenv("MODRINTH")
-        if (mrToken != null) {
-            modrinth {
-                token = mrToken
-                id = project.modrinth_project
+            for (final def mcVer in mcReleaseVersions) {
+                minecraftVersions.add(mcVer)
             }
         }
     }
