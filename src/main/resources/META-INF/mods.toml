@@ -13,7 +13,7 @@ authors = "null2264"
 description = "An MC mod that allows you to customize cobblestone (stone and basalt) generators"
 
 [[dependencies.cobblegen]]
-modId = "forge"
+modId = "${forge}"
 mandatory = true
 versionRange = "[40,)"
 ordering = "NONE"
