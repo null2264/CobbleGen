@@ -71,4 +71,4 @@ jobs:
           CHANGELOG: ${{ github.event.release.body }}
           CURSEFORGE: ${{ secrets.CURSEFORGE }}
           MODRINTH: ${{ secrets.MODRINTH }}
-        run: ./gradlew publishUnified --stacktrace --no-daemon --max-workers 1
+        run: ./gradlew publishMods --stacktrace --no-daemon --max-workers 1

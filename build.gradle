@@ -2,14 +2,16 @@ plugins {
     id "dev.architectury.loom" version "1.1-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
     id "com.github.null2264.preprocess"
-    id "me.shedaniel.unified-publishing" version "0.1.+"
+    id "me.modmuss50.mod-publish-plugin" version "0.3.5"
 }
 
+def isForge = project.name.endsWith("forge")
+def isNeo = project.name.endsWith("neoforge")
 def isFabric = project.name.endsWith("fabric")
 def mcVersion
 def (major, minor, patch) = project.name.tokenize('-')[0].tokenize('.')
 mcVersion = "${major}${minor.padLeft(2, '0')}${(patch ?: '').padLeft(2, '0')}" as int
-static def String stringifyVersion(int ver) {
+static String stringifyVersion(int ver) {
     return "${(int)(ver/10000)}.${(int)(ver/100)%100}" + (ver%100==0 ? '' : ".${ver%100}")
 }
 def mcVersionStr = stringifyVersion(mcVersion)
@@ -17,12 +19,14 @@ def supportedVersionRange = [
         11802: [null, "1.18.2"],
         11902: ["1.19", "1.19.2"],
         11904: ["1.19.3", "1.19.4"],
-        12001: ["1.20", null],
+        12001: ["1.20", "1.20.1"],
+        12002: ["1.20.2", null],
 ][mcVersion]
 
 preprocess {
     vars.put("MC", mcVersion)
     vars.put("FABRIC", isFabric ? 1 : 0)
+    vars.put("FORGE", isForge ? 1 + (isNeo ? 1 : 0) : 0)
 
     patternAnnotation.set("io.github.null2264.gradle.Pattern")
 }
@@ -49,9 +53,6 @@ archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
 project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + (isFabric ? "-fabric" : "-forge")
-
-ext.isAlpha = project.version_stage == "ALPHA"
-ext.isBeta = project.version_stage == "BETA"
 
 group = project.maven_group
 
@@ -85,29 +86,43 @@ configurations {
 }
 
 dependencies {
-    minecraft "com.mojang:minecraft:${mcVersionStr}"
+    // for snapshots
+    def mc = []
+    minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
     mappings loom.officialMojangMappings()
 
     if (isFabric) {
         if (mcVersion <= 11902)
             modImplementation "net.fabricmc:fabric-loader:0.14.14"  // I don't get it, REI hate 0.14.21 in 1.19.2 or lower, wtf?
-        else
+        else if (mcVersion <= 12001)
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
+        else
+            modImplementation "net.fabricmc:fabric-loader:0.14.22"
 
+        // For testing
         modLocalRuntime modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:" + [
                 11802: "0.76.0+1.18.2",
                 11902: "0.76.0+1.19.2",
                 11904: "0.83.0+1.19.4",
                 12001: "0.83.1+1.20.1",
+                12002: "0.89.0+1.20.2",
         ][mcVersion])
     } else {
-        forge "net.minecraftforge:forge:" + [
-                11802: "1.18.2-40.2.9",
-                11902: "1.19.2-43.2.14",
-                11904: "1.19.4-45.1.0",
-                12001: "1.20.1-47.0.3",
-        ][mcVersion]
+        if (!isNeo) {
+            forge "net.minecraftforge:forge:" + [
+                    11802: "1.18.2-40.2.9",
+                    11902: "1.19.2-43.2.14",
+                    11904: "1.19.4-45.1.0",
+                    12001: "1.20.1-47.0.3",
+                    12002: "1.20.2-48.0.13",
+                    // TODO: 1.20.3
+            ][mcVersion]
+        } else {
+            forge "net.neoforged:forge:" + [
+                    // TODO
+            ][mcVersion]
+        }
     }
 
     shade("blue.endless:jankson:${project.jankson_version}")
@@ -131,11 +146,18 @@ dependencies {
         if (project.recipe_viewer == "emi")
             modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
     } else {
+        def suffix = [
+                11902: "1.19.2",
+                11904: "1.19.4",
+                12001: "1.20.1",
+                12002: "1.20.2",
+                12003: "1.20.2", // TODO
+        ]
         // EMI support multiple platform since 1.0.0
         // EMI seems to also skip 1.19 and 1.19.1
-        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}:api")
+        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}:api")
         if (project.recipe_viewer == "emi")
-            modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? mcVersionStr : '1.19.2'}")
+            modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}")
     }
 
     // REI
@@ -144,6 +166,8 @@ dependencies {
             11902: "9.1.619",
             11904: "11.0.621",
             12001: "12.0.625",
+            12002: "13.0.666",
+            12003: "13.0.666", // TODO
     ]
     if (isFabric)
         modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
@@ -161,11 +185,16 @@ dependencies {
             11902: "11.6.0.1015",
             11904: "13.1.0.13",
             12001: "15.0.0.12",
+            12002: "16.0.0.28",
+            12003: "16.0.0.28", // TODO
     ]
-    modCompileOnly("mezz.jei:jei-${mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
-    modCompileOnly("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
+    def jeiMc = [
+            12003: "1.20.2",
+    ]
+    modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
+    modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
     if (project.recipe_viewer == "jei")
-        modLocalRuntime("mezz.jei:jei-${mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
+        modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
 
     /* FIXME: Broken, somehow
     if (mcVersion == 11802 && isFabric) {
@@ -246,50 +275,58 @@ jar {
     }
 }
 
-def _releaseType = "release"
-if (ext.isAlpha) {
-    _releaseType = "alpha"
-} else if (ext.isBeta) {
-    _releaseType = "beta"
-}
-
 def mcReleaseVersions = [
         11802: ["1.18.2"],
         11902: ["1.19", "1.19.1", "1.19.2"],
         11904: ["1.19.3", "1.19.4"],
         12001: ["1.20", "1.20.1"],
+        12002: ["1.20.2"],
 ][mcVersion]
 
-unifiedPublishing {
-    project {
-        releaseType = _releaseType
-        displayName = "[${isFabric ? "Fabric" : "Forge"} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
-        version = project.version as String
-        changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
-        gameVersions = mcReleaseVersions
-        gameLoaders = isFabric ? ["fabric", "quilt"] : ["forge"]
+publishMods {
+    file = tasks.remapJar.archiveFile
+    displayName = "[${isFabric ? "Fabric" : "Forge"} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
+    changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
+    version = project.version
+    if (isFabric) {
+        modLoaders.add("fabric")
+        modLoaders.add("quilt")
+    } else {
+        modLoaders.add("forge")
+        if (mcVersion >= 12001)
+            modLoaders.add("neoforge")
+    }
+    if (project.version_stage == "ALPHA")
+        type = ALPHA
+    else if (project.version_stage == "BETA")
+        type = BETA
+    else
+        type = RELEASE
 
-        mainPublication tasks.remapJar
+    var cfToken = System.getenv("CURSEFORGE")
+    if (cfToken != null) {
+        curseforge {
+            accessToken = cfToken
+            projectId = project.curseforge_project
 
-        relations {
-            includes {
-                curseforge = "jankson"
+            for (final def mcVer in mcReleaseVersions) {
+                minecraftVersions.add(mcVer)
+            }
+
+            embeds {
+                slug = "jankson"
             }
         }
+    }
 
-        var cfToken = System.getenv("CURSEFORGE")
-        if (cfToken != null) {
-            curseforge {
-                token = cfToken
-                id = project.curseforge_project
-            }
-        }
+    var mrToken = System.getenv("MODRINTH")
+    if (mrToken != null) {
+        modrinth {
+            accessToken = mrToken
+            projectId = project.modrinth_project
 
-        var mrToken = System.getenv("MODRINTH")
-        if (mrToken != null) {
-            modrinth {
-                token = mrToken
-                id = project.modrinth_project
+            for (final def mcVer in mcReleaseVersions) {
+                minecraftVersions.add(mcVer)
             }
         }
     }
