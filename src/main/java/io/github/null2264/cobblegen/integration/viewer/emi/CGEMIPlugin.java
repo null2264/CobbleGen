@@ -7,24 +7,24 @@ import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.EmiWorldInteractionRecipe;
 import dev.emi.emi.api.stack.EmiStack;
 import io.github.null2264.cobblegen.CobbleGen;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.config.ConfigMetaData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
@@ -58,12 +58,17 @@ public class CGEMIPlugin implements EmiPlugin
             )
     );
 
+    // To merge EMI
+    private static ResourceLocation synthetic(String type, String name) {
+        return new ResourceLocation("emi", "/" + type + "/" + name);
+    }
+
     @Override
     public void register(EmiRegistry registry) {
         if (!CobbleGen.META_CONFIG.enableRecipeViewer)
             return;
 
-        if (CobbleGen.META_CONFIG.mergeEMIRecipeCategory) {
+        if (!CobbleGen.META_CONFIG.mergeEMIRecipeCategory) {
             FLUID_INTERACTION_CATEGORIES.forEach((ignored, category) -> registry.addCategory(category));
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                     (modifierId, blocks) -> {
@@ -86,6 +91,8 @@ public class CGEMIPlugin implements EmiPlugin
             Minecraft minecraft = Minecraft.getInstance();
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                     (modifierRawId, blocks) -> {
+                        EmiStack trigger = EmiStack.of(fluid, LoaderCompat.isForge() ? 1_000 : 81_000);
+
                         ResourceLocation modifierId = new ResourceLocation("none");
                         Optional<Block> modifier = Optional.empty();
                         if (!Objects.equals(modifierRawId, "*")) {
@@ -95,6 +102,8 @@ public class CGEMIPlugin implements EmiPlugin
 
                         for (WeightedBlock block : blocks) {
                             ResourceLocation resultId = new ResourceLocation(block.id);
+                            EmiStack output = EmiStack.of(Util.getBlock(resultId));
+
                             ResourceLocation source = Util.getFluidId(fluid);
                             EmiStack neighbour;
                             ResourceLocation neighbourId;
@@ -103,28 +112,37 @@ public class CGEMIPlugin implements EmiPlugin
                                 neighbour = EmiStack.of(Objects.requireNonNull(generator.getBlock()));
                             } else {
                                 neighbourId = Util.getFluidId(generator.getFluid());
-                                neighbour = EmiStack.of(Objects.requireNonNull(generator.getFluid()));
+                                neighbour = EmiStack.of(Objects.requireNonNull(generator.getFluid()), LoaderCompat.isForge() ? 1_000 : 81_000);
                             }
+
+                            if (CobbleGen.META_CONFIG.emi.removeOverlaps) {
+                                registry.removeRecipes(r ->
+                                        new HashSet<>(r.getInputs()).containsAll(List.of(neighbour, trigger)) && r.getOutputs().contains(output) && r.getId().toString().startsWith("emi")
+                                );
+                            }
+
                             val id = Util.identifierOf(CGEMIPlugin.ID_PREFIX + generator.getType().name()
                                     .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbourId.toDebugFileName() + "-" + modifierId.toDebugFileName());
 
                             EmiWorldInteractionRecipe.Builder recipe = EmiWorldInteractionRecipe.builder()
                                     .id(id)
-                                    .leftInput(EmiStack.of(fluid));
+                                    .leftInput(trigger.copy().setRemainder(trigger));
+
+                            EmiStack neighbourRemainder = neighbour.isEmpty() ? neighbour : neighbour.copy().setRemainder(neighbour);
 
                             if (modifier.isPresent())
                                 recipe.rightInput(EmiStack.of(modifier.get()), false,
                                                 s -> s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.soul_soil").withStyle(ChatFormatting.GREEN)))
-                                        .rightInput(neighbour, false,
+                                        .rightInput(neighbourRemainder, false,
                                                 s -> generator.getBlock() != null ? s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.blue_ice").withStyle(ChatFormatting.GREEN)) : s);
                             else {
-                                recipe.rightInput(neighbour, false);
+                                recipe.rightInput(neighbourRemainder, false);
                             }
 
-                            recipe.output(EmiStack.of(Util.getBlock(resultId)),
+                            recipe.output(output,
                                     s -> {
                                         if (!CobbleGen.META_CONFIG.emi.addTooltip) return s;
-                                        
+
                                         var minY = block.minY;
                                         if (minY == null)
                                             minY = minecraft.level != null ? minecraft.level.getMinBuildHeight() : 0;
