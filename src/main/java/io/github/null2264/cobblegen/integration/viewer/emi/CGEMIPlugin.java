@@ -58,11 +58,6 @@ public class CGEMIPlugin implements EmiPlugin
             )
     );
 
-    // To merge EMI
-    private static ResourceLocation synthetic(String type, String name) {
-        return new ResourceLocation("emi", "/" + type + "/" + name);
-    }
-
     @Override
     public void register(EmiRegistry registry) {
         if (!CobbleGen.META_CONFIG.enableRecipeViewer)
