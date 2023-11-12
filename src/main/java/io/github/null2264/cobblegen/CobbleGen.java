@@ -50,7 +50,12 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
                         .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").executes(c -> {
                             CGLog.info("Reloading meta config...");
                             META_CONFIG = loadConfig(true, configFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
-                            c.getSource().sendSuccess(TextCompat.literal("Meta config has been reloaded"), false);
+                            c.getSource().sendSuccess(
+                                //#if MC>=1.20.1
+                                //$$ () ->
+                                //#endif
+                                TextCompat.literal("Meta config has been reloaded"), false
+                            );
                             CGLog.info("Meta config has been reloaded");
                             return 0;
                         }))
