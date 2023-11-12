@@ -32,7 +32,6 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
     private static final Path configPath = LoaderCompat.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + "-meta.json5");
     @ApiStatus.Internal
-    @Nullable
     public static ConfigMetaData META_CONFIG = loadConfig(false, configFile, null, new ConfigMetaData(), ConfigMetaData.class);
 
     //#if FABRIC>=1

@@ -60,7 +60,10 @@ public class CGEMIPlugin implements EmiPlugin
 
     @Override
     public void register(EmiRegistry registry) {
-        if (Util.optional(CobbleGen.META_CONFIG).orElse(new ConfigMetaData()).mergeEMIRecipeCategory) {
+        if (!CobbleGen.META_CONFIG.enableRecipeViewer)
+            return;
+
+        if (CobbleGen.META_CONFIG.mergeEMIRecipeCategory) {
             FLUID_INTERACTION_CATEGORIES.forEach((ignored, category) -> registry.addCategory(category));
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                     (modifierId, blocks) -> {
@@ -120,6 +123,8 @@ public class CGEMIPlugin implements EmiPlugin
 
                             recipe.output(EmiStack.of(Util.getBlock(resultId)),
                                     s -> {
+                                        if (!CobbleGen.META_CONFIG.emi.addTooltip) return s;
+                                        
                                         var minY = block.minY;
                                         if (minY == null)
                                             minY = minecraft.level != null ? minecraft.level.getMinBuildHeight() : 0;
