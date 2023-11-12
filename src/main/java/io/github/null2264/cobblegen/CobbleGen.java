@@ -1,12 +1,16 @@
 package io.github.null2264.cobblegen;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.FluidInteractionHelper;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
+import io.github.null2264.cobblegen.util.CGLog;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -38,6 +42,20 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
     @Override
     public void onInitialize() {}
     //#endif
+
+    public static void initCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+        CGLog.info("Registering command...");
+        dispatcher.register(
+                LiteralArgumentBuilder.<CommandSourceStack>literal("cobblegen")
+                        .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").executes(c -> {
+                            CGLog.info("Reloading meta config...");
+                            META_CONFIG = loadConfig(true, configFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
+                            c.getSource().sendSuccess(TextCompat.literal("Meta config has been reloaded"), false);
+                            CGLog.info("Meta config has been reloaded");
+                            return 0;
+                        }))
+        );
+    }
 
     public enum Channel {
         PING,

@@ -4,15 +4,16 @@
     "package": "io.github.null2264.cobblegen.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "CommandsMixin",
         "MinecraftServerMixin",
         "fluid.CreateFluidReactionsMixin",
         "fluid.FluidEventMixin",
         "fluid.LavaEventMixin"
     ],
     "client": [
-        "network.ConnectionMixin",
         "network.ClientboundCustomPayloadPacketMixin",
-        "network.ClientCommonPacketListenerMixin"
+        "network.ClientCommonPacketListenerMixin",
+        "network.ConnectionMixin"
     ],
     "server": [
         "network.PlayerManagerMixin",
