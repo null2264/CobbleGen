@@ -10,6 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
@@ -37,6 +38,11 @@ public class StoneGenerator implements BuiltInGenerator
     @Override
     public @NotNull Map<String, List<WeightedBlock>> getOutput() {
         return possibleBlocks;
+    }
+
+    @Override
+    public Map<String, List<WeightedBlock>> getObsidianOutput() {
+        return Map.of("*", List.of(WeightedBlock.fromBlock(Blocks.STONE, 100D)));
     }
 
     @Override
@@ -73,7 +79,7 @@ public class StoneGenerator implements BuiltInGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         Fluid fluid = Generator.getStillFluid(neighbour);
         if (getFluid() == fluid) {
-            return getBlockCandidate(level, pos);
+            return getBlockCandidate(level, pos, getOutput());
         }
 
         return Optional.empty();
