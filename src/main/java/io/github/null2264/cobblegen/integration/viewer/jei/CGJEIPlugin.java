@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -35,6 +36,9 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
+        if (!CobbleGen.META_CONFIG.enableRecipeViewer)
+            return;
+
         IJeiHelpers jeiHelpers = registration.getJeiHelpers();
         IGuiHelper guiHelper = jeiHelpers.getGuiHelper();
         IPlatformFluidHelper<?> fluidHelper = jeiHelpers.getPlatformFluidHelper();
@@ -47,6 +51,9 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
+        if (!CobbleGen.META_CONFIG.enableRecipeViewer)
+            return;
+
         FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                 (modifierId, blocks) -> {
                     val recipes = new ArrayList<FluidInteractionRecipeHolder>();
