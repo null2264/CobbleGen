@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigData
+public class ConfigData implements Config
 {
     @Nullable
     @Comment(value = """
@@ -68,8 +68,9 @@ public class ConfigData
                 null,
                 null,
                 null,
-                0
-        ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null));
+                0,
+                null
+        ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null));
         config.stoneGen = List.of(new WeightedBlock("minecraft:stone", 100.0));
         config.basaltGen = List.of(new WeightedBlock("minecraft:basalt", 100.0));
         config.customGen = new CustomGen(

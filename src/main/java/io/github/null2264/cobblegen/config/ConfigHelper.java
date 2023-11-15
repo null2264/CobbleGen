@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.config;
 import blue.endless.jankson.*;
 import com.google.gson.Gson;
 import io.github.null2264.cobblegen.util.CGLog;
-import lombok.val;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,12 +38,12 @@ public class ConfigHelper {
     }
 
     @ApiStatus.Internal
-    public static ConfigData loadConfig(boolean reload, File configFile, ConfigData workingConfig) {
+    public static <T extends Config> T loadConfig(boolean reload, File configFile, T workingConfig, T defaultConfig, Class<T> clazz) {
         String string = reload ? "reload" : "load";
         try {
             CGLog.info("Trying to " + string + " config file...");
             JsonObject json = jankson.load(configFile);
-            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), ConfigData.class);
+            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), clazz);
         } catch (Exception e) {
             CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
 
@@ -53,16 +52,15 @@ public class ConfigHelper {
                 return workingConfig;
             }
 
-            val newConfig = ConfigData.defaultConfig();
             if (!configFile.exists()) {
-                saveConfig(newConfig, configFile);
+                saveConfig(defaultConfig, configFile);
             }
             CGLog.warn("Falling back to default config...");
-            return newConfig;
+            return defaultConfig;
         }
     }
 
-    private static void saveConfig(ConfigData config, File configFile) {
+    private static void saveConfig(Config config, File configFile) {
         try {
             CGLog.info("Trying to create config file...");
             FileWriter fw = new FileWriter(configFile);

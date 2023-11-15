@@ -42,8 +42,6 @@ public interface Generator extends PacketSerializable<Generator>
         return fluid;
     }
 
-    ;
-
     Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state);
 
     /**
@@ -56,11 +54,18 @@ public interface Generator extends PacketSerializable<Generator>
     @NotNull
     Map<String, List<WeightedBlock>> getOutput();
 
+    /**
+     * @return The output block when a source fluid met another fluid (e.g. Water -> Stone / Lava -> Obsidian)
+     */
+    default Map<String, List<WeightedBlock>> getObsidianOutput() {
+        return Map.of();
+    }
+
     @NotNull
     GeneratorType getType();
 
     /**
-     * The neighbour {@link Fluid}, for Stone/Cobble-like generators.
+     * @return The neighbour {@link Fluid}, for Stone/Cobble-like generators.
      */
     @Nullable
     Fluid getFluid();
@@ -69,7 +74,7 @@ public interface Generator extends PacketSerializable<Generator>
     default void setFluid(Fluid fluid) {};
 
     /**
-     * The neighbour {@link Block}, for Basalt-like generators.
+     * @return The neighbour {@link Block}, for Basalt-like generators.
      */
     @Nullable
     Block getBlock();
