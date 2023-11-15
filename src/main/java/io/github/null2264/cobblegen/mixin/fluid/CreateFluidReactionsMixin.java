@@ -3,7 +3,11 @@ package io.github.null2264.cobblegen.mixin.fluid;
 //#if FABRIC>=1
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 //#else
-//$$ import net.minecraftforge.fluids.FluidStack;
+    //#if FORGE>=2 && MC>=1.20.2
+    //$$ import net.neoforged.fluids.FluidStack;
+    //#else
+    //$$ import net.minecraftforge.fluids.FluidStack;
+    //#endif
 //#endif
 import io.github.null2264.cobblegen.data.model.Generator;
 import lombok.val;
