@@ -21,10 +21,13 @@ public class ConfigMetaData implements Config
     public EMIData emi = new EMIData();
 
     public static class EMIData {
-        @Comment(value="Add CobbleGen tooltip when CobbleGen is merged with EMI's World Interaction category")
+        @Comment(value="Add CobbleGen tooltip")
         public Boolean addTooltip = true;
 
-        @Comment(value="Remove overlapping recipe between CobbleGen and EMI when CobbleGen is merged with EMI's World Interaction category")
+        @Comment(value="Remove overlapping recipe between CobbleGen and EMI")
         public Boolean removeOverlaps = true;
+
+        @Comment(value="Invert input position")
+        public Boolean invertInput = false;
     }
 }

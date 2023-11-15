@@ -5,26 +5,25 @@ import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.EmiWorldInteractionRecipe;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.widget.SlotWidget;
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.config.ConfigMetaData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
-import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
@@ -57,6 +56,35 @@ public class CGEMIPlugin implements EmiPlugin
                             Blocks.BASALT)
             )
     );
+
+    enum InputPosition {
+        LEFT, RIGHT
+    }
+
+    private void input(
+            EmiWorldInteractionRecipe.Builder recipe,
+            EmiIngredient input,
+            boolean catalyst,
+            InputPosition position
+    ) {
+        if (position.equals(InputPosition.RIGHT))
+            recipe.rightInput(input, catalyst);
+        else
+            recipe.leftInput(input);
+    }
+
+    private void input(
+            EmiWorldInteractionRecipe.Builder recipe,
+            EmiIngredient input,
+            boolean catalyst,
+            Function<SlotWidget, SlotWidget> mutator,
+            InputPosition position
+    ) {
+        if (position.equals(InputPosition.RIGHT))
+            recipe.rightInput(input, catalyst, mutator);
+        else
+            recipe.leftInput(input, mutator);
+    }
 
     @Override
     public void register(EmiRegistry registry) {
@@ -119,19 +147,40 @@ public class CGEMIPlugin implements EmiPlugin
                             val id = Util.identifierOf(CGEMIPlugin.ID_PREFIX + generator.getType().name()
                                     .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbourId.toDebugFileName() + "-" + modifierId.toDebugFileName());
 
-                            EmiWorldInteractionRecipe.Builder recipe = EmiWorldInteractionRecipe.builder()
-                                    .id(id)
-                                    .leftInput(trigger.copy().setRemainder(trigger));
+                            val recipe = EmiWorldInteractionRecipe.builder()
+                                    .id(id);
+
+                            input(
+                                    recipe,
+                                    trigger.copy().setRemainder(trigger),
+                                    false,
+                                    CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.RIGHT : InputPosition.LEFT
+                            );
 
                             EmiStack neighbourRemainder = neighbour.isEmpty() ? neighbour : neighbour.copy().setRemainder(neighbour);
 
-                            if (modifier.isPresent())
-                                recipe.rightInput(EmiStack.of(modifier.get()), false,
-                                                s -> s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.soul_soil").withStyle(ChatFormatting.GREEN)))
-                                        .rightInput(neighbourRemainder, false,
-                                                s -> generator.getBlock() != null ? s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.blue_ice").withStyle(ChatFormatting.GREEN)) : s);
-                            else {
-                                recipe.rightInput(neighbourRemainder, false);
+                            if (modifier.isPresent()) {
+                                input(
+                                        recipe,
+                                        EmiStack.of(modifier.get()),
+                                        false,
+                                        s -> s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.soul_soil").withStyle(ChatFormatting.GREEN)),
+                                        CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                );
+                                input(
+                                        recipe,
+                                        neighbourRemainder,
+                                        false,
+                                        s -> generator.getBlock() != null ? s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.blue_ice").withStyle(ChatFormatting.GREEN)) : s,
+                                        CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                );
+                            } else {
+                                input(
+                                        recipe,
+                                        neighbourRemainder,
+                                        false,
+                                        CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                );
                             }
 
                             recipe.output(output,
