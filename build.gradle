@@ -293,7 +293,7 @@ publishMods {
         modLoaders.add("quilt")
     } else {
         modLoaders.add("forge")
-        if (mcVersion >= 12001)
+        if (mcVersion == 12001)
             modLoaders.add("neoforge")
     }
     if (project.version_stage == "ALPHA")
