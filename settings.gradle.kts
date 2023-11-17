@@ -1,6 +1,15 @@
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")
+        // For early access to "unstable" features
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/null2264/architectury-loom")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_PAT")
+            }
+        }
         maven("https://maven.architectury.dev/")
         maven("https://jitpack.io/")
         maven("https://files.minecraftforge.net/maven/")
