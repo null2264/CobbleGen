@@ -1,10 +1,20 @@
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")
+        // For early access to "unstable" features
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/null2264/architectury-loom")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_PAT")
+            }
+        }
         maven("https://maven.architectury.dev/")
         maven("https://jitpack.io/")
         maven("https://files.minecraftforge.net/maven/")
         maven("https://repo.essential.gg/repository/maven-public/")
+        maven("https://maven.neoforged.net/releases")
         gradlePluginPortal()
     }
     plugins {
@@ -32,6 +42,7 @@ listOf(
     "1.20.1-forge",
     "1.20.2-fabric",
     "1.20.2-forge",
+    "1.20.2-neoforge",
 ).forEach { version ->
     include(":$version")
     project(":$version").apply {

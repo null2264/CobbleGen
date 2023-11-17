@@ -12,9 +12,15 @@ import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 //#else
 //$$ import java.lang.reflect.Constructor;
 //$$ import io.github.null2264.cobblegen.CGPlugin;
-//$$ import net.minecraftforge.fml.ModList;
-//$$ import net.minecraftforge.forgespi.language.IModInfo;
-//$$ import net.minecraftforge.forgespi.language.ModFileScanData;
+    //#if FORGE>=2 && MC>=1.20.2
+    //$$ import net.neoforged.fml.ModList;
+    //$$ import net.neoforged.neoforgespi.language.IModInfo;
+    //$$ import net.neoforged.neoforgespi.language.ModFileScanData;
+    //#else
+    //$$ import net.minecraftforge.fml.ModList;
+    //$$ import net.minecraftforge.forgespi.language.IModInfo;
+    //$$ import net.minecraftforge.forgespi.language.ModFileScanData;
+    //#endif
 //$$ import org.objectweb.asm.Type;
 //#endif
 

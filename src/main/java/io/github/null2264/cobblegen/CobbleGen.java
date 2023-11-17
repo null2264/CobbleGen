@@ -17,8 +17,12 @@ import java.nio.file.Path;
 
 import static io.github.null2264.cobblegen.config.ConfigHelper.loadConfig;
 
-//#if FABRIC<=0
-//$$ @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
+//#if FORGE>=1
+    //#if FORGE==2
+    //$$ @net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
+    //#else
+    //$$ @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
+    //#endif
 //$$ public class CobbleGen
 //#else
 public class CobbleGen implements net.fabricmc.api.ModInitializer
