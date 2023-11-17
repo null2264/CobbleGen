@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[1,)"
 license = "LGPL-3.0-only"
 issueTrackerURL = "https://github.com/null2264/CobbleGen/issues"
 
@@ -18,7 +18,7 @@ config = "cobblegen.mixins.json"
 [[dependencies.cobblegen]]
 modId = "${forge}"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[1,)"
 ordering = "NONE"
 side = "BOTH"
 
