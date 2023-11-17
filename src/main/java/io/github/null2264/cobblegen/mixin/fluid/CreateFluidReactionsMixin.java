@@ -4,7 +4,7 @@ package io.github.null2264.cobblegen.mixin.fluid;
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 //#else
     //#if FORGE>=2 && MC>=1.20.2
-    //$$ import net.neoforged.fluids.FluidStack;
+    //$$ import net.neoforged.neoforge.fluids.FluidStack;
     //#else
     //$$ import net.minecraftforge.fluids.FluidStack;
     //#endif
@@ -35,7 +35,7 @@ public abstract class CreateFluidReactionsMixin
             //#if FABRIC
             method = "handlePipeFlowCollision(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;)V",
             //#else
-            //$$ method = "handlePipeFlowCollision(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraftforge/fluids/FluidStack;Lnet/minecraftforge/fluids/FluidStack;)V",
+            //$$ method = "handlePipeFlowCollision",
             //$$ remap = false,
             //#endif
             at = @At(value = "HEAD"), cancellable = true
