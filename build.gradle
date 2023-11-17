@@ -60,7 +60,7 @@ group = project.maven_group
 loom {
     silentMojangMappingsLicense()
 
-    mixin.defaultRefmapName.set("mixins.cobblegen.refmap.json")
+    //mixin.defaultRefmapName.set("mixins.cobblegen.refmap.json")
 
     runConfigs.configure {
         client {
@@ -73,12 +73,13 @@ loom {
         }
     }
 
-    if (!isFabric)
+    if (!isFabric && !isNeo) {
         forge {
             mixinConfigs = [
                     "cobblegen.mixins.json"
             ]
         }
+    }
 }
 
 configurations {
@@ -119,7 +120,7 @@ dependencies {
                     12002: "1.20.2-48.0.13",
             ][mcVersion]
         } else {
-            forge "net.neoforged:neoforge:" + [
+            neoForge "net.neoforged:neoforge:" + [
                     12002: "20.2.31-beta"
                     // TODO: 1.20.3
             ][mcVersion]

@@ -12,6 +12,9 @@ logoFile = "icon.png"
 authors = "null2264"
 description = "An MC mod that allows you to customize cobblestone (stone and basalt) generators"
 
+[[mixins]]
+config = "cobblegen.mixins.json"
+
 [[dependencies.cobblegen]]
 modId = "${forge}"
 mandatory = true
