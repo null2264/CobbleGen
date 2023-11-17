@@ -66,6 +66,8 @@ jobs:
       - run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
+        env:
+          GITHUB_PAT: ${{ secrets.PAT }}
       - name: Upload to CurseForge and Modrinth
         env:
           CHANGELOG: ${{ github.event.release.body }}
