@@ -53,7 +53,7 @@ repositories {
 archivesBaseName = project.archives_base_name
 
 ext.buildNumber = System.getenv("GITHUB_RUN_NUMBER")
-project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + (isFabric ? "-fabric" : "-forge")
+project.version = project.mod_version + "+${mcVersionStr}" + (buildNumber != null ? "b${buildNumber}-" : "-") + project.version_stage + (isFabric ? "-fabric" : (isNeo ? "-neoforge" : "-forge"))
 
 group = project.maven_group
 
@@ -287,16 +287,16 @@ def mcReleaseVersions = [
 
 publishMods {
     file = tasks.remapJar.archiveFile
-    displayName = "[${isFabric ? "Fabric" : "Forge"} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
+    displayName = "[${isFabric ? "Fabric" : (isNeo ? "NeoForge" : "Forge")} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
     changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
     version = project.version
     if (isFabric) {
         modLoaders.add("fabric")
         modLoaders.add("quilt")
     } else {
-        if (mcVersion <= 12001)  // No more LexForge, LexForge is too buggy
+        if (mcVersion <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
             modLoaders.add("forge")
-        if (mcVersion >= 12001)
+        if (mcVersion == 12001 || isNeo)
             modLoaders.add("neoforge")
     }
     if (project.version_stage == "ALPHA")
