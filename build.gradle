@@ -121,7 +121,7 @@ dependencies {
             ][mcVersion]
         } else {
             neoForge "net.neoforged:neoforge:" + [
-                    12002: "20.2.31-beta"
+                    12002: "20.2.51-beta"
                     // TODO: 1.20.3
             ][mcVersion]
         }
