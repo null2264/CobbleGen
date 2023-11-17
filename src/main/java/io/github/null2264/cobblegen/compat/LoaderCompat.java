@@ -6,11 +6,11 @@ import net.fabricmc.loader.api.FabricLoader;
     //#if FORGE>=2 && MC>=1.20.2
     //$$ import net.neoforged.fml.loading.FMLPaths;
     //$$ import net.neoforged.fml.ModList;
-    //$$ import net.neoforged.fml.loading.LoadingModList
+    //$$ import net.neoforged.fml.loading.LoadingModList;
     //#else
     //$$ import net.minecraftforge.fml.loading.FMLPaths;
     //$$ import net.minecraftforge.fml.ModList;
-    //$$ import net.minecraftforge.fml.loading.LoadingModList
+    //$$ import net.minecraftforge.fml.loading.LoadingModList;
     //#endif
 //#endif
 
