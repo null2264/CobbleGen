@@ -60,8 +60,6 @@ group = project.maven_group
 loom {
     silentMojangMappingsLicense()
 
-    //mixin.defaultRefmapName.set("mixins.cobblegen.refmap.json")
-
     runConfigs.configure {
         client {
             runDir = "../../run/client"
@@ -287,7 +285,7 @@ def mcReleaseVersions = [
 
 publishMods {
     file = tasks.remapJar.archiveFile
-    displayName = "[${isFabric ? "Fabric" : (isNeo ? "NeoForge" : "Forge")} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
+    displayName = "[${isFabric ? "FABRIC" : (isNeo ? "NEOFORGE" : "FORGE")} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
     changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
     version = project.version
     if (isFabric) {
