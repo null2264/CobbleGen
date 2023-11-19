@@ -1,5 +1,5 @@
 plugins {
-    id("com.github.null2264.preprocess")
+    id("io.github.null2264.preprocess")
 }
 
 preprocess {

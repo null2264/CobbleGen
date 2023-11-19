@@ -11,12 +11,7 @@ pluginManagement {
     }
     plugins {
         id("com.github.johnrengelman.shadow") version("8.1.1")
-    }
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "com.github.null2264.preprocess")
-                useModule("com.github.null2264:Preprocessor:ba61239")
-        }
+        id("io.github.null2264.preprocess") version("1.0-SNAPSHOT")
     }
 }
 

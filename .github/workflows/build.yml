@@ -1,8 +1,3 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
-
 name: build
 on: [pull_request, push]
 
@@ -15,13 +10,11 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v3
         with:
-          distribution: "temurin"
+          distribution: temurin
           java-version: 17
       - run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
-        env:
-          GITHUB_PAT: ${{ secrets.PAT }}
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst versions/*/build/libs
       - name: Upload build folder
