@@ -52,8 +52,10 @@ public class CGServerPlayNetworkHandler
     //#endif
         //#if MC>=1.20.2
             //#if FABRIC>=1
-            //$$ if (LoaderCompat.isModLoaded("fabric") && packet instanceof net.fabricmc.fabric.impl.networking.payload.PacketByteBufPayload && packet.id().getNamespace().equals(MOD_ID))
-            //$$     packet = new PacketByteBufPayload(packet.id(), ((net.fabricmc.fabric.impl.networking.payload.PacketByteBufPayload) packet).data());
+            //$$ try {  // Fabric API 0.91+ removed PacketByteBufPayload entirely
+            //$$     if (LoaderCompat.isModLoaded("fabric") && packet instanceof net.fabricmc.fabric.impl.networking.payload.PacketByteBufPayload && packet.id().getNamespace().equals(MOD_ID))
+            //$$         packet = new PacketByteBufPayload(packet.id(), ((net.fabricmc.fabric.impl.networking.payload.PacketByteBufPayload) packet).data());
+            //$$ } catch (NoClassDefFoundError e) {}
             //#endif
         //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
         //$$ ResourceLocation id = ((PacketByteBufPayload) packet).id();
