@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class ConnectionMixin {
     //#if MC>=1.20.2
     //$$ @Shadow public abstract boolean isConnected();
-
+    //$$
     //$$ @Inject(method = "disconnect", at = @At("TAIL"))
     //$$ private void disconnect(Component component, CallbackInfo ci) {
     //$$     if (this.isConnected())

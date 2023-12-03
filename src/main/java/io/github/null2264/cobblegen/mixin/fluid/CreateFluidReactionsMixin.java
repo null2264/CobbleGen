@@ -31,11 +31,10 @@ public abstract class CreateFluidReactionsMixin
         return FLUID_INTERACTION.interactFromPipe(level, pos, fluid1, fluid2);
     }
 
+    @SuppressWarnings("InvalidInjectorMethodSignature") // False positive
     @Inject(
-            //#if FABRIC
-            method = "handlePipeFlowCollision(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;Lio/github/fabricators_of_create/porting_lib/util/FluidStack;)V",
-            //#else
-            //$$ method = "handlePipeFlowCollision",
+            method = "handlePipeFlowCollision",
+            //#if FABRIC<=0
             //$$ remap = false,
             //#endif
             at = @At(value = "HEAD"), cancellable = true
@@ -49,7 +48,7 @@ public abstract class CreateFluidReactionsMixin
     }
 
     @Inject(
-            method = "handlePipeSpillCollision(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/material/Fluid;Lnet/minecraft/world/level/material/FluidState;)V",
+            method = "handlePipeSpillCollision",
             //#if FABRIC<=0
             //$$ remap = false,
             //#endif
