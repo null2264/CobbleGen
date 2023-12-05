@@ -1,5 +1,7 @@
 package io.github.null2264.cobblegen.util;
 
+import com.google.common.collect.ImmutableList;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
@@ -36,4 +38,8 @@ public class Constants
             return fromId(Util.getBlockId(block));
         }
     }
+
+    public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
+            Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
+    );
 }

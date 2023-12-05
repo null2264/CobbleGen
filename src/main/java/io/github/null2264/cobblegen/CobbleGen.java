@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.config.ConfigMetaData;
-import io.github.null2264.cobblegen.data.FluidInteractionHelper;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;
 import net.minecraft.commands.CommandSourceStack;
@@ -36,7 +35,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
      */
     @Deprecated
     @ApiStatus.Internal
-    public static final FluidInteractionHelper FLUID_INTERACTION = new FluidInteractionHelper();
+    public static final FluidInteraction FLUID_INTERACTION = new FluidInteraction();
     private static final Path configPath = LoaderCompat.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + "-meta.json5");
     @ApiStatus.Internal

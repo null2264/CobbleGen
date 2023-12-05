@@ -1,8 +1,7 @@
-package io.github.null2264.cobblegen.data;
+package io.github.null2264.cobblegen;
 
 import com.google.common.collect.ImmutableList;
-import io.github.null2264.cobblegen.CobbleGen;
-import io.github.null2264.cobblegen.CobbleGenPlugin;
+import io.github.null2264.cobblegen.data.CGRegistryImpl;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
@@ -13,7 +12,6 @@ import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LevelEvent;
@@ -37,12 +35,8 @@ import static io.github.null2264.cobblegen.util.Util.notNullOr;
 /**
  * Replacement for BlockGenerator. This will act like Vanilla's registry system
  */
-public class FluidInteractionHelper
+public class FluidInteraction
 {
-    public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
-            Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
-    );
-
     private final Map<Fluid, List<Generator>> generatorMap = new HashMap<>();
     private @Nullable Map<Fluid, List<Generator>> serverGeneratorMap = null;
 

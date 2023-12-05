@@ -9,7 +9,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
-import static io.github.null2264.cobblegen.data.FluidInteractionHelper.FLOW_DIRECTIONS;
+import static io.github.null2264.cobblegen.util.Constants.FLOW_DIRECTIONS;
 
 @ApiStatus.Internal
 public abstract class BlockGenerator implements BuiltInGenerator
