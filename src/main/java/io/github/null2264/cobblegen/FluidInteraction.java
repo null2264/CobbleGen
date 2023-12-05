@@ -113,6 +113,9 @@ public class FluidInteraction
             for (PluginFinder.PlugInContainer container : PluginFinder.getModPlugins()) {
                 String id = container.getModId();
                 CobbleGenPlugin plugin = container.getPlugin();
+
+                if (!plugin.shouldLoad()) continue;
+
                 CGLog.info(firstInit ? "Loading" : "Reloading", "plugin from", id);
                 try {
                     if (!firstInit) plugin.onReload();

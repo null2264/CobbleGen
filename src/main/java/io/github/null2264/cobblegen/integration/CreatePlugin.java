@@ -20,8 +20,6 @@ public class CreatePlugin implements CobbleGenPlugin
 
     @Override
     public void registerInteraction(CGRegistry registry) {
-        if (!LoaderCompat.isModLoaded("create")) return;
-
         CGLog.info("Create mod detected,", firstInit ? "loading" : "reloading", "integration...");
         registry.addGenerator(
                 Fluids.LAVA,
@@ -41,5 +39,10 @@ public class CreatePlugin implements CobbleGenPlugin
         );
 
         if (firstInit) firstInit = false;
+    }
+
+    @Override
+    public boolean shouldLoad() {
+        return LoaderCompat.isModLoaded("create");
     }
 }

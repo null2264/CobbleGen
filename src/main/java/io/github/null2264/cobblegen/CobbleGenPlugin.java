@@ -14,4 +14,12 @@ public interface CobbleGenPlugin
      */
     default void onReload() {
     }
+
+    /**
+     * Should this fluid interaction be loaded
+     * @return true if it should be loaded
+     */
+    default boolean shouldLoad() {
+        return true;
+    }
 }
