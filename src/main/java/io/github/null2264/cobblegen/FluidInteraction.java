@@ -166,6 +166,9 @@ public class FluidInteraction
         return false;
     }
 
+    /**
+     * Create Pipe support
+     */
     @ApiStatus.Internal
     public boolean interactFromPipe(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
         Fluid source;
