@@ -8,7 +8,6 @@ import java.util.*;
 
 //#if FABRIC>=1
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 //#else
 //$$ import java.lang.reflect.Constructor;
 //$$ import io.github.null2264.cobblegen.CGPlugin;
