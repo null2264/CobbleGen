@@ -12,6 +12,7 @@ import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
  * @param name
  */
 public record CGIdentifier(String modid, String name) {
+    // TODO: Add validation
     public static CGIdentifier of(String id) {
         if (id.equals("*")) return wildcard();
 

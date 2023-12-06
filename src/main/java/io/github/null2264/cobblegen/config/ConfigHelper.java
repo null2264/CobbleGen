@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.*;
 import com.google.gson.Gson;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class ConfigHelper {
-    private static final Jankson jankson = Jankson.builder().build();
+    private static final Jankson jankson = Jankson.builder()
+            .registerSerializer(CGIdentifier.class, (it, m) -> new JsonPrimitive(it.toString()))
+            .registerDeserializer(String.class, CGIdentifier.class, (str, m) -> CGIdentifier.of(str))
+            .build();
     private static final Gson gson = new Gson();
 
     /**
