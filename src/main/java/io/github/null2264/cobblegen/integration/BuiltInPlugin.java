@@ -86,7 +86,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
                         registry.addGenerator(
                                 actualFluid,
-                                new StoneGenerator(
+                                StoneGenerator.fromString(
                                         gen.resultsFromTop,
                                         getFluidFromString(neighbour),
                                         gen.silent
@@ -98,9 +98,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (!results.isEmpty()) {
                         Generator generator;
                         if (isNeighbourBlock)
-                            generator = new BasaltGenerator(results, getBlockFromString(neighbour), gen.silent);
+                            generator = BasaltGenerator.fromString(results, getBlockFromString(neighbour), gen.silent);
                         else
-                            generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent, obi);
+                            generator = CobbleGenerator.fromString(results, getFluidFromString(neighbour), gen.silent, obi);
 
                         registry.addGenerator(actualFluid, generator);
                         count.getAndIncrement();
@@ -108,9 +108,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
                 });
             });
 
-        registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, Map.of()));
-        registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
+        registry.addGenerator(Fluids.LAVA, StoneGenerator.fromString(stoneGen, Fluids.WATER, false));
+        registry.addGenerator(Fluids.LAVA, CobbleGenerator.fromString(cobbleGen, Fluids.WATER, false, Map.of()));
+        registry.addGenerator(Fluids.LAVA, BasaltGenerator.fromString(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 
         CGLog.info(String.valueOf(count.get()), "generators has been added from config");
