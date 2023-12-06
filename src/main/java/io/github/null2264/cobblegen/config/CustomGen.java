@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.config;
 
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -8,19 +9,19 @@ import java.util.Map;
 public class CustomGen
 {
     @Nullable
-    public Map<String, List<WeightedBlock>> cobbleGen;
+    public Map<CGIdentifier, List<WeightedBlock>> cobbleGen;
     @Nullable
-    public Map<String, List<WeightedBlock>> stoneGen;
+    public Map<CGIdentifier, List<WeightedBlock>> stoneGen;
     @Nullable
-    public Map<String, List<WeightedBlock>> basaltGen;
+    public Map<CGIdentifier, List<WeightedBlock>> basaltGen;
 
     public CustomGen(
             @Nullable
-            Map<String, List<WeightedBlock>> cobbleGen,
+            Map<CGIdentifier, List<WeightedBlock>> cobbleGen,
             @Nullable
-            Map<String, List<WeightedBlock>> stoneGen,
+            Map<CGIdentifier, List<WeightedBlock>> stoneGen,
             @Nullable
-            Map<String, List<WeightedBlock>> basaltGen
+            Map<CGIdentifier, List<WeightedBlock>> basaltGen
     ) {
         this.cobbleGen = cobbleGen;
         this.stoneGen = stoneGen;

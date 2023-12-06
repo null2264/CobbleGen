@@ -1,8 +1,10 @@
 package io.github.null2264.cobblegen.data;
 
+import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
@@ -46,6 +48,10 @@ public record CGIdentifier(String modid, String name) {
     public ResourceLocation toMC() {
         if (isWildcard()) throw new RuntimeException("Wildcard is not a valid MC ID");
         return new ResourceLocation(modid, name);
+    }
+
+    public static CGIdentifier fromBlock(Block block) {
+        return fromMC(Util.getBlockId(block));
     }
 
     public void writeToBuf(FriendlyByteBuf buf) {

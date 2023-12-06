@@ -5,6 +5,7 @@ import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.config.ConfigData;
 import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.generator.StoneGenerator;
@@ -59,19 +60,19 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
         AtomicInteger count = new AtomicInteger();
 
-        Map<String, List<WeightedBlock>> stoneGen = new HashMap<>();
+        Map<CGIdentifier, List<WeightedBlock>> stoneGen = new HashMap<>();
         if (config.customGen != null && config.customGen.stoneGen != null)
             stoneGen = new HashMap<>(config.customGen.stoneGen);
-        Map<String, List<WeightedBlock>> cobbleGen = new HashMap<>();
+        Map<CGIdentifier, List<WeightedBlock>> cobbleGen = new HashMap<>();
         if (config.customGen != null && config.customGen.cobbleGen != null)
             cobbleGen = new HashMap<>(config.customGen.cobbleGen);
-        Map<String, List<WeightedBlock>> basaltGen = new HashMap<>();
+        Map<CGIdentifier, List<WeightedBlock>> basaltGen = new HashMap<>();
         if (config.customGen != null && config.customGen.basaltGen != null)
             basaltGen = new HashMap<>(config.customGen.basaltGen);
 
-        stoneGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.stoneGen, new ArrayList<>()));
-        cobbleGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.cobbleGen, new ArrayList<>()));
-        basaltGen.put(CGBlocks.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ArrayList<>()));
+        stoneGen.put(CGIdentifier.wildcard(), notNullOr(config.stoneGen, new ArrayList<>()));
+        cobbleGen.put(CGIdentifier.wildcard(), notNullOr(config.cobbleGen, new ArrayList<>()));
+        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ArrayList<>()));
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {
@@ -86,7 +87,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
                         registry.addGenerator(
                                 actualFluid,
-                                StoneGenerator.fromString(
+                                new StoneGenerator(
                                         gen.resultsFromTop,
                                         getFluidFromString(neighbour),
                                         gen.silent
@@ -98,9 +99,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (!results.isEmpty()) {
                         Generator generator;
                         if (isNeighbourBlock)
-                            generator = BasaltGenerator.fromString(results, getBlockFromString(neighbour), gen.silent);
+                            generator = new BasaltGenerator(results, getBlockFromString(neighbour), gen.silent);
                         else
-                            generator = CobbleGenerator.fromString(results, getFluidFromString(neighbour), gen.silent, obi);
+                            generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent, obi);
 
                         registry.addGenerator(actualFluid, generator);
                         count.getAndIncrement();
@@ -108,9 +109,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
                 });
             });
 
-        registry.addGenerator(Fluids.LAVA, StoneGenerator.fromString(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, CobbleGenerator.fromString(cobbleGen, Fluids.WATER, false, Map.of()));
-        registry.addGenerator(Fluids.LAVA, BasaltGenerator.fromString(basaltGen, Blocks.BLUE_ICE, false));
+        registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, Map.of()));
+        registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 
         CGLog.info(String.valueOf(count.get()), "generators has been added from config");

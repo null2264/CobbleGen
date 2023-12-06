@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.Comment;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -76,7 +77,7 @@ public class ConfigData implements Config
         config.customGen = new CustomGen(
                 // Cobble Gen
                 Map.of(
-                        "minecraft:bedrock",
+                        CGIdentifier.of("minecraft:bedrock"),
                         List.of(
                                 new WeightedBlock("minecraft:emerald_ore", 2.0),
                                 new WeightedBlock("minecraft:diamond_ore", 5.0),
@@ -84,12 +85,12 @@ public class ConfigData implements Config
                                 new WeightedBlock("minecraft:gold_ore", 10.0),
                                 new WeightedBlock("minecraft:iron_ore", 15.0),
                                 new WeightedBlock("minecraft:coal_ore", 20.0),
-                                new WeightedBlock("minecraft:cobblestone", 40.0)
+                                new WeightedBlock("minecraft:cobblestone", 80.0)
                         )
                 ),
                 // Stone Gen
                 Map.of(
-                        "minecraft:bedrock",
+                        CGIdentifier.of("minecraft:bedrock"),
                         List.of(
                                 new WeightedBlock("minecraft:stone", 40.0),
                                 new WeightedBlock("minecraft:diorite", 20.0),
@@ -99,7 +100,7 @@ public class ConfigData implements Config
                 ),
                 // Basalt Gen
                 Map.of(
-                        "minecraft:bedrock",
+                        CGIdentifier.of("minecraft:bedrock"),
                         List.of(
                                 new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
                                 new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
