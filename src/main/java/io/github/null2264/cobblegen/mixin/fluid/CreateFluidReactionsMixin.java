@@ -9,6 +9,7 @@ import io.github.fabricators_of_create.porting_lib.util.FluidStack;
     //$$ import net.minecraftforge.fluids.FluidStack;
     //#endif
 //#endif
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.data.model.Generator;
 import lombok.val;
 import net.minecraft.core.BlockPos;
@@ -28,6 +29,7 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 public abstract class CreateFluidReactionsMixin
 {
     private static boolean handleReaction(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
+        if (CobbleGen.META_CONFIG.create.disablePipe) return false;
         return FLUID_INTERACTION.interactFromPipe(level, pos, fluid1, fluid2);
     }
 

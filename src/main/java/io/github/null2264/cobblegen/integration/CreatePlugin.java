@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.integration;
 
 import io.github.null2264.cobblegen.CGPlugin;
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
@@ -43,6 +44,6 @@ public class CreatePlugin implements CobbleGenPlugin
 
     @Override
     public boolean shouldLoad() {
-        return LoaderCompat.isModLoaded("create");
+        return LoaderCompat.isModLoaded("create") && CobbleGen.META_CONFIG.create.loadIntegration;
     }
 }
