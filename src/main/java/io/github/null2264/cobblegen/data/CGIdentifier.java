@@ -63,6 +63,7 @@ public record CGIdentifier(String modid, String name) {
     }
 
     public String toDebugFileName() {
+        if (isWildcard()) return MOD_ID + "/wildcard";
         return this.toString().replace('/', '_').replace(':', '_');
     }
 }
