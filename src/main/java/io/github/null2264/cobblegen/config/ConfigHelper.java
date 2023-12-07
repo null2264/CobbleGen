@@ -1,9 +1,9 @@
 package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.*;
-import com.google.gson.Gson;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
+import lombok.val;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,8 +15,12 @@ public class ConfigHelper {
     private static final Jankson jankson = Jankson.builder()
             .registerSerializer(CGIdentifier.class, (it, m) -> new JsonPrimitive(it.toString()))
             .registerDeserializer(String.class, CGIdentifier.class, (str, m) -> CGIdentifier.of(str))
+            .registerDeserializer(JsonPrimitive.class, CGIdentifier.class, (primitive, m) -> {
+                val str = primitive.asString();
+                if (str.equals("null")) return null;
+                return CGIdentifier.of(str);
+            })
             .build();
-    private static final Gson gson = new Gson();
 
     /**
      * @deprecated Removed when Jankson released their proper null filter
@@ -47,7 +51,7 @@ public class ConfigHelper {
         try {
             CGLog.info("Trying to " + string + " config file...");
             JsonObject json = jankson.load(configFile);
-            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), clazz);
+            return jankson.fromJson(json, clazz);
         } catch (Exception e) {
             CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
 
