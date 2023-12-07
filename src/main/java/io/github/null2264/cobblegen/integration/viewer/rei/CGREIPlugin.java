@@ -41,8 +41,8 @@ public class CGREIPlugin implements REIClientPlugin
         FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                 (modifierId, blocks) -> {
                     Block modifier = null;
-                    if (!Objects.equals(modifierId, "*"))
-                        modifier = Util.getBlock(new ResourceLocation(modifierId));
+                    if (!modifierId.isWildcard())
+                        modifier = Util.getBlock(modifierId.toMC());
                     for (WeightedBlock block : blocks)
                         registry.add(
                                 new FluidInteractionRecipe(

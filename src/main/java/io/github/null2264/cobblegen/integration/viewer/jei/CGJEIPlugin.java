@@ -58,8 +58,8 @@ public class CGJEIPlugin implements IModPlugin
                 (modifierId, blocks) -> {
                     val recipes = new ArrayList<FluidInteractionRecipeHolder>();
                     Block modifier = null;
-                    if (!Objects.equals(modifierId, "*"))
-                        modifier = Util.getBlock(new ResourceLocation(modifierId));
+                    if (!modifierId.isWildcard())
+                        modifier = Util.getBlock(modifierId.toMC());
                     for (WeightedBlock block : blocks)
                         recipes.add(
                                 new FluidInteractionRecipeHolder(

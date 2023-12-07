@@ -61,4 +61,8 @@ public record CGIdentifier(String modid, String name) {
     public static CGIdentifier readFromBuf(FriendlyByteBuf buf) {
         return of(buf.readUtf());
     }
+
+    public String toDebugFileName() {
+        return this.toString().replace('/', '_').replace(':', '_');
+    }
 }
