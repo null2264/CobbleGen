@@ -1,8 +1,8 @@
 package io.github.null2264.cobblegen.util;
 
 import com.google.common.collect.ImmutableList;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
 public class Constants
@@ -11,7 +11,7 @@ public class Constants
     public static final int JEI_RECIPE_WIDTH = 136;
     public static final int JEI_RECIPE_HEIGHT = 36;
     public static final int JEI_RECIPE_HEIGHT_STONE = 56;
-    public static final ResourceLocation JEI_UI_COMPONENT = Util.identifierOf("textures/gui/jei.png");
+    public static final CGIdentifier JEI_UI_COMPONENT = CGIdentifier.of("textures/gui/jei.png");
 
     /**
      * Just a helper class to make the code more "readable"
@@ -30,7 +30,7 @@ public class Constants
             return text;
         }
 
-        public static String fromId(ResourceLocation id) {
+        public static String fromId(net.minecraft.resources.ResourceLocation id) {
             return id.toString();
         }
 
