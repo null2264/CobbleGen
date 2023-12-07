@@ -39,6 +39,7 @@ public abstract class ServerCommonPacketListenerMixin
     //#endif
     }
 
+    //#if MC<1.20.2
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
         val self = getListener();
@@ -50,6 +51,7 @@ public abstract class ServerCommonPacketListenerMixin
         //#endif
         CGServerPlayNetworkHandler.trySync(self);
     }
+    //#endif
 
     @Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
     private void handleCustomPayload(ServerboundCustomPayloadPacket packet, CallbackInfo ci) {

@@ -6,6 +6,7 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.netty.buffer.Unpooled;
 import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
+import org.jetbrains.annotations.ApiStatus;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
@@ -96,7 +97,8 @@ public class CGServerPlayNetworkHandler
         handler.send(createS2CPacket(buf));
     }
 
-    private static ClientboundCustomPayloadPacket createS2CPacket(FriendlyByteBuf buf) {
+    @ApiStatus.Internal
+    public static ClientboundCustomPayloadPacket createS2CPacket(FriendlyByteBuf buf) {
         //#if MC<=1.20.1
         return new ClientboundCustomPayloadPacket(buf.readResourceLocation(), buf);
         //#else
