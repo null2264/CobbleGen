@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.network;
 
-import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.network.payload.*;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.netty.buffer.Unpooled;
 import lombok.val;
@@ -14,76 +15,73 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 //$$ import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
-import net.minecraft.resources.ResourceLocation;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
+import static io.github.null2264.cobblegen.util.Constants.*;
 
 public class CGServerPlayNetworkHandler
 {
-    //#if MC<1.20.2
-    public static void trySync(ServerGamePacketListenerImpl listener) {
-    //#else
-    //$$ public static void trySync(ServerCommonPacketListenerImpl listener) {
-    //#endif
+    public static void trySync(
+            //#if MC<1.20.2
+            ServerGamePacketListenerImpl listener
+            //#else
+            //$$ ServerCommonPacketListenerImpl listener
+            //#endif
+    ) {
         trySync(listener, false);
     }
 
-    //#if MC<1.20.2
-    public static void trySync(ServerGamePacketListenerImpl listener, boolean isReload) {
-    //#else
-    //$$ public static void trySync(ServerCommonPacketListenerImpl listener, boolean isReload) {
-    //#endif
+    public static void trySync(
+            //#if MC<1.20.2
+            ServerGamePacketListenerImpl listener,
+            //#else
+            //$$ ServerCommonPacketListenerImpl listener,
+            //#endif
+            boolean isReload
+    ) {
         if (isReload)
             CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
         else
             CGLog.info("A player joined, checking for recipe viewer...");
         val buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeResourceLocation(keyFromChannel(Channel.PING));
-        buf.writeBoolean(isReload);
-        buf.writeUtf("ping");  // Basically "do you want this?"
+        buf.writeResourceLocation(CG_PING.toMC());
+        new CGPingS2CPayload(isReload).write(buf);
         listener.send(createS2CPacket(buf));
     }
 
-    //#if MC<1.20.2
-    public static boolean handlePacket(ServerGamePacketListenerImpl listener, ServerboundCustomPayloadPacket packet) {
-    //#else
-    //$$ @SuppressWarnings("UnstableApiUsage")
-    //$$ public static boolean handlePacket(ServerCommonPacketListenerImpl listener, CustomPacketPayload packet) {
-    //#endif
-        //#if MC>=1.20.2
-        //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
-        //$$ ResourceLocation id = ((PacketByteBufPayload) packet).id();
-        //#else
-        ResourceLocation id = packet.getIdentifier();
+    public static boolean handlePacket(
+            //#if MC<1.20.2
+            ServerGamePacketListenerImpl listener,
+            ServerboundCustomPayloadPacket packet
+            //#else
+            //$$ ServerCommonPacketListenerImpl listener,
+            //$$ CustomPacketPayload payload
+            //#endif
+    ) {
+        //#if MC<1.20.2
+        CGIdentifier id = CGIdentifier.fromMC(packet.getIdentifier());
+        val packetData = packet.getData();
+
+        val reader = KNOWN_SERVER_PAYLOADS.get(id);
+        if (reader == null) return false;
+        val payload = reader.apply(packetData);
         //#endif
 
-        if (id.equals(SYNC_CHANNEL)) {
-            //#if MC<1.20.2
-            val packetData = packet.getData();
-            //#else
-            //$$ val packetData = ((PacketByteBufPayload) packet).data();
-            //#endif
-
-            val received = packetData.readBoolean();
-            if (received)
-                CGLog.info("Player has received the server's newest CobbleGen config");
-            return true;
-        } else if (id.equals(SYNC_PING_CHANNEL)) {
-            //#if MC<1.20.2
-            val packetData = packet.getData();
-            //#else
-            //$$ val packetData = ((PacketByteBufPayload) packet).data();
-            //#endif
-
-            val isReload = packetData.readBoolean();
-            val isInstalled = packetData.readBoolean();
-            if (isInstalled) {
-                if (!isReload)
+        if (payload instanceof CGPingC2SPayload) {
+            if (((CGPingC2SPayload) payload).hasRecipeViewer()) {
+                if (!((CGPingC2SPayload) payload).isReload())
                     CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
-                sync(listener, isReload);
+                sync(listener, ((CGPingC2SPayload) payload).isReload());
             }
             return true;
         }
+
+        if (payload instanceof CGSyncC2SPayload) {
+            if (((CGSyncC2SPayload) payload).isSync())
+                CGLog.info("Player has received the server's newest CobbleGen config");
+            return true;
+        }
+
         return false;
     }
 
@@ -93,21 +91,9 @@ public class CGServerPlayNetworkHandler
     //$$ public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
     //#endif
         val buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
-        buf.writeBoolean(isReload);
-        FLUID_INTERACTION.write(buf);
+        buf.writeResourceLocation(CG_SYNC.toMC());
+        new CGSyncS2CPayload(isReload, FLUID_INTERACTION.getLocalGenerators()).write(buf);
         handler.send(createS2CPacket(buf));
-    }
-
-    private static ResourceLocation keyFromChannel(Channel channel) {
-        switch (channel) {
-            case PING -> {
-                return SYNC_PING_CHANNEL;
-            }
-            default -> {
-                return SYNC_CHANNEL;
-            }
-        }
     }
 
     private static ClientboundCustomPayloadPacket createS2CPacket(FriendlyByteBuf buf) {

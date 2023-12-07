@@ -12,11 +12,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//#if MC<1.20.2
-@Mixin(net.minecraft.client.multiplayer.ClientPacketListener.class)
-//#else
-//$$ @Mixin(net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl.class)
-//#endif
+@Mixin(
+        //#if MC<1.20.2
+        net.minecraft.client.multiplayer.ClientPacketListener.class
+        //#else
+        //$$ net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl.class
+        //#endif
+)
 public abstract class ClientCommonPacketListenerMixin
 {
     @SuppressWarnings("DataFlowIssue")
@@ -30,17 +32,16 @@ public abstract class ClientCommonPacketListenerMixin
     }
 
     @SuppressWarnings("AmbiguousMixinReference")
-    //#if MC>=1.20.2
-    //$$ @Inject(method = "handleCustomPayload(Lnet/minecraft/network/protocol/common/ClientboundCustomPayloadPacket;)V", at = @At("HEAD"), cancellable = true)
-    //#else
     @Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
-    //#endif
     private void handleCustomPayload(ClientboundCustomPayloadPacket packet, CallbackInfo ci) {
-        //#if MC<1.20.2
-        if (CGClientPlayNetworkHandler.handlePacket(getListener(), packet)) {
-        //#else
-        //$$ if (CGClientPlayNetworkHandler.handlePacket(getListener(), packet.payload())) {
-        //#endif
+        if (CGClientPlayNetworkHandler.handlePacket(
+                getListener(),
+                //#if MC<1.20.2
+                packet
+                //#else
+                //$$ packet.payload()
+                //#endif
+        )) {
             ci.cancel();
         }
     }

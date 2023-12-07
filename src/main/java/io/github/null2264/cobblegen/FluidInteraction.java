@@ -1,16 +1,15 @@
 package io.github.null2264.cobblegen;
 
-import com.google.common.collect.ImmutableList;
 import io.github.null2264.cobblegen.data.CGRegistryImpl;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
+import io.github.null2264.cobblegen.network.payload.CGSyncS2CPayload;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -57,6 +56,10 @@ public class FluidInteraction
         count.incrementAndGet();
     }
 
+    public Map<Fluid, List<Generator>> getLocalGenerators() {
+        return generatorMap;
+    }
+
     @NotNull
     public Map<Fluid, List<Generator>> getGenerators() {
         return notNullOr(serverGeneratorMap, generatorMap);
@@ -70,31 +73,17 @@ public class FluidInteraction
     @ApiStatus.Internal
     @Deprecated(since = "5.1", forRemoval = true)
     public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
-        write(buf);
+        write(generatorMap, buf);
     }
 
     @ApiStatus.Internal
     public void readGeneratorsFromPacket(FriendlyByteBuf buf) {
-        val _genSize = buf.readInt();
-        val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
+        serverGeneratorMap = read(buf);
+    }
 
-        for (int i = 0; i < _genSize; i++) {
-            val key = Util.getFluid(buf.readResourceLocation());
-
-            val _gensSize = buf.readInt();
-            val gens = new ArrayList<Generator>(_gensSize);
-            for (int j = 0; j < _gensSize; j++) {
-                val generator = Generator.fromPacket(buf);
-                if (generator == null) {
-                    // Shouldn't be possible, but just in case... it's Java Reflection API after all.
-                    CGLog.warn("Failed to retrieve a generator, skipping...");
-                    continue;
-                }
-                gens.add(generator);
-            }
-            genMap.put(key, gens);
-        }
-        serverGeneratorMap = genMap;
+    @ApiStatus.Internal
+    public void readGeneratorsFromPayload(CGSyncS2CPayload payload) {
+        serverGeneratorMap = payload.recipe();
     }
 
     @ApiStatus.Internal
@@ -203,18 +192,32 @@ public class FluidInteraction
         return false;
     }
 
-    public void write(FriendlyByteBuf buf) {
-        buf.writeInt(generatorMap.size());
+    public static void write(Map<Fluid, List<Generator>> generatorMap, FriendlyByteBuf buf) {
+        buf.writeMap(
+                generatorMap,
+                (b, o) -> b.writeResourceLocation(Util.getFluidId(o)),
+                (b, generators) -> b.writeCollection(generators, (p, gen) -> gen.toPacket(p))
+        );
+    }
 
-        for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
-            buf.writeResourceLocation(Util.getFluidId(entry.getKey()));
-
-            val gens = entry.getValue();
-            buf.writeInt(gens.size());
-
-            for (Generator generator : gens) {
-                generator.toPacket(buf);
-            }
-        }
+    @ApiStatus.Internal
+    public static Map<Fluid, List<Generator>> read(FriendlyByteBuf buf) {
+        return buf.readMap(
+                (o) -> Util.getFluid(o.readResourceLocation()),
+                (o) -> {
+                    val _gensSize = o.readVarInt();
+                    val gens = new ArrayList<Generator>(_gensSize);
+                    for (int j = 0; j < _gensSize; j++) {
+                        val generator = Generator.fromPacket(o);
+                        if (generator == null) {
+                            // Shouldn't be possible, but just in case... it's Java Reflection API after all.
+                            CGLog.warn("Failed to retrieve a generator, skipping...");
+                            continue;
+                        }
+                        gens.add(generator);
+                    }
+                    return gens;
+                }
+        );
     }
 }
