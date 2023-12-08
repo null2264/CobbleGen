@@ -5,6 +5,7 @@ import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
+import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -15,6 +16,9 @@ import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigData implements Config, JanksonSerializable
 {
+    @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
+    public String formatVersion = "1.0";
+
     @Nullable
     @Comment(value = """
             Default Generators
@@ -120,6 +124,7 @@ public class ConfigData implements Config, JanksonSerializable
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
+        json.put("formatVersion", JsonPrimitive.of(formatVersion));
         json.put("cobbleGen", JANKSON.toJson(cobbleGen));
         json.put("stoneGen", JANKSON.toJson(stoneGen));
         json.put("basaltGen", JANKSON.toJson(basaltGen));
@@ -139,6 +144,8 @@ public class ConfigData implements Config, JanksonSerializable
     @Deserializer
     public static ConfigData fromJson(JsonObject json) {
         ConfigData config = new ConfigData();
+        val formatVersion = json.get("formatVersion");
+        config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
         config.cobbleGen = JANKSON.fromJson(json.getObject("cobbleGen"), List.class);
         config.stoneGen = JANKSON.fromJson(json.getObject("stoneGen"), List.class);
         config.basaltGen = JANKSON.fromJson(json.getObject("basaltGen"), List.class);
