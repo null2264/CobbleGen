@@ -7,11 +7,14 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    container:
-      image: eclipse-temurin:17-jdk
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
       - run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
@@ -47,11 +50,14 @@ jobs:
   deploy-mod:
     name: Deploy Mod
     runs-on: ubuntu-latest
-    container:
-      image: eclipse-temurin:17-jdk
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
       - run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
