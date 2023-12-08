@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.config;
 
 import blue.endless.jankson.*;
+import blue.endless.jankson.api.SyntaxError;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
 import lombok.val;
@@ -10,20 +11,39 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigHelper {
-    private static final Jankson jankson = Jankson.builder()
-            .registerSerializer(CGIdentifier.class, (it, m) -> new JsonPrimitive(it.toString()))
-            .registerDeserializer(String.class, CGIdentifier.class, (str, m) -> CGIdentifier.of(str))
-            .registerDeserializer(JsonPrimitive.class, CGIdentifier.class, (primitive, m) -> {
-                val str = primitive.asString();
-                if (str.equals("null")) return null;
-                return CGIdentifier.of(str);
-            })
-            .build();
+    @ApiStatus.Internal
+    public static <T extends Config> T loadConfig(boolean reload, File configFile, T workingConfig, T defaultConfig, Class<T> clazz) {
+        String string = reload ? "reload" : "load";
+        try {
+            CGLog.info("Trying to " + string + " config file...");
+            JsonObject json = JANKSON.load(configFile);
+            return JANKSON.fromJson(json, clazz);
+        } catch (Exception e) {
+            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
+
+            if (reload && workingConfig != null) {
+                CGLog.warn("Falling back to previously working config...");
+                return workingConfig;
+            }
+
+            if (!configFile.exists()) {
+                saveConfig(defaultConfig, configFile);
+            }
+            CGLog.warn("Falling back to default config...");
+            return defaultConfig;
+        }
+    }
 
     /**
-     * @deprecated Removed when Jankson released their proper null filter
+     * @deprecated Will be removed once Jankson released their proper omit null feature
      */
     @Deprecated
     @Nullable
@@ -45,29 +65,6 @@ public class ConfigHelper {
         return result;
     }
 
-    @ApiStatus.Internal
-    public static <T extends Config> T loadConfig(boolean reload, File configFile, T workingConfig, T defaultConfig, Class<T> clazz) {
-        String string = reload ? "reload" : "load";
-        try {
-            CGLog.info("Trying to " + string + " config file...");
-            JsonObject json = jankson.load(configFile);
-            return jankson.fromJson(json, clazz);
-        } catch (Exception e) {
-            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
-
-            if (reload && workingConfig != null) {
-                CGLog.warn("Falling back to previously working config...");
-                return workingConfig;
-            }
-
-            if (!configFile.exists()) {
-                saveConfig(defaultConfig, configFile);
-            }
-            CGLog.warn("Falling back to default config...");
-            return defaultConfig;
-        }
-    }
-
     private static void saveConfig(Config config, File configFile) {
         try {
             CGLog.info("Trying to create config file...");
@@ -79,5 +76,30 @@ public class ConfigHelper {
         } catch (IOException e) {
             CGLog.error("There was an error while creating the config file!\n" + e);
         }
+    }
+
+    public static <T> List<T> listFromJson(JsonArray json, Function<JsonObject, T> mapper) {
+        return json.stream().map((o) -> mapper.apply((JsonObject) o)).toList();
+    }
+
+    public static Map<CGIdentifier, List<WeightedBlock>> generatorFromJson(JsonObject json, String key) {
+        Map<CGIdentifier, List<WeightedBlock>> result = new HashMap<>();
+        JsonObject obj = json.getObject(key);
+
+        if (obj == null) return null;
+
+        obj.forEach((k, v) -> {
+            if (!(v instanceof JsonArray)) return;
+            val id = CGIdentifier.of(k);
+            List<WeightedBlock> list = listFromJson((JsonArray) v, (e) -> {
+                try {
+                    return WeightedBlock.fromJson(e);
+                } catch (SyntaxError ex) {
+                    throw new RuntimeException(ex);
+                }
+            });
+            result.put(id, list);
+        });
+        return result;
     }
 }

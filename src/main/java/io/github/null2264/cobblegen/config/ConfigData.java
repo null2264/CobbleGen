@@ -1,13 +1,19 @@
 package io.github.null2264.cobblegen.config;
 
-import blue.endless.jankson.Comment;
+import blue.endless.jankson.*;
+import blue.endless.jankson.annotation.Deserializer;
+import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.JanksonSerializable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ConfigData implements Config
+import static io.github.null2264.cobblegen.util.Constants.JANKSON;
+
+public class ConfigData implements Config, JanksonSerializable
 {
     @Nullable
     @Comment(value = """
@@ -107,6 +113,47 @@ public class ConfigData implements Config
                         )
                 )
         );
+        return config;
+    }
+
+    @Override
+    @Serializer
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.put("cobbleGen", JANKSON.toJson(cobbleGen));
+        json.put("stoneGen", JANKSON.toJson(stoneGen));
+        json.put("basaltGen", JANKSON.toJson(basaltGen));
+        json.put("customGen", JANKSON.toJson(customGen));
+        if (advanced != null) {
+            JsonObject advancedRoot = new JsonObject();
+            advanced.forEach((fluid1, fluidMap) -> {
+                JsonObject advancedSubroot = new JsonObject();
+                fluidMap.forEach((fluid2, advancedGen) -> advancedSubroot.put(fluid2, advancedGen.toJson()));
+                advancedRoot.put(fluid1, advancedSubroot);
+            });
+            json.put("advanced", advancedRoot);
+        }
+        return json;
+    }
+
+    @Deserializer
+    public static ConfigData fromJson(JsonObject json) {
+        ConfigData config = new ConfigData();
+        config.cobbleGen = JANKSON.fromJson(json.getObject("cobbleGen"), List.class);
+        config.stoneGen = JANKSON.fromJson(json.getObject("stoneGen"), List.class);
+        config.basaltGen = JANKSON.fromJson(json.getObject("basaltGen"), List.class);
+        config.customGen = JANKSON.fromJson(json.getObject("customGen"), CustomGen.class);
+        JsonObject e = json.getObject("advanced");
+        if (e == null) return config;
+
+        config.advanced = new HashMap<>();
+        e.forEach((fluid1, fluidMap) -> {
+            if (!(fluidMap instanceof JsonObject advancedSubroot)) return;
+
+            Map<String, AdvancedGen> advanced = new HashMap<>();
+            advancedSubroot.forEach((fluid2, jsonElement) -> advanced.put(fluid2, AdvancedGen.fromJson((JsonObject) jsonElement)));
+            config.advanced.put(fluid1, advanced);
+        });
         return config;
     }
 }

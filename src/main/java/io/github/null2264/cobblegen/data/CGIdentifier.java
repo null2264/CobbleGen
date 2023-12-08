@@ -1,5 +1,9 @@
 package io.github.null2264.cobblegen.data;
 
+import blue.endless.jankson.JsonElement;
+import blue.endless.jankson.JsonPrimitive;
+import blue.endless.jankson.annotation.Deserializer;
+import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
@@ -65,5 +69,15 @@ public record CGIdentifier(String modid, String name) {
     public String toDebugFileName() {
         if (isWildcard()) return MOD_ID + "/wildcard";
         return this.toString().replace('/', '_').replace(':', '_');
+    }
+
+    @Serializer
+    public JsonElement toJson() {
+        return JsonPrimitive.of(toString());
+    }
+
+    @Deserializer
+    public static CGIdentifier fromJson(JsonPrimitive json) {
+        return of(json.asString());
     }
 }
