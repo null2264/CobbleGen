@@ -11,7 +11,7 @@ import dev.emi.emi.api.widget.SlotWidget;
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.ChatFormatting;

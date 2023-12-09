@@ -1,7 +1,6 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.*;
-import blue.endless.jankson.api.SyntaxError;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
 import lombok.val;

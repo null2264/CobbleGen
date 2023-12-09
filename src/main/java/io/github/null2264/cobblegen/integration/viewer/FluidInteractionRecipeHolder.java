@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.integration.viewer;
 
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import lombok.Data;
 import net.minecraft.world.level.block.Block;

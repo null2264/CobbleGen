@@ -8,7 +8,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;

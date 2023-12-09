@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.*;
 import blue.endless.jankson.annotation.Deserializer;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.config.ConfigHelper.listFromJson;
+import static io.github.null2264.cobblegen.data.config.ConfigHelper.listFromJson;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigData implements Config, JanksonSerializable

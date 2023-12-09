@@ -3,8 +3,8 @@ package io.github.null2264.cobblegen.integration;
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
-import io.github.null2264.cobblegen.config.ConfigData;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.ConfigData;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
@@ -12,7 +12,6 @@ import io.github.null2264.cobblegen.data.generator.StoneGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +30,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.config.ConfigHelper.loadConfig;
+import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 @CGPlugin

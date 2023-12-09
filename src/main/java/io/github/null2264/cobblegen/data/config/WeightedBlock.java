@@ -1,11 +1,10 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.JsonArray;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
-import blue.endless.jankson.api.SyntaxError;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;

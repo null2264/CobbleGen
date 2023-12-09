@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
@@ -8,9 +8,7 @@ import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 

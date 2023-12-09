@@ -4,7 +4,7 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;

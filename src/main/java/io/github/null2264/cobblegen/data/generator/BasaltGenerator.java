@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.data.generator;
 
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;

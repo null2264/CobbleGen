@@ -1,11 +1,9 @@
 package io.github.null2264.cobblegen.util;
 
 import blue.endless.jankson.Jankson;
-import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.github.null2264.cobblegen.config.AdvancedGen;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.network.payload.*;
 import net.minecraft.core.Direction;

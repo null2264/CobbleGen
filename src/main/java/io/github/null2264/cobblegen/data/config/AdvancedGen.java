@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.*;
 import blue.endless.jankson.annotation.Deserializer;
@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.config.ConfigHelper.*;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class AdvancedGen implements JanksonSerializable
@@ -51,9 +50,9 @@ public class AdvancedGen implements JanksonSerializable
     @Deserializer
     public static AdvancedGen fromJson(JsonObject json) {
         val silent = json.getBoolean("silent", false);
-        val results = generatorFromJson(json, "results");
-        val resultsFromTop = generatorFromJson(json, "resultsFromTop");
-        val obsidian = generatorFromJson(json, "obsidian");
+        val results = ConfigHelper.generatorFromJson(json, "results");
+        val resultsFromTop = ConfigHelper.generatorFromJson(json, "resultsFromTop");
+        val obsidian = ConfigHelper.generatorFromJson(json, "obsidian");
         return new AdvancedGen(silent, results, resultsFromTop, obsidian);
     }
 }

@@ -1,4 +1,4 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.Comment;
 import org.jetbrains.annotations.NotNull;

@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.CobbleGen;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
