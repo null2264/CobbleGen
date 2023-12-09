@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.null2264.cobblegen.config.ConfigHelper.listFromJson;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigData implements Config, JanksonSerializable
@@ -146,10 +147,10 @@ public class ConfigData implements Config, JanksonSerializable
         ConfigData config = new ConfigData();
         val formatVersion = json.get("formatVersion");
         config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
-        config.cobbleGen = JANKSON.fromJson(json.getObject("cobbleGen"), List.class);
-        config.stoneGen = JANKSON.fromJson(json.getObject("stoneGen"), List.class);
-        config.basaltGen = JANKSON.fromJson(json.getObject("basaltGen"), List.class);
-        config.customGen = JANKSON.fromJson(json.getObject("customGen"), CustomGen.class);
+        config.cobbleGen = listFromJson((JsonArray) json.get("cobbleGen"), WeightedBlock::fromJson);
+        config.stoneGen = listFromJson((JsonArray) json.get("stoneGen"), WeightedBlock::fromJson);
+        config.stoneGen = listFromJson((JsonArray) json.get("stoneGen"), WeightedBlock::fromJson);
+        config.customGen = CustomGen.fromJson(json.getObject("customGen"));
         JsonObject e = json.getObject("advanced");
         if (e == null) return config;
 

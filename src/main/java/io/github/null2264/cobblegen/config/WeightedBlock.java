@@ -149,9 +149,9 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     }
 
     @Deserializer
-    public static WeightedBlock fromJson(JsonObject json) throws SyntaxError {
+    public static WeightedBlock fromJson(JsonObject json) {
         val _id = json.get("id");
-        if (!(_id instanceof JsonPrimitive)) throw new SyntaxError("ID is invalid");
+        if (!(_id instanceof JsonPrimitive)) return null;
         val id = ((JsonPrimitive) _id).asString();
 
         val weight = json.getDouble("weight", 0.0);

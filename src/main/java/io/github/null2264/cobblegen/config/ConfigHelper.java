@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
@@ -79,7 +80,7 @@ public class ConfigHelper {
     }
 
     public static <T> List<T> listFromJson(JsonArray json, Function<JsonObject, T> mapper) {
-        return json.stream().map((o) -> mapper.apply((JsonObject) o)).toList();
+        return json.stream().map((o) -> mapper.apply((JsonObject) o)).filter(Objects::nonNull).toList();
     }
 
     public static Map<CGIdentifier, List<WeightedBlock>> generatorFromJson(JsonObject json, String key) {
@@ -91,13 +92,7 @@ public class ConfigHelper {
         obj.forEach((k, v) -> {
             if (!(v instanceof JsonArray)) return;
             val id = CGIdentifier.of(k);
-            List<WeightedBlock> list = listFromJson((JsonArray) v, (e) -> {
-                try {
-                    return WeightedBlock.fromJson(e);
-                } catch (SyntaxError ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
+            List<WeightedBlock> list = listFromJson((JsonArray) v, WeightedBlock::fromJson);
             result.put(id, list);
         });
         return result;
