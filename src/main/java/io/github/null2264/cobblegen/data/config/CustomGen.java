@@ -10,25 +10,24 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.data.config.ConfigHelper.generatorFromJson;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class CustomGen implements JanksonSerializable
 {
     @Nullable
-    public Map<CGIdentifier, List<WeightedBlock>> cobbleGen;
+    public GeneratorMap cobbleGen;
     @Nullable
-    public Map<CGIdentifier, List<WeightedBlock>> stoneGen;
+    public GeneratorMap stoneGen;
     @Nullable
-    public Map<CGIdentifier, List<WeightedBlock>> basaltGen;
+    public GeneratorMap basaltGen;
 
     public CustomGen(
             @Nullable
-            Map<CGIdentifier, List<WeightedBlock>> cobbleGen,
+            GeneratorMap cobbleGen,
             @Nullable
-            Map<CGIdentifier, List<WeightedBlock>> stoneGen,
+            GeneratorMap stoneGen,
             @Nullable
-            Map<CGIdentifier, List<WeightedBlock>> basaltGen
+            GeneratorMap basaltGen
     ) {
         this.cobbleGen = cobbleGen;
         this.stoneGen = stoneGen;
@@ -39,17 +38,19 @@ public class CustomGen implements JanksonSerializable
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.put("cobbleGen", JANKSON.toJson(cobbleGen));
-        json.put("stoneGen", JANKSON.toJson(stoneGen));
-        json.put("basaltGen", JANKSON.toJson(basaltGen));
+        if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
+        if (stoneGen != null) json.put("stoneGen", JANKSON.toJson(stoneGen));
+        if (basaltGen != null) json.put("basaltGen", JANKSON.toJson(basaltGen));
         return json;
     }
 
     @Deserializer
     public static CustomGen fromJson(JsonObject json) {
-        Map<CGIdentifier, List<WeightedBlock>> cobbleGen = generatorFromJson(json, "cobbleGen");
-        Map<CGIdentifier, List<WeightedBlock>> stoneGen = generatorFromJson(json, "stoneGen");
-        Map<CGIdentifier, List<WeightedBlock>> basaltGen = generatorFromJson(json, "basaltGen");
+        if (json == null) return null;
+
+        GeneratorMap cobbleGen = GeneratorMap.fromJson(json.getObject("cobbleGen"));
+        GeneratorMap stoneGen = GeneratorMap.fromJson(json.getObject("stoneGen"));
+        GeneratorMap basaltGen = GeneratorMap.fromJson(json.getObject("basaltGen"));
         return new CustomGen(cobbleGen, stoneGen, basaltGen);
     }
 }

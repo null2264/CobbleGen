@@ -29,7 +29,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
 {
     public static final String MOD_ID = "cobblegen";
     /**
-     * @deprecated Now only for internal usage. Use the parameter {@link CGRegistry registry} instead
+     * @deprecated Only for internal usage. Use the parameter {@link CGRegistry registry} instead to register new Fluid Interaction
      */
     @Deprecated
     @ApiStatus.Internal

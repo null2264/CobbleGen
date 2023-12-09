@@ -1,18 +1,14 @@
 package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.*;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
-import lombok.val;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
@@ -78,22 +74,9 @@ public class ConfigHelper {
         }
     }
 
+    @Nullable
     public static <T> List<T> listFromJson(JsonArray json, Function<JsonObject, T> mapper) {
+        if (json == null) return null;
         return json.stream().map((o) -> mapper.apply((JsonObject) o)).filter(Objects::nonNull).toList();
-    }
-
-    public static Map<CGIdentifier, List<WeightedBlock>> generatorFromJson(JsonObject json, String key) {
-        Map<CGIdentifier, List<WeightedBlock>> result = new HashMap<>();
-        JsonObject obj = json.getObject(key);
-
-        if (obj == null) return null;
-
-        obj.forEach((k, v) -> {
-            if (!(v instanceof JsonArray)) return;
-            val id = CGIdentifier.of(k);
-            List<WeightedBlock> list = listFromJson((JsonArray) v, WeightedBlock::fromJson);
-            result.put(id, list);
-        });
-        return result;
     }
 }

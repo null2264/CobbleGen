@@ -5,6 +5,7 @@ import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
+import io.github.null2264.cobblegen.data.Pair;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,34 +88,40 @@ public class ConfigData implements Config, JanksonSerializable
         config.basaltGen = List.of(new WeightedBlock("minecraft:basalt", 100.0));
         config.customGen = new CustomGen(
                 // Cobble Gen
-                Map.of(
-                        CGIdentifier.of("minecraft:bedrock"),
-                        List.of(
-                                new WeightedBlock("minecraft:emerald_ore", 2.0),
-                                new WeightedBlock("minecraft:diamond_ore", 5.0),
-                                new WeightedBlock("minecraft:lapis_ore", 8.0),
-                                new WeightedBlock("minecraft:gold_ore", 10.0),
-                                new WeightedBlock("minecraft:iron_ore", 15.0),
-                                new WeightedBlock("minecraft:coal_ore", 20.0),
-                                new WeightedBlock("minecraft:cobblestone", 80.0)
+                GeneratorMap.of(
+                        new Pair<>(
+                                CGIdentifier.of("minecraft:bedrock"),
+                                List.of(
+                                        new WeightedBlock("minecraft:emerald_ore", 2.0),
+                                        new WeightedBlock("minecraft:diamond_ore", 5.0),
+                                        new WeightedBlock("minecraft:lapis_ore", 8.0),
+                                        new WeightedBlock("minecraft:gold_ore", 10.0),
+                                        new WeightedBlock("minecraft:iron_ore", 15.0),
+                                        new WeightedBlock("minecraft:coal_ore", 20.0),
+                                        new WeightedBlock("minecraft:cobblestone", 80.0)
+                                )
                         )
                 ),
                 // Stone Gen
-                Map.of(
-                        CGIdentifier.of("minecraft:bedrock"),
-                        List.of(
-                                new WeightedBlock("minecraft:stone", 40.0),
-                                new WeightedBlock("minecraft:diorite", 20.0),
-                                new WeightedBlock("minecraft:andesite", 20.0),
-                                new WeightedBlock("minecraft:granite", 20.0)
+                GeneratorMap.of(
+                        new Pair<>(
+                                CGIdentifier.of("minecraft:bedrock"),
+                                List.of(
+                                        new WeightedBlock("minecraft:stone", 40.0),
+                                        new WeightedBlock("minecraft:diorite", 20.0),
+                                        new WeightedBlock("minecraft:andesite", 20.0),
+                                        new WeightedBlock("minecraft:granite", 20.0)
+                                )
                         )
                 ),
                 // Basalt Gen
-                Map.of(
-                        CGIdentifier.of("minecraft:bedrock"),
-                        List.of(
-                                new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
-                                new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
+                GeneratorMap.of(
+                        new Pair<>(
+                                CGIdentifier.of("minecraft:bedrock"),
+                                List.of(
+                                        new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
+                                        new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
+                                )
                         )
                 )
         );
@@ -129,7 +136,7 @@ public class ConfigData implements Config, JanksonSerializable
         json.put("cobbleGen", JANKSON.toJson(cobbleGen));
         json.put("stoneGen", JANKSON.toJson(stoneGen));
         json.put("basaltGen", JANKSON.toJson(basaltGen));
-        json.put("customGen", JANKSON.toJson(customGen));
+        if (customGen != null) json.put("customGen", customGen.toJson());
         if (advanced != null) {
             JsonObject advancedRoot = new JsonObject();
             advanced.forEach((fluid1, fluidMap) -> {

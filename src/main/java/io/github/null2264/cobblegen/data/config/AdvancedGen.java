@@ -16,19 +16,19 @@ import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 public class AdvancedGen implements JanksonSerializable
 {
     public Boolean silent;
-    public Map<CGIdentifier, List<WeightedBlock>> results;
-    public Map<CGIdentifier, List<WeightedBlock>> resultsFromTop;
-    public Map<CGIdentifier, List<WeightedBlock>> obsidian;
+    public GeneratorMap results;
+    public GeneratorMap resultsFromTop;
+    public GeneratorMap obsidian;
 
     public AdvancedGen() {
-        this(false, new HashMap<>(), new HashMap<>(), new HashMap<>());
+        this(false, new GeneratorMap(), new GeneratorMap(), new GeneratorMap());
     }
 
     public AdvancedGen(
             Boolean silent,
-            Map<CGIdentifier, List<WeightedBlock>> results,
-            Map<CGIdentifier, List<WeightedBlock>> resultsFromTop,
-            Map<CGIdentifier, List<WeightedBlock>> obsidian
+            GeneratorMap results,
+            GeneratorMap resultsFromTop,
+            GeneratorMap obsidian
     ) {
         this.silent = silent;
         this.results = results;
@@ -41,18 +41,18 @@ public class AdvancedGen implements JanksonSerializable
     public JsonElement toJson() {
         val json = new JsonObject();
         json.put("silent", JsonPrimitive.of(silent));
-        json.put("results", JANKSON.toJson(results));
-        json.put("resultsFromTop", JANKSON.toJson(resultsFromTop));
-        json.put("obsidian", JANKSON.toJson(obsidian));
+        json.put("results", results.toJson());
+        json.put("resultsFromTop", resultsFromTop.toJson());
+        json.put("obsidian", obsidian.toJson());
         return json;
     }
 
     @Deserializer
     public static AdvancedGen fromJson(JsonObject json) {
         val silent = json.getBoolean("silent", false);
-        val results = ConfigHelper.generatorFromJson(json, "results");
-        val resultsFromTop = ConfigHelper.generatorFromJson(json, "resultsFromTop");
-        val obsidian = ConfigHelper.generatorFromJson(json, "obsidian");
+        val results = GeneratorMap.fromJson(json.getObject("results"));
+        val resultsFromTop = GeneratorMap.fromJson(json.getObject("resultsFromTop"));
+        val obsidian = GeneratorMap.fromJson(json.getObject("obsidian"));
         return new AdvancedGen(silent, results, resultsFromTop, obsidian);
     }
 }
