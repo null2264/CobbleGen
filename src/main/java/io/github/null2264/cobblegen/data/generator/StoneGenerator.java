@@ -1,5 +1,8 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.BuiltInGenerator;
@@ -23,38 +26,38 @@ import java.util.stream.Collectors;
 
 public class StoneGenerator implements BuiltInGenerator
 {
-    private final Map<CGIdentifier, List<WeightedBlock>> possibleBlocks;
+    private final GeneratorMap possibleBlocks;
     private final Fluid fluid;
     private final boolean silent;
 
-    public StoneGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(Map.of(CGIdentifier.wildcard(), possibleBlocks), fluid, silent);
+    public StoneGenerator(ResultList possibleBlocks, Fluid fluid, boolean silent) {
+        this(GeneratorMap.of(Pair.of(CGIdentifier.wildcard(), possibleBlocks)), fluid, silent);
     }
 
-    public StoneGenerator(Map<CGIdentifier, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent) {
+    public StoneGenerator(GeneratorMap possibleBlocks, Fluid fluid, boolean silent) {
         this.possibleBlocks = possibleBlocks;
         this.fluid = fluid;
         this.silent = silent;
     }
 
     public static StoneGenerator fromString(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent) {
+        val map = new GeneratorMap();
+        possibleBlocks.forEach((k, v) -> map.put(CGIdentifier.of(k), new ResultList(v)));
         return new StoneGenerator(
-                possibleBlocks.entrySet().stream()
-                        .map(e -> Map.entry(CGIdentifier.of(e.getKey()), e.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                map,
                 fluid,
                 silent
         );
     }
 
     @Override
-    public @NotNull Map<CGIdentifier, List<WeightedBlock>> getOutput() {
+    public @NotNull GeneratorMap getOutput() {
         return possibleBlocks;
     }
 
     @Override
-    public Map<CGIdentifier, List<WeightedBlock>> getObsidianOutput() {
-        return Map.of(CGIdentifier.wildcard(), List.of(WeightedBlock.fromBlock(Blocks.STONE, 100D)));
+    public GeneratorMap getObsidianOutput() {
+        return GeneratorMap.of(Pair.of(CGIdentifier.wildcard(), ResultList.of(WeightedBlock.fromBlock(Blocks.STONE, 100D))));
     }
 
     @Override
@@ -104,11 +107,7 @@ public class StoneGenerator implements BuiltInGenerator
         buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
 
-        val outMap = getOutput();
-        buf.writeMap(
-                outMap,
-                (o, key) -> key.writeToBuf(o), (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
-        );
+        getOutput().toPacket(buf);
     }
 
     @SuppressWarnings("unused")
@@ -116,8 +115,7 @@ public class StoneGenerator implements BuiltInGenerator
         val fluid = Util.getFluid(buf.readResourceLocation());
         val silent = buf.readBoolean();
 
-        Map<CGIdentifier, List<WeightedBlock>> outMap =
-                buf.readMap(CGIdentifier::readFromBuf, (o) -> o.readList(WeightedBlock::fromPacket));
+        GeneratorMap outMap = GeneratorMap.fromPacket(buf);
 
         return new StoneGenerator(outMap, fluid, silent);
     }

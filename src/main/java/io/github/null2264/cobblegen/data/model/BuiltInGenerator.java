@@ -1,5 +1,7 @@
 package io.github.null2264.cobblegen.data.model;
 
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.Util;
@@ -11,9 +13,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -21,13 +21,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
-    private String randomizeBlockId(Block key, String dim, Integer yLevel, Map<CGIdentifier, List<WeightedBlock>> candidates) {
+    private String randomizeBlockId(Block key, String dim, Integer yLevel, GeneratorMap candidates) {
         val blockIds = candidates.getOrDefault(
                 CGIdentifier.fromMC(Util.getBlockId(key)),
-                candidates.getOrDefault(CGIdentifier.wildcard(), List.of())
+                candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())
         );
 
-        ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();
+        ResultList filteredBlockIds = new ResultList();
         AtomicReference<Double> totalWeight = new AtomicReference<>(0.0);
 
         for (WeightedBlock block : blockIds) {
@@ -64,11 +64,11 @@ public interface BuiltInGenerator extends Generator
         return filteredBlockIds.get(idx).id;
     }
 
-    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, Map<CGIdentifier, List<WeightedBlock>> candidates) {
+    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, GeneratorMap candidates) {
         return getBlockCandidate(level, pos, candidates, null);
     }
 
-    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, Map<CGIdentifier, List<WeightedBlock>> candidates, Block defaultBlock) {
+    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, GeneratorMap candidates, Block defaultBlock) {
         val replacementId = randomizeBlockId(
                 level.getBlockState(pos.below()).getBlock(),
                 Util.getDimension(level),

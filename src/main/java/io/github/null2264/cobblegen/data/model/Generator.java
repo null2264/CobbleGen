@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.data.model;
 
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
@@ -53,13 +54,13 @@ public interface Generator extends PacketSerializable<Generator>
     }
 
     @NotNull
-    Map<CGIdentifier, List<WeightedBlock>> getOutput();
+    GeneratorMap getOutput();
 
     /**
      * @return The output block when a source fluid met another fluid (e.g. Water -> Stone / Lava -> Obsidian)
      */
-    default Map<CGIdentifier, List<WeightedBlock>> getObsidianOutput() {
-        return Map.of();
+    default GeneratorMap getObsidianOutput() {
+        return GeneratorMap.of();
     }
 
     @NotNull

@@ -4,7 +4,8 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.config.ConfigData;
-import io.github.null2264.cobblegen.data.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
@@ -23,10 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
@@ -59,19 +56,19 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
         AtomicInteger count = new AtomicInteger();
 
-        Map<CGIdentifier, List<WeightedBlock>> stoneGen = new HashMap<>();
+        GeneratorMap stoneGen = new GeneratorMap();
         if (config.customGen != null && config.customGen.stoneGen != null)
-            stoneGen = new HashMap<>(config.customGen.stoneGen);
-        Map<CGIdentifier, List<WeightedBlock>> cobbleGen = new HashMap<>();
+            stoneGen = config.customGen.stoneGen;
+        GeneratorMap cobbleGen = new GeneratorMap();
         if (config.customGen != null && config.customGen.cobbleGen != null)
-            cobbleGen = new HashMap<>(config.customGen.cobbleGen);
-        Map<CGIdentifier, List<WeightedBlock>> basaltGen = new HashMap<>();
+            cobbleGen = config.customGen.cobbleGen;
+        GeneratorMap basaltGen = new GeneratorMap();
         if (config.customGen != null && config.customGen.basaltGen != null)
-            basaltGen = new HashMap<>(config.customGen.basaltGen);
+            basaltGen = config.customGen.basaltGen;
 
-        stoneGen.put(CGIdentifier.wildcard(), notNullOr(config.stoneGen, new ArrayList<>()));
-        cobbleGen.put(CGIdentifier.wildcard(), notNullOr(config.cobbleGen, new ArrayList<>()));
-        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ArrayList<>()));
+        stoneGen.put(CGIdentifier.wildcard(), notNullOr(config.stoneGen, new ResultList()));
+        cobbleGen.put(CGIdentifier.wildcard(), notNullOr(config.cobbleGen, new ResultList()));
+        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ResultList()));
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {
@@ -109,7 +106,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
             });
 
         registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, Map.of()));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, GeneratorMap.of()));
         registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 

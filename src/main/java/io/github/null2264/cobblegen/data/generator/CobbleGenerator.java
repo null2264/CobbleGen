@@ -1,7 +1,10 @@
 package io.github.null2264.cobblegen.data.generator;
 
 import io.github.null2264.cobblegen.CobbleGen;
+import io.github.null2264.cobblegen.data.Pair;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
@@ -23,24 +26,23 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CobbleGenerator extends BlockGenerator
 {
-    private final Map<CGIdentifier, List<WeightedBlock>> possibleBlocks;
-    private final Map<CGIdentifier, List<WeightedBlock>> obsidianReplacements;
+    private final GeneratorMap possibleBlocks;
+    private final GeneratorMap obsidianReplacements;
     private Fluid fluid;
     private final boolean silent;
 
-    public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(possibleBlocks, fluid, silent, Map.of());
+    public CobbleGenerator(ResultList possibleBlocks, Fluid fluid, boolean silent) {
+        this(possibleBlocks, fluid, silent, GeneratorMap.of());
     }
 
-    public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent, Map<CGIdentifier, List<WeightedBlock>> obsidianReplacements) {
-        this(Map.of(CGIdentifier.wildcard(), possibleBlocks), fluid, silent, obsidianReplacements);
+    public CobbleGenerator(ResultList possibleBlocks, Fluid fluid, boolean silent, GeneratorMap obsidianReplacements) {
+        this(GeneratorMap.of(Pair.of(CGIdentifier.wildcard(), possibleBlocks)), fluid, silent, obsidianReplacements);
     }
 
-    public CobbleGenerator(Map<CGIdentifier, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent, Map<CGIdentifier, List<WeightedBlock>> obsidianReplacements) {
+    public CobbleGenerator(GeneratorMap possibleBlocks, Fluid fluid, boolean silent, GeneratorMap obsidianReplacements) {
         this.possibleBlocks = possibleBlocks;
         this.obsidianReplacements = obsidianReplacements;
         this.fluid = fluid;
@@ -48,25 +50,25 @@ public class CobbleGenerator extends BlockGenerator
     }
 
     public static CobbleGenerator fromString(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {
+        val map1 = new GeneratorMap();
+        possibleBlocks.forEach((k, v) -> map1.put(CGIdentifier.of(k), new ResultList(v)));
+        val map2 = new GeneratorMap();
+        obsidianReplacements.forEach((k, v) -> map2.put(CGIdentifier.of(k), new ResultList(v)));
         return new CobbleGenerator(
-                possibleBlocks.entrySet().stream()
-                        .map(e -> Map.entry(CGIdentifier.of(e.getKey()), e.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                map1,
                 fluid,
                 silent,
-                obsidianReplacements.entrySet().stream()
-                        .map(e -> Map.entry(CGIdentifier.of(e.getKey()), e.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                map2
         );
     }
 
     @Override
-    public @NotNull Map<CGIdentifier, List<WeightedBlock>> getOutput() {
+    public @NotNull GeneratorMap getOutput() {
         return possibleBlocks;
     }
 
     @Override
-    public Map<CGIdentifier, List<WeightedBlock>> getObsidianOutput() {
+    public GeneratorMap getObsidianOutput() {
         return obsidianReplacements;
     }
 
@@ -122,14 +124,8 @@ public class CobbleGenerator extends BlockGenerator
         buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
 
-        buf.writeMap(
-                getOutput(),
-                (o, key) -> key.writeToBuf(o), (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
-        );
-        buf.writeMap(
-                getObsidianOutput(),
-                (o, key) -> key.writeToBuf(o), (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
-        );
+        getOutput().toPacket(buf);
+        getObsidianOutput().toPacket(buf);
     }
 
     @SuppressWarnings("unused")
@@ -137,10 +133,8 @@ public class CobbleGenerator extends BlockGenerator
         val fluid = Util.getFluid(buf.readResourceLocation());
         val silent = buf.readBoolean();
 
-        Map<CGIdentifier, List<WeightedBlock>> outMap =
-                buf.readMap(CGIdentifier::readFromBuf, (o) -> o.readList(WeightedBlock::fromPacket));
-        Map<CGIdentifier, List<WeightedBlock>> obiMap =
-                buf.readMap(CGIdentifier::readFromBuf, (o) -> o.readList(WeightedBlock::fromPacket));
+        GeneratorMap outMap = GeneratorMap.fromPacket(buf);
+        GeneratorMap obiMap = GeneratorMap.fromPacket(buf);
 
         return new CobbleGenerator(outMap, fluid, silent, obiMap);
     }

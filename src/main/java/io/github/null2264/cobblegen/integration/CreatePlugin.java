@@ -4,6 +4,7 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
@@ -11,8 +12,6 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
-
-import java.util.List;
 
 @CGPlugin
 public class CreatePlugin implements CobbleGenPlugin
@@ -25,7 +24,7 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "limestone")), 1.0)),
+                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "limestone")), 1.0)),
                         Util.getFluid(new ResourceLocation("create", "honey")),
                         false
                 )
@@ -33,7 +32,7 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "scoria")), 1.0)),
+                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "scoria")), 1.0)),
                         Util.getFluid(new ResourceLocation("create", "chocolate")),
                         false
                 )

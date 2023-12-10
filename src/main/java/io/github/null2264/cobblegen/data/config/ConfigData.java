@@ -7,18 +7,15 @@ import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
 import lombok.val;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static io.github.null2264.cobblegen.data.config.ConfigHelper.listFromJson;
-import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigData implements Config, JanksonSerializable
 {
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
+    @NotNull
     public String formatVersion = "1.0";
 
     @Nullable
@@ -38,13 +35,13 @@ public class ConfigData implements Config, JanksonSerializable
               "minY": 0,
               "maxY": 69
             }""")
-    public List<WeightedBlock> cobbleGen;
+    public ResultList cobbleGen;
 
     @Nullable
-    public List<WeightedBlock> stoneGen;
+    public ResultList stoneGen;
 
     @Nullable
-    public List<WeightedBlock> basaltGen;
+    public ResultList basaltGen;
 
     @Nullable
     @Comment(value = """
@@ -71,11 +68,11 @@ public class ConfigData implements Config, JanksonSerializable
     public CustomGen customGen;
 
     @Nullable
-    public Map<String, Map<String, AdvancedGen>> advanced;
+    public FluidInteractionMap advanced;
 
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
-        config.cobbleGen = List.of(new WeightedBlock(
+        config.cobbleGen = ResultList.of(new WeightedBlock(
                 "minecraft:cobblestone",
                 100.0,
                 null,
@@ -84,14 +81,14 @@ public class ConfigData implements Config, JanksonSerializable
                 0,
                 null
         ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null));
-        config.stoneGen = List.of(new WeightedBlock("minecraft:stone", 100.0));
-        config.basaltGen = List.of(new WeightedBlock("minecraft:basalt", 100.0));
+        config.stoneGen = ResultList.of(new WeightedBlock("minecraft:stone", 100.0));
+        config.basaltGen = ResultList.of(new WeightedBlock("minecraft:basalt", 100.0));
         config.customGen = new CustomGen(
                 // Cobble Gen
                 GeneratorMap.of(
-                        new Pair<>(
+                        Pair.of(
                                 CGIdentifier.of("minecraft:bedrock"),
-                                List.of(
+                                ResultList.of(
                                         new WeightedBlock("minecraft:emerald_ore", 2.0),
                                         new WeightedBlock("minecraft:diamond_ore", 5.0),
                                         new WeightedBlock("minecraft:lapis_ore", 8.0),
@@ -104,9 +101,9 @@ public class ConfigData implements Config, JanksonSerializable
                 ),
                 // Stone Gen
                 GeneratorMap.of(
-                        new Pair<>(
+                        Pair.of(
                                 CGIdentifier.of("minecraft:bedrock"),
-                                List.of(
+                                ResultList.of(
                                         new WeightedBlock("minecraft:stone", 40.0),
                                         new WeightedBlock("minecraft:diorite", 20.0),
                                         new WeightedBlock("minecraft:andesite", 20.0),
@@ -116,9 +113,9 @@ public class ConfigData implements Config, JanksonSerializable
                 ),
                 // Basalt Gen
                 GeneratorMap.of(
-                        new Pair<>(
+                        Pair.of(
                                 CGIdentifier.of("minecraft:bedrock"),
-                                List.of(
+                                ResultList.of(
                                         new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
                                         new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
                                 )
@@ -133,19 +130,11 @@ public class ConfigData implements Config, JanksonSerializable
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
         json.put("formatVersion", JsonPrimitive.of(formatVersion));
-        json.put("cobbleGen", JANKSON.toJson(cobbleGen));
-        json.put("stoneGen", JANKSON.toJson(stoneGen));
-        json.put("basaltGen", JANKSON.toJson(basaltGen));
+        if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
+        if (stoneGen != null) json.put("stoneGen", stoneGen.toJson());
+        if (basaltGen != null) json.put("basaltGen", basaltGen.toJson());
         if (customGen != null) json.put("customGen", customGen.toJson());
-        if (advanced != null) {
-            JsonObject advancedRoot = new JsonObject();
-            advanced.forEach((fluid1, fluidMap) -> {
-                JsonObject advancedSubroot = new JsonObject();
-                fluidMap.forEach((fluid2, advancedGen) -> advancedSubroot.put(fluid2, advancedGen.toJson()));
-                advancedRoot.put(fluid1, advancedSubroot);
-            });
-            json.put("advanced", advancedRoot);
-        }
+        if (advanced != null) json.put("advanced", advanced.toJson());
         return json;
     }
 
@@ -154,21 +143,11 @@ public class ConfigData implements Config, JanksonSerializable
         ConfigData config = new ConfigData();
         val formatVersion = json.get("formatVersion");
         config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
-        config.cobbleGen = listFromJson((JsonArray) json.get("cobbleGen"), WeightedBlock::fromJson);
-        config.stoneGen = listFromJson((JsonArray) json.get("stoneGen"), WeightedBlock::fromJson);
-        config.stoneGen = listFromJson((JsonArray) json.get("stoneGen"), WeightedBlock::fromJson);
+        config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
+        config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
+        config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
         config.customGen = CustomGen.fromJson(json.getObject("customGen"));
-        JsonObject e = json.getObject("advanced");
-        if (e == null) return config;
-
-        config.advanced = new HashMap<>();
-        e.forEach((fluid1, fluidMap) -> {
-            if (!(fluidMap instanceof JsonObject advancedSubroot)) return;
-
-            Map<String, AdvancedGen> advanced = new HashMap<>();
-            advancedSubroot.forEach((fluid2, jsonElement) -> advanced.put(fluid2, AdvancedGen.fromJson((JsonObject) jsonElement)));
-            config.advanced.put(fluid1, advanced);
-        });
+        config.advanced = FluidInteractionMap.fromJson(json.getObject("advanced"));
         return config;
     }
 }

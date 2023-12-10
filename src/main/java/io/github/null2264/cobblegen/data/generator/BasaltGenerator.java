@@ -1,5 +1,8 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
@@ -18,36 +21,35 @@ import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BasaltGenerator extends BlockGenerator
 {
-    private final Map<CGIdentifier, List<WeightedBlock>> possibleBlocks;
+    private final GeneratorMap possibleBlocks;
     private final Block block;
     private final boolean silent;
 
-    public BasaltGenerator(List<WeightedBlock> possibleBlocks, Block block, boolean silent) {
-        this(Map.of(CGIdentifier.fromMC(Util.getBlockId(Blocks.SOUL_SOIL)), possibleBlocks), block, silent);
+    public BasaltGenerator(ResultList possibleBlocks, Block block, boolean silent) {
+        this(GeneratorMap.of(Pair.of(CGIdentifier.fromMC(Util.getBlockId(Blocks.SOUL_SOIL)), possibleBlocks)), block, silent);
     }
 
-    public BasaltGenerator(Map<CGIdentifier, List<WeightedBlock>> possibleBlocks, Block block, boolean silent) {
+    public BasaltGenerator(GeneratorMap possibleBlocks, Block block, boolean silent) {
         this.possibleBlocks = possibleBlocks;
         this.block = block;
         this.silent = silent;
     }
 
     public static BasaltGenerator fromString(Map<String, List<WeightedBlock>> possibleBlocks, Block block, boolean silent) {
+        val map = new GeneratorMap();
+        possibleBlocks.forEach((k, v) -> map.put(CGIdentifier.of(k), new ResultList(v)));
         return new BasaltGenerator(
-                possibleBlocks.entrySet().stream()
-                        .map(e -> Map.entry(CGIdentifier.of(e.getKey()), e.getValue()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)),
+                map,
                 block,
                 silent
         );
     }
 
     @Override
-    public @NotNull Map<CGIdentifier, List<WeightedBlock>> getOutput() {
+    public @NotNull GeneratorMap getOutput() {
         return possibleBlocks;
     }
 
@@ -87,11 +89,7 @@ public class BasaltGenerator extends BlockGenerator
         buf.writeUtf(Util.getBlockId(block).toString());
         buf.writeBoolean(silent);
 
-        val outMap = getOutput();
-        buf.writeMap(
-                outMap,
-                (o, key) -> key.writeToBuf(o), (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
-        );
+        getOutput().toPacket(buf);
     }
 
     @SuppressWarnings("unused")
@@ -99,8 +97,7 @@ public class BasaltGenerator extends BlockGenerator
         val block = Util.getBlock(buf.readResourceLocation());
         val silent = buf.readBoolean();
 
-        Map<CGIdentifier, List<WeightedBlock>> outMap =
-                buf.readMap(CGIdentifier::readFromBuf, (o) -> o.readList(WeightedBlock::fromPacket));
+        GeneratorMap outMap = GeneratorMap.fromPacket(buf);
 
         return new BasaltGenerator(outMap, block, silent);
     }
