@@ -2,7 +2,6 @@ package io.github.null2264.cobblegen.data;
 
 import net.minecraft.network.FriendlyByteBuf;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -13,7 +12,7 @@ public class CGModifier {
     List<CGIdentifier> modifiers;
 
     public CGModifier(List<CGIdentifier> modifiers) {
-
+        if (modifiers.size() >= 4) throw new IllegalArgumentException("Cannot have more than 4 modifiers");
         this.modifiers = modifiers.stream().sorted().toList();
     }
 
