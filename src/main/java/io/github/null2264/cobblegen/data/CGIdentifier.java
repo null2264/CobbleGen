@@ -10,6 +10,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 
+import java.util.Objects;
+
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
 /**
@@ -79,5 +81,16 @@ public record CGIdentifier(String modid, String name) {
     @Deserializer
     public static CGIdentifier fromJson(JsonPrimitive json) {
         return of(json.asString());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof CGIdentifier)) return false;
+        return this.modid().equals(((CGIdentifier) obj).modid()) && this.name().equals(((CGIdentifier) obj).name());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(modid, name);
     }
 }
