@@ -1,13 +1,7 @@
 package io.github.null2264.cobblegen.network;
 
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
-import io.github.null2264.cobblegen.compat.LoaderCompat;
-import io.github.null2264.cobblegen.mixin.network.ServerboundCustomPayloadPacketAccessor;
-import io.github.null2264.cobblegen.util.CGLog;
-import io.netty.buffer.Unpooled;
-import lombok.val;
-import net.minecraft.network.FriendlyByteBuf;
 //#if MC<1.20.2
+import io.github.null2264.cobblegen.mixin.network.ServerboundCustomPayloadPacketAccessor;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -16,6 +10,12 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 //$$ import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
+
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
+import io.github.null2264.cobblegen.util.CGLog;
+import io.netty.buffer.Unpooled;
+import lombok.val;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
