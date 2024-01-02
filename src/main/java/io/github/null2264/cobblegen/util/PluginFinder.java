@@ -55,20 +55,20 @@ public class PluginFinder
     //$$             for (ModFileScanData.AnnotationData a : annotations) {
 
     //$$                 if (!(Objects.equals(
-    //$$                         //#if MC>1.16.5
+                                 //#if MC>1.16.5
     //$$                         a.annotationType(),
-    //$$                         //#else
-    //$$                         //$$ a.getAnnotationType(),
-    //$$                         //#endif
+                                 //#else
+                                 //$$ a.getAnnotationType(),
+                                 //#endif
     //$$                         annotationType)))
     //$$                     continue;
 
     //$$                 String className =
-    //$$                         //#if MC>1.16.5
+                                 //#if MC>1.16.5
     //$$                         a.memberName();
-    //$$                         //#else
-    //$$                         //$$ a.getMemberName();
-    //$$                         //#endif
+                                 //#else
+                                 //$$ a.getMemberName();
+                                 //#endif
     //$$                 try {
     //$$                     Class<?> asmClass = Class.forName(className);
     //$$                     Class<? extends T> asmInstanceClass = asmClass.asSubclass(instanceClass);
