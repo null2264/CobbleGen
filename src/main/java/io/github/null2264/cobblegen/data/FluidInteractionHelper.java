@@ -1,8 +1,8 @@
 package io.github.null2264.cobblegen.data;
 
 import com.google.common.collect.ImmutableList;
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
@@ -13,10 +13,8 @@ import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
@@ -32,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.github.null2264.cobblegen.util.Constants.LAVA_FIZZ;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 /**
@@ -75,12 +74,12 @@ public class FluidInteractionHelper
 
     @ApiStatus.Internal
     @Deprecated(since = "5.1", forRemoval = true)
-    public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
+    public void writeGeneratorsToPacket(ByteBufCompat buf) {
         write(buf);
     }
 
     @ApiStatus.Internal
-    public void readGeneratorsFromPacket(FriendlyByteBuf buf) {
+    public void readGeneratorsFromPacket(ByteBufCompat buf) {
         val _genSize = buf.readInt();
         val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
 
@@ -162,7 +161,7 @@ public class FluidInteractionHelper
             if (result.isPresent()) {
                 level.setBlock(pos, result.get(), 3);
                 if (!generator.isSilent())
-                    level.levelEvent(LevelEvent.LAVA_FIZZ, pos, 0);
+                    level.levelEvent(LAVA_FIZZ, pos, 0);
                 return true;
             }
         }
@@ -203,7 +202,7 @@ public class FluidInteractionHelper
         return false;
     }
 
-    public void write(FriendlyByteBuf buf) {
+    public void write(ByteBufCompat buf) {
         buf.writeInt(generatorMap.size());
 
         for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {

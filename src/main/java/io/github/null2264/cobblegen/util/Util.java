@@ -2,10 +2,15 @@ package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
+import lombok.val;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+//#if MC>1.16.5
 import net.minecraft.tags.TagKey;
+//#else
+//$$ import net.minecraft.tags.BlockTags;
+//#endif
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -69,7 +74,8 @@ public class Util
     }
 
     public static List<ResourceLocation> getTaggedBlockIds(ResourceLocation tagId) {
-        TagKey<Block> blockTag = TagKey.create(
+        //#if MC>1.16.5
+        val blockTag = TagKey.create(
                 //#if MC<=11902
                 Registry.BLOCK_REGISTRY,
                 //#else
@@ -77,14 +83,27 @@ public class Util
                 //#endif
                 tagId
         );
+        //#else
+        //$$ val blockTag = BlockTags.getAllTags().getTag(tagId);
+        //#endif
+
+        //#if MC>1.16.5
+        val blockList = RegistryCompat.block().getTag(blockTag);
+        //#else
+        //$$ val blockList = Optional.ofNullable(blockTag != null ? blockTag.getValues() : null);
+        //#endif
 
         ArrayList<ResourceLocation> blockIds = new ArrayList<>();
-        RegistryCompat.block().getTag(blockTag).ifPresent(t -> t.stream().forEach(taggedBlock -> {
+        blockList.ifPresent(t -> t.stream().forEach(taggedBlock -> {
+            //#if MC>1.16.5
             Optional<ResourceKey<Block>> key = taggedBlock.unwrapKey();
             if (key.isPresent()) {
                 ResourceKey<Block> actualKey = key.get();
                 blockIds.add(actualKey.registry());
             }
+            //#else
+            //$$ blockIds.add(getBlockId(taggedBlock));
+            //#endif
         }));
         return blockIds;
     }

@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin.network;
 
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;

@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -70,8 +71,9 @@ public class BasaltGenerator extends BlockGenerator
         return Optional.empty();
     }
 
+    @SuppressWarnings("RedundantCast")
     @Override
-    public void toPacket(FriendlyByteBuf buf) {
+    public void toPacket(ByteBufCompat buf) {
         buf.writeUtf(this.getClass().getName());
 
         buf.writeUtf(Util.getBlockId(block).toString());
@@ -80,17 +82,17 @@ public class BasaltGenerator extends BlockGenerator
         val outMap = getOutput();
         buf.writeMap(
                 outMap,
-                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
         );
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "RedundantCast"})
     public static Generator fromPacket(FriendlyByteBuf buf) {
         val block = Util.getBlock(buf.readResourceLocation());
         val silent = buf.readBoolean();
 
         Map<String, List<WeightedBlock>> outMap =
-                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+                ((ByteBufCompat) buf).readMap(FriendlyByteBuf::readUtf, (o) -> ((ByteBufCompat) o).readList(WeightedBlock::fromPacket));
 
         return new BasaltGenerator(outMap, block, silent);
     }

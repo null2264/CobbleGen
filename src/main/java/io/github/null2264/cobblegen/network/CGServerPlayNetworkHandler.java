@@ -1,6 +1,8 @@
 package io.github.null2264.cobblegen.network;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.mixin.network.ServerboundCustomPayloadPacketAccessor;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.netty.buffer.Unpooled;
 import lombok.val;
@@ -54,12 +56,12 @@ public class CGServerPlayNetworkHandler
         //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
         //$$ ResourceLocation id = ((PacketByteBufPayload) packet).id();
         //#else
-        ResourceLocation id = packet.getIdentifier();
+        ResourceLocation id = ((ServerboundCustomPayloadPacketAccessor) packet).getResourceLocation();
         //#endif
 
         if (id.equals(SYNC_CHANNEL)) {
             //#if MC<1.20.2
-            val packetData = packet.getData();
+            val packetData = ((ServerboundCustomPayloadPacketAccessor) packet).getByte();
             //#else
             //$$ val packetData = ((PacketByteBufPayload) packet).data();
             //#endif
@@ -70,7 +72,7 @@ public class CGServerPlayNetworkHandler
             return true;
         } else if (id.equals(SYNC_PING_CHANNEL)) {
             //#if MC<1.20.2
-            val packetData = packet.getData();
+            val packetData = ((ServerboundCustomPayloadPacketAccessor) packet).getByte();
             //#else
             //$$ val packetData = ((PacketByteBufPayload) packet).data();
             //#endif
@@ -92,7 +94,7 @@ public class CGServerPlayNetworkHandler
     //#else
     //$$ public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
     //#endif
-        val buf = new FriendlyByteBuf(Unpooled.buffer());
+        val buf = new ByteBufCompat(Unpooled.buffer());
         buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
         buf.writeBoolean(isReload);
         FLUID_INTERACTION.write(buf);

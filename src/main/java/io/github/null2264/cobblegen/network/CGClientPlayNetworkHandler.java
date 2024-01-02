@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.network;
 
 import io.github.null2264.cobblegen.CobbleGen;
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
@@ -43,7 +44,7 @@ public class CGClientPlayNetworkHandler
             //#endif
 
             val isReload = packetData.readBoolean();
-            FLUID_INTERACTION.readGeneratorsFromPacket(packetData);
+            FLUID_INTERACTION.readGeneratorsFromPacket((ByteBufCompat) packetData);
 
             val isSync = FLUID_INTERACTION.isSync();
             if (isSync)

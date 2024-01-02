@@ -207,6 +207,11 @@ dependencies {
             modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
         }
          */
+    } else {
+        // slf4j is not included by MC in 1.16.5
+        shade("org.slf4j:slf4j-api:1.7.36")
+        if (!isFabric)
+            forgeRuntimeLibrary("org.slf4j:slf4j-api:1.7.36")
     }
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -216,6 +221,7 @@ dependencies {
 shadowJar {
     zip64 true
     relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
+    relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
     exclude "architectury.common.json"
 
@@ -247,6 +253,7 @@ processResources {
     filteringCharset "UTF-8"
 
     filesMatching(isFabric ? "fabric.mod.json" : "META-INF/mods.toml") {
+        filter { line -> line.trim().startsWith('//') ? '' : line }  // strip comments
         expand "version": metadataVersion, "mcversion": metadataMCVersion, "forge": (isNeo ? "neoforge" : "forge")
     }
 }
