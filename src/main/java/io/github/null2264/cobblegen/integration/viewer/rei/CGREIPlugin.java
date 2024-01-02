@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.CobbleGen;
@@ -57,3 +58,4 @@ public class CGREIPlugin implements REIClientPlugin
                 })));
     }
 }
+//#endif

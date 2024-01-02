@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
@@ -17,3 +18,4 @@ public class FluidInteractionRecipeHolder
     private final @NotNull GeneratorType type;
     private final @NotNull Block modifier;
 }
+//#endif

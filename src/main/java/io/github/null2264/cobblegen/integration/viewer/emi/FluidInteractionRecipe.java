@@ -1,4 +1,4 @@
-//#if FABRIC>=1 && MC<=11802 || MC>=11900
+//#if FABRIC>=1 && MC<=1.18.2 && MC>1.16.5 || MC>=1.19
 package io.github.null2264.cobblegen.integration.viewer.emi;
 
 import dev.emi.emi.api.recipe.EmiRecipe;

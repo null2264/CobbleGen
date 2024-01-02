@@ -19,6 +19,7 @@
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ],
+        //#if MC>1.16.5
         "jei_mod_plugin": [
             "io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"
         ],
@@ -28,9 +29,12 @@
         "emi": [
             "io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"
         ],
+        //#endif
         "cobblegen_plugin": [
             "io.github.null2264.cobblegen.integration.BuiltInPlugin",
+            //#if MC>1.16.5
             "io.github.null2264.cobblegen.integration.CreatePlugin"
+            //#endif
         ]
     },
     "mixins": [

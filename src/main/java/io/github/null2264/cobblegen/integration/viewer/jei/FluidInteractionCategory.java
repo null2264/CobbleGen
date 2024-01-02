@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
@@ -234,3 +235,4 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     }
     //#endif
 }
+//#endif
