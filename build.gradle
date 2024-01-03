@@ -102,14 +102,15 @@ dependencies {
             modImplementation "net.fabricmc:fabric-loader:0.15.3"
 
         // For testing
-        modLocalRuntime modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:" + [
-                11605: "0.42.0+1.16",
-                11802: "0.76.0+1.18.2",
-                11902: "0.76.0+1.19.2",
-                11904: "0.83.0+1.19.4",
-                12001: "0.83.1+1.20.1",
-                12002: "0.89.0+1.20.2",
-        ][mcVersion])
+        if (project.recipe_viewer != "none" && mcVersion > 11605)
+            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + [
+                    11605: "0.42.0+1.16",
+                    11802: "0.76.0+1.18.2",
+                    11902: "0.76.0+1.19.2",
+                    11904: "0.83.0+1.19.4",
+                    12001: "0.83.1+1.20.1",
+                    12002: "0.89.0+1.20.2",
+            ][mcVersion])
     } else {
         if (!isNeo) {
             forge "net.minecraftforge:forge:${mcVersionStr}-" + [
@@ -210,8 +211,14 @@ dependencies {
     } else {
         // slf4j is not included by MC in 1.16.5
         shade("org.slf4j:slf4j-api:1.7.36")
-        if (!isFabric)
+        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1") {
+            exclude(group: "org.apache.logging.log4j", module: "log4j-api")
+            exclude(group: "org.apache.logging.log4j", module: "log4j-core")
+        }
+        if (!isFabric) {
             forgeRuntimeLibrary("org.slf4j:slf4j-api:1.7.36")
+            forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+        }
     }
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
@@ -221,7 +228,10 @@ dependencies {
 shadowJar {
     zip64 true
     relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
-    relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
+    if (mcVersion < 12000) {
+        relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
+        relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
+    }
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
     exclude "architectury.common.json"
 
