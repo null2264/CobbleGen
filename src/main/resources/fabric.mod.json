@@ -31,9 +31,9 @@
         ],
         //#endif
         "cobblegen_plugin": [
-            "io.github.null2264.cobblegen.integration.BuiltInPlugin",
+            "io.github.null2264.cobblegen.integration.BuiltInPlugin"
             //#if MC>1.16.5
-            "io.github.null2264.cobblegen.integration.CreatePlugin"
+            ,"io.github.null2264.cobblegen.integration.CreatePlugin"
             //#endif
         ]
     },
