@@ -30,7 +30,12 @@ public class LoaderCompat {
 
     public static Path getConfigDir() {
         //#if FABRIC>=1
-        return FabricLoader.getInstance().getConfigDir();
+            //#if MC>1.16.5
+            return FabricLoader.getInstance().getConfigDir();
+            //#else
+            // Config dir is null somehow in 1.16.5
+            //$$ return Path.of(".", "config");
+            //#endif
         //#else
         //$$ return FMLPaths.CONFIGDIR.get();
         //#endif
