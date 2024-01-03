@@ -6,9 +6,11 @@
   "mixins": [
     "CommandsMixin",
     "MinecraftServerMixin",
+    //#if MC>1.16.5
     "fluid.CreateFluidReactionsMixin",
+    //#endif
     "fluid.FluidEventMixin",
-    "fluid.LavaEventMixin",
+    "fluid.LavaEventMixin"
   ],
   "client": [
     "network.ClientboundCustomPayloadPacketMixin",
