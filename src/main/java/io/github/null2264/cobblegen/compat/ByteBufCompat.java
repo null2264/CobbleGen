@@ -1,19 +1,26 @@
 package io.github.null2264.cobblegen.compat;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+//#if MC<=1.16.5
+//$$ import com.google.common.collect.Lists;
+//$$ import com.google.common.collect.Maps;
+//$$ import org.jetbrains.annotations.NotNull;
+//$$ import java.util.Collection;
+//$$ import java.util.List;
+//$$ import java.util.Map;
+//$$ import java.util.Optional;
+//$$ import java.util.function.BiConsumer;
+//$$ import java.util.function.Function;
+//$$ import java.util.function.IntFunction;
+//#endif
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.IntFunction;
-
+/**
+ * Backport functions from future versions of MC.
+ * <p>
+ * Could be useful to add CG specific functions in the future.
+ */
 public class ByteBufCompat extends FriendlyByteBuf {
     public ByteBufCompat(ByteBuf byteBuf) {
         super(byteBuf);
