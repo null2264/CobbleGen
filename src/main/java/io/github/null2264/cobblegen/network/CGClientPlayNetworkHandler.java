@@ -19,6 +19,8 @@ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#endif
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Objects;
+
 import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGClientPlayNetworkHandler
@@ -76,14 +78,10 @@ public class CGClientPlayNetworkHandler
     }
 
     private static ResourceLocation keyFromChannel(Channel channel) {
-        switch (channel) {
-            case PING -> {
-                return SYNC_PING_CHANNEL;
-            }
-            default -> {
-                return SYNC_CHANNEL;
-            }
+        if (Objects.requireNonNull(channel) == Channel.PING) {
+            return SYNC_PING_CHANNEL;
         }
+        return SYNC_CHANNEL;
     }
 
     private static ServerboundCustomPayloadPacket createC2SPacket(FriendlyByteBuf buf) {

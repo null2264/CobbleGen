@@ -20,7 +20,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
-    private String randomizeBlockId(Block key, String dim, Integer yLevel, Map<String, List<WeightedBlock>> candidates) {
+    //#if MC<=1.16.5
+    //$$ @ApiStatus.Internal
+    //$$ default String
+    //#else
+    private String
+    //#endif
+    randomizeBlockId(Block key, String dim, Integer yLevel, Map<String, List<WeightedBlock>> candidates) {
         val blockIds = candidates.getOrDefault(
                 Util.getBlockId(key).toString(),
                 candidates.getOrDefault("*", List.of())

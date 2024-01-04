@@ -18,6 +18,8 @@ import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Objects;
+
 import static io.github.null2264.cobblegen.CobbleGen.*;
 
 public class CGServerPlayNetworkHandler
@@ -102,14 +104,10 @@ public class CGServerPlayNetworkHandler
     }
 
     private static ResourceLocation keyFromChannel(Channel channel) {
-        switch (channel) {
-            case PING -> {
-                return SYNC_PING_CHANNEL;
-            }
-            default -> {
-                return SYNC_CHANNEL;
-            }
+        if (Objects.requireNonNull(channel) == Channel.PING) {
+            return SYNC_PING_CHANNEL;
         }
+        return SYNC_CHANNEL;
     }
 
     private static ClientboundCustomPayloadPacket createS2CPacket(FriendlyByteBuf buf) {

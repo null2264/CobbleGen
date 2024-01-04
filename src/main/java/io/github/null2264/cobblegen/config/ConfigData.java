@@ -9,22 +9,21 @@ import java.util.Map;
 public class ConfigData implements Config
 {
     @Nullable
-    @Comment(value = """
-            Default Generators
-            {
-              "id": "mod_id:block_id",
-              "weight": 95.5,
-              "dimensions": [
-                "mod_id:dimension_id",
-                "mod_id:dimension_id"
-              ],
-              "excludedDimensions": [
-                "mod_id:dimension_id",
-                "mod_id:dimension_id"
-              ],
-              "minY": 0,
-              "maxY": 69
-            }""")
+    @Comment(value = "Default Generators\n" +
+                     "{\n" +
+                     "  \"id\": \"mod_id:block_id\",\n" +
+                     "  \"weight\": 95.5,\n" +
+                     "  \"dimensions\": [\n" +
+                     "    \"mod_id:dimension_id\",\n" +
+                     "    \"mod_id:dimension_id\"\n" +
+                     "  ],\n" +
+                     "  \"excludedDimensions\": [\n" +
+                     "    \"mod_id:dimension_id\",\n" +
+                     "    \"mod_id:dimension_id\"\n" +
+                     "  ],\n" +
+                     "  \"minY\": 0,\n" +
+                     "  \"maxY\": 69\n" +
+                     "}")
     public List<WeightedBlock> cobbleGen;
 
     @Nullable
@@ -34,27 +33,26 @@ public class ConfigData implements Config
     public List<WeightedBlock> basaltGen;
 
     @Nullable
-    @Comment(value = """
-            Custom Generators
-            <stoneGen|cobbleGen|basaltGen>: {
-              "mod_id:modifier_block_id": [
-                {
-                  "id": "mod_id:block_id",
-                  "weight": 95.5,
-                  "dimensions": [
-                    "mod_id:dimension_id",
-                    "mod_id:dimension_id"
-                  ],
-                  "excludedDimensions": [
-                    "mod_id:dimension_id",
-                    "mod_id:dimension_id"
-                  ],
-                  "minY": 0,
-                  "maxY": 69
-                },
-                ...
-              ]
-            }""")
+    @Comment(value = "Custom Generators\n" +
+                     "<stoneGen|cobbleGen|basaltGen>: {\n" +
+                     "  \"mod_id:modifier_block_id\": [\n" +
+                     "    {\n" +
+                     "      \"id\": \"mod_id:block_id\",\n" +
+                     "      \"weight\": 95.5,\n" +
+                     "      \"dimensions\": [\n" +
+                     "        \"mod_id:dimension_id\",\n" +
+                     "        \"mod_id:dimension_id\"\n" +
+                     "      ],\n" +
+                     "      \"excludedDimensions\": [\n" +
+                     "        \"mod_id:dimension_id\",\n" +
+                     "        \"mod_id:dimension_id\"\n" +
+                     "      ],\n" +
+                     "      \"minY\": 0,\n" +
+                     "      \"maxY\": 69\n" +
+                     "    },\n" +
+                     "    ...\n" +
+                     "  ]\n" +
+                     "}")
     public CustomGen customGen;
 
     @Nullable
