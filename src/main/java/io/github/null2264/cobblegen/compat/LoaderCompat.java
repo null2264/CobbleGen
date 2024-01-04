@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.compat;
 //#if FABRIC>=1
 import net.fabricmc.loader.api.FabricLoader;
     //#if MC<=1.16.5
-    //$$ import lombok.val;
     //$$ import java.io.IOException;
     //$$ import java.nio.file.Files;
     //#endif
@@ -39,7 +38,7 @@ public class LoaderCompat {
             return FabricLoader.getInstance().getConfigDir();
             //#else
             // Not ideal, but configDir is null somehow in 1.16.5
-            //$$ val configDir = Path.of(".", "config");
+            //$$ Path configDir = Path.of(".", "config");
             //$$ if (!Files.exists(configDir)) {  // Stolen from fabric loader
             //$$     try {
             //$$         Files.createDirectories(configDir);

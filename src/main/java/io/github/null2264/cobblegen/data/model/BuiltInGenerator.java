@@ -2,7 +2,6 @@ package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
@@ -27,7 +26,7 @@ public interface BuiltInGenerator extends Generator
     private String
     //#endif
     randomizeBlockId(Block key, String dim, Integer yLevel, Map<String, List<WeightedBlock>> candidates) {
-        val blockIds = candidates.getOrDefault(
+        List<WeightedBlock> blockIds = candidates.getOrDefault(
                 Util.getBlockId(key).toString(),
                 candidates.getOrDefault("*", List.of())
         );
@@ -74,7 +73,7 @@ public interface BuiltInGenerator extends Generator
     }
 
     default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, Map<String, List<WeightedBlock>> candidates, Block defaultBlock) {
-        val replacementId = randomizeBlockId(
+        String replacementId = randomizeBlockId(
                 level.getBlockState(pos.below()).getBlock(),
                 Util.getDimension(level),
                 pos.getY(),

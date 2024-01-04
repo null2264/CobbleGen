@@ -12,7 +12,6 @@ import io.github.null2264.cobblegen.util.Util;
 import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,7 +72,10 @@ public class FluidInteractionHelper
     }
 
     @ApiStatus.Internal
-    @Deprecated(since = "5.1", forRemoval = true)
+    @Deprecated
+    //#if MC>1.16.5
+    (since = "5.1", forRemoval = true)
+    //#endif
     public void writeGeneratorsToPacket(ByteBufCompat buf) {
         write(buf);
     }
