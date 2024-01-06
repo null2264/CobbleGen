@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Map;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
+
 public class ConfigData implements Config
 {
     @Nullable
@@ -60,7 +63,7 @@ public class ConfigData implements Config
 
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
-        config.cobbleGen = List.of(new WeightedBlock(
+        config.cobbleGen = listOf(new WeightedBlock(
                 "minecraft:cobblestone",
                 100.0,
                 null,
@@ -69,13 +72,13 @@ public class ConfigData implements Config
                 0,
                 null
         ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null));
-        config.stoneGen = List.of(new WeightedBlock("minecraft:stone", 100.0));
-        config.basaltGen = List.of(new WeightedBlock("minecraft:basalt", 100.0));
+        config.stoneGen = listOf(new WeightedBlock("minecraft:stone", 100.0));
+        config.basaltGen = listOf(new WeightedBlock("minecraft:basalt", 100.0));
         config.customGen = new CustomGen(
                 // Cobble Gen
-                Map.of(
+                mapOf(
                         "minecraft:bedrock",
-                        List.of(
+                        listOf(
                                 new WeightedBlock("minecraft:emerald_ore", 2.0),
                                 new WeightedBlock("minecraft:diamond_ore", 5.0),
                                 new WeightedBlock("minecraft:lapis_ore", 8.0),
@@ -86,9 +89,9 @@ public class ConfigData implements Config
                         )
                 ),
                 // Stone Gen
-                Map.of(
+                mapOf(
                         "minecraft:bedrock",
-                        List.of(
+                        listOf(
                                 new WeightedBlock("minecraft:stone", 40.0),
                                 new WeightedBlock("minecraft:diorite", 20.0),
                                 new WeightedBlock("minecraft:andesite", 20.0),
@@ -96,11 +99,11 @@ public class ConfigData implements Config
                         )
                 ),
                 // Basalt Gen
-                Map.of(
+                mapOf(
                         "minecraft:bedrock",
-                        List.of(
-                                new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
-                                new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
+                        listOf(
+                                new WeightedBlock("minecraft:end_stone", 100.0, listOf("minecraft:the_end")),
+                                new WeightedBlock("minecraft:blackstone", 100.0, null, listOf("minecraft:overworld"))
                         )
                 )
         );

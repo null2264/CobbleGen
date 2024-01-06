@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
+
 public class BasaltGenerator extends BlockGenerator
 {
     private final Map<String, List<WeightedBlock>> possibleBlocks;
@@ -25,7 +27,7 @@ public class BasaltGenerator extends BlockGenerator
     private final boolean silent;
 
     public BasaltGenerator(List<WeightedBlock> possibleBlocks, Block block, boolean silent) {
-        this(Map.of(Util.getBlockId(Blocks.SOUL_SOIL).toString(), possibleBlocks), block, silent);
+        this(mapOf(Util.getBlockId(Blocks.SOUL_SOIL).toString(), possibleBlocks), block, silent);
     }
 
     public BasaltGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Block block, boolean silent) {

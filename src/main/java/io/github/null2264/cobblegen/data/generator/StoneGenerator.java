@@ -19,6 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
+
 public class StoneGenerator implements BuiltInGenerator
 {
     private final Map<String, List<WeightedBlock>> possibleBlocks;
@@ -26,7 +29,7 @@ public class StoneGenerator implements BuiltInGenerator
     private final boolean silent;
 
     public StoneGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(Map.of("*", possibleBlocks), fluid, silent);
+        this(mapOf("*", possibleBlocks), fluid, silent);
     }
 
     public StoneGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent) {
@@ -42,7 +45,7 @@ public class StoneGenerator implements BuiltInGenerator
 
     @Override
     public Map<String, List<WeightedBlock>> getObsidianOutput() {
-        return Map.of("*", List.of(WeightedBlock.fromBlock(Blocks.STONE, 100D)));
+        return mapOf("*", listOf(WeightedBlock.fromBlock(Blocks.STONE, 100D)));
     }
 
     @Override

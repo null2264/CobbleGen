@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
 import static io.github.null2264.cobblegen.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
@@ -108,7 +109,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
             });
 
         registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, Map.of()));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, mapOf()));
         registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 

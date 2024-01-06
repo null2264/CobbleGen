@@ -12,7 +12,7 @@ import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 
-import java.util.List;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 
 @CGPlugin
 public class CreatePlugin implements CobbleGenPlugin
@@ -27,7 +27,7 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "limestone")), 1.0)),
+                        listOf(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "limestone")), 1.0)),
                         Util.getFluid(new ResourceLocation("create", "honey")),
                         false
                 )
@@ -35,7 +35,7 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        List.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "scoria")), 1.0)),
+                        listOf(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "scoria")), 1.0)),
                         Util.getFluid(new ResourceLocation("create", "chocolate")),
                         false
                 )

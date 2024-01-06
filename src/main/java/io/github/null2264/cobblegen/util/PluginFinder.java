@@ -5,6 +5,8 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.streamToList;
+
 //#if FABRIC>=1
 import net.fabricmc.loader.api.FabricLoader;
 //#else
@@ -26,11 +28,12 @@ public class PluginFinder
 {
     public static List<PlugInContainer> getModPlugins() {
         //#if FABRIC>=1
-        return FabricLoader.getInstance()
-                .getEntrypointContainers("cobblegen_plugin", CobbleGenPlugin.class)
-                .stream()
-                .map(entrypoint -> new PlugInContainer(entrypoint.getProvider().getMetadata().getId(), entrypoint.getEntrypoint()))
-                .toList();
+        return streamToList(
+                FabricLoader.getInstance()
+                        .getEntrypointContainers("cobblegen_plugin", CobbleGenPlugin.class)
+                        .stream()
+                        .map(entrypoint -> new PlugInContainer(entrypoint.getProvider().getMetadata().getId(), entrypoint.getEntrypoint()))
+        );
         //#else
         //$$ return AnnotatedFinder.getInstances(CGPlugin.class, CobbleGenPlugin.class);
         //#endif
@@ -43,10 +46,11 @@ public class PluginFinder
     //$$         List<ModFileScanData> allScanData = ModList.get().getAllScanData();
     //$$         List<PlugInContainer> instances = new ArrayList<>();
     //$$         for (ModFileScanData data : allScanData) {
-    //$$             List<String> modIds = data.getIModInfoData().stream()
-    //$$                     .flatMap(info -> info.getMods().stream())
-    //$$                     .map(IModInfo::getModId)
-    //$$                     .toList();
+    //$$             List<String> modIds = streamToList(
+    //$$                     data.getIModInfoData().stream()
+    //$$                            .flatMap(info -> info.getMods().stream())
+    //$$                            .map(IModInfo::getModId)
+    //$$             );
     //$$             String modId = "[" + String.join(", ", modIds) + "]";
     //$$
     //$$             Iterable<ModFileScanData.AnnotationData> annotations = data.getAnnotations();

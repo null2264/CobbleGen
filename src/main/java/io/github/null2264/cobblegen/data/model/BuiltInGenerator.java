@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+
 @ApiStatus.Internal
 public interface BuiltInGenerator extends Generator
 {
@@ -28,7 +30,7 @@ public interface BuiltInGenerator extends Generator
     randomizeBlockId(Block key, String dim, Integer yLevel, Map<String, List<WeightedBlock>> candidates) {
         List<WeightedBlock> blockIds = candidates.getOrDefault(
                 Util.getBlockId(key).toString(),
-                candidates.getOrDefault("*", List.of())
+                candidates.getOrDefault("*", listOf())
         );
 
         ArrayList<WeightedBlock> filteredBlockIds = new ArrayList<>();

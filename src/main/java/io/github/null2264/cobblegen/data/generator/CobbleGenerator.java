@@ -23,6 +23,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
+
 public class CobbleGenerator extends BlockGenerator
 {
     private final Map<String, List<WeightedBlock>> possibleBlocks;
@@ -35,7 +37,7 @@ public class CobbleGenerator extends BlockGenerator
     }
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {
-        this(Map.of("*", possibleBlocks), fluid, silent, obsidianReplacements);
+        this(mapOf("*", possibleBlocks), fluid, silent, obsidianReplacements);
     }
 
     public CobbleGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {
