@@ -2,16 +2,9 @@ package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
-import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-//#if MC>1.16.5
-import net.minecraft.tags.TagKey;
-//#else
-//$$ import net.minecraft.tags.BlockTags;
-//$$ import net.minecraft.tags.Tag;
-//#endif
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -23,6 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
+
+//#if MC>1.16.5
+import net.minecraft.core.HolderSet;
+import net.minecraft.tags.TagKey;
+//#else
+//$$ import net.minecraft.tags.BlockTags;
+//$$ import net.minecraft.tags.Tag;
+//#endif
 
 public class Util
 {
