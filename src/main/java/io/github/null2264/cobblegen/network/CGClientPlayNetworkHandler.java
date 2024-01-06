@@ -1,12 +1,9 @@
 package io.github.null2264.cobblegen.network;
 
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.ByteBufCompat;
-import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import io.netty.buffer.Unpooled;
-import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 //#if MC<1.20.2
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -39,31 +36,33 @@ public class CGClientPlayNetworkHandler
         //#endif
 
         if (id.equals(SYNC_CHANNEL)) {
-            //#if MC<1.20.2
-            val packetData = packet.getData();
-            //#else
-            //$$ val packetData = ((PacketByteBufPayload) packet).data();
-            //#endif
+            final FriendlyByteBuf packetData =
+                    //#if MC<1.20.2
+                    packet.getData();
+                    //#else
+                    //$$ ((PacketByteBufPayload) packet).data();
+                    //#endif
 
-            val isReload = packetData.readBoolean();
+            boolean isReload = packetData.readBoolean();
             FLUID_INTERACTION.readGeneratorsFromPacket((ByteBufCompat) packetData);
 
-            val isSync = FLUID_INTERACTION.isSync();
+            boolean isSync = FLUID_INTERACTION.isSync();
             if (isSync)
                 CGLog.info("CobbleGen config has been", isReload ? "re-synced" : "retrieved from the server");
-            val buf = new FriendlyByteBuf(Unpooled.buffer());
+            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
             buf.writeBoolean(isSync);
             listener.send(createC2SPacket(buf));
             return true;
         } if (id.equals(SYNC_PING_CHANNEL)) {
-            //#if MC<1.20.2
-            val packetData = packet.getData();
-            //#else
-            //$$ val packetData = ((PacketByteBufPayload) packet).data();
-            //#endif
+            final FriendlyByteBuf packetData =
+                    //#if MC<1.20.2
+                    packet.getData();
+                    //#else
+                    //$$ ((PacketByteBufPayload) packet).data();
+                    //#endif
 
-            val buf = new FriendlyByteBuf(Unpooled.buffer());
+            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeResourceLocation(keyFromChannel(Channel.PING));
             buf.writeBoolean(packetData.readBoolean());
             buf.writeBoolean(Util.isAnyRecipeViewerLoaded());  // Reply "yes I need those data"

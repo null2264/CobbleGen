@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.data.model;
 
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
@@ -18,8 +17,8 @@ public abstract class BlockGenerator implements BuiltInGenerator
 
     @Override
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state) {
-        for (val direction : FLOW_DIRECTIONS) {
-            val candidate = tryGenerate(level, pos, state, direction);
+        for (Direction direction : FLOW_DIRECTIONS) {
+            final Optional<BlockState> candidate = tryGenerate(level, pos, state, direction);
             if (candidate.isEmpty()) continue;
             return candidate;
         }

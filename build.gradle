@@ -217,9 +217,6 @@ dependencies {
             forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
         }
     }
-
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 shadowJar {

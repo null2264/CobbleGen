@@ -13,7 +13,6 @@ import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHol
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
@@ -81,18 +80,18 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     @Override
     public void addWidgets(WidgetHolder widgets) {
-        val offset = Constants.SLOT_SIZE;
-        val gap = 2;
-        val base = new Point(0, 0);
+        final int offset = Constants.SLOT_SIZE;
+        final int gap = 2;
+        final Point base = new Point(0, 0);
 
-        val cold = (Point) base.clone();
+        final Point cold = (Point) base.clone();
 
-        val lava = (Point) base.clone();
+        final Point lava = (Point) base.clone();
         lava.x += 2 * (offset + gap);
 
-        val result = (Point) base.clone();
+        final Point result = (Point) base.clone();
         result.x += offset + gap;
-        val resultMod = (Point) result.clone();
+        final Point resultMod = (Point) result.clone();
         resultMod.y += offset + gap;
 
         if (getType() == GeneratorType.STONE) {
@@ -124,27 +123,27 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         );
         var y = base.y;
         for (Component text : texts) {
-            val labelPoint = new Point(getDisplayWidth() - textRenderer.width(text), y);
+            final Point labelPoint = new Point(getDisplayWidth() - textRenderer.width(text), y);
             widgets.addText(text, labelPoint.x, labelPoint.y, 0xFFFFFFFF, true);
             y += 9;
         }
 
         // Dimensions
         Component text = TextCompat.translatable("cobblegen.info.dimensions");
-        val dimensionTitlePoint = new Point(
+        final Point dimensionTitlePoint = new Point(
                 (getDisplayWidth() / 2) - (textRenderer.width(text) / 2),
                 resultMod.y + offset + 9
         );
         widgets.addText(text, dimensionTitlePoint.x, dimensionTitlePoint.y, 0xFFFFFFFF, true);
 
-        val dimensionBounds = (Point) base.clone();
+        final Point dimensionBounds = (Point) base.clone();
         dimensionBounds.y = dimensionTitlePoint.y + (2 * 9);
 
         // Whitelisted Dimensions
-        val whitelistBounds = (Point) dimensionBounds.clone();
+        final Point whitelistBounds = (Point) dimensionBounds.clone();
         whitelistBounds.x += 18;
 
-        val whitelist = new ArrayList<ClientTooltipComponent>();
+        final ArrayList<ClientTooltipComponent> whitelist = new ArrayList<>();
         whitelist.add(ClientTooltipComponent.create(TextCompat.translatable("cobblegen.info.whitelistedDim")
                 .getVisualOrderText()));
         List<String> recipeWhitelist = getResult().dimensions;
@@ -164,10 +163,10 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
                 .tooltip((mouseX, mouseY) -> whitelist);
 
         // Blacklisted Dimensions
-        val blacklistBounds = (Point) dimensionBounds.clone();
+        final Point blacklistBounds = (Point) dimensionBounds.clone();
         blacklistBounds.x += getDisplayWidth() - 15 - 18;
 
-        val blacklist = new ArrayList<ClientTooltipComponent>();
+        final ArrayList<ClientTooltipComponent> blacklist = new ArrayList<>();
         blacklist.add(ClientTooltipComponent.create(TextCompat.translatable(
                 "cobblegen.info.blacklistedDim").getVisualOrderText()));
         List<String> recipeBlacklist = getResult().excludedDimensions;

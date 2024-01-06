@@ -4,14 +4,11 @@ import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
-import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -79,7 +76,7 @@ public class BasaltGenerator extends BlockGenerator
         buf.writeUtf(Util.getBlockId(block).toString());
         buf.writeBoolean(silent);
 
-        val outMap = getOutput();
+        final Map<String, List<WeightedBlock>> outMap = getOutput();
         buf.writeMap(
                 outMap,
                 FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
@@ -88,8 +85,8 @@ public class BasaltGenerator extends BlockGenerator
 
     @SuppressWarnings({"unused", "RedundantCast"})
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val block = Util.getBlock(buf.readResourceLocation());
-        val silent = buf.readBoolean();
+        final Block block = Util.getBlock(buf.readResourceLocation());
+        final boolean silent = buf.readBoolean();
 
         Map<String, List<WeightedBlock>> outMap =
                 ((ByteBufCompat) buf).readMap(FriendlyByteBuf::readUtf, (o) -> ((ByteBufCompat) o).readList(WeightedBlock::fromPacket));

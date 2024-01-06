@@ -3,14 +3,11 @@ package io.github.null2264.cobblegen.config;
 import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -75,7 +72,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
             Integer maxY,
             Integer minY
     ) {
-        val id = Util.getBlockId(block).toString();
+        final String id = Util.getBlockId(block).toString();
         return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY, null);
     }
 
@@ -110,8 +107,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
 
     @SuppressWarnings("RedundantCast")
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
-        val id = buf.readUtf();
-        val weight = buf.readDouble();
+        final String id = buf.readUtf();
+        final Double weight = buf.readDouble();
 
         Optional<List<String>> dimensions = ((ByteBufCompat) buf).readOptional((o) -> ((ByteBufCompat) o).readList(FriendlyByteBuf::readUtf));
         Optional<List<String>> excludedDimensions = ((ByteBufCompat) buf).readOptional((o) -> ((ByteBufCompat) o).readList(FriendlyByteBuf::readUtf));

@@ -1,14 +1,12 @@
 package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.CobbleGenPlugin;
-import lombok.Data;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
 //#if FABRIC>=1
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 //#else
 //$$ import java.lang.reflect.Constructor;
 //$$ import io.github.null2264.cobblegen.CGPlugin;
@@ -85,10 +83,22 @@ public class PluginFinder
     //$$ }
     //#endif
 
-    @Data
     @ApiStatus.Internal
     public static class PlugInContainer {
         final String modId;
         final CobbleGenPlugin plugin;
+
+        public PlugInContainer(String modId, CobbleGenPlugin plugin) {
+            this.modId = modId;
+            this.plugin = plugin;
+        }
+
+        public String getModId() {
+            return modId;
+        }
+
+        public CobbleGenPlugin getPlugin() {
+            return plugin;
+        }
     }
 }

@@ -2,7 +2,7 @@ package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
-import lombok.val;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 //#else
 //$$ import net.minecraft.tags.BlockTags;
+//$$ import net.minecraft.tags.Tag;
 //#endif
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -75,7 +76,7 @@ public class Util
 
     public static List<ResourceLocation> getTaggedBlockIds(ResourceLocation tagId) {
         //#if MC>1.16.5
-        val blockTag = TagKey.create(
+        final TagKey<Block> blockTag = TagKey.create(
                 //#if MC<=11902
                 Registry.BLOCK_REGISTRY,
                 //#else
@@ -84,13 +85,13 @@ public class Util
                 tagId
         );
         //#else
-        //$$ val blockTag = BlockTags.getAllTags().getTag(tagId);
+        //$$ final Tag<Block> blockTag = BlockTags.getAllTags().getTag(tagId);
         //#endif
 
         //#if MC>1.16.5
-        val blockList = RegistryCompat.block().getTag(blockTag);
+        final Optional<HolderSet.Named<Block>> blockList = RegistryCompat.block().getTag(blockTag);
         //#else
-        //$$ val blockList = Optional.ofNullable(blockTag != null ? blockTag.getValues() : null);
+        //$$ final Optional<List<Block>> blockList = Optional.ofNullable(blockTag != null ? blockTag.getValues() : null);
         //#endif
 
         ArrayList<ResourceLocation> blockIds = new ArrayList<>();

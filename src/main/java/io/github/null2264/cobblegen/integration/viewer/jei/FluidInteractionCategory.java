@@ -3,13 +3,14 @@ package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
+import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
+import mezz.jei.api.gui.builder.IRecipeSlotBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -24,6 +25,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -93,16 +96,16 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, FluidInteractionRecipeHolder recipe, IFocusGroup focuses) {
-        val output = recipe.getResult();
-        val modifier = recipe.getModifier();
-        val source = recipe.getSourceFluid();
-        val neighbourFluid = recipe.getNeighbourFluid();
-        val neighbourBlock = recipe.getNeighbourBlock();
+        final WeightedBlock output = recipe.getResult();
+        final Block modifier = recipe.getModifier();
+        final Fluid source = recipe.getSourceFluid();
+        final Fluid neighbourFluid = recipe.getNeighbourFluid();
+        final Block neighbourBlock = recipe.getNeighbourBlock();
 
-        val offset = Constants.SLOT_SIZE;
+        final int offset = Constants.SLOT_SIZE;
         var x = 0;
         var y = 0;
-        val gap = 2;
+        final int gap = 2;
 
         var coldY = y;
 
@@ -119,7 +122,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             resultModY = resultModY + offset + gap;
         }
 
-        val coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
+        final IRecipeSlotBuilder coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
         if (type.equals(GeneratorType.BASALT)) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultInstance());
         else coldBuilder.addFluidStack(neighbourFluid, full);
         builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(source, full);
@@ -200,7 +203,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             return biomeList;
         }
 
-        val aetherX = getBackground().getWidth() - 18;
+        final int aetherX = getBackground().getWidth() - 18;
         if ((mouseX > aetherX - 15 && mouseX < aetherX) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
             ArrayList<Component> biomeList = new ArrayList<>();
             biomeList.add(TextCompat.translatable("cobblegen.info.blacklistedDim"));

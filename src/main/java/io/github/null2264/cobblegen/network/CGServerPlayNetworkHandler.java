@@ -14,7 +14,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.netty.buffer.Unpooled;
-import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
@@ -41,7 +40,7 @@ public class CGServerPlayNetworkHandler
             CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
         else
             CGLog.info("A player joined, checking for recipe viewer...");
-        val buf = new FriendlyByteBuf(Unpooled.buffer());
+        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeResourceLocation(keyFromChannel(Channel.PING));
         buf.writeBoolean(isReload);
         buf.writeUtf("ping");  // Basically "do you want this?"
@@ -62,25 +61,27 @@ public class CGServerPlayNetworkHandler
         //#endif
 
         if (id.equals(SYNC_CHANNEL)) {
-            //#if MC<1.20.2
-            val packetData = ((ServerboundCustomPayloadPacketAccessor) packet).getByte();
-            //#else
-            //$$ val packetData = ((PacketByteBufPayload) packet).data();
-            //#endif
+            final FriendlyByteBuf packetData =
+                    //#if MC<1.20.2
+                    ((ServerboundCustomPayloadPacketAccessor) packet).getByte();
+                    //#else
+                    //$$ ((PacketByteBufPayload) packet).data();
+                    //#endif
 
-            val received = packetData.readBoolean();
+            boolean received = packetData.readBoolean();
             if (received)
                 CGLog.info("Player has received the server's newest CobbleGen config");
             return true;
         } else if (id.equals(SYNC_PING_CHANNEL)) {
-            //#if MC<1.20.2
-            val packetData = ((ServerboundCustomPayloadPacketAccessor) packet).getByte();
-            //#else
-            //$$ val packetData = ((PacketByteBufPayload) packet).data();
-            //#endif
+            final FriendlyByteBuf packetData =
+                    //#if MC<1.20.2
+                    ((ServerboundCustomPayloadPacketAccessor) packet).getByte();
+                    //#else
+                    //$$ ((PacketByteBufPayload) packet).data();
+                    //#endif
 
-            val isReload = packetData.readBoolean();
-            val isInstalled = packetData.readBoolean();
+            boolean isReload = packetData.readBoolean();
+            boolean isInstalled = packetData.readBoolean();
             if (isInstalled) {
                 if (!isReload)
                     CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
@@ -96,7 +97,7 @@ public class CGServerPlayNetworkHandler
     //#else
     //$$ public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
     //#endif
-        val buf = new ByteBufCompat(Unpooled.buffer());
+        final ByteBufCompat buf = new ByteBufCompat(Unpooled.buffer());
         buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
         buf.writeBoolean(isReload);
         FLUID_INTERACTION.write(buf);

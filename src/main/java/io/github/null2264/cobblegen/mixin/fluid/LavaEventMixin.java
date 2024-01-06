@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin.fluid;
 
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelAccessor;
@@ -26,7 +25,7 @@ public abstract class LavaEventMixin
             FluidState fluidState,
             CallbackInfo ci
     ) {
-        val success = FLUID_INTERACTION.interact(level, pos, level.getBlockState(pos.above()), true);
+        final boolean success = FLUID_INTERACTION.interact(level, pos, level.getBlockState(pos.above()), true);
 
         if (success)
             ci.cancel();

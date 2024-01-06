@@ -13,7 +13,6 @@ import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -144,10 +143,10 @@ public class CGEMIPlugin implements EmiPlugin
                                 );
                             }
 
-                            val id = Util.identifierOf(CGEMIPlugin.ID_PREFIX + generator.getType().name()
+                            final ResourceLocation id = Util.identifierOf(CGEMIPlugin.ID_PREFIX + generator.getType().name()
                                     .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbourId.toDebugFileName() + "-" + modifierId.toDebugFileName());
 
-                            val recipe = EmiWorldInteractionRecipe.builder()
+                            final EmiWorldInteractionRecipe.Builder recipe = EmiWorldInteractionRecipe.builder()
                                     .id(id);
 
                             input(

@@ -11,7 +11,6 @@ import io.github.fabricators_of_create.porting_lib.util.FluidStack;
     //#endif
 //#endif
 import io.github.null2264.cobblegen.data.model.Generator;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
@@ -43,7 +42,7 @@ public abstract class CreateFluidReactionsMixin
     private static void generator$handlePipeFlowCollision(
             Level level, BlockPos pos, FluidStack fluid1, FluidStack fluid2, CallbackInfo ci
     ) {
-        val success = handleReaction(level, pos, fluid1.getFluid(), fluid2.getFluid());
+        final boolean success = handleReaction(level, pos, fluid1.getFluid(), fluid2.getFluid());
         if (success)
             ci.cancel();
     }
@@ -59,7 +58,7 @@ public abstract class CreateFluidReactionsMixin
     private static void generator$handlePipeSpillCollision(
             Level level, BlockPos pos, Fluid pipeFluid, FluidState worldFluid, CallbackInfo ci
     ) {
-        val success = handleReaction(level, pos, Generator.getStillFluid(pipeFluid), worldFluid.getType());
+        final boolean success = handleReaction(level, pos, Generator.getStillFluid(pipeFluid), worldFluid.getType());
         if (success)
             ci.cancel();
     }

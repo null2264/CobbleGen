@@ -9,7 +9,6 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -23,10 +22,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.util.Constants.LAVA_FIZZ;
@@ -82,16 +78,16 @@ public class FluidInteractionHelper
 
     @ApiStatus.Internal
     public void readGeneratorsFromPacket(ByteBufCompat buf) {
-        val _genSize = buf.readInt();
-        val genMap = new HashMap<Fluid, List<Generator>>(_genSize);
+        final int _genSize = buf.readInt();
+        final HashMap<Fluid, List<Generator>> genMap = new HashMap<>(_genSize);
 
         for (int i = 0; i < _genSize; i++) {
-            val key = Util.getFluid(buf.readResourceLocation());
+            final Fluid key = Util.getFluid(buf.readResourceLocation());
 
-            val _gensSize = buf.readInt();
-            val gens = new ArrayList<Generator>(_gensSize);
+            final int _gensSize = buf.readInt();
+            final ArrayList<Generator> gens = new ArrayList<>(_gensSize);
             for (int j = 0; j < _gensSize; j++) {
-                val generator = Generator.fromPacket(buf);
+                final Generator generator = Generator.fromPacket(buf);
                 if (generator == null) {
                     // Shouldn't be possible, but just in case... it's Java Reflection API after all.
                     CGLog.warn("Failed to retrieve a generator, skipping...");
@@ -153,13 +149,13 @@ public class FluidInteractionHelper
     public boolean interact(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
         FluidState fluidState = state.getFluidState();
         Fluid fluid = Generator.getStillFluid(fluidState);
-        val generators = generatorMap.getOrDefault(fluid, List.of());
+        final List<Generator> generators = generatorMap.getOrDefault(fluid, List.of());
 
         for (Generator generator : generators) {
             if (!generator.check(level, pos, state, fromTop)) continue;
             if (fromTop && generator.getType() != GeneratorType.STONE) continue;
 
-            val result = generator.tryGenerate(level, pos, state);
+            final Optional<BlockState> result = generator.tryGenerate(level, pos, state);
             if (result.isPresent()) {
                 level.setBlock(pos, result.get(), 3);
                 if (!generator.isSilent())
@@ -195,7 +191,7 @@ public class FluidInteractionHelper
             if (source == Fluids.LAVA)  // prevent obsidian from generating
                 source = ((FlowingFluid) source).getFlowing();
 
-            val result = generator.tryGenerate(level, pos, source.defaultFluidState(), neighbour.defaultFluidState());
+            final Optional<BlockState> result = generator.tryGenerate(level, pos, source.defaultFluidState(), neighbour.defaultFluidState());
             if (result.isPresent()) {
                 level.setBlockAndUpdate(pos, result.get());
                 return true;
@@ -210,7 +206,7 @@ public class FluidInteractionHelper
         for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
             buf.writeResourceLocation(Util.getFluidId(entry.getKey()));
 
-            val gens = entry.getValue();
+            final List<Generator> gens = entry.getValue();
             buf.writeInt(gens.size());
 
             for (Generator generator : gens) {

@@ -6,7 +6,6 @@ import io.github.null2264.cobblegen.data.model.BuiltInGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.LevelAccessor;
@@ -94,7 +93,7 @@ public class StoneGenerator implements BuiltInGenerator
         buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
 
-        val outMap = getOutput();
+        final Map<String, List<WeightedBlock>> outMap = getOutput();
         buf.writeMap(
                 outMap,
                 FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
@@ -103,8 +102,8 @@ public class StoneGenerator implements BuiltInGenerator
 
     @SuppressWarnings({"unused", "RedundantCast"})
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val fluid = Util.getFluid(buf.readResourceLocation());
-        val silent = buf.readBoolean();
+        final Fluid fluid = Util.getFluid(buf.readResourceLocation());
+        final boolean silent = buf.readBoolean();
 
         Map<String, List<WeightedBlock>> outMap =
                 ((ByteBufCompat) buf).readMap(FriendlyByteBuf::readUtf, (o) -> ((ByteBufCompat) o).readList(WeightedBlock::fromPacket));

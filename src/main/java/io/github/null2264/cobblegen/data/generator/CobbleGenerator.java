@@ -8,7 +8,6 @@ import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -121,8 +120,8 @@ public class CobbleGenerator extends BlockGenerator
 
     @SuppressWarnings({"unused", "RedundantCast"})
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val fluid = Util.getFluid(buf.readResourceLocation());
-        val silent = buf.readBoolean();
+        final Fluid fluid = Util.getFluid(buf.readResourceLocation());
+        final boolean silent = buf.readBoolean();
 
         Map<String, List<WeightedBlock>> outMap =
                 ((ByteBufCompat) buf).readMap(FriendlyByteBuf::readUtf, (o) -> ((ByteBufCompat) o).readList(WeightedBlock::fromPacket));

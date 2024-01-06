@@ -1,12 +1,7 @@
 package io.github.null2264.cobblegen.mixin.network;
 
-//#if MC<1.20.2
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-//#else
-//#endif
 import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import org.spongepowered.asm.mixin.Final;
@@ -39,7 +34,12 @@ public abstract class ServerCommonPacketListenerMixin
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        val self = getListener();
+        //#if MC<1.20.2
+        net.minecraft.server.network.ServerGamePacketListenerImpl self =
+        //#else
+        //$$ net.minecraft.server.network.ServerCommonPacketListenerImpl self =
+        //#endif
+                getListener();
         //#if FABRIC>=1 && MC>1.16.5
         if (Util.isPortingLibLoaded()) {
             // Just in case
