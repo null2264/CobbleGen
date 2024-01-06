@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
+
 public interface Generator extends PacketSerializable<Generator>
 {
     static Fluid getStillFluid(FluidState fluidState) {
@@ -57,7 +59,7 @@ public interface Generator extends PacketSerializable<Generator>
      * @return The output block when a source fluid met another fluid (e.g. Water -> Stone / Lava -> Obsidian)
      */
     default Map<String, List<WeightedBlock>> getObsidianOutput() {
-        return Map.of();
+        return mapOf();
     }
 
     @NotNull

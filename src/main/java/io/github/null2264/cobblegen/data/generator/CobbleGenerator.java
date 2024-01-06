@@ -33,7 +33,7 @@ public class CobbleGenerator extends BlockGenerator
     private final boolean silent;
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(possibleBlocks, fluid, silent, Map.of());
+        this(possibleBlocks, fluid, silent, mapOf());
     }
 
     public CobbleGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent, Map<String, List<WeightedBlock>> obsidianReplacements) {

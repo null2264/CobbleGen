@@ -19,7 +19,7 @@ public abstract class BlockGenerator implements BuiltInGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state) {
         for (Direction direction : FLOW_DIRECTIONS) {
             final Optional<BlockState> candidate = tryGenerate(level, pos, state, direction);
-            if (candidate.isEmpty()) continue;
+            if (!candidate.isPresent()) continue;
             return candidate;
         }
 

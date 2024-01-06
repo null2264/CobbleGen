@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 import static io.github.null2264.cobblegen.util.Constants.LAVA_FIZZ;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
@@ -149,7 +150,7 @@ public class FluidInteractionHelper
     public boolean interact(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
         FluidState fluidState = state.getFluidState();
         Fluid fluid = Generator.getStillFluid(fluidState);
-        final List<Generator> generators = generatorMap.getOrDefault(fluid, List.of());
+        final List<Generator> generators = generatorMap.getOrDefault(fluid, listOf());
 
         for (Generator generator : generators) {
             if (!generator.check(level, pos, state, fromTop)) continue;
