@@ -1,20 +1,25 @@
 package io.github.null2264.cobblegen.compat;
 
+import java.nio.file.Path;
+
 //#if FABRIC>=1
 import net.fabricmc.loader.api.FabricLoader;
-//#else
-    //#if FORGE>=2 && MC>=1.20.2
-    //$$ import net.neoforged.fml.loading.FMLPaths;
-    //$$ import net.neoforged.fml.ModList;
-    //$$ import net.neoforged.fml.loading.LoadingModList;
-    //#else
-    //$$ import net.minecraftforge.fml.loading.FMLPaths;
-    //$$ import net.minecraftforge.fml.ModList;
-    //$$ import net.minecraftforge.fml.loading.LoadingModList;
-    //#endif
+//#if MC<=1.16.5
+//$$ import java.io.IOException;
+//$$ import java.nio.file.FileSystems;
+//$$ import java.nio.file.Files;
 //#endif
-
-import java.nio.file.Path;
+//#else
+//#if FORGE>=2 && MC>=1.20.2
+//$$ import net.neoforged.fml.loading.FMLPaths;
+//$$ import net.neoforged.fml.ModList;
+//$$ import net.neoforged.fml.loading.LoadingModList;
+//#else
+//$$ import net.minecraftforge.fml.loading.FMLPaths;
+//$$ import net.minecraftforge.fml.ModList;
+//$$ import net.minecraftforge.fml.loading.LoadingModList;
+//#endif
+//#endif
 
 public class LoaderCompat {
     public static boolean isModLoaded(String mod) {
@@ -30,7 +35,20 @@ public class LoaderCompat {
 
     public static Path getConfigDir() {
         //#if FABRIC>=1
-        return FabricLoader.getInstance().getConfigDir();
+            //#if MC>1.16.5
+            return FabricLoader.getInstance().getConfigDir();
+            //#else
+            // Not ideal, but configDir is null somehow in 1.16.5
+            //$$ Path configDir = FileSystems.getDefault().getPath(".", "config");
+            //$$ if (!Files.exists(configDir)) {  // Stolen from fabric loader
+            //$$     try {
+            //$$         Files.createDirectories(configDir);
+            //$$     } catch (IOException e) {
+            //$$         throw new RuntimeException("Creating config directory", e);
+            //$$     }
+            //$$ }
+            //$$ return configDir;
+            //#endif
         //#else
         //$$ return FMLPaths.CONFIGDIR.get();
         //#endif

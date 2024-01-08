@@ -16,6 +16,7 @@ static String stringifyVersion(int ver) {
 }
 def mcVersionStr = stringifyVersion(mcVersion)
 def supportedVersionRange = [
+        11605: [null, "1.16.5"],
         11802: [null, "1.18.2"],
         11902: ["1.19", "1.19.2"],
         11904: ["1.19.3", "1.19.4"],
@@ -98,29 +99,31 @@ dependencies {
         else if (mcVersion <= 12001)
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
         else
-            modImplementation "net.fabricmc:fabric-loader:0.14.22"
+            modImplementation "net.fabricmc:fabric-loader:0.15.3"
 
         // For testing
-        modLocalRuntime modCompileOnlyApi("net.fabricmc.fabric-api:fabric-api:" + [
-                11802: "0.76.0+1.18.2",
-                11902: "0.76.0+1.19.2",
-                11904: "0.83.0+1.19.4",
-                12001: "0.83.1+1.20.1",
-                12002: "0.89.0+1.20.2",
-        ][mcVersion])
+        if (project.recipe_viewer != "none" && mcVersion > 11605)
+            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + [
+                    11605: "0.42.0+1.16",
+                    11802: "0.76.0+1.18.2",
+                    11902: "0.76.0+1.19.2",
+                    11904: "0.83.0+1.19.4",
+                    12001: "0.83.1+1.20.1",
+                    12002: "0.89.0+1.20.2",
+            ][mcVersion])
     } else {
         if (!isNeo) {
-            forge "net.minecraftforge:forge:" + [
-                    11802: "1.18.2-40.2.9",
-                    11902: "1.19.2-43.2.14",
-                    11904: "1.19.4-45.1.0",
-                    12001: "1.20.1-47.0.3",
-                    12002: "1.20.2-48.0.13",
+            forge "net.minecraftforge:forge:${mcVersionStr}-" + [
+                    11605: "36.2.41",
+                    11802: "40.2.9",
+                    11902: "43.2.14",
+                    11904: "45.1.0",
+                    12001: "47.0.3",
+                    12002: "48.0.13",
             ][mcVersion]
         } else {
             neoForge "net.neoforged:neoforge:" + [
                     12002: "20.2.51-beta"
-                    // TODO: 1.20.3
             ][mcVersion]
         }
     }
@@ -129,88 +132,100 @@ dependencies {
     if (!isFabric)
         forgeRuntimeLibrary("blue.endless:jankson:${project.jankson_version}")
 
-    // These act like a dummy, technically only here to provide their modules/packages
-    if (isFabric) {
-        modCompileOnly("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
-        modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
-        modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
-    } else {
-        modCompileOnly("com.jozufozu.flywheel:flywheel-forge-1.18.2:0.6.8.a-99")
-        modCompileOnly("com.simibubi.create:create-1.18.2:0.5.0.i-249:slim") { transitive = false }
-        modCompileOnly("com.tterrag.registrate:Registrate:MC1.18.2-1.1.3")
-    }
+    // Don't wanna deal with these atm
+    if (mcVersion > 11605) {
+        // These act like a dummy, technically only here to provide their modules/packages
+        if (isFabric) {
+            modCompileOnly("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
+            modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+            modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+        } else {
+            modCompileOnly("com.jozufozu.flywheel:flywheel-forge-1.18.2:0.6.8.a-99")
+            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.0.i-249:slim") { transitive = false }
+            modCompileOnly("com.tterrag.registrate:Registrate:MC1.18.2-1.1.3")
+        }
 
-    // EMI
-    if (mcVersion <= 11802 && isFabric) {
-        modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
-        if (project.recipe_viewer == "emi")
-            modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
-    } else {
-        def suffix = [
-                11902: "1.19.2",
-                11904: "1.19.4",
-                12001: "1.20.1",
-                12002: "1.20.2",
-                12003: "1.20.2", // TODO
+        // EMI
+        if (mcVersion <= 11802 && isFabric) {
+            modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
+            if (project.recipe_viewer == "emi")
+                modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
+        } else {
+            def suffix = [
+                    11902: "1.19.2",
+                    11904: "1.19.4",
+                    12001: "1.20.1",
+                    12002: "1.20.2",
+                    12003: "1.20.2", // TODO
+            ]
+            // EMI support multiple platform since 1.0.0
+            // EMI seems to also skip 1.19 and 1.19.1
+            modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}:api")
+            if (project.recipe_viewer == "emi")
+                modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}")
+        }
+
+        // REI
+        def reiVersions = [
+                11802: "8.3.618",
+                11902: "9.1.619",
+                11904: "11.0.621",
+                12001: "12.0.625",
+                12002: "13.0.666",
+                12003: "13.0.666", // TODO
         ]
-        // EMI support multiple platform since 1.0.0
-        // EMI seems to also skip 1.19 and 1.19.1
-        modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}:api")
-        if (project.recipe_viewer == "emi")
-            modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : '1.19.2'}")
+        if (isFabric)
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
+        else  // I need the full package since for whatever reason @REIPluginClient is not included in API, thanks REI
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${reiVersions[mcVersion]}")
+        if (project.recipe_viewer == "rei") {
+            if (mcVersion == 11902)  // REI's stupid dep bug
+                modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
+            modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
+        }
+
+        // JEI
+        def jeiVersions = [
+                11802: "10.2.1.1004",
+                11902: "11.6.0.1015",
+                11904: "13.1.0.13",
+                12001: "15.0.0.12",
+                12002: "16.0.0.28",
+                12003: "16.0.0.28", // TODO
+        ]
+        def jeiMc = [
+                12003: "1.20.2",
+        ]
+        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
+        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
+        if (project.recipe_viewer == "jei")
+            modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
+
+        /* FIXME: Broken, somehow
+        if (mcVersion == 11802 && isFabric) {
+            modLocalRuntime("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
+            modLocalRuntime("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+            modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+        }
+         */
+    } else {
+        // slf4j is not included by MC in 1.16.5
+        shade("org.slf4j:slf4j-api:1.7.36")
+        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+        if (!isFabric) {
+            forgeRuntimeLibrary("org.slf4j:slf4j-api:1.7.36")
+            forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+        }
     }
-
-    // REI
-    def reiVersions = [
-            11802: "8.3.618",
-            11902: "9.1.619",
-            11904: "11.0.621",
-            12001: "12.0.625",
-            12002: "13.0.666",
-            12003: "13.0.666", // TODO
-    ]
-    if (isFabric)
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion]}")
-    else  // I need the full package since for whatever reason @REIPluginClient is not included in API, thanks REI
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${reiVersions[mcVersion]}")
-    if (project.recipe_viewer == "rei") {
-        if (mcVersion == 11902)  // REI's stupid dep bug
-            modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-        modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
-    }
-
-    // JEI
-    def jeiVersions = [
-            11802: "10.2.1.1004",
-            11902: "11.6.0.1015",
-            11904: "13.1.0.13",
-            12001: "15.0.0.12",
-            12002: "16.0.0.28",
-            12003: "16.0.0.28", // TODO
-    ]
-    def jeiMc = [
-            12003: "1.20.2",
-    ]
-    modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersions[mcVersion]}")
-    modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion]}")
-    if (project.recipe_viewer == "jei")
-        modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
-
-    /* FIXME: Broken, somehow
-    if (mcVersion == 11802 && isFabric) {
-        modLocalRuntime("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
-        modLocalRuntime("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
-        modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
-    }
-     */
-
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 shadowJar {
     zip64 true
     relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
+    if (mcVersion < 12000) {
+        relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
+        relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
+    }
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
     exclude "architectury.common.json"
 
@@ -242,11 +257,12 @@ processResources {
     filteringCharset "UTF-8"
 
     filesMatching(isFabric ? "fabric.mod.json" : "META-INF/mods.toml") {
+        filter { line -> line.trim().startsWith('//') ? '' : line }  // strip comments
         expand "version": metadataVersion, "mcversion": metadataMCVersion, "forge": (isNeo ? "neoforge" : "forge")
     }
 }
 
-def targetJavaVersion = 17
+def targetJavaVersion = mcVersion >= 11700 ? 17 : 8
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -276,6 +292,7 @@ jar {
 }
 
 def mcReleaseVersions = [
+        11605: ["1.16.5"],
         11802: ["1.18.2"],
         11902: ["1.19", "1.19.1", "1.19.2"],
         11904: ["1.19.3", "1.19.4"],
@@ -285,7 +302,7 @@ def mcReleaseVersions = [
 
 publishMods {
     file = tasks.remapJar.archiveFile
-    displayName = "[${isFabric ? "FABRIC" : (isNeo ? "NEOFORGE" : "FORGE")} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}"
+    displayName = "[${isFabric ? "FABRIC" : (isNeo ? "NEOFORGE" : "FORGE")} MC${mcReleaseVersions[0] + (mcReleaseVersions.size() > 1 ? "+" : "")}] v${project.mod_version}-${project.version_stage}${mcVersion <= 11605 ? " (LITE)" : ""}"
     changelog = System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
     version = project.version
     if (isFabric) {

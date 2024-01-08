@@ -1,10 +1,10 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin;
 import me.shedaniel.rei.api.client.registry.category.CategoryRegistry;
 import me.shedaniel.rei.api.client.registry.display.DisplayRegistry;
@@ -28,7 +28,7 @@ public class CGREIPlugin implements REIClientPlugin
             return;
 
         for (GeneratorType generator : GeneratorType.values()) {
-            val category = new FluidInteractionCategory(generator);
+            final FluidInteractionCategory category = new FluidInteractionCategory(generator);
             registry.add(category);
         }
     }
@@ -57,3 +57,4 @@ public class CGREIPlugin implements REIClientPlugin
                 })));
     }
 }
+//#endif

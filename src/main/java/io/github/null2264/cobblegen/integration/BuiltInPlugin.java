@@ -13,7 +13,6 @@ import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
 import static io.github.null2264.cobblegen.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
@@ -77,8 +77,8 @@ public class BuiltInPlugin implements CobbleGenPlugin
             config.advanced.forEach((fluid, value) -> {
                 Fluid actualFluid = getFluidFromString(fluid);
                 value.forEach((neighbour, gen) -> {
-                    val results = gen.results;
-                    val obi = gen.obsidian;
+                    final Map<String, List<WeightedBlock>> results = gen.results;
+                    final Map<String, List<WeightedBlock>> obi = gen.obsidian;
 
                     boolean isNeighbourBlock = neighbour.startsWith("b:");
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);
@@ -109,7 +109,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
             });
 
         registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, Map.of()));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, mapOf()));
         registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 

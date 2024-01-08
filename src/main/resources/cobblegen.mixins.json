@@ -1,27 +1,32 @@
 {
-    "required": true,
-    "minVersion": "0.8",
-    "package": "io.github.null2264.cobblegen.mixin",
-    "compatibilityLevel": "JAVA_17",
-    "mixins": [
-        "CommandsMixin",
-        "MinecraftServerMixin",
-        "fluid.CreateFluidReactionsMixin",
-        "fluid.FluidEventMixin",
-        "fluid.LavaEventMixin"
-    ],
-    "client": [
-        "network.ClientboundCustomPayloadPacketMixin",
-        "network.ClientCommonPacketListenerMixin",
-        "network.ConnectionMixin"
-    ],
-    "server": [
-        "network.PlayerManagerMixin",
-        "network.ServerboundCustomPayloadPacketMixin",
-        "network.ServerCommonPacketListenerMixin"
-    ],
-    "injectors": {
-        "defaultRequire": 1
-    },
-    "plugin": "io.github.null2264.cobblegen.mixin.core.CobbleGenMixinPlugin"
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.null2264.cobblegen.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "CommandsMixin",
+    "MinecraftServerMixin",
+    //#if MC>1.16.5
+    "fluid.CreateFluidReactionsMixin",
+    //#endif
+    "fluid.FluidEventMixin",
+    "fluid.LavaEventMixin"
+  ],
+  "client": [
+    "network.ClientboundCustomPayloadPacketMixin",
+    "network.ClientCommonPacketListenerMixin",
+    "network.ConnectionMixin"
+  ],
+  "server": [
+    "network.PlayerManagerMixin",
+    //#if MC<1.20.2
+    "network.ServerboundCustomPayloadPacketAccessor",
+    //#endif
+    "network.ServerboundCustomPayloadPacketMixin",
+    "network.ServerCommonPacketListenerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "plugin": "io.github.null2264.cobblegen.mixin.core.CobbleGenMixinPlugin"
 }

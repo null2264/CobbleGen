@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.config.WeightedBlock;
@@ -8,9 +9,7 @@ import me.shedaniel.rei.api.common.display.Display;
 import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -58,3 +57,4 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         return FluidInteractionCategory.generateIdentifier(getType());
     }
 }
+//#endif

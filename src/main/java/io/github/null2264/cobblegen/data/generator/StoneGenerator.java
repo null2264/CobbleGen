@@ -1,11 +1,11 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.model.BuiltInGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.LevelAccessor;
@@ -19,6 +19,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
+
 public class StoneGenerator implements BuiltInGenerator
 {
     private final Map<String, List<WeightedBlock>> possibleBlocks;
@@ -26,7 +29,7 @@ public class StoneGenerator implements BuiltInGenerator
     private final boolean silent;
 
     public StoneGenerator(List<WeightedBlock> possibleBlocks, Fluid fluid, boolean silent) {
-        this(Map.of("*", possibleBlocks), fluid, silent);
+        this(mapOf("*", possibleBlocks), fluid, silent);
     }
 
     public StoneGenerator(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent) {
@@ -42,7 +45,7 @@ public class StoneGenerator implements BuiltInGenerator
 
     @Override
     public Map<String, List<WeightedBlock>> getObsidianOutput() {
-        return Map.of("*", List.of(WeightedBlock.fromBlock(Blocks.STONE, 100D)));
+        return mapOf("*", listOf(WeightedBlock.fromBlock(Blocks.STONE, 100D)));
     }
 
     @Override
@@ -85,27 +88,28 @@ public class StoneGenerator implements BuiltInGenerator
         return Optional.empty();
     }
 
+    @SuppressWarnings("RedundantCast")
     @Override
-    public void toPacket(FriendlyByteBuf buf) {
+    public void toPacket(ByteBufCompat buf) {
         buf.writeUtf(this.getClass().getName());
 
         buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
 
-        val outMap = getOutput();
+        final Map<String, List<WeightedBlock>> outMap = getOutput();
         buf.writeMap(
                 outMap,
-                FriendlyByteBuf::writeUtf, (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
         );
     }
 
-    @SuppressWarnings("unused")
+    @SuppressWarnings({"unused", "RedundantCast"})
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val fluid = Util.getFluid(buf.readResourceLocation());
-        val silent = buf.readBoolean();
+        final Fluid fluid = Util.getFluid(buf.readResourceLocation());
+        final boolean silent = buf.readBoolean();
 
         Map<String, List<WeightedBlock>> outMap =
-                buf.readMap(FriendlyByteBuf::readUtf, (o) -> o.readList(WeightedBlock::fromPacket));
+                ((ByteBufCompat) buf).readMap(FriendlyByteBuf::readUtf, (o) -> ((ByteBufCompat) o).readList(WeightedBlock::fromPacket));
 
         return new StoneGenerator(outMap, fluid, silent);
     }

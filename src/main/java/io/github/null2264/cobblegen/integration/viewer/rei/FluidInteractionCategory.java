@@ -1,13 +1,14 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import me.shedaniel.math.Point;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.Renderer;
+import me.shedaniel.rei.api.client.gui.widgets.Label;
 import me.shedaniel.rei.api.client.gui.widgets.Widget;
 import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
@@ -67,10 +68,10 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
 
     @Override
     public List<Widget> setupDisplay(FluidInteractionRecipe display, Rectangle bounds) {
-        val offset = Constants.SLOT_SIZE;
-        val gap = 2;
-        val gapAgainstBound = gap * 3;
-        val base = bounds.clone();
+        final int offset = Constants.SLOT_SIZE;
+        final int gap = 2;
+        final int gapAgainstBound = gap * 3;
+        final Rectangle base = bounds.clone();
         base.resize(Constants.SLOT_SIZE, Constants.SLOT_SIZE);
         base.translate(gapAgainstBound, gapAgainstBound);
 
@@ -118,27 +119,27 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
 
         var y = base.y;
         for (Component text : texts) {
-            val labelPoint = new Point(bounds.x + getDisplayWidth(display) - gapAgainstBound, y);
-            val label = Widgets.createLabel(labelPoint, text).rightAligned().noShadow().color(0xFF404040, 0xFFBBBBBB);
+            final Point labelPoint = new Point(bounds.x + getDisplayWidth(display) - gapAgainstBound, y);
+            final Label label = Widgets.createLabel(labelPoint, text).rightAligned().noShadow().color(0xFF404040, 0xFFBBBBBB);
             widgets.add(label);
             y += 9;
         }
 
         // Dimensions
         Component text = TextCompat.translatable("cobblegen.info.dimensions");
-        val dimensionTitlePoint = new Point(bounds.getCenterX(), resultMod.y + offset + 9);
+        final Point dimensionTitlePoint = new Point(bounds.getCenterX(), resultMod.y + offset + 9);
         widgets.add(Widgets.createLabel(dimensionTitlePoint, text).centered().noShadow().color(0xFF404040, 0xFFBBBBBB));
 
-        val dimensionBounds = base.clone();
+        final Rectangle dimensionBounds = base.clone();
         dimensionBounds.resize(15, 20);
         dimensionBounds.y = dimensionTitlePoint.y + (2 * 9);
 
         // Whitelisted Dimensions
-        val whitelistBounds = dimensionBounds.clone();
+        final Rectangle whitelistBounds = dimensionBounds.clone();
         whitelistBounds.x += 18;
-        val whitelistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT, whitelistBounds, 0F, 0F, 256, 256);
+        final Widget whitelistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT, whitelistBounds, 0F, 0F, 256, 256);
 
-        val whitelist = new ArrayList<Component>();
+        final ArrayList<Component> whitelist = new ArrayList<>();
         whitelist.add(TextCompat.translatable("cobblegen.info.whitelistedDim"));
         List<String> recipeWhitelist = display.getResult().dimensions;
         try {
@@ -152,9 +153,9 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         widgets.add(Widgets.withTooltip(Widgets.withBounds(whitelistIcon, whitelistBounds), whitelist));
 
         // Blacklisted Dimensions
-        val blacklistBounds = dimensionBounds.clone();
+        final Rectangle blacklistBounds = dimensionBounds.clone();
         blacklistBounds.x += bounds.width - 15 - 18 - (2 * gapAgainstBound);
-        val blacklistIcon = Widgets.createTexturedWidget(
+        final Widget blacklistIcon = Widgets.createTexturedWidget(
                 Constants.JEI_UI_COMPONENT,
                 blacklistBounds,
                 15F,
@@ -163,7 +164,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
                 256
         );
 
-        val blacklist = new ArrayList<Component>();
+        final ArrayList<Component> blacklist = new ArrayList<>();
         blacklist.add(TextCompat.translatable("cobblegen.info.blacklistedDim"));
         List<String> recipeBlacklist = display.getResult().excludedDimensions;
         try {
@@ -183,3 +184,4 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         return generateIdentifier(type);
     }
 }
+//#endif

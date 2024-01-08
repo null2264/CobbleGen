@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.CobbleGen;
@@ -5,7 +6,6 @@ import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
@@ -56,7 +56,7 @@ public class CGJEIPlugin implements IModPlugin
 
         FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                 (modifierId, blocks) -> {
-                    val recipes = new ArrayList<FluidInteractionRecipeHolder>();
+                    final ArrayList<FluidInteractionRecipeHolder> recipes = new ArrayList<>();
                     Block modifier = null;
                     if (!Objects.equals(modifierId, "*"))
                         modifier = Util.getBlock(new ResourceLocation(modifierId));
@@ -78,3 +78,4 @@ public class CGJEIPlugin implements IModPlugin
                 })));
     }
 }
+//#endif

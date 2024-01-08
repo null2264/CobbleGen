@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.data.model;
 import io.github.null2264.cobblegen.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.LevelAccessor;
@@ -21,6 +20,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
 
 public interface Generator extends PacketSerializable<Generator>
 {
@@ -58,7 +59,7 @@ public interface Generator extends PacketSerializable<Generator>
      * @return The output block when a source fluid met another fluid (e.g. Water -> Stone / Lava -> Obsidian)
      */
     default Map<String, List<WeightedBlock>> getObsidianOutput() {
-        return Map.of();
+        return mapOf();
     }
 
     @NotNull
@@ -89,7 +90,7 @@ public interface Generator extends PacketSerializable<Generator>
     }
 
     static Generator fromPacket(FriendlyByteBuf buf) {
-        val className = buf.readUtf();
+        final String className = buf.readUtf();
         try {
             Method method = Class.forName(className).getMethod("fromPacket", FriendlyByteBuf.class);
             return (Generator) method.invoke(null, buf);

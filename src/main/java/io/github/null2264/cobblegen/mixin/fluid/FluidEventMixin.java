@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin.fluid;
 
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -25,14 +24,14 @@ public abstract class FluidEventMixin
 
     @SuppressWarnings("unused")
     private void doInteraction(Level level, BlockPos pos, BlockState state, CallbackInfo ci) {
-        val success = FLUID_INTERACTION.interact(level, pos, state);
+        final boolean success = FLUID_INTERACTION.interact(level, pos, state);
 
         if (success)
             ci.cancel();
     }
 
     private void doInteraction(Level level, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        val success = FLUID_INTERACTION.interact(level, pos, state);
+        final boolean success = FLUID_INTERACTION.interact(level, pos, state);
 
         if (success)
             cir.setReturnValue(false);

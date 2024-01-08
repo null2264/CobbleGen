@@ -10,6 +10,7 @@ public class Constants
     public static final int JEI_RECIPE_HEIGHT = 36;
     public static final int JEI_RECIPE_HEIGHT_STONE = 56;
     public static final ResourceLocation JEI_UI_COMPONENT = Util.identifierOf("textures/gui/jei.png");
+    public static final int LAVA_FIZZ = 1501;
 
     /**
      * Just a helper class to make the code more "readable"

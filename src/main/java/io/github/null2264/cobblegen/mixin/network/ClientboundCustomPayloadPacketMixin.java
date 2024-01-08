@@ -15,7 +15,6 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //$$
 //$$ import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 //#endif
-import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = ClientboundCustomPayloadPacket.class, priority = 999)
