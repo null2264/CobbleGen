@@ -1,19 +1,14 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
-
 name: release
 on:
   release:
     types: [ published ]
 
 jobs:
-  build:
-    name: Build
+  deploy:
+    name: Build and Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v1
       - name: Setup JDK
         uses: actions/setup-java@v3
@@ -21,6 +16,12 @@ jobs:
           distribution: "temurin"
           java-version: 17
       - run: chmod +x ./gradlew
+      - uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Build with Gradle
         run: ./gradlew build --stacktrace
       - name: Archive build results
@@ -32,10 +33,16 @@ jobs:
           path: build.tar.zst
           if-no-files-found: error
           retention-days: 3
+      - name: Upload to CurseForge and Modrinth
+        run: ./gradlew publishMods --stacktrace --no-daemon --max-workers 1
+        env:
+          CHANGELOG: ${{ github.event.release.body }}
+          CURSEFORGE: ${{ secrets.CURSEFORGE }}
+          MODRINTH: ${{ secrets.MODRINTH }}
 
   upload-release-artifacts:
     name: Upload Release Artifacts
-    needs: build
+    needs: deploy
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifact
@@ -51,24 +58,3 @@ jobs:
         with:
           files: |
             versions/*/build/libs/!(*-dev-shade|*-sources).jar
-
-  deploy-mod:
-    name: Deploy Mod
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: gradle/wrapper-validation-action@v1
-      - name: Setup JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: "temurin"
-          java-version: 17
-      - run: chmod +x ./gradlew
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace
-      - name: Upload to CurseForge and Modrinth
-        run: ./gradlew publishMods --stacktrace --no-daemon --max-workers 1
-        env:
-          CHANGELOG: ${{ github.event.release.body }}
-          CURSEFORGE: ${{ secrets.CURSEFORGE }}
-          MODRINTH: ${{ secrets.MODRINTH }}
