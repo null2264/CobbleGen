@@ -16,6 +16,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import static io.github.null2264.cobblegen.config.ConfigHelper.loadConfig;
+import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
 //#if FORGE>=1
     //#if FORGE==2
@@ -51,7 +52,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
         CGLog.info("Registering command...");
         dispatcher.register(
                 LiteralArgumentBuilder.<CommandSourceStack>literal("cobblegen")
-                        .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").executes(c -> {
+                        .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").requires(arg -> arg.hasPermission(OP_LEVEL_GAMEMASTERS)).executes(c -> {
                             CGLog.info("Reloading meta config...");
                             META_CONFIG = loadConfig(true, configFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
                             c.getSource().sendSuccess(
