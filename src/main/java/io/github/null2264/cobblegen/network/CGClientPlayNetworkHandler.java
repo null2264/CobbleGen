@@ -28,6 +28,11 @@ public class CGClientPlayNetworkHandler
     //$$ @SuppressWarnings("UnstableApiUsage")
     //$$ public static boolean handlePacket(ClientCommonPacketListenerImpl listener, CustomPacketPayload packet) {
     //#endif
+        // FIXME: Enable REI integration
+        //#if MC<=1.16.5
+        //$$ return false;
+        //#endif
+
         //#if MC>=1.20.2
         //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
         //$$ ResourceLocation id = ((PacketByteBufPayload) packet).id();
