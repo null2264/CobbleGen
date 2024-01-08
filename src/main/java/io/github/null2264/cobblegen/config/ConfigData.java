@@ -63,15 +63,14 @@ public class ConfigData implements Config
 
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
-        config.cobbleGen = listOf(new WeightedBlock(
-                "minecraft:cobblestone",
-                100.0,
-                null,
-                null,
-                null,
-                0,
-                null
-        ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null));
+        config.cobbleGen = listOf(
+                //#if MC>=1.17
+                new WeightedBlock("minecraft:cobblestone", 100.0, null, null, null, 0, null),
+                new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null)
+                //#else
+                //$$ new WeightedBlock("minecraft:cobblestone", 100.0)
+                //#endif
+        );
         config.stoneGen = listOf(new WeightedBlock("minecraft:stone", 100.0));
         config.basaltGen = listOf(new WeightedBlock("minecraft:basalt", 100.0));
         config.customGen = new CustomGen(
