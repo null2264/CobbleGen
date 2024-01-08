@@ -94,6 +94,8 @@ public interface Generator extends PacketSerializable<Generator>
         try {
             Method method = Class.forName(className).getMethod("fromPacket", FriendlyByteBuf.class);
             return (Generator) method.invoke(null, buf);
+        } catch (ClassNotFoundException t) {
+            // Do nothing
         } catch (Throwable t) {
             CGLog.error("Failed to get generator packet: " + className + " ", t);
         }

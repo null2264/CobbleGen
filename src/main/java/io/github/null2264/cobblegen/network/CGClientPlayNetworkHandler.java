@@ -41,15 +41,17 @@ public class CGClientPlayNetworkHandler
         //#endif
 
         if (id.equals(SYNC_CHANNEL)) {
-            final FriendlyByteBuf packetData =
+            final FriendlyByteBuf mcPacket =
                     //#if MC<1.20.2
                     packet.getData();
                     //#else
                     //$$ ((PacketByteBufPayload) packet).data();
                     //#endif
 
+            final ByteBufCompat packetData = ByteBufCompat.fromMC(mcPacket);
+
             boolean isReload = packetData.readBoolean();
-            FLUID_INTERACTION.readGeneratorsFromPacket((ByteBufCompat) packetData);
+            FLUID_INTERACTION.readGeneratorsFromPacket(packetData);
 
             boolean isSync = FLUID_INTERACTION.isSync();
             if (isSync)

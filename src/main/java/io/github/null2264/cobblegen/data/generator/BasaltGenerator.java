@@ -81,7 +81,7 @@ public class BasaltGenerator extends BlockGenerator
         final Map<String, List<WeightedBlock>> outMap = getOutput();
         buf.writeMap(
                 outMap,
-                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
+                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket((ByteBufCompat) p))
         );
     }
 

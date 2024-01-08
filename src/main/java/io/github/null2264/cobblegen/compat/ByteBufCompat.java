@@ -26,6 +26,10 @@ public class ByteBufCompat extends FriendlyByteBuf {
         super(byteBuf);
     }
 
+    public static ByteBufCompat fromMC(FriendlyByteBuf buf) {
+        return new ByteBufCompat(buf.copy());
+    }
+
     //#if MC<=1.16.5
     //$$ public <T> void writeOptional(Optional<T> optional, @NotNull BiConsumer<FriendlyByteBuf, T> predicate) {
     //$$     if (optional.isPresent()) {

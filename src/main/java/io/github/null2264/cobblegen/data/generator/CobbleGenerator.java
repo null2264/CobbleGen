@@ -112,11 +112,11 @@ public class CobbleGenerator extends BlockGenerator
 
         buf.writeMap(
                 getOutput(),
-                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
+                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket((ByteBufCompat) p))
         );
         buf.writeMap(
                 getObsidianOutput(),
-                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket(p))
+                FriendlyByteBuf::writeUtf, (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket((ByteBufCompat) p))
         );
     }
 
