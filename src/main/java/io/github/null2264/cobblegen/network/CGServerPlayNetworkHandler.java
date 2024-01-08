@@ -56,7 +56,7 @@ public class CGServerPlayNetworkHandler
         // FIXME: Enable REI integration
         //#if MC<=1.16.5
         //$$ return false;
-        //#endif
+        //#else
 
         //#if MC>=1.20.2
         //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
@@ -95,6 +95,7 @@ public class CGServerPlayNetworkHandler
             return true;
         }
         return false;
+        //#endif
     }
 
     //#if MC<1.20.2

@@ -31,7 +31,7 @@ public class CGClientPlayNetworkHandler
         // FIXME: Enable REI integration
         //#if MC<=1.16.5
         //$$ return false;
-        //#endif
+        //#else
 
         //#if MC>=1.20.2
         //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
@@ -75,6 +75,7 @@ public class CGClientPlayNetworkHandler
             return true;
         }
         return false;
+        //#endif
     }
 
     public static void onDisconnect() {
