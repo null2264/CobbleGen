@@ -39,7 +39,7 @@ public class CGServerPlayNetworkHandler
         if (isReload)
             CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
         else
-            CGLog.info("A player joined, checking for recipe viewer...");
+            CGLog.debug("A player joined, checking for recipe viewer...");
         final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeResourceLocation(keyFromChannel(Channel.PING));
         buf.writeBoolean(isReload);
@@ -75,7 +75,7 @@ public class CGServerPlayNetworkHandler
 
             boolean received = packetData.readBoolean();
             if (received)
-                CGLog.info("Player has received the server's newest CobbleGen config");
+                CGLog.debug("Player has received the server's newest CobbleGen config");
             return true;
         } else if (id.equals(SYNC_PING_CHANNEL)) {
             final FriendlyByteBuf packetData =
@@ -89,7 +89,7 @@ public class CGServerPlayNetworkHandler
             boolean isInstalled = packetData.readBoolean();
             if (isInstalled) {
                 if (!isReload)
-                    CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
+                    CGLog.debug("Player has recipe viewer installed, sending CobbleGen config...");
                 sync(listener, isReload);
             }
             return true;
