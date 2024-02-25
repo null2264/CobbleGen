@@ -17,11 +17,11 @@ static String stringifyVersion(int ver) {
 def mcVersionStr = stringifyVersion(mcVersion)
 // TODO(addingVersion): Add "-" suffix to support snapshots
 def supportedVersionRange = [
-        11605: [null, "1.16.5-"],
-        11802: [null, "1.18.2-"],
-        11902: ["1.19-", "1.19.2-"],
-        12001: ["1.20-", "1.20.1-"],
-        12002: ["1.20.2-", "1.20.4-"],
+        11605: [null, "1.16.5"],
+        11802: [null, "1.18.2"],
+        11902: ["1.19-", "1.19.2"],
+        12001: ["1.20-", "1.20.1"],
+        12002: ["1.20.2-", "1.20.4"],
         12005: ["1.20.5-", null],
 ][mcVersion]
 
