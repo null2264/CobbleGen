@@ -41,6 +41,12 @@ public class Constants
             .registerDeserializer(JsonPrimitive .class, CGIdentifier.class, (json, m) -> CGIdentifier.fromJson(json))
             .registerDeserializer(String.class, CGIdentifier.class, (str, m) -> CGIdentifier.of(str))
             .build();
+    public static final int LAVA_FIZZ = 1501;
+    //public static final int OP_LEVEL_PLAYER = 0;
+    //public static final int OP_LEVEL_MODERATORS = 1;
+    public static final int OP_LEVEL_GAMEMASTERS = 2;
+    //public static final int OP_LEVEL_ADMINS = 3;
+    //public static final int OP_LEVEL_OWNERS = 4;
 
     /**
      * Just a helper class to make the code more "readable"

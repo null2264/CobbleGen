@@ -13,6 +13,9 @@ public class ConfigMetaData implements Config
     @NotNull
     public Boolean enableExperimentalFeatures = false;
 
+    @Comment(value="Enable debug log, may spam your server console")
+    public Boolean debugLog = false;
+
     @Comment(value="Merge CobbleGen recipe categories into EMI's World Interaction category")
     @NotNull
     public Boolean mergeEMIRecipeCategory = true;

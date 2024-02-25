@@ -6,15 +6,16 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import com.google.common.primitives.Ints;
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
-import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements JanksonSerializable, PacketSerializable<GeneratorMap> {
     public GeneratorMap() {}
@@ -25,7 +26,7 @@ public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements J
 
     @SafeVarargs
     public static GeneratorMap of(Pair<CGIdentifier, ResultList>... gens) {
-        val map = new GeneratorMap();
+        GeneratorMap map = new GeneratorMap();
         Arrays.stream(gens).forEach(pair -> map.put(pair.getFirst(), pair.getSecond()));
         return map;
     }
@@ -66,11 +67,13 @@ public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements J
         return Integer.MAX_VALUE; // any large value
     }
 
+    @SuppressWarnings("RedundantCast")
     @Override
-    public void toPacket(FriendlyByteBuf buf) {
+    public void toPacket(ByteBufCompat buf) {
         buf.writeMap(
                 this,
-                (o, key) -> key.writeToBuf(o), (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
+                (o, key) -> key.writeToBuf(o),
+                (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket((ByteBufCompat) p))
         );
     }
 
@@ -78,13 +81,14 @@ public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements J
         return new GeneratorMap(capacity(expectedSize));
     }
 
+    @SuppressWarnings("RedundantCast")
     public static GeneratorMap fromPacket(FriendlyByteBuf buf) {
         int i = buf.readVarInt();
-        val map = GeneratorMap.withExpectedSize(i);
+        GeneratorMap map = GeneratorMap.withExpectedSize(i);
 
         for(int j = 0; j < i; ++j) {
-            val id = CGIdentifier.readFromBuf(buf);
-            val list = buf.readList(WeightedBlock::fromPacket);
+            CGIdentifier id = CGIdentifier.readFromBuf(buf);
+            List<WeightedBlock> list = ((ByteBufCompat) buf).readList(WeightedBlock::fromPacket);
             map.put(id, new ResultList(list));
         }
 

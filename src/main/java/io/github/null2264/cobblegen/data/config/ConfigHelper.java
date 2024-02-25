@@ -41,18 +41,21 @@ public class ConfigHelper {
     /**
      * @deprecated Will be removed once Jankson released their proper omit null feature
      */
+    @SuppressWarnings("PatternVariableCanBeUsed")
     @Deprecated
     @Nullable
     private static JsonElement filter(JsonElement json) {
         JsonElement result = null;
-        if (json instanceof JsonObject finalResult) {
+        if (json instanceof JsonObject) {
+            JsonObject finalResult = (JsonObject) json;
             finalResult.keySet().forEach(key -> {
                 JsonElement element = finalResult.get(key);
                 if (!(element instanceof JsonNull) && element != null) filter(element);
                 else finalResult.remove(key);
             });
             result = finalResult;
-        } else if (json instanceof JsonArray finalResult) {
+        } else if (json instanceof JsonArray) {
+            JsonArray finalResult = (JsonArray) json;
             finalResult.forEach(element -> {
                 if (element instanceof JsonObject) filter(element);
             });

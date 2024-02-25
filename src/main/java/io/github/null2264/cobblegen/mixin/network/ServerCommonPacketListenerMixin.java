@@ -7,11 +7,11 @@ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#endif
 import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.network.Connection;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,8 +27,9 @@ public abstract class ServerCommonPacketListenerMixin
 {
     @Shadow
     @Final
-    private Connection connection;
+    public Connection connection;
 
+    @Unique
     @SuppressWarnings("DataFlowIssue")
     //#if MC<1.20.2
     private net.minecraft.server.network.ServerGamePacketListenerImpl getListener() {
@@ -42,8 +43,13 @@ public abstract class ServerCommonPacketListenerMixin
     //#if MC<1.20.2
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(CallbackInfo ci) {
-        val self = getListener();
-        //#if FABRIC>=1
+        //#if MC<1.20.2
+        net.minecraft.server.network.ServerGamePacketListenerImpl self =
+        //#else
+        //$$ net.minecraft.server.network.ServerCommonPacketListenerImpl self =
+        //#endif
+                getListener();
+        //#if FABRIC>=1 && MC>1.16.5
         if (Util.isPortingLibLoaded()) {
             // Just in case
             if (this.connection instanceof io.github.fabricators_of_create.porting_lib.fake_players.FakeConnection) return;

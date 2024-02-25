@@ -1,14 +1,15 @@
 package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.JsonArray;
+import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -81,7 +82,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             Integer maxY,
             Integer minY
     ) {
-        val id = Util.getBlockId(block).toString();
+        final String id = Util.getBlockId(block).toString();
         return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY, null);
     }
 
@@ -101,27 +102,29 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(minY);
     }
 
+    @SuppressWarnings("RedundantCast")
     @Override
-    public void toPacket(FriendlyByteBuf buf) {
+    public void toPacket(ByteBufCompat buf) {
         buf.writeUtf(id);
         buf.writeDouble(weight);
 
-        buf.writeOptional(Util.optional(dimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(Util.optional(dimensions), (o, value) -> ((ByteBufCompat) o).writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> ((ByteBufCompat) o).writeCollection(value, FriendlyByteBuf::writeUtf));
 
         buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
         buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
     }
 
+    @SuppressWarnings("RedundantCast")
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
-        val id = buf.readUtf();
-        val weight = buf.readDouble();
+        final String id = buf.readUtf();
+        final Double weight = buf.readDouble();
 
-        Optional<List<String>> dimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
-        Optional<List<String>> excludedDimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+        Optional<List<String>> dimensions = ((ByteBufCompat) buf).readOptional((o) -> ((ByteBufCompat) o).readList(FriendlyByteBuf::readUtf));
+        Optional<List<String>> excludedDimensions = ((ByteBufCompat) buf).readOptional((o) -> ((ByteBufCompat) o).readList(FriendlyByteBuf::readUtf));
 
-        Optional<Integer> maxY = buf.readOptional(FriendlyByteBuf::readInt);
-        Optional<Integer> minY = buf.readOptional(FriendlyByteBuf::readInt);
+        Optional<Integer> maxY = ((ByteBufCompat) buf).readOptional(FriendlyByteBuf::readInt);
+        Optional<Integer> minY = ((ByteBufCompat) buf).readOptional(FriendlyByteBuf::readInt);
 
         return new WeightedBlock(
                 id,
@@ -149,11 +152,11 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
     @Deserializer
     public static WeightedBlock fromJson(JsonObject json) {
-        val _id = json.get("id");
+        JsonElement _id = json.get("id");
         if (!(_id instanceof JsonPrimitive)) return null;
-        val id = ((JsonPrimitive) _id).asString();
+        String id = ((JsonPrimitive) _id).asString();
 
-        val weight = json.getDouble("weight", 0.0);
+        Double weight = json.getDouble("weight", 0.0);
 
         @Nullable
         List<String> dimensions;

@@ -5,7 +5,6 @@ import io.github.null2264.cobblegen.compat.RegistryCompat;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -17,6 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
+
+//#if MC>1.16.5
+import net.minecraft.core.HolderSet;
+import net.minecraft.tags.TagKey;
+//#else
+//$$ import net.minecraft.tags.BlockTags;
+//$$ import net.minecraft.tags.Tag;
+//#endif
 
 public class Util
 {
@@ -69,7 +76,8 @@ public class Util
     }
 
     public static List<ResourceLocation> getTaggedBlockIds(ResourceLocation tagId) {
-        TagKey<Block> blockTag = TagKey.create(
+        //#if MC>1.16.5
+        final TagKey<Block> blockTag = TagKey.create(
                 //#if MC<=11902
                 Registry.BLOCK_REGISTRY,
                 //#else
@@ -77,14 +85,27 @@ public class Util
                 //#endif
                 tagId
         );
+        //#else
+        //$$ final Tag<Block> blockTag = BlockTags.getAllTags().getTag(tagId);
+        //#endif
+
+        //#if MC>1.16.5
+        final Optional<HolderSet.Named<Block>> blockList = RegistryCompat.block().getTag(blockTag);
+        //#else
+        //$$ final Optional<List<Block>> blockList = Optional.ofNullable(blockTag != null ? blockTag.getValues() : null);
+        //#endif
 
         ArrayList<ResourceLocation> blockIds = new ArrayList<>();
-        RegistryCompat.block().getTag(blockTag).ifPresent(t -> t.stream().forEach(taggedBlock -> {
+        blockList.ifPresent(t -> t.stream().forEach(taggedBlock -> {
+            //#if MC>1.16.5
             Optional<ResourceKey<Block>> key = taggedBlock.unwrapKey();
             if (key.isPresent()) {
                 ResourceKey<Block> actualKey = key.get();
                 blockIds.add(actualKey.registry());
             }
+            //#else
+            //$$ blockIds.add(getBlockId(taggedBlock));
+            //#endif
         }));
         return blockIds;
     }

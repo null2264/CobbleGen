@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin.fluid;
 
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -9,6 +8,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,16 +23,18 @@ public abstract class FluidEventMixin
     @Final
     protected FlowingFluid fluid;
 
+    @Unique
     @SuppressWarnings("unused")
     private void doInteraction(Level level, BlockPos pos, BlockState state, CallbackInfo ci) {
-        val success = FLUID_INTERACTION.interact(level, pos, state);
+        final boolean success = FLUID_INTERACTION.interact(level, pos, state);
 
         if (success)
             ci.cancel();
     }
 
+    @Unique
     private void doInteraction(Level level, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
-        val success = FLUID_INTERACTION.interact(level, pos, state);
+        final boolean success = FLUID_INTERACTION.interact(level, pos, state);
 
         if (success)
             cir.setReturnValue(false);

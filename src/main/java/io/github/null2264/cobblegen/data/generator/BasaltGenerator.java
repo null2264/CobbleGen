@@ -1,15 +1,15 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.Pair;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.BlockGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
@@ -20,7 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class BasaltGenerator extends BlockGenerator
 {
@@ -39,7 +41,7 @@ public class BasaltGenerator extends BlockGenerator
     }
 
     public static BasaltGenerator fromString(Map<String, List<WeightedBlock>> possibleBlocks, Block block, boolean silent) {
-        val map = new GeneratorMap();
+        final GeneratorMap map = new GeneratorMap();
         possibleBlocks.forEach((k, v) -> map.put(CGIdentifier.of(k), new ResultList(v)));
         return new BasaltGenerator(
                 map,
@@ -83,7 +85,7 @@ public class BasaltGenerator extends BlockGenerator
     }
 
     @Override
-    public void toPacket(FriendlyByteBuf buf) {
+    public void toPacket(ByteBufCompat buf) {
         buf.writeUtf(this.getClass().getName());
 
         buf.writeUtf(Util.getBlockId(block).toString());
@@ -94,8 +96,8 @@ public class BasaltGenerator extends BlockGenerator
 
     @SuppressWarnings("unused")
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val block = Util.getBlock(buf.readResourceLocation());
-        val silent = buf.readBoolean();
+        final Block block = Util.getBlock(buf.readResourceLocation());
+        final boolean silent = buf.readBoolean();
 
         GeneratorMap outMap = GeneratorMap.fromPacket(buf);
 

@@ -3,10 +3,10 @@ package io.github.null2264.cobblegen.integration;
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ConfigData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.generator.StoneGenerator;
@@ -14,7 +14,6 @@ import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -74,8 +73,8 @@ public class BuiltInPlugin implements CobbleGenPlugin
             config.advanced.forEach((fluid, value) -> {
                 Fluid actualFluid = getFluidFromString(fluid);
                 value.forEach((neighbour, gen) -> {
-                    val results = gen.results;
-                    val obi = gen.obsidian;
+                    final GeneratorMap results = gen.results;
+                    final GeneratorMap obi = gen.obsidian;
 
                     boolean isNeighbourBlock = neighbour.startsWith("b:");
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);

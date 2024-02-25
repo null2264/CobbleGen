@@ -1,11 +1,8 @@
 package io.github.null2264.cobblegen.data.model;
 
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
-import io.github.null2264.cobblegen.data.config.WeightedBlock;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.LevelAccessor;
@@ -20,8 +17,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface Generator extends PacketSerializable<Generator>
@@ -91,10 +86,12 @@ public interface Generator extends PacketSerializable<Generator>
     }
 
     static Generator fromPacket(FriendlyByteBuf buf) {
-        val className = buf.readUtf();
+        final String className = buf.readUtf();
         try {
             Method method = Class.forName(className).getMethod("fromPacket", FriendlyByteBuf.class);
             return (Generator) method.invoke(null, buf);
+        } catch (ClassNotFoundException t) {
+            // Do nothing
         } catch (Throwable t) {
             CGLog.error("Failed to get generator packet: " + className + " ", t);
         }

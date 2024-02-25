@@ -1,15 +1,15 @@
 package io.github.null2264.cobblegen.data.generator;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.Pair;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.BuiltInGenerator;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.LevelAccessor;
@@ -21,8 +21,9 @@ import net.minecraft.world.level.material.FluidState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class StoneGenerator implements BuiltInGenerator
 {
@@ -41,7 +42,7 @@ public class StoneGenerator implements BuiltInGenerator
     }
 
     public static StoneGenerator fromString(Map<String, List<WeightedBlock>> possibleBlocks, Fluid fluid, boolean silent) {
-        val map = new GeneratorMap();
+        final GeneratorMap map = new GeneratorMap();
         possibleBlocks.forEach((k, v) -> map.put(CGIdentifier.of(k), new ResultList(v)));
         return new StoneGenerator(
                 map,
@@ -101,7 +102,7 @@ public class StoneGenerator implements BuiltInGenerator
     }
 
     @Override
-    public void toPacket(FriendlyByteBuf buf) {
+    public void toPacket(ByteBufCompat buf) {
         buf.writeUtf(this.getClass().getName());
 
         buf.writeResourceLocation(Util.getFluidId(fluid));
@@ -112,8 +113,8 @@ public class StoneGenerator implements BuiltInGenerator
 
     @SuppressWarnings("unused")
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        val fluid = Util.getFluid(buf.readResourceLocation());
-        val silent = buf.readBoolean();
+        final Fluid fluid = Util.getFluid(buf.readResourceLocation());
+        final boolean silent = buf.readBoolean();
 
         GeneratorMap outMap = GeneratorMap.fromPacket(buf);
 

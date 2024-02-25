@@ -6,12 +6,12 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
-import lombok.val;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SuppressWarnings("TextBlockMigration")
 public class ConfigData implements Config, JanksonSerializable
 {
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
@@ -19,22 +19,21 @@ public class ConfigData implements Config, JanksonSerializable
     public String formatVersion = "1.0";
 
     @Nullable
-    @Comment(value = """
-            Default Generators
-            {
-              "id": "mod_id:block_id",
-              "weight": 95.5,
-              "dimensions": [
-                "mod_id:dimension_id",
-                "mod_id:dimension_id"
-              ],
-              "excludedDimensions": [
-                "mod_id:dimension_id",
-                "mod_id:dimension_id"
-              ],
-              "minY": 0,
-              "maxY": 69
-            }""")
+    @Comment(value = "Default Generators\n" +
+                     "{\n" +
+                     "  \"id\": \"mod_id:block_id\",\n" +
+                     "  \"weight\": 95.5,\n" +
+                     "  \"dimensions\": [\n" +
+                     "    \"mod_id:dimension_id\",\n" +
+                     "    \"mod_id:dimension_id\"\n" +
+                     "  ],\n" +
+                     "  \"excludedDimensions\": [\n" +
+                     "    \"mod_id:dimension_id\",\n" +
+                     "    \"mod_id:dimension_id\"\n" +
+                     "  ],\n" +
+                     "  \"minY\": 0,\n" +
+                     "  \"maxY\": 69\n" +
+                     "}")
     public ResultList cobbleGen;
 
     @Nullable
@@ -44,27 +43,26 @@ public class ConfigData implements Config, JanksonSerializable
     public ResultList basaltGen;
 
     @Nullable
-    @Comment(value = """
-            Custom Generators
-            <stoneGen|cobbleGen|basaltGen>: {
-              "mod_id:modifier_block_id": [
-                {
-                  "id": "mod_id:block_id",
-                  "weight": 95.5,
-                  "dimensions": [
-                    "mod_id:dimension_id",
-                    "mod_id:dimension_id"
-                  ],
-                  "excludedDimensions": [
-                    "mod_id:dimension_id",
-                    "mod_id:dimension_id"
-                  ],
-                  "minY": 0,
-                  "maxY": 69
-                },
-                ...
-              ]
-            }""")
+    @Comment(value = "Custom Generators\n" +
+                     "<stoneGen|cobbleGen|basaltGen>: {\n" +
+                     "  \"mod_id:modifier_block_id\": [\n" +
+                     "    {\n" +
+                     "      \"id\": \"mod_id:block_id\",\n" +
+                     "      \"weight\": 95.5,\n" +
+                     "      \"dimensions\": [\n" +
+                     "        \"mod_id:dimension_id\",\n" +
+                     "        \"mod_id:dimension_id\"\n" +
+                     "      ],\n" +
+                     "      \"excludedDimensions\": [\n" +
+                     "        \"mod_id:dimension_id\",\n" +
+                     "        \"mod_id:dimension_id\"\n" +
+                     "      ],\n" +
+                     "      \"minY\": 0,\n" +
+                     "      \"maxY\": 69\n" +
+                     "    },\n" +
+                     "    ...\n" +
+                     "  ]\n" +
+                     "}")
     public CustomGen customGen;
 
     @Nullable
@@ -141,8 +139,13 @@ public class ConfigData implements Config, JanksonSerializable
     @Deserializer
     public static ConfigData fromJson(JsonObject json) {
         ConfigData config = new ConfigData();
-        val formatVersion = json.get("formatVersion");
+        JsonElement formatVersion = json.get("formatVersion");
         config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
+        /* TODO
+        if (config.formatVersion.equals("1.0")) {
+            // TODO: Migrate to 2.0
+        }
+         */
         config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"));

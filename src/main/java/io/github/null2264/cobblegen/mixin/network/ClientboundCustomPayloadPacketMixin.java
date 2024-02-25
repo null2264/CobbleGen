@@ -1,11 +1,10 @@
 package io.github.null2264.cobblegen.mixin.network;
 
-import org.spongepowered.asm.mixin.Mixin;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //#else
-//$$ import lombok.val;
 //$$ import io.github.null2264.cobblegen.data.CGIdentifier;
+//$$ import io.github.null2264.cobblegen.network.payload.*;
 //$$ import io.netty.buffer.Unpooled;
 //$$ import net.minecraft.network.FriendlyByteBuf;
 //$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -19,6 +18,8 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //$$ import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 //#endif
 
+import org.spongepowered.asm.mixin.Mixin;
+
 @Mixin(value = ClientboundCustomPayloadPacket.class, priority = 999)
 public abstract class ClientboundCustomPayloadPacketMixin {
     //#if MC>=1.20.2
@@ -27,7 +28,7 @@ public abstract class ClientboundCustomPayloadPacketMixin {
     //$$     if (!id.getNamespace().equals(MOD_ID))
     //$$         return;
     //$$
-    //$$     val reader = KNOWN_CLIENT_PAYLOADS.get(CGIdentifier.fromMC(id));
+    //$$     CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_CLIENT_PAYLOADS.get(CGIdentifier.fromMC(id));
     //$$     if (reader == null) return;
     //$$
     //$$     cir.setReturnValue(reader.apply(buf));

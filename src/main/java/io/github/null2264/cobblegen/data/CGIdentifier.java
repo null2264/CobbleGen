@@ -5,7 +5,6 @@ import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -24,7 +23,7 @@ public record CGIdentifier(String modid, String name) {
     public static CGIdentifier of(String id) {
         if (id.equals("*")) return wildcard();
 
-        val split = id.split(":", 2);
+        String[] split = id.split(":", 2);
         if (split.length < 1)
             throw new RuntimeException("Invalid ID");
         if (split.length == 1)

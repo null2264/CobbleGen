@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.CGRegistryImpl;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -8,12 +9,10 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import io.github.null2264.cobblegen.util.Util;
-import lombok.val;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
@@ -23,12 +22,11 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+import static io.github.null2264.cobblegen.util.Constants.LAVA_FIZZ;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 /**
@@ -71,7 +69,10 @@ public class FluidInteraction
     }
 
     @ApiStatus.Internal
-    @Deprecated(since = "5.1", forRemoval = true)
+    @Deprecated
+    //#if MC>1.16.5
+    (since = "5.1", forRemoval = true)
+    //#endif
     public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
         write(generatorMap, buf);
     }
@@ -138,17 +139,17 @@ public class FluidInteraction
     public boolean interact(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
         FluidState fluidState = state.getFluidState();
         Fluid fluid = Generator.getStillFluid(fluidState);
-        val generators = generatorMap.getOrDefault(fluid, List.of());
+        final List<Generator> generators = generatorMap.getOrDefault(fluid, listOf());
 
         for (Generator generator : generators) {
             if (!generator.check(level, pos, state, fromTop)) continue;
             if (fromTop && generator.getType() != GeneratorType.STONE) continue;
 
-            val result = generator.tryGenerate(level, pos, state);
+            final Optional<BlockState> result = generator.tryGenerate(level, pos, state);
             if (result.isPresent()) {
                 level.setBlock(pos, result.get(), 3);
                 if (!generator.isSilent())
-                    level.levelEvent(LevelEvent.LAVA_FIZZ, pos, 0);
+                    level.levelEvent(LAVA_FIZZ, pos, 0);
                 return true;
             }
         }
@@ -183,7 +184,7 @@ public class FluidInteraction
             if (source == Fluids.LAVA)  // prevent obsidian from generating
                 source = ((FlowingFluid) source).getFlowing();
 
-            val result = generator.tryGenerate(level, pos, source.defaultFluidState(), neighbour.defaultFluidState());
+            final Optional<BlockState> result = generator.tryGenerate(level, pos, source.defaultFluidState(), neighbour.defaultFluidState());
             if (result.isPresent()) {
                 level.setBlockAndUpdate(pos, result.get());
                 return true;
@@ -192,11 +193,12 @@ public class FluidInteraction
         return false;
     }
 
+    @SuppressWarnings("RedundantCast")
     public static void write(Map<Fluid, List<Generator>> generatorMap, FriendlyByteBuf buf) {
-        buf.writeMap(
+        ((ByteBufCompat) buf).writeMap(
                 generatorMap,
                 (b, o) -> b.writeResourceLocation(Util.getFluidId(o)),
-                (b, generators) -> b.writeCollection(generators, (p, gen) -> gen.toPacket(p))
+                (b, generators) -> ((ByteBufCompat) b).writeCollection(generators, (p, gen) -> gen.toPacket((ByteBufCompat) p))
         );
     }
 
@@ -205,10 +207,10 @@ public class FluidInteraction
         return buf.readMap(
                 (o) -> Util.getFluid(o.readResourceLocation()),
                 (o) -> {
-                    val _gensSize = o.readVarInt();
-                    val gens = new ArrayList<Generator>(_gensSize);
+                    int _gensSize = o.readVarInt();
+                    List<Generator> gens = new ArrayList<>(_gensSize);
                     for (int j = 0; j < _gensSize; j++) {
-                        val generator = Generator.fromPacket(o);
+                        Generator generator = Generator.fromPacket(o);
                         if (generator == null) {
                             // Shouldn't be possible, but just in case... it's Java Reflection API after all.
                             CGLog.warn("Failed to retrieve a generator, skipping...");

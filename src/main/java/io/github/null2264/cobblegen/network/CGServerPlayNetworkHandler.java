@@ -1,12 +1,5 @@
 package io.github.null2264.cobblegen.network;
 
-import io.github.null2264.cobblegen.data.CGIdentifier;
-import io.github.null2264.cobblegen.network.payload.*;
-import io.github.null2264.cobblegen.util.CGLog;
-import io.netty.buffer.Unpooled;
-import lombok.val;
-import net.minecraft.network.FriendlyByteBuf;
-import org.jetbrains.annotations.ApiStatus;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
@@ -16,6 +9,13 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 //$$ import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
+
+import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.network.payload.*;
+import io.github.null2264.cobblegen.util.CGLog;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.FriendlyByteBuf;
+import org.jetbrains.annotations.ApiStatus;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
 import static io.github.null2264.cobblegen.util.Constants.*;
@@ -43,8 +43,8 @@ public class CGServerPlayNetworkHandler
         if (isReload)
             CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
         else
-            CGLog.info("A player joined, checking for recipe viewer...");
-        val buf = new FriendlyByteBuf(Unpooled.buffer());
+            CGLog.debug("A player joined, checking for recipe viewer...");
+        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeResourceLocation(CG_PING.toMC());
         new CGPingS2CPayload(isReload).write(buf);
         listener.send(createS2CPacket(buf));
@@ -59,13 +59,18 @@ public class CGServerPlayNetworkHandler
             //$$ CustomPacketPayload payload
             //#endif
     ) {
+        // FIXME: Enable REI integration
+        //#if MC<=1.16.5
+        //$$ return false;
+        //#else
+
         //#if MC<1.20.2
         CGIdentifier id = CGIdentifier.fromMC(packet.getIdentifier());
-        val packetData = packet.getData();
+        FriendlyByteBuf packetData = packet.getData();
 
-        val reader = KNOWN_SERVER_PAYLOADS.get(id);
+        CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_SERVER_PAYLOADS.get(id);
         if (reader == null) return false;
-        val payload = reader.apply(packetData);
+        CGPacketPayload payload = reader.apply(packetData);
         //#endif
 
         if (payload instanceof CGPingC2SPayload) {
@@ -84,6 +89,7 @@ public class CGServerPlayNetworkHandler
         }
 
         return false;
+        //#endif
     }
 
     //#if MC<1.20.2
@@ -91,7 +97,7 @@ public class CGServerPlayNetworkHandler
     //#else
     //$$ public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
     //#endif
-        val buf = new FriendlyByteBuf(Unpooled.buffer());
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeResourceLocation(CG_SYNC.toMC());
         new CGSyncS2CPayload(isReload, FLUID_INTERACTION.getLocalGenerators()).write(buf);
         handler.send(createS2CPacket(buf));

@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.integration;
 
 import io.github.null2264.cobblegen.CGPlugin;
@@ -46,3 +47,4 @@ public class CreatePlugin implements CobbleGenPlugin
         return LoaderCompat.isModLoaded("create") && CobbleGen.META_CONFIG.create.loadIntegration;
     }
 }
+//#endif
