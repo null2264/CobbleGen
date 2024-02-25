@@ -17,7 +17,6 @@
         "fluid.LavaEventMixin",
     ],
     "client": [
-        "network.ClientboundCustomPayloadPacketMixin",
         "network.ClientCommonPacketListenerMixin",
         "network.ConnectionMixin"
     ],
@@ -26,7 +25,6 @@
         //#if MC<1.20.2
         "network.ServerboundCustomPayloadPacketAccessor",
         //#endif
-        "network.ServerboundCustomPayloadPacketMixin",
         "network.ServerCommonPacketListenerMixin",
         //#if MC>=1.20.2
         //$$ "network.ServerConfigurationPacketListenerMixin"

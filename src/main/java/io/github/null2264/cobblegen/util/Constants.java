@@ -1,5 +1,13 @@
 package io.github.null2264.cobblegen.util;
 
+//#if MC>=1.20.5
+//$$ import io.github.null2264.cobblegen.compat.ByteBufCompat;
+//$$ import io.github.null2264.cobblegen.data.model.Generator;
+//$$ import io.netty.buffer.ByteBuf;
+//$$ import io.netty.buffer.Unpooled;
+//$$ import net.minecraft.world.level.material.Fluid;
+//#endif
+
 import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonPrimitive;
 import com.google.common.collect.ImmutableList;
@@ -18,20 +26,12 @@ public class Constants
     public static final CGIdentifier JEI_UI_COMPONENT = CGIdentifier.of("textures/gui/jei.png");
     public static final CGIdentifier CG_PING = CGIdentifier.of("ping");
     public static final CGIdentifier CG_SYNC = CGIdentifier.of("sync");
-    //#if MC<1.20.2
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_SERVER_PAYLOADS =
-    //#else
-    //$$ public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload>> KNOWN_SERVER_PAYLOADS =
-    //#endif
             ImmutableMap.of(
                     CGPingC2SPayload.ID, CGPingC2SPayload::new,
                     CGSyncC2SPayload.ID, CGSyncC2SPayload::new
             );
-    //#if MC<1.20.2
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_CLIENT_PAYLOADS =
-    //#else
-    //$$ public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload>> KNOWN_CLIENT_PAYLOADS =
-    //#endif
             ImmutableMap.of(
                     CGPingS2CPayload.ID, CGPingS2CPayload::new,
                     CGSyncS2CPayload.ID, CGSyncS2CPayload::new
@@ -47,6 +47,39 @@ public class Constants
     public static final int OP_LEVEL_GAMEMASTERS = 2;
     //public static final int OP_LEVEL_ADMINS = 3;
     //public static final int OP_LEVEL_OWNERS = 4;
+    //#if MC>=1.20.5
+    //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> GENERATOR_CODEC =
+    //$$ new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
+    //$$ {
+    //$$     @Override
+    //$$     public Generator decode(ByteBuf buf) {
+    //$$         return Generator.fromPacket(new ByteBufCompat(buf));
+    //$$     }
+    //$$
+    //$$     @Override
+    //$$     public void encode(ByteBuf buf, Generator generator) {
+    //$$         ByteBufCompat newBuf = ByteBufCompat.unpooled();
+    //$$         generator.toPacket(newBuf);
+    //$$         buf.writeBytes(newBuf);
+    //$$     }
+    //$$ };
+    //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Fluid> FLUID_CODEC =
+    //$$     new net.minecraft.network.codec.StreamCodec<ByteBuf, Fluid>()
+    //$$     {
+    //$$         @Override
+    //$$         public Fluid decode(ByteBuf buf) {
+    //$$             ByteBufCompat compat = new ByteBufCompat(buf);
+    //$$             return Util.getFluid(compat.readResourceLocation());
+    //$$         }
+
+    //$$         @Override
+    //$$         public void encode(ByteBuf buf, Fluid fluid) {
+    //$$             ByteBufCompat newBuf = ByteBufCompat.unpooled();
+    //$$             newBuf.writeResourceLocation(Util.getFluidId(fluid));
+    //$$             buf.writeBytes(newBuf);
+    //$$         }
+    //$$     };
+    //#endif
 
     /**
      * Just a helper class to make the code more "readable"

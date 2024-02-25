@@ -1,5 +1,14 @@
 package io.github.null2264.cobblegen.network.payload;
 
+//#if MC>=1.20.5
+//$$ import com.google.common.collect.Lists;
+//$$ import com.google.common.collect.Maps;
+//$$ import io.github.null2264.cobblegen.util.Constants;
+//$$ import net.minecraft.network.codec.ByteBufCodecs;
+//$$ import net.minecraft.network.codec.StreamCodec;
+//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+//#endif
+
 import io.github.null2264.cobblegen.FluidInteraction;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -17,11 +26,7 @@ import static io.github.null2264.cobblegen.util.Constants.CG_SYNC;
 //#else
 public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> recipe)
 //#endif
-        //#if MC<1.20.2
         implements CGPacketPayload
-        //#else
-        //$$ implements net.minecraft.network.protocol.common.custom.CustomPacketPayload
-        //#endif
 {
     public static final CGIdentifier ID = CG_SYNC;
 
@@ -57,4 +62,28 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
     public ResourceLocation id() {
         return ID.toMC();
     }
+
+    //#if MC>=1.20.5
+    //$$ public static final StreamCodec<FriendlyByteBuf, CGSyncS2CPayload> STREAM_CODEC =
+    //$$     StreamCodec.composite(
+    //$$         ByteBufCodecs.BOOL,
+    //$$         CGSyncS2CPayload::isReload,
+    //$$         ByteBufCodecs.map(
+    //$$             Maps::newHashMapWithExpectedSize,
+    //$$             Constants.FLUID_CODEC,
+    //$$             ByteBufCodecs.collection(
+    //$$                 Lists::newArrayListWithCapacity,
+    //$$                 Generator.CODEC
+    //$$             )
+    //$$         ),
+    //$$         CGSyncS2CPayload::recipe,
+    //$$         CGSyncS2CPayload::new
+    //$$     );
+    //$$ public static final CustomPacketPayload.Type<CGSyncS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
+    //$$
+    //$$ @Override
+    //$$ public Type<? extends CGPacketPayload> type() {
+    //$$     return TYPE;
+    //$$ }
+    //#endif
 }

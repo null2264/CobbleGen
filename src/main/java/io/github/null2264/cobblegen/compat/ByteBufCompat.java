@@ -14,6 +14,7 @@ package io.github.null2264.cobblegen.compat;
 //#endif
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
@@ -28,6 +29,10 @@ public class ByteBufCompat extends FriendlyByteBuf {
 
     public static ByteBufCompat fromMC(FriendlyByteBuf buf) {
         return new ByteBufCompat(buf.copy());
+    }
+
+    public static ByteBufCompat unpooled() {
+        return new ByteBufCompat(Unpooled.buffer());
     }
 
     //#if MC<=1.16.5

@@ -1,5 +1,11 @@
 package io.github.null2264.cobblegen.data.model;
 
+//#if MC>=1.20.5
+//$$ import io.github.null2264.cobblegen.compat.ByteBufCompat;
+//$$ import io.github.null2264.cobblegen.data.model.Generator;
+//$$ import io.netty.buffer.ByteBuf;
+//#endif
+
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -21,6 +27,24 @@ import java.util.Optional;
 
 public interface Generator extends PacketSerializable<Generator>
 {
+    //#if MC>=1.20.5
+    //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> CODEC =
+    //$$ new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
+    //$$ {
+    //$$     @Override
+    //$$     public Generator decode(ByteBuf buf) {
+    //$$         return Generator.fromPacket(new ByteBufCompat(buf));
+    //$$     }
+    //$$
+    //$$     @Override
+    //$$     public void encode(ByteBuf buf, Generator generator) {
+    //$$         ByteBufCompat newBuf = ByteBufCompat.unpooled();
+    //$$         generator.toPacket(newBuf);
+    //$$         buf.writeBytes(newBuf);
+    //$$     }
+    //$$ };
+    //#endif
+
     static Fluid getStillFluid(FluidState fluidState) {
         try {
             return ((FlowingFluid) fluidState.getType()).getSource();

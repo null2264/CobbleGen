@@ -1,5 +1,11 @@
 package io.github.null2264.cobblegen.network.payload;
 
+//#if MC>=1.20.5
+//$$ import net.minecraft.network.codec.ByteBufCodecs;
+//$$ import net.minecraft.network.codec.StreamCodec;
+//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+//#endif
+
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -11,11 +17,7 @@ import static io.github.null2264.cobblegen.util.Constants.CG_SYNC;
 //#else
 public record CGSyncC2SPayload(Boolean sync)
 //#endif
-        //#if MC<1.20.2
         implements CGPacketPayload
-        //#else
-        //$$ implements net.minecraft.network.protocol.common.custom.CustomPacketPayload
-        //#endif
 {
     public static final CGIdentifier ID = CG_SYNC;
 
@@ -44,4 +46,15 @@ public record CGSyncC2SPayload(Boolean sync)
     public ResourceLocation id() {
         return ID.toMC();
     }
+
+    //#if MC>=1.20.5
+    //$$ public static final StreamCodec<FriendlyByteBuf, CGSyncC2SPayload> STREAM_CODEC =
+    //$$     StreamCodec.composite(ByteBufCodecs.BOOL, CGSyncC2SPayload::sync, CGSyncC2SPayload::new);
+    //$$ public static final CustomPacketPayload.Type<CGSyncC2SPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
+    //$$
+    //$$ @Override
+    //$$ public Type<? extends CGPacketPayload> type() {
+    //$$     return TYPE;
+    //$$ }
+    //#endif
 }

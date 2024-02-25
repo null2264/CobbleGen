@@ -44,10 +44,8 @@ public class CGServerPlayNetworkHandler
             CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
         else
             CGLog.debug("A player joined, checking for recipe viewer...");
-        final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeResourceLocation(CG_PING.toMC());
-        new CGPingS2CPayload(isReload).write(buf);
-        listener.send(createS2CPacket(buf));
+        CGPacketPayload payload = new CGPingS2CPayload(isReload);
+        listener.send(createS2CPacket(payload));
     }
 
     public static boolean handlePacket(
@@ -97,18 +95,18 @@ public class CGServerPlayNetworkHandler
     //#else
     //$$ public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
     //#endif
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeResourceLocation(CG_SYNC.toMC());
-        new CGSyncS2CPayload(isReload, FLUID_INTERACTION.getLocalGenerators()).write(buf);
-        handler.send(createS2CPacket(buf));
+        CGPacketPayload payload = new CGSyncS2CPayload(isReload, FLUID_INTERACTION.getLocalGenerators());
+        handler.send(createS2CPacket(payload));
     }
 
     @ApiStatus.Internal
-    public static ClientboundCustomPayloadPacket createS2CPacket(FriendlyByteBuf buf) {
+    public static ClientboundCustomPayloadPacket createS2CPacket(CGPacketPayload payload) {
         //#if MC<=1.20.1
-        return new ClientboundCustomPayloadPacket(buf.readResourceLocation(), buf);
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        payload.write(buf);
+        return new ClientboundCustomPayloadPacket(payload.id(), buf);
         //#else
-        //$$ return new ClientboundCustomPayloadPacket(buf);
+        //$$ return new ClientboundCustomPayloadPacket(payload);
         //#endif
     }
 }
