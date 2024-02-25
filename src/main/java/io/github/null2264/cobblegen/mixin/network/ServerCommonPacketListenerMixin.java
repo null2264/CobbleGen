@@ -6,11 +6,7 @@ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //#endif
 import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
-import io.github.null2264.cobblegen.util.Util;
-import net.minecraft.network.Connection;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -25,10 +21,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 )
 public abstract class ServerCommonPacketListenerMixin
 {
-    @Shadow
-    @Final
-    public Connection connection;
-
     @Unique
     @SuppressWarnings("DataFlowIssue")
     //#if MC<1.20.2
@@ -49,12 +41,6 @@ public abstract class ServerCommonPacketListenerMixin
         //$$ net.minecraft.server.network.ServerCommonPacketListenerImpl self =
         //#endif
                 getListener();
-        //#if FABRIC>=1 && MC>1.16.5
-        if (Util.isPortingLibLoaded()) {
-            // Just in case
-            if (this.connection instanceof io.github.fabricators_of_create.porting_lib.fake_players.FakeConnection) return;
-        }
-        //#endif
         CGServerPlayNetworkHandler.trySync(self);
     }
     //#endif
