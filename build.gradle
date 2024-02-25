@@ -338,7 +338,7 @@ publishMods {
             accessToken = cfToken
             projectId = project.curseforge_project
 
-            if (cfSnapshots != null) {
+            if (cfSnapshots == null) {
                 for (final def mcVer in mcReleaseVersions) {
                     minecraftVersions.add(mcVer)
                 }
@@ -360,7 +360,7 @@ publishMods {
             accessToken = mrToken
             projectId = project.modrinth_project
 
-            if (mrSnapshots != null) {
+            if (mrSnapshots == null) {
                 for (final def mcVer in mcReleaseVersions) {
                     minecraftVersions.add(mcVer)
                 }
