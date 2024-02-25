@@ -9,7 +9,7 @@ import io.github.null2264.cobblegen.data.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 
 @SuppressWarnings("TextBlockMigration")
 public class ConfigData implements Config, JanksonSerializable
@@ -114,8 +114,8 @@ public class ConfigData implements Config, JanksonSerializable
                         Pair.of(
                                 CGIdentifier.of("minecraft:bedrock"),
                                 ResultList.of(
-                                        new WeightedBlock("minecraft:end_stone", 100.0, List.of("minecraft:the_end")),
-                                        new WeightedBlock("minecraft:blackstone", 100.0, null, List.of("minecraft:overworld"))
+                                        new WeightedBlock("minecraft:end_stone", 100.0, listOf("minecraft:the_end")),
+                                        new WeightedBlock("minecraft:blackstone", 100.0, null, listOf("minecraft:overworld"))
                                 )
                         )
                 )

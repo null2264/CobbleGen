@@ -202,9 +202,10 @@ public class FluidInteraction
         );
     }
 
+    @SuppressWarnings("RedundantCast")
     @ApiStatus.Internal
     public static Map<Fluid, List<Generator>> read(FriendlyByteBuf buf) {
-        return buf.readMap(
+        return ((ByteBufCompat) buf).readMap(
                 (o) -> Util.getFluid(o.readResourceLocation()),
                 (o) -> {
                     int _gensSize = o.readVarInt();

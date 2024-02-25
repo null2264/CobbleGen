@@ -76,10 +76,4 @@ public class ConfigHelper {
             CGLog.error("There was an error while creating the config file!\n" + e);
         }
     }
-
-    @Nullable
-    public static <T> List<T> listFromJson(JsonArray json, Function<JsonObject, T> mapper) {
-        if (json == null) return null;
-        return json.stream().map((o) -> mapper.apply((JsonObject) o)).filter(Objects::nonNull).toList();
-    }
 }

@@ -1,9 +1,12 @@
 package io.github.null2264.cobblegen.data;
 
+import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
 import java.util.Objects;
+
+import static io.github.null2264.cobblegen.compat.CollectionCompat.streamToList;
 
 /**
  * Class to holds modifier as Map key
@@ -13,14 +16,14 @@ public class CGModifier {
 
     public CGModifier(List<CGIdentifier> modifiers) {
         if (modifiers.size() >= 4) throw new IllegalArgumentException("Cannot have more than 4 modifiers");
-        this.modifiers = modifiers.stream().sorted().toList();
+        this.modifiers = streamToList(modifiers.stream().sorted());
     }
 
-    public void writeToBuf(FriendlyByteBuf buf) {
+    public void writeToBuf(ByteBufCompat buf) {
         buf.writeCollection(modifiers, (b, o) -> o.writeToBuf(b));
     }
 
-    public static CGModifier readFromBuf(FriendlyByteBuf buf) {
+    public static CGModifier readFromBuf(ByteBufCompat buf) {
         return new CGModifier(buf.readList(CGIdentifier::readFromBuf));
     }
 
