@@ -20,13 +20,15 @@ public class FluidInteractionMap extends HashMap<String, HashMap<String, Advance
         return root;
     }
 
+    @SuppressWarnings("PatternVariableCanBeUsed")
     @Deserializer
     public static FluidInteractionMap fromJson(JsonObject json) {
         if (json == null) return null;
 
         FluidInteractionMap result = new FluidInteractionMap();
         json.forEach((fluid1, fluidMap) -> {
-            if (!(fluidMap instanceof JsonObject subroot)) return;
+            if (!(fluidMap instanceof JsonObject)) return;
+            JsonObject subroot = (JsonObject) fluidMap;
 
             HashMap<String, AdvancedGen> root = new HashMap<>();
             subroot.forEach((fluid2, jsonElement) -> root.put(fluid2, AdvancedGen.fromJson((JsonObject) jsonElement)));

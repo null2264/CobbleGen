@@ -150,6 +150,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return json;
     }
 
+    @SuppressWarnings("PatternVariableCanBeUsed")
     @Deserializer
     public static WeightedBlock fromJson(JsonObject json) {
         JsonElement _id = json.get("id");
@@ -160,7 +161,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         @Nullable
         List<String> dimensions;
-        if (json.get("dimensions") instanceof JsonArray _dimensions) {
+        if (json.get("dimensions") instanceof JsonArray) {
+            JsonArray _dimensions = (JsonArray) json.get("dimensions");
             dimensions = new ArrayList<>();
             _dimensions.forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
         } else {
@@ -169,7 +171,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         @Nullable
         List<String> excludedDimensions;
-        if (json.get("excludedDimensions") instanceof JsonArray _excludedDimensions) {
+        if (json.get("excludedDimensions") instanceof JsonArray) {
+            JsonArray _excludedDimensions = (JsonArray) json.get("excludedDimensions");
             excludedDimensions = new ArrayList<>();
             _excludedDimensions.forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
         } else {
