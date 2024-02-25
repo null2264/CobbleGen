@@ -15,14 +15,14 @@ static String stringifyVersion(int ver) {
     return "${(int)(ver/10000)}.${(int)(ver/100)%100}" + (ver%100==0 ? '' : ".${ver%100}")
 }
 def mcVersionStr = stringifyVersion(mcVersion)
-// TODO(addingVersion)
+// TODO(addingVersion): Add "-" suffix to support snapshots
 def supportedVersionRange = [
-        11605: [null, "1.16.5"],
-        11802: [null, "1.18.2"],
-        11902: ["1.19", "1.19.2"],
-        12001: ["1.20", "1.20.1"],
-        12002: ["1.20.2", "1.20.4"],
-        12005: ["1.20.5", null],
+        11605: [null, "1.16.5-"],
+        11802: [null, "1.18.2-"],
+        11902: ["1.19-", "1.19.2-"],
+        12001: ["1.20-", "1.20.1-"],
+        12002: ["1.20.2-", "1.20.4-"],
+        12005: ["1.20.5-", null],
 ][mcVersion]
 
 preprocess {
@@ -102,7 +102,7 @@ dependencies {
         else if (mcVersion <= 12001)
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
         else
-            modImplementation "net.fabricmc:fabric-loader:0.15.3"
+            modImplementation "net.fabricmc:fabric-loader:0.15.7"
 
         // For testing
         if (project.recipe_viewer != "none" && mcVersion > 11605)
