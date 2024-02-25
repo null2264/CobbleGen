@@ -181,13 +181,17 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         @Nullable
         Integer maxY = null;
-        if (json.get("maxY") instanceof JsonPrimitive _maxY)
+        if (json.get("maxY") instanceof JsonPrimitive) {
+            JsonPrimitive _maxY = (JsonPrimitive) json.get("maxY");
             maxY = _maxY.asInt(0);
+        }
 
         @Nullable
         Integer minY = null;
-        if (json.get("minY") instanceof JsonPrimitive _minY)
+        if (json.get("minY") instanceof JsonPrimitive) {
+            JsonPrimitive _minY = (JsonPrimitive) json.get("minY");
             minY = _minY.asInt(0);
+        }
 
         return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null);
     }
