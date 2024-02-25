@@ -4,8 +4,8 @@ import org.spongepowered.asm.mixin.Mixin;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#else
-//$$ import lombok.val;
 //$$ import io.github.null2264.cobblegen.data.CGIdentifier;
+//$$ import io.github.null2264.cobblegen.network.payload.CGPayloadReader;
 //$$ import io.netty.buffer.Unpooled;
 //$$ import net.minecraft.network.FriendlyByteBuf;
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
@@ -27,7 +27,7 @@ public abstract class ServerboundCustomPayloadPacketMixin {
     //$$     if (!id.getNamespace().equals(MOD_ID))
     //$$         return;
     //$$
-    //$$     val reader = KNOWN_SERVER_PAYLOADS.get(CGIdentifier.fromMC(id));
+    //$$     CGPayloadReader<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> reader = KNOWN_SERVER_PAYLOADS.get(CGIdentifier.fromMC(id));
     //$$     if (reader == null) return;
     //$$
     //$$     cir.setReturnValue(reader.apply(buf));

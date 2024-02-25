@@ -1,17 +1,11 @@
 package io.github.null2264.cobblegen.data.config;
 
-import blue.endless.jankson.*;
+import blue.endless.jankson.JsonElement;
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
-import lombok.val;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class AdvancedGen implements JanksonSerializable
 {
@@ -39,7 +33,7 @@ public class AdvancedGen implements JanksonSerializable
     @Override
     @Serializer
     public JsonElement toJson() {
-        val json = new JsonObject();
+        JsonObject json = new JsonObject();
         json.put("silent", JsonPrimitive.of(silent));
         json.put("results", results.toJson());
         json.put("resultsFromTop", resultsFromTop.toJson());
@@ -49,10 +43,10 @@ public class AdvancedGen implements JanksonSerializable
 
     @Deserializer
     public static AdvancedGen fromJson(JsonObject json) {
-        val silent = json.getBoolean("silent", false);
-        val results = GeneratorMap.fromJson(json.getObject("results"));
-        val resultsFromTop = GeneratorMap.fromJson(json.getObject("resultsFromTop"));
-        val obsidian = GeneratorMap.fromJson(json.getObject("obsidian"));
+        Boolean silent = json.getBoolean("silent", false);
+        GeneratorMap results = GeneratorMap.fromJson(json.getObject("results"));
+        GeneratorMap resultsFromTop = GeneratorMap.fromJson(json.getObject("resultsFromTop"));
+        GeneratorMap obsidian = GeneratorMap.fromJson(json.getObject("obsidian"));
         return new AdvancedGen(silent, results, resultsFromTop, obsidian);
     }
 }
