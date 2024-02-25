@@ -2,7 +2,7 @@
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.CobbleGen;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
@@ -58,8 +57,8 @@ public class CGJEIPlugin implements IModPlugin
                 (modifierId, blocks) -> {
                     final ArrayList<FluidInteractionRecipeHolder> recipes = new ArrayList<>();
                     Block modifier = null;
-                    if (!Objects.equals(modifierId, "*"))
-                        modifier = Util.getBlock(new ResourceLocation(modifierId));
+                    if (!modifierId.isWildcard())
+                        modifier = Util.getBlock(modifierId.toMC());
                     for (WeightedBlock block : blocks)
                         recipes.add(
                                 new FluidInteractionRecipeHolder(

@@ -3,7 +3,7 @@ package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -66,8 +66,8 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
         icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, iconStack);
         type = generatorType;
-        whitelistIcon = guiHelper.drawableBuilder(Constants.JEI_UI_COMPONENT, 0, 0, 15, 20).build();
-        blacklistIcon = guiHelper.drawableBuilder(Constants.JEI_UI_COMPONENT, 15, 0, 15, 20).build();
+        whitelistIcon = guiHelper.drawableBuilder(Constants.JEI_UI_COMPONENT.toMC(), 0, 0, 15, 20).build();
+        blacklistIcon = guiHelper.drawableBuilder(Constants.JEI_UI_COMPONENT.toMC(), 15, 0, 15, 20).build();
     }
 
     @NotNull

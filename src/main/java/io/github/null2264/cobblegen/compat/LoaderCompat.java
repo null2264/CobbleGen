@@ -85,7 +85,7 @@ public class LoaderCompat {
     }
 
     @SuppressWarnings("unused")
-    enum LoaderType {
+    public enum LoaderType {
         FABRIC,
         QUILT,
         FORGE,

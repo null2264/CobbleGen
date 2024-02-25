@@ -1,6 +1,12 @@
 package io.github.null2264.cobblegen.data.model;
 
-import io.github.null2264.cobblegen.config.WeightedBlock;
+//#if MC>=1.20.5
+//$$ import io.github.null2264.cobblegen.compat.ByteBufCompat;
+//$$ import io.github.null2264.cobblegen.data.model.Generator;
+//$$ import io.netty.buffer.ByteBuf;
+//#endif
+
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import net.minecraft.core.BlockPos;
@@ -17,14 +23,28 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
 
 public interface Generator extends PacketSerializable<Generator>
 {
+    //#if MC>=1.20.5
+    //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> CODEC =
+    //$$ new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
+    //$$ {
+    //$$     @Override
+    //$$     public Generator decode(ByteBuf buf) {
+    //$$         return Generator.fromPacket(new ByteBufCompat(buf));
+    //$$     }
+    //$$
+    //$$     @Override
+    //$$     public void encode(ByteBuf buf, Generator generator) {
+    //$$         ByteBufCompat newBuf = ByteBufCompat.unpooled();
+    //$$         generator.toPacket(newBuf);
+    //$$         buf.writeBytes(newBuf);
+    //$$     }
+    //$$ };
+    //#endif
+
     static Fluid getStillFluid(FluidState fluidState) {
         try {
             return ((FlowingFluid) fluidState.getType()).getSource();
@@ -53,13 +73,13 @@ public interface Generator extends PacketSerializable<Generator>
     }
 
     @NotNull
-    Map<String, List<WeightedBlock>> getOutput();
+    GeneratorMap getOutput();
 
     /**
      * @return The output block when a source fluid met another fluid (e.g. Water -> Stone / Lava -> Obsidian)
      */
-    default Map<String, List<WeightedBlock>> getObsidianOutput() {
-        return mapOf();
+    default GeneratorMap getObsidianOutput() {
+        return GeneratorMap.of();
     }
 
     @NotNull

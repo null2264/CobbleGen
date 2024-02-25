@@ -1,10 +1,5 @@
 package io.github.null2264.cobblegen.network;
 
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
-import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.util.Util;
-import io.netty.buffer.Unpooled;
-import net.minecraft.network.FriendlyByteBuf;
 //#if MC<1.20.2
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
@@ -14,68 +9,61 @@ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
-import net.minecraft.resources.ResourceLocation;
 
-import java.util.Objects;
+import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.network.payload.*;
+import io.github.null2264.cobblegen.util.CGLog;
+import io.github.null2264.cobblegen.util.Util;
+import io.netty.buffer.Unpooled;
+import net.minecraft.network.FriendlyByteBuf;
+import org.jetbrains.annotations.ApiStatus;
 
 import static io.github.null2264.cobblegen.CobbleGen.*;
+import static io.github.null2264.cobblegen.util.Constants.*;
 
 public class CGClientPlayNetworkHandler
 {
-    //#if MC<1.20.2
-    public static boolean handlePacket(ClientPacketListener listener, ClientboundCustomPayloadPacket packet) {
-    //#else
-    //$$ @SuppressWarnings("UnstableApiUsage")
-    //$$ public static boolean handlePacket(ClientCommonPacketListenerImpl listener, CustomPacketPayload packet) {
-    //#endif
-        // FIXME: Enable REI integration
+    public static boolean handlePacket(
+            //#if MC<1.20.2
+            ClientPacketListener listener,
+            ClientboundCustomPayloadPacket packet
+            //#else
+            //$$ ClientCommonPacketListenerImpl listener,
+            //$$ CustomPacketPayload payload
+            //#endif
+    ) {
+        // FIXME: Enable REI integration for 1.16.5
         //#if MC<=1.16.5
         //$$ return false;
         //#else
+        //#if MC<1.20.2
+        CGIdentifier id = CGIdentifier.fromMC(packet.getIdentifier());
+        FriendlyByteBuf packetData = packet.getData();
 
-        //#if MC>=1.20.2
-        //$$ if (!(packet instanceof PacketByteBufPayload)) return false;
-        //$$ ResourceLocation id = ((PacketByteBufPayload) packet).id();
-        //#else
-        ResourceLocation id = packet.getIdentifier();
+        CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_CLIENT_PAYLOADS.get(id);
+        if (reader == null) return false;
+        CGPacketPayload payload = reader.apply(packetData);
         //#endif
 
-        if (id.equals(SYNC_CHANNEL)) {
-            final FriendlyByteBuf mcPacket =
-                    //#if MC<1.20.2
-                    packet.getData();
-                    //#else
-                    //$$ ((PacketByteBufPayload) packet).data();
-                    //#endif
-
-            final ByteBufCompat packetData = ByteBufCompat.fromMC(mcPacket);
-
-            boolean isReload = packetData.readBoolean();
-            FLUID_INTERACTION.readGeneratorsFromPacket(packetData);
+        if (payload instanceof CGSyncS2CPayload) {
+            Boolean isReload = ((CGSyncS2CPayload) payload).isReload();
+            FLUID_INTERACTION.readGeneratorsFromPayload((CGSyncS2CPayload) payload);
 
             boolean isSync = FLUID_INTERACTION.isSync();
             if (isSync)
                 CGLog.info("CobbleGen config has been", isReload ? "re-synced" : "retrieved from the server");
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            buf.writeResourceLocation(keyFromChannel(Channel.SYNC));
-            buf.writeBoolean(isSync);
-            listener.send(createC2SPacket(buf));
-            return true;
-        } if (id.equals(SYNC_PING_CHANNEL)) {
-            final FriendlyByteBuf packetData =
-                    //#if MC<1.20.2
-                    packet.getData();
-                    //#else
-                    //$$ ((PacketByteBufPayload) packet).data();
-                    //#endif
-
-            final FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-            buf.writeResourceLocation(keyFromChannel(Channel.PING));
-            buf.writeBoolean(packetData.readBoolean());
-            buf.writeBoolean(Util.isAnyRecipeViewerLoaded());  // Reply "yes I need those data"
-            listener.send(createC2SPacket(buf));
+            CGPacketPayload newPayload = new CGSyncC2SPayload(isSync);
+            listener.send(createC2SPacket(newPayload));
             return true;
         }
+
+        if (payload instanceof CGPingS2CPayload) {
+            CGPacketPayload newPayload =
+                new CGPingC2SPayload(((CGPingS2CPayload) payload).reload(), Util.isAnyRecipeViewerLoaded());
+            listener.send(createC2SPacket(newPayload));
+            return true;
+        }
+
         return false;
         //#endif
     }
@@ -84,18 +72,14 @@ public class CGClientPlayNetworkHandler
         FLUID_INTERACTION.disconnect();
     }
 
-    private static ResourceLocation keyFromChannel(Channel channel) {
-        if (Objects.requireNonNull(channel) == Channel.PING) {
-            return SYNC_PING_CHANNEL;
-        }
-        return SYNC_CHANNEL;
-    }
-
-    private static ServerboundCustomPayloadPacket createC2SPacket(FriendlyByteBuf buf) {
+    @ApiStatus.Internal
+    private static ServerboundCustomPayloadPacket createC2SPacket(CGPacketPayload payload) {
         //#if MC<=1.20.1
-        return new ServerboundCustomPayloadPacket(buf.readResourceLocation(), buf);
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        payload.write(buf);
+        return new ServerboundCustomPayloadPacket(payload.id(), buf);
         //#else
-        //$$ return new ServerboundCustomPayloadPacket(buf);
+        //$$ return new ServerboundCustomPayloadPacket(payload);
         //#endif
     }
 }

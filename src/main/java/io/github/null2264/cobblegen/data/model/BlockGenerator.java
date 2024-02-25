@@ -8,7 +8,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.Optional;
 
-import static io.github.null2264.cobblegen.data.FluidInteractionHelper.FLOW_DIRECTIONS;
+import static io.github.null2264.cobblegen.util.Constants.FLOW_DIRECTIONS;
 
 @ApiStatus.Internal
 public abstract class BlockGenerator implements BuiltInGenerator
@@ -19,6 +19,7 @@ public abstract class BlockGenerator implements BuiltInGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state) {
         for (Direction direction : FLOW_DIRECTIONS) {
             final Optional<BlockState> candidate = tryGenerate(level, pos, state, direction);
+            //noinspection SimplifyOptionalCallChains
             if (!candidate.isPresent()) continue;
             return candidate;
         }

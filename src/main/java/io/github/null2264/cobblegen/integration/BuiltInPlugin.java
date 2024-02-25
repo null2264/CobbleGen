@@ -3,15 +3,16 @@ package io.github.null2264.cobblegen.integration;
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
-import io.github.null2264.cobblegen.config.ConfigData;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.config.ConfigData;
+import io.github.null2264.cobblegen.data.config.GeneratorMap;
+import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.generator.StoneGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.util.Constants.CGBlocks;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
@@ -22,15 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.compat.CollectionCompat.mapOf;
-import static io.github.null2264.cobblegen.config.ConfigHelper.loadConfig;
+import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 @CGPlugin
@@ -59,26 +55,26 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
         AtomicInteger count = new AtomicInteger();
 
-        Map<String, List<WeightedBlock>> stoneGen = new HashMap<>();
+        GeneratorMap stoneGen = new GeneratorMap();
         if (config.customGen != null && config.customGen.stoneGen != null)
-            stoneGen = new HashMap<>(config.customGen.stoneGen);
-        Map<String, List<WeightedBlock>> cobbleGen = new HashMap<>();
+            stoneGen = config.customGen.stoneGen;
+        GeneratorMap cobbleGen = new GeneratorMap();
         if (config.customGen != null && config.customGen.cobbleGen != null)
-            cobbleGen = new HashMap<>(config.customGen.cobbleGen);
-        Map<String, List<WeightedBlock>> basaltGen = new HashMap<>();
+            cobbleGen = config.customGen.cobbleGen;
+        GeneratorMap basaltGen = new GeneratorMap();
         if (config.customGen != null && config.customGen.basaltGen != null)
-            basaltGen = new HashMap<>(config.customGen.basaltGen);
+            basaltGen = config.customGen.basaltGen;
 
-        stoneGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.stoneGen, new ArrayList<>()));
-        cobbleGen.put(CGBlocks.WILDCARD.toString(), notNullOr(config.cobbleGen, new ArrayList<>()));
-        basaltGen.put(CGBlocks.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ArrayList<>()));
+        stoneGen.put(CGIdentifier.wildcard(), notNullOr(config.stoneGen, new ResultList()));
+        cobbleGen.put(CGIdentifier.wildcard(), notNullOr(config.cobbleGen, new ResultList()));
+        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ResultList()));
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {
                 Fluid actualFluid = getFluidFromString(fluid);
                 value.forEach((neighbour, gen) -> {
-                    final Map<String, List<WeightedBlock>> results = gen.results;
-                    final Map<String, List<WeightedBlock>> obi = gen.obsidian;
+                    final GeneratorMap results = gen.results;
+                    final GeneratorMap obi = gen.obsidian;
 
                     boolean isNeighbourBlock = neighbour.startsWith("b:");
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);
@@ -109,7 +105,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
             });
 
         registry.addGenerator(Fluids.LAVA, new StoneGenerator(stoneGen, Fluids.WATER, false));
-        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, mapOf()));
+        registry.addGenerator(Fluids.LAVA, new CobbleGenerator(cobbleGen, Fluids.WATER, false, GeneratorMap.of()));
         registry.addGenerator(Fluids.LAVA, new BasaltGenerator(basaltGen, Blocks.BLUE_ICE, false));
         count.addAndGet(3);
 

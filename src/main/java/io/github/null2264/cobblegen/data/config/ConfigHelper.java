@@ -1,7 +1,6 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.*;
-import com.google.gson.Gson;
 import io.github.null2264.cobblegen.util.CGLog;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -9,13 +8,38 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigHelper {
-    private static final Jankson jankson = Jankson.builder().build();
-    private static final Gson gson = new Gson();
+    @ApiStatus.Internal
+    public static <T extends Config> T loadConfig(boolean reload, File configFile, T workingConfig, T defaultConfig, Class<T> clazz) {
+        String string = reload ? "reload" : "load";
+        try {
+            CGLog.info("Trying to " + string + " config file...");
+            JsonObject json = JANKSON.load(configFile);
+            return JANKSON.fromJson(json, clazz);
+        } catch (Exception e) {
+            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
+
+            if (reload && workingConfig != null) {
+                CGLog.warn("Falling back to previously working config...");
+                return workingConfig;
+            }
+
+            if (!configFile.exists()) {
+                saveConfig(defaultConfig, configFile);
+            }
+            CGLog.warn("Falling back to default config...");
+            return defaultConfig;
+        }
+    }
 
     /**
-     * @deprecated Removed when Jankson released their proper null filter
+     * @deprecated Will be removed once Jankson released their proper omit null feature
      */
     @SuppressWarnings("PatternVariableCanBeUsed")
     @Deprecated
@@ -38,29 +62,6 @@ public class ConfigHelper {
             result = finalResult;
         }
         return result;
-    }
-
-    @ApiStatus.Internal
-    public static <T extends Config> T loadConfig(boolean reload, File configFile, T workingConfig, T defaultConfig, Class<T> clazz) {
-        String string = reload ? "reload" : "load";
-        try {
-            CGLog.info("Trying to " + string + " config file...");
-            JsonObject json = jankson.load(configFile);
-            return gson.fromJson(json.toJson(JsonGrammar.COMPACT), clazz);
-        } catch (Exception e) {
-            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
-
-            if (reload && workingConfig != null) {
-                CGLog.warn("Falling back to previously working config...");
-                return workingConfig;
-            }
-
-            if (!configFile.exists()) {
-                saveConfig(defaultConfig, configFile);
-            }
-            CGLog.warn("Falling back to default config...");
-            return defaultConfig;
-        }
     }
 
     private static void saveConfig(Config config, File configFile) {

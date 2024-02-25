@@ -8,6 +8,7 @@ import net.minecraft.world.level.material.FlowingFluid;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -22,6 +23,7 @@ public abstract class FluidEventMixin
     @Final
     protected FlowingFluid fluid;
 
+    @Unique
     @SuppressWarnings("unused")
     private void doInteraction(Level level, BlockPos pos, BlockState state, CallbackInfo ci) {
         final boolean success = FLUID_INTERACTION.interact(level, pos, state);
@@ -30,6 +32,7 @@ public abstract class FluidEventMixin
             ci.cancel();
     }
 
+    @Unique
     private void doInteraction(Level level, BlockPos pos, BlockState state, CallbackInfoReturnable<Boolean> cir) {
         final boolean success = FLUID_INTERACTION.interact(level, pos, state);
 

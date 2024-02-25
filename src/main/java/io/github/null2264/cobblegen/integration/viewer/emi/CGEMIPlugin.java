@@ -11,7 +11,7 @@ import dev.emi.emi.api.widget.SlotWidget;
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -95,8 +95,8 @@ public class CGEMIPlugin implements EmiPlugin
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                     (modifierId, blocks) -> {
                         Block modifier = null;
-                        if (!Objects.equals(modifierId, "*"))
-                            modifier = Util.getBlock(new ResourceLocation(modifierId));
+                        if (!modifierId.isWildcard())
+                            modifier = Util.getBlock(modifierId.toMC());
                         for (WeightedBlock block : blocks)
                             registry.addRecipe(
                                     new FluidInteractionRecipe(
@@ -112,14 +112,12 @@ public class CGEMIPlugin implements EmiPlugin
         } else {
             Minecraft minecraft = Minecraft.getInstance();
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
-                    (modifierRawId, blocks) -> {
+                    (modifierId, blocks) -> {
                         EmiStack trigger = EmiStack.of(fluid, LoaderCompat.isForge() ? 1_000 : 81_000);
 
-                        ResourceLocation modifierId = new ResourceLocation("none");
                         Optional<Block> modifier = Optional.empty();
-                        if (!Objects.equals(modifierRawId, "*")) {
-                            modifierId = new ResourceLocation(modifierRawId);
-                            modifier = Optional.of(Util.getBlock(modifierId));
+                        if (!modifierId.isWildcard()) {
+                            modifier = Optional.of(Util.getBlock(modifierId.toMC()));
                         }
 
                         for (WeightedBlock block : blocks) {

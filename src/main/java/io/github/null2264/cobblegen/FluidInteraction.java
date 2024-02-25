@@ -1,16 +1,16 @@
-package io.github.null2264.cobblegen.data;
+package io.github.null2264.cobblegen;
 
-import com.google.common.collect.ImmutableList;
-import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.ByteBufCompat;
+import io.github.null2264.cobblegen.data.CGRegistryImpl;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
+import io.github.null2264.cobblegen.network.payload.CGSyncS2CPayload;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
@@ -32,12 +32,8 @@ import static io.github.null2264.cobblegen.util.Util.notNullOr;
 /**
  * Replacement for BlockGenerator. This will act like Vanilla's registry system
  */
-public class FluidInteractionHelper
+public class FluidInteraction
 {
-    public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
-            Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
-    );
-
     private final Map<Fluid, List<Generator>> generatorMap = new HashMap<>();
     private @Nullable Map<Fluid, List<Generator>> serverGeneratorMap = null;
 
@@ -58,6 +54,10 @@ public class FluidInteractionHelper
         count.incrementAndGet();
     }
 
+    public Map<Fluid, List<Generator>> getLocalGenerators() {
+        return generatorMap;
+    }
+
     @NotNull
     public Map<Fluid, List<Generator>> getGenerators() {
         return notNullOr(serverGeneratorMap, generatorMap);
@@ -73,32 +73,18 @@ public class FluidInteractionHelper
     //#if MC>1.16.5
     (since = "5.1", forRemoval = true)
     //#endif
-    public void writeGeneratorsToPacket(ByteBufCompat buf) {
-        write(buf);
+    public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
+        write(generatorMap, buf);
     }
 
     @ApiStatus.Internal
-    public void readGeneratorsFromPacket(ByteBufCompat buf) {
-        final int _genSize = buf.readInt();
-        final HashMap<Fluid, List<Generator>> genMap = new HashMap<>(_genSize);
+    public void readGeneratorsFromPacket(FriendlyByteBuf buf) {
+        serverGeneratorMap = read(buf);
+    }
 
-        for (int i = 0; i < _genSize; i++) {
-            final Fluid key = Util.getFluid(buf.readResourceLocation());
-
-            final int _gensSize = buf.readInt();
-            final ArrayList<Generator> gens = new ArrayList<>(_gensSize);
-            for (int j = 0; j < _gensSize; j++) {
-                final Generator generator = Generator.fromPacket(buf);
-                if (generator == null) {
-                    // Shouldn't be possible, but just in case... it's Java Reflection API after all.
-                    CGLog.warn("Failed to retrieve a generator, skipping...");
-                    continue;
-                }
-                gens.add(generator);
-            }
-            genMap.put(key, gens);
-        }
-        serverGeneratorMap = genMap;
+    @ApiStatus.Internal
+    public void readGeneratorsFromPayload(CGSyncS2CPayload payload) {
+        serverGeneratorMap = payload.recipe();
     }
 
     @ApiStatus.Internal
@@ -117,6 +103,9 @@ public class FluidInteractionHelper
             for (PluginFinder.PlugInContainer container : PluginFinder.getModPlugins()) {
                 String id = container.getModId();
                 CobbleGenPlugin plugin = container.getPlugin();
+
+                if (!plugin.shouldLoad()) continue;
+
                 CGLog.info(firstInit ? "Loading" : "Reloading", "plugin from", id);
                 try {
                     if (!firstInit) plugin.onReload();
@@ -167,6 +156,9 @@ public class FluidInteractionHelper
         return false;
     }
 
+    /**
+     * Create Pipe support
+     */
     @ApiStatus.Internal
     public boolean interactFromPipe(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
         Fluid source;
@@ -201,18 +193,34 @@ public class FluidInteractionHelper
         return false;
     }
 
-    public void write(ByteBufCompat buf) {
-        buf.writeInt(generatorMap.size());
+    @SuppressWarnings("RedundantCast")
+    public static void write(Map<Fluid, List<Generator>> generatorMap, FriendlyByteBuf buf) {
+        ((ByteBufCompat) buf).writeMap(
+                generatorMap,
+                (b, o) -> b.writeResourceLocation(Util.getFluidId(o)),
+                (b, generators) -> ((ByteBufCompat) b).writeCollection(generators, (p, gen) -> gen.toPacket((ByteBufCompat) p))
+        );
+    }
 
-        for (Map.Entry<Fluid, List<Generator>> entry : generatorMap.entrySet()) {
-            buf.writeResourceLocation(Util.getFluidId(entry.getKey()));
-
-            final List<Generator> gens = entry.getValue();
-            buf.writeInt(gens.size());
-
-            for (Generator generator : gens) {
-                generator.toPacket(buf);
-            }
-        }
+    @SuppressWarnings("RedundantCast")
+    @ApiStatus.Internal
+    public static Map<Fluid, List<Generator>> read(FriendlyByteBuf buf) {
+        return ((ByteBufCompat) buf).readMap(
+                (o) -> Util.getFluid(o.readResourceLocation()),
+                (o) -> {
+                    int _gensSize = o.readVarInt();
+                    List<Generator> gens = new ArrayList<>(_gensSize);
+                    for (int j = 0; j < _gensSize; j++) {
+                        Generator generator = Generator.fromPacket(o);
+                        if (generator == null) {
+                            // Shouldn't be possible, but just in case... it's Java Reflection API after all.
+                            CGLog.warn("Failed to retrieve a generator, skipping...");
+                            continue;
+                        }
+                        gens.add(generator);
+                    }
+                    return gens;
+                }
+        );
     }
 }

@@ -10,6 +10,7 @@ import io.github.fabricators_of_create.porting_lib.util.FluidStack;
     //$$ import net.minecraftforge.fluids.FluidStack;
     //#endif
 //#endif
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.data.model.Generator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -17,21 +18,24 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
+@SuppressWarnings("UnresolvedMixinReference") // False positive
 @Pseudo
 @Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
 public abstract class CreateFluidReactionsMixin
 {
+    @Unique
     private static boolean handleReaction(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
+        if (CobbleGen.META_CONFIG.create.disablePipe) return false;
         return FLUID_INTERACTION.interactFromPipe(level, pos, fluid1, fluid2);
     }
 
-    @SuppressWarnings("InvalidInjectorMethodSignature") // False positive
     @Inject(
             method = "handlePipeFlowCollision",
             //#if FABRIC<=0

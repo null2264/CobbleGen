@@ -1,7 +1,7 @@
 //#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer;
 
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;

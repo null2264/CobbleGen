@@ -137,7 +137,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         // Whitelisted Dimensions
         final Rectangle whitelistBounds = dimensionBounds.clone();
         whitelistBounds.x += 18;
-        final Widget whitelistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT, whitelistBounds, 0F, 0F, 256, 256);
+        final Widget whitelistIcon = Widgets.createTexturedWidget(Constants.JEI_UI_COMPONENT.toMC(), whitelistBounds, 0F, 0F, 256, 256);
 
         final ArrayList<Component> whitelist = new ArrayList<>();
         whitelist.add(TextCompat.translatable("cobblegen.info.whitelistedDim"));
@@ -156,7 +156,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         final Rectangle blacklistBounds = dimensionBounds.clone();
         blacklistBounds.x += bounds.width - 15 - 18 - (2 * gapAgainstBound);
         final Widget blacklistIcon = Widgets.createTexturedWidget(
-                Constants.JEI_UI_COMPONENT,
+                Constants.JEI_UI_COMPONENT.toMC(),
                 blacklistBounds,
                 15F,
                 0F,

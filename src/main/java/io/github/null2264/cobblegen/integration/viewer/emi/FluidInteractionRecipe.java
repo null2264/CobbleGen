@@ -8,7 +8,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.config.WeightedBlock;
+import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -159,7 +159,7 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
                                     .getVisualOrderText()
             ));
         }
-        widgets.addTexture(Constants.JEI_UI_COMPONENT, whitelistBounds.x, whitelistBounds.y, 15, 20, 0, 0)
+        widgets.addTexture(Constants.JEI_UI_COMPONENT.toMC(), whitelistBounds.x, whitelistBounds.y, 15, 20, 0, 0)
                 .tooltip((mouseX, mouseY) -> whitelist);
 
         // Blacklisted Dimensions
@@ -182,7 +182,7 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
                                     .getVisualOrderText()
             ));
         }
-        widgets.addTexture(Constants.JEI_UI_COMPONENT, blacklistBounds.x, blacklistBounds.y, 15, 20, 15, 0)
+        widgets.addTexture(Constants.JEI_UI_COMPONENT.toMC(), blacklistBounds.x, blacklistBounds.y, 15, 20, 15, 0)
                 .tooltip((mouseX, mouseY) -> blacklist);
     }
 

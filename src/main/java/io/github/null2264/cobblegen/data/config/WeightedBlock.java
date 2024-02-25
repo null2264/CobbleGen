@@ -1,5 +1,12 @@
-package io.github.null2264.cobblegen.config;
+package io.github.null2264.cobblegen.data.config;
 
+import blue.endless.jankson.JsonArray;
+import blue.endless.jankson.JsonElement;
+import blue.endless.jankson.JsonObject;
+import blue.endless.jankson.JsonPrimitive;
+import blue.endless.jankson.annotation.Deserializer;
+import blue.endless.jankson.annotation.Serializer;
+import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;
@@ -8,10 +15,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class WeightedBlock implements PacketSerializable<WeightedBlock>
+import static io.github.null2264.cobblegen.util.Constants.JANKSON;
+
+public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable
 {
     public String id;
     public Double weight;
@@ -125,5 +135,64 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>
                 minY.orElse(null),
                 null
         );
+    }
+
+    @Override
+    @Serializer
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.put("id", JsonPrimitive.of(id));
+        json.put("weight", JsonPrimitive.of(weight));
+        json.put("dimensions", JANKSON.toJson(dimensions));
+        json.put("excludedDimensions", JANKSON.toJson(excludedDimensions));
+        json.put("maxY", JANKSON.toJson(maxY));
+        json.put("minY", JANKSON.toJson(minY));
+        return json;
+    }
+
+    @SuppressWarnings("PatternVariableCanBeUsed")
+    @Deserializer
+    public static WeightedBlock fromJson(JsonObject json) {
+        JsonElement _id = json.get("id");
+        if (!(_id instanceof JsonPrimitive)) return null;
+        String id = ((JsonPrimitive) _id).asString();
+
+        Double weight = json.getDouble("weight", 0.0);
+
+        @Nullable
+        List<String> dimensions;
+        if (json.get("dimensions") instanceof JsonArray) {
+            JsonArray _dimensions = (JsonArray) json.get("dimensions");
+            dimensions = new ArrayList<>();
+            _dimensions.forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
+        } else {
+            dimensions = null;
+        }
+
+        @Nullable
+        List<String> excludedDimensions;
+        if (json.get("excludedDimensions") instanceof JsonArray) {
+            JsonArray _excludedDimensions = (JsonArray) json.get("excludedDimensions");
+            excludedDimensions = new ArrayList<>();
+            _excludedDimensions.forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
+        } else {
+            excludedDimensions = null;
+        }
+
+        @Nullable
+        Integer maxY = null;
+        if (json.get("maxY") instanceof JsonPrimitive) {
+            JsonPrimitive _maxY = (JsonPrimitive) json.get("maxY");
+            maxY = _maxY.asInt(0);
+        }
+
+        @Nullable
+        Integer minY = null;
+        if (json.get("minY") instanceof JsonPrimitive) {
+            JsonPrimitive _minY = (JsonPrimitive) json.get("minY");
+            minY = _minY.asInt(0);
+        }
+
+        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null);
     }
 }

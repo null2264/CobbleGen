@@ -43,10 +43,8 @@ public class CGLog {
     }
 
     public static void error(String prefix, Throwable t) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(prefix);
-        builder.append(errorString(t));
-        error(builder.toString());
+        String builder = prefix + errorString(t);
+        error(builder);
     }
 
     public static void error(Throwable t) {
