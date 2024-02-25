@@ -300,7 +300,15 @@ def mcReleaseVersions = [
         11902: ["1.19", "1.19.1", "1.19.2"],
         12001: ["1.20", "1.20.1"],
         12002: ["1.20.2", "1.20.3", "1.20.4"],
-        12005: ["1.20.5"],
+        12005: ["1.20.5"], // TODO: Still in snapshot
+][mcVersion]
+
+def cfSnapshots = [
+        12005: ["1.20.5-Snapshot"],
+][mcVersion]
+
+def mrSnapshots = [
+        12005: ["24w07a"],
 ][mcVersion]
 
 publishMods {
@@ -330,7 +338,13 @@ publishMods {
             accessToken = cfToken
             projectId = project.curseforge_project
 
-            for (final def mcVer in mcReleaseVersions) {
+            if (cfSnapshots != null) {
+                for (final def mcVer in mcReleaseVersions) {
+                    minecraftVersions.add(mcVer)
+                }
+            }
+
+            for (final def mcVer in cfSnapshots) {
                 minecraftVersions.add(mcVer)
             }
 
@@ -346,7 +360,13 @@ publishMods {
             accessToken = mrToken
             projectId = project.modrinth_project
 
-            for (final def mcVer in mcReleaseVersions) {
+            if (mrSnapshots != null) {
+                for (final def mcVer in mcReleaseVersions) {
+                    minecraftVersions.add(mcVer)
+                }
+            }
+
+            for (final def mcVer in mrSnapshots) {
                 minecraftVersions.add(mcVer)
             }
         }
