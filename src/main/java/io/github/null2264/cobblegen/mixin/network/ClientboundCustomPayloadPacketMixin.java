@@ -4,7 +4,7 @@ package io.github.null2264.cobblegen.mixin.network;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //#else
 //$$ import io.github.null2264.cobblegen.data.CGIdentifier;
-//$$ import io.github.null2264.cobblegen.network.payload.*;
+//$$ import io.github.null2264.cobblegen.network.payload.CGPayloadReader;
 //$$ import io.netty.buffer.Unpooled;
 //$$ import net.minecraft.network.FriendlyByteBuf;
 //$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
@@ -28,7 +28,7 @@ public abstract class ClientboundCustomPayloadPacketMixin {
     //$$     if (!id.getNamespace().equals(MOD_ID))
     //$$         return;
     //$$
-    //$$     CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_CLIENT_PAYLOADS.get(CGIdentifier.fromMC(id));
+    //$$     CGPayloadReader<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> reader = KNOWN_CLIENT_PAYLOADS.get(CGIdentifier.fromMC(id));
     //$$     if (reader == null) return;
     //$$
     //$$     cir.setReturnValue(reader.apply(buf));
