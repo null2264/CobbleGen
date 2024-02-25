@@ -48,21 +48,6 @@ public class Constants
     //public static final int OP_LEVEL_ADMINS = 3;
     //public static final int OP_LEVEL_OWNERS = 4;
     //#if MC>=1.20.5
-    //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> GENERATOR_CODEC =
-    //$$ new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
-    //$$ {
-    //$$     @Override
-    //$$     public Generator decode(ByteBuf buf) {
-    //$$         return Generator.fromPacket(new ByteBufCompat(buf));
-    //$$     }
-    //$$
-    //$$     @Override
-    //$$     public void encode(ByteBuf buf, Generator generator) {
-    //$$         ByteBufCompat newBuf = ByteBufCompat.unpooled();
-    //$$         generator.toPacket(newBuf);
-    //$$         buf.writeBytes(newBuf);
-    //$$     }
-    //$$ };
     //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Fluid> FLUID_CODEC =
     //$$     new net.minecraft.network.codec.StreamCodec<ByteBuf, Fluid>()
     //$$     {
