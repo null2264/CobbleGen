@@ -12,7 +12,11 @@ import java.util.Map;
 
 import static io.github.null2264.cobblegen.util.Constants.CG_SYNC;
 
+//#if MC<=1.16.5
+//$$ public class CGSyncS2CPayload
+//#else
 public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> recipe)
+//#endif
         //#if MC<1.20.2
         implements CGPacketPayload
         //#else
@@ -20,6 +24,24 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
         //#endif
 {
     public static final CGIdentifier ID = CG_SYNC;
+
+    //#if MC<=1.16.5
+    //$$ private final Boolean isReload;
+    //$$ private final Map<Fluid, List<Generator>> recipe;
+
+    //$$ public CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> recipe) {
+    //$$     this.isReload = isReload;
+    //$$     this.recipe = recipe;
+    //$$ }
+
+    //$$ public Boolean isReload() {
+    //$$     return isReload;
+    //$$ }
+
+    //$$ public Map<Fluid, List<Generator>> recipe() {
+    //$$     return recipe;
+    //$$ }
+    //#endif
 
     public CGSyncS2CPayload(FriendlyByteBuf buf) {
         this(buf.readBoolean(), FluidInteraction.read(buf));

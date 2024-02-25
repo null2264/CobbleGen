@@ -60,7 +60,7 @@ public class CGClientPlayNetworkHandler
         if (payload instanceof CGPingS2CPayload) {
             FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
             buf.writeResourceLocation(CG_PING.toMC());
-            new CGPingC2SPayload(((CGPingS2CPayload) payload).isReload(), Util.isAnyRecipeViewerLoaded()).write(buf);
+            new CGPingC2SPayload(((CGPingS2CPayload) payload).reload(), Util.isAnyRecipeViewerLoaded()).write(buf);
             listener.send(createC2SPacket(buf));
             return true;
         }

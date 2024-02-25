@@ -6,7 +6,11 @@ import net.minecraft.resources.ResourceLocation;
 
 import static io.github.null2264.cobblegen.util.Constants.CG_PING;
 
+//#if MC<=1.16.5
+//$$ public class CGPingC2SPayload
+//#else
 public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
+//#endif
         //#if MC<1.20.2
         implements CGPacketPayload
         //#else
@@ -15,12 +19,26 @@ public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
 {
     public static final CGIdentifier ID = CG_PING;
 
+    //#if MC<=1.16.5
+    //$$ private final Boolean reload;
+    //$$ private final Boolean recipeViewer;
+
+    //$$ public CGPingC2SPayload(Boolean reload, Boolean recipeViewer) {
+    //$$     this.reload = reload;
+    //$$     this.recipeViewer = recipeViewer;
+    //$$ }
+
+    //$$ public Boolean reload() {
+    //$$     return reload;
+    //$$ }
+
+    //$$ public Boolean recipeViewer() {
+    //$$     return recipeViewer;
+    //$$ }
+    //#endif
+
     public CGPingC2SPayload(FriendlyByteBuf buf) {
         this(buf.readBoolean(), buf.readBoolean());
-    }
-
-    public Boolean isReload() {
-        return reload;
     }
 
     public Boolean hasRecipeViewer() {
@@ -29,7 +47,7 @@ public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
 
     @Override
     public void write(FriendlyByteBuf buf) {
-        buf.writeBoolean(isReload());
+        buf.writeBoolean(reload);
         buf.writeBoolean(hasRecipeViewer());
     }
 

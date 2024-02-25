@@ -75,15 +75,15 @@ public class CGServerPlayNetworkHandler
 
         if (payload instanceof CGPingC2SPayload) {
             if (((CGPingC2SPayload) payload).hasRecipeViewer()) {
-                if (!((CGPingC2SPayload) payload).isReload())
+                if (!((CGPingC2SPayload) payload).reload())
                     CGLog.info("Player has recipe viewer installed, sending CobbleGen config...");
-                sync(listener, ((CGPingC2SPayload) payload).isReload());
+                sync(listener, ((CGPingC2SPayload) payload).reload());
             }
             return true;
         }
 
         if (payload instanceof CGSyncC2SPayload) {
-            if (((CGSyncC2SPayload) payload).isSync())
+            if (((CGSyncC2SPayload) payload).sync())
                 CGLog.info("Player has received the server's newest CobbleGen config");
             return true;
         }

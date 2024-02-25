@@ -13,12 +13,35 @@ import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 
+//#if MC<=1.16.5
+//$$ public class CGIdentifier
+//#else
 /**
  * Replaces MC's ResourceLocation, in case MC's ResourceLocation changed
  * @param modid
  * @param name
  */
-public record CGIdentifier(String modid, String name) {
+public record CGIdentifier(String modid, String name)
+//#endif
+{
+    //#if MC<=1.16.5
+    //$$ private final String modid;
+    //$$ private final String name;
+
+    //$$ public CGIdentifier(String modid, String name) {
+    //$$     this.modid = modid;
+    //$$     this.name = name;
+    //$$ }
+
+    //$$ public String modid() {
+    //$$     return modid;
+    //$$ }
+
+    //$$ public String name() {
+    //$$     return name;
+    //$$ }
+    //#endif
+
     // TODO: Add validation
     public static CGIdentifier of(String id) {
         if (id.equals("*")) return wildcard();
