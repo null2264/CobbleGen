@@ -3,13 +3,13 @@ package io.github.null2264.cobblegen.mixin.network.packet;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //#else
+//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 //#if MC<1.20.5
 //$$ import io.github.null2264.cobblegen.data.CGIdentifier;
 //$$ import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
 //$$ import io.github.null2264.cobblegen.network.payload.CGPayloadReader;
 //$$ import io.netty.buffer.Unpooled;
 //$$ import net.minecraft.network.FriendlyByteBuf;
-//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //$$ import net.minecraft.resources.ResourceLocation;
 //$$ import org.spongepowered.asm.mixin.injection.At;
