@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.data;
 
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
@@ -19,11 +18,11 @@ public class CGModifier {
         this.modifiers = streamToList(modifiers.stream().sorted());
     }
 
-    public void writeToBuf(ByteBufCompat buf) {
+    public void writeToBuf(FriendlyByteBuf buf) {
         buf.writeCollection(modifiers, (b, o) -> o.writeToBuf(b));
     }
 
-    public static CGModifier readFromBuf(ByteBufCompat buf) {
+    public static CGModifier readFromBuf(FriendlyByteBuf buf) {
         return new CGModifier(buf.readList(CGIdentifier::readFromBuf));
     }
 

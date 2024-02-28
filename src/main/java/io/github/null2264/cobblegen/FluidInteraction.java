@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen;
 
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.CGRegistryImpl;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -193,19 +192,17 @@ public class FluidInteraction
         return false;
     }
 
-    @SuppressWarnings("RedundantCast")
     public static void write(Map<Fluid, List<Generator>> generatorMap, FriendlyByteBuf buf) {
-        ((ByteBufCompat) buf).writeMap(
+        buf.writeMap(
                 generatorMap,
                 (b, o) -> b.writeResourceLocation(Util.getFluidId(o)),
-                (b, generators) -> ((ByteBufCompat) b).writeCollection(generators, (p, gen) -> gen.toPacket((ByteBufCompat) p))
+                (b, generators) -> b.writeCollection(generators, (p, gen) -> gen.toPacket(p))
         );
     }
 
-    @SuppressWarnings("RedundantCast")
     @ApiStatus.Internal
     public static Map<Fluid, List<Generator>> read(FriendlyByteBuf buf) {
-        return ((ByteBufCompat) buf).readMap(
+        return buf.readMap(
                 (o) -> Util.getFluid(o.readResourceLocation()),
                 (o) -> {
                     int _gensSize = o.readVarInt();

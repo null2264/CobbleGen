@@ -6,7 +6,6 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import com.google.common.primitives.Ints;
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
@@ -67,13 +66,12 @@ public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements J
         return Integer.MAX_VALUE; // any large value
     }
 
-    @SuppressWarnings("RedundantCast")
     @Override
-    public void toPacket(ByteBufCompat buf) {
+    public void toPacket(FriendlyByteBuf buf) {
         buf.writeMap(
                 this,
                 (o, key) -> key.writeToBuf(o),
-                (o, blocks) -> ((ByteBufCompat) o).writeCollection(blocks, (p, block) -> block.toPacket((ByteBufCompat) p))
+                (o, blocks) -> o.writeCollection(blocks, (p, block) -> block.toPacket(p))
         );
     }
 
@@ -81,14 +79,13 @@ public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements J
         return new GeneratorMap(capacity(expectedSize));
     }
 
-    @SuppressWarnings("RedundantCast")
     public static GeneratorMap fromPacket(FriendlyByteBuf buf) {
         int i = buf.readVarInt();
         GeneratorMap map = GeneratorMap.withExpectedSize(i);
 
         for(int j = 0; j < i; ++j) {
             CGIdentifier id = CGIdentifier.readFromBuf(buf);
-            List<WeightedBlock> list = ((ByteBufCompat) buf).readList(WeightedBlock::fromPacket);
+            List<WeightedBlock> list = buf.readList(WeightedBlock::fromPacket);
             map.put(id, new ResultList(list));
         }
 
