@@ -14,11 +14,12 @@
         "fluid.CreateFluidReactionsMixin",
         //#endif
         "fluid.FluidEventMixin",
-        "fluid.LavaEventMixin",
+        "fluid.LavaEventMixin"
     ],
     "client": [
         "network.ClientCommonPacketListenerMixin",
-        "network.ConnectionMixin"
+        "network.ConnectionMixin",
+        "network.packet.ClientboundCustomPayloadPacketMixin"
     ],
     "server": [
         "network.PlayerManagerMixin",
@@ -27,8 +28,9 @@
         //#endif
         "network.ServerCommonPacketListenerMixin",
         //#if MC>=1.20.2
-        //$$ "network.ServerConfigurationPacketListenerMixin"
+        //$$ "network.ServerConfigurationPacketListenerMixin",
         //#endif
+        "network.packet.ServerboundCustomPayloadPacketMixin"
     ],
     "injectors": {
         "defaultRequire": 1
