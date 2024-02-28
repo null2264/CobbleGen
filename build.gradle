@@ -138,6 +138,12 @@ dependencies {
     if (!isFabric)
         forgeRuntimeLibrary("blue.endless:jankson:${project.jankson_version}")
 
+    shade("systems.manifold:manifold-ext-rt:${project.manifold_version}")
+    if (!isFabric)
+        forgeRuntimeLibrary("systems.manifold:manifold-ext-rt:${project.manifold_version}")
+    annotationProcessor("systems.manifold:manifold-ext:${project.manifold_version}")
+    testAnnotationProcessor("systems.manifold:manifold-ext:${project.manifold_version}")
+
     // Don't wanna deal with these atm
     if (mcVersion > 11605) {
         // These act like a dummy, technically only here to provide their modules/packages
@@ -228,6 +234,7 @@ shadowJar {
         relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
         relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
     }
+    relocate "manifold", "io.github.null2264.shadowed.manifold"
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
     exclude "architectury.common.json"
 
@@ -290,6 +297,19 @@ java {
 jar {
     from("LICENSE") {
         rename { "${it}_${archivesBaseName}" }
+    }
+}
+
+if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
+        sourceSets.main.allJava.files.any {it.name == "module-info.java"}) {
+    tasks.withType(JavaCompile) {
+        // if you DO define a module-info.java file:
+        options.compilerArgs += ['-Xplugin:Manifold', '--module-path', it.classpath.asPath]
+    }
+} else {
+    tasks.withType(JavaCompile) {
+        // If you DO NOT define a module-info.java file:
+        options.compilerArgs += ['-Xplugin:Manifold']
     }
 }
 
