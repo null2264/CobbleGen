@@ -25,18 +25,15 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = ClientboundCustomPayloadPacket.class, priority = 999)
 public abstract class ClientboundCustomPayloadPacketMixin {
-    //#if MC>=1.20.2
-    //#if MC<1.20.5
+    //#if MC>=1.20.2 && MC<1.20.5
     //$$ @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
     //$$ private static void read(ResourceLocation id, FriendlyByteBuf buf, CallbackInfoReturnable<CustomPacketPayload> cir) {
-    //$$     if (!id.getNamespace().equals(MOD_ID))
-    //$$         return;
+    //$$     if (!id.getNamespace().equals(MOD_ID)) return;
     //$$
     //$$     CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_CLIENT_PAYLOADS.get(CGIdentifier.fromMC(id));
     //$$     if (reader == null) return;
     //$$
     //$$     cir.setReturnValue(reader.apply(buf));
     //$$ }
-    //#endif
     //#endif
 }

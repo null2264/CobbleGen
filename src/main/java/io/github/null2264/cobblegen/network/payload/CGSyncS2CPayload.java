@@ -65,20 +65,7 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
 
     //#if MC>=1.20.5
     //$$ public static final StreamCodec<FriendlyByteBuf, CGSyncS2CPayload> STREAM_CODEC =
-    //$$     StreamCodec.composite(
-    //$$         ByteBufCodecs.BOOL,
-    //$$         CGSyncS2CPayload::isReload,
-    //$$         ByteBufCodecs.map(
-    //$$             Maps::newHashMapWithExpectedSize,
-    //$$             Constants.FLUID_CODEC,
-    //$$             ByteBufCodecs.collection(
-    //$$                 Lists::newArrayListWithCapacity,
-    //$$                 Generator.CODEC
-    //$$             )
-    //$$         ),
-    //$$         CGSyncS2CPayload::recipe,
-    //$$         CGSyncS2CPayload::new
-    //$$     );
+    //$$     CustomPacketPayload.codec(CGSyncS2CPayload::write, CGSyncS2CPayload::new);
     //$$ public static final CustomPacketPayload.Type<CGSyncS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
     //$$
     //$$ @Override

@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.network.payload;
 
 //#if MC>=1.20.5
-//$$ import net.minecraft.network.codec.ByteBufCodecs;
 //$$ import net.minecraft.network.codec.StreamCodec;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //#endif
@@ -49,7 +48,7 @@ public record CGPingS2CPayload(Boolean reload)
 
     //#if MC>=1.20.5
     //$$ public static final StreamCodec<FriendlyByteBuf, CGPingS2CPayload> STREAM_CODEC =
-    //$$     StreamCodec.composite(ByteBufCodecs.BOOL, CGPingS2CPayload::reload, CGPingS2CPayload::new);
+    //$$     CustomPacketPayload.codec(CGPingS2CPayload::write, CGPingS2CPayload::new);
     //$$ public static final CustomPacketPayload.Type<CGPingS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
     //$$
     //$$ @Override

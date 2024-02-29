@@ -8,6 +8,9 @@
     "compatibilityLevel": "JAVA_8",
     //#endif
     "mixins": [
+        //#if MC>=1.20.5
+        //$$ "network.packet.CustomPacketPayloadMixin",
+        //#endif
         "CommandsMixin",
         "MinecraftServerMixin",
         //#if MC>1.16.5
@@ -17,20 +20,23 @@
         "fluid.LavaEventMixin"
     ],
     "client": [
+        //#if MC<1.20.5
+        "network.packet.ClientboundCustomPayloadPacketMixin"
+        //#endif
         "network.ClientCommonPacketListenerMixin",
         "network.ConnectionMixin",
-        "network.packet.ClientboundCustomPayloadPacketMixin"
     ],
     "server": [
         "network.PlayerManagerMixin",
         //#if MC<1.20.2
         "network.ServerboundCustomPayloadPacketAccessor",
-        //#endif
-        "network.ServerCommonPacketListenerMixin",
-        //#if MC>=1.20.2
+        //#else
         //$$ "network.ServerConfigurationPacketListenerMixin",
         //#endif
-        "network.packet.ServerboundCustomPayloadPacketMixin"
+        //#if MC<1.20.5
+        "network.packet.ServerboundCustomPayloadPacketMixin",
+        //#endif
+        "network.ServerCommonPacketListenerMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -26,16 +26,26 @@ public class Constants
     public static final CGIdentifier JEI_UI_COMPONENT = CGIdentifier.of("textures/gui/jei.png");
     public static final CGIdentifier CG_PING = CGIdentifier.of("ping");
     public static final CGIdentifier CG_SYNC = CGIdentifier.of("sync");
+    //#if MC<1.20.5
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_SERVER_PAYLOADS =
             ImmutableMap.of(
-                    CGPingC2SPayload.ID, CGPingC2SPayload::new,
-                    CGSyncC2SPayload.ID, CGSyncC2SPayload::new
+                CGPingC2SPayload.ID, CGPingC2SPayload::new,
+                CGSyncC2SPayload.ID, CGSyncC2SPayload::new
             );
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_CLIENT_PAYLOADS =
             ImmutableMap.of(
-                    CGPingS2CPayload.ID, CGPingS2CPayload::new,
-                    CGSyncS2CPayload.ID, CGSyncS2CPayload::new
+                CGPingS2CPayload.ID, CGPingS2CPayload::new,
+                CGSyncS2CPayload.ID, CGSyncS2CPayload::new
             );
+    //#else
+    //$$ public static final ImmutableMap<CGIdentifier, net.minecraft.network.codec.StreamCodec<? super FriendlyByteBuf, ? extends CGPacketPayload>> KNOWN_PAYLOADS =
+    //$$         ImmutableMap.of(
+    //$$             CGPingC2SPayload.ID, CGPingC2SPayload.STREAM_CODEC,
+    //$$             CGSyncC2SPayload.ID, CGSyncC2SPayload.STREAM_CODEC,
+    //$$             CGPingS2CPayload.ID, CGPingS2CPayload.STREAM_CODEC,
+    //$$             CGSyncS2CPayload.ID, CGSyncS2CPayload.STREAM_CODEC
+    //$$         );
+    //#endif
     public static final Jankson JANKSON = Jankson.builder()
             .registerSerializer(CGIdentifier.class, (it, m) -> it.toJson())
             .registerDeserializer(JsonPrimitive .class, CGIdentifier.class, (json, m) -> CGIdentifier.fromJson(json))
