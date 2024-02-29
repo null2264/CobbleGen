@@ -21,10 +21,10 @@
     ],
     "client": [
         //#if MC<1.20.5
-        "network.packet.ClientboundCustomPayloadPacketMixin"
+        "network.packet.ClientboundCustomPayloadPacketMixin",
         //#endif
         "network.ClientCommonPacketListenerMixin",
-        "network.ConnectionMixin",
+        "network.ConnectionMixin"
     ],
     "server": [
         "network.PlayerManagerMixin",
