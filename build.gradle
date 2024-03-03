@@ -190,7 +190,7 @@ dependencies {
             modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${(reiVersions[mcVersion] ?: "13.0.685")}")
         else
             modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${(reiVersions[mcVersion] ?: "13.0.685")}")
-        if (mcVersion >= 12005) {  // FIXME: Not sure why it's not included
+        if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
         }
