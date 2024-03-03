@@ -340,7 +340,7 @@ def cfSnapshots = [
 ][mcVersion]
 
 def mrSnapshots = [
-        12005: ["24w07a"],
+        12005: ["24w09a"],
 ][mcVersion]
 
 publishMods {
