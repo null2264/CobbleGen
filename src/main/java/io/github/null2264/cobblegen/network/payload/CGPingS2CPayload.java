@@ -9,7 +9,7 @@ import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 
-import static io.github.null2264.cobblegen.util.Constants.CG_PING;
+import static io.github.null2264.cobblegen.util.Constants.CG_PING_SERVER;
 
 //#if MC<=1.16.5
 //$$ public class CGPingS2CPayload
@@ -18,7 +18,7 @@ public record CGPingS2CPayload(Boolean reload)
 //#endif
         implements CGPacketPayload
 {
-    public static final CGIdentifier ID = CG_PING;
+    public static final CGIdentifier ID = CG_PING_SERVER;
 
     //#if MC<=1.16.5
     //$$ private final Boolean reload;

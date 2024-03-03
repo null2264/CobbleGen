@@ -26,6 +26,8 @@ public class Constants
     public static final CGIdentifier JEI_UI_COMPONENT = CGIdentifier.of("textures/gui/jei.png");
     public static final CGIdentifier CG_PING = CGIdentifier.of("ping");
     public static final CGIdentifier CG_SYNC = CGIdentifier.of("sync");
+    public static final CGIdentifier CG_PING_SERVER = CGIdentifier.of("ping_server");
+    public static final CGIdentifier CG_SYNC_SERVER = CGIdentifier.of("sync_server");
     //#if MC<1.20.5
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_SERVER_PAYLOADS =
             ImmutableMap.of(

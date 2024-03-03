@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.util.Constants.CG_SYNC;
+import static io.github.null2264.cobblegen.util.Constants.CG_SYNC_SERVER;
 
 //#if MC<=1.16.5
 //$$ public class CGSyncS2CPayload
@@ -28,7 +28,7 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
 //#endif
         implements CGPacketPayload
 {
-    public static final CGIdentifier ID = CG_SYNC;
+    public static final CGIdentifier ID = CG_SYNC_SERVER;
 
     //#if MC<=1.16.5
     //$$ private final Boolean isReload;
