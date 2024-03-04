@@ -49,7 +49,7 @@ public record CGSyncC2SPayload(Boolean sync)
 
     //#if MC>=1.20.5
     //$$ public static final StreamCodec<FriendlyByteBuf, CGSyncC2SPayload> STREAM_CODEC =
-    //$$     StreamCodec.composite(ByteBufCodecs.BOOL, CGSyncC2SPayload::sync, CGSyncC2SPayload::new);
+    //$$     CustomPacketPayload.codec(CGSyncC2SPayload::write, CGSyncC2SPayload::new);
     //$$ public static final CustomPacketPayload.Type<CGSyncC2SPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
     //$$
     //$$ @Override

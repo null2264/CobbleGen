@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.data.generator;
 
 import io.github.null2264.cobblegen.CobbleGen;
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.Pair;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
@@ -120,7 +119,7 @@ public class CobbleGenerator extends BlockGenerator
     }
 
     @Override
-    public void toPacket(ByteBufCompat buf) {
+    public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(this.getClass().getName());
 
         buf.writeResourceLocation(Util.getFluidId(fluid));

@@ -7,7 +7,6 @@ import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
-import io.github.null2264.cobblegen.compat.ByteBufCompat;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.network.FriendlyByteBuf;
@@ -102,29 +101,27 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(minY);
     }
 
-    @SuppressWarnings("RedundantCast")
     @Override
-    public void toPacket(ByteBufCompat buf) {
+    public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(id);
         buf.writeDouble(weight);
 
-        buf.writeOptional(Util.optional(dimensions), (o, value) -> ((ByteBufCompat) o).writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> ((ByteBufCompat) o).writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(Util.optional(dimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
 
         buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
         buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
     }
 
-    @SuppressWarnings("RedundantCast")
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
         final String id = buf.readUtf();
         final Double weight = buf.readDouble();
 
-        Optional<List<String>> dimensions = ((ByteBufCompat) buf).readOptional((o) -> ((ByteBufCompat) o).readList(FriendlyByteBuf::readUtf));
-        Optional<List<String>> excludedDimensions = ((ByteBufCompat) buf).readOptional((o) -> ((ByteBufCompat) o).readList(FriendlyByteBuf::readUtf));
+        Optional<List<String>> dimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+        Optional<List<String>> excludedDimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
 
-        Optional<Integer> maxY = ((ByteBufCompat) buf).readOptional(FriendlyByteBuf::readInt);
-        Optional<Integer> minY = ((ByteBufCompat) buf).readOptional(FriendlyByteBuf::readInt);
+        Optional<Integer> maxY = buf.readOptional(FriendlyByteBuf::readInt);
+        Optional<Integer> minY = buf.readOptional(FriendlyByteBuf::readInt);
 
         return new WeightedBlock(
                 id,

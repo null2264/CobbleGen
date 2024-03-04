@@ -90,7 +90,7 @@ configurations {
 dependencies {
     // TODO(addingVersion): For snapshots
     def mc = [
-            12005: "24w07a"
+            12005: "24w09a"
     ]
     minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
@@ -138,6 +138,12 @@ dependencies {
     if (!isFabric)
         forgeRuntimeLibrary("blue.endless:jankson:${project.jankson_version}")
 
+    shade("systems.manifold:manifold-ext-rt:${project.manifold_version}")
+    if (!isFabric)
+        forgeRuntimeLibrary("systems.manifold:manifold-ext-rt:${project.manifold_version}")
+    annotationProcessor("systems.manifold:manifold-ext:${project.manifold_version}")
+    testAnnotationProcessor("systems.manifold:manifold-ext:${project.manifold_version}")
+
     // Don't wanna deal with these atm
     if (mcVersion > 11605) {
         // These act like a dummy, technically only here to provide their modules/packages
@@ -145,13 +151,13 @@ dependencies {
             modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
         }
 
-        // EMI
+        // <- EMI
         if (mcVersion <= 11802 && isFabric) {
             modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
             if (project.recipe_viewer == "emi")
                 modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
         } else {
-            // TODO(addingVersion)
+            // TODO(addingVersion): EMI
             def suffix = [
                     11902: "1.19.2",
                     11904: "1.19.4",
@@ -164,28 +170,39 @@ dependencies {
             if (project.recipe_viewer == "emi" && suffix[mcVersion] != null)
                 modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : "1.19.2"}")
         }
+        // EMI ->
 
-        // REI
-        // TODO(addingVersion)
+        // <- REI
+        // TODO(addingVersion): REI
         def reiVersions = [
                 11802: "8.3.618",
                 11902: "9.1.619",
                 11904: "11.0.621",
                 12001: "12.0.625",
-                12002: "13.0.666",
+                12002: "13.0.685",
+                12005: "14.0.689-alpha",
         ]
         if (isFabric)
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: "13.0.666"}")
-        else  // I need the full package since for whatever reason @REIPluginClient is not included in API, thanks REI
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${(reiVersions[mcVersion] ?: "13.0.666")}")
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: "13.0.685"}")
+        // NOTE: I need the full package for Forge(-like) loaders since for whatever reason @REIPluginClient
+        // is not included in API, thanks REI
+        else if (!isNeo)
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${(reiVersions[mcVersion] ?: "13.0.685")}")
+        else
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${(reiVersions[mcVersion] ?: "13.0.685")}")
+        if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
+            modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
+            modCompileOnly("dev.architectury:architectury:11.1.13")
+        }
         if (project.recipe_viewer == "rei" && reiVersions[mcVersion] != null) {
             if (mcVersion == 11902)  // REI's stupid dep bug
                 modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
             modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${isFabric ? "fabric" : "forge"}:${reiVersions[mcVersion]}")
         }
+        // REI ->
 
-        // JEI
-        // TODO(addingVersion)
+        // <- JEI
+        // TODO(addingVersion): JEI
         def jeiVersions = [
                 11802: "10.2.1.1004",
                 11902: "11.6.0.1015",
@@ -202,6 +219,7 @@ dependencies {
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion] ?: fallbackJeiVer}")
         if (project.recipe_viewer == "jei" && jeiVersions[mcVersion] != null)
             modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}:${jeiVersions[mcVersion]}")
+        // JEI ->
 
         /* FIXME: Broken, somehow
         if (mcVersion == 11802 && isFabric) {
@@ -228,6 +246,7 @@ shadowJar {
         relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
         relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
     }
+    relocate "manifold", "io.github.null2264.shadowed.manifold"
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
     exclude "architectury.common.json"
 
@@ -293,6 +312,19 @@ jar {
     }
 }
 
+if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
+        sourceSets.main.allJava.files.any {it.name == "module-info.java"}) {
+    tasks.withType(JavaCompile) {
+        // if you DO define a module-info.java file:
+        options.compilerArgs += ['-Xplugin:Manifold', '--module-path', it.classpath.asPath]
+    }
+} else {
+    tasks.withType(JavaCompile) {
+        // If you DO NOT define a module-info.java file:
+        options.compilerArgs += ['-Xplugin:Manifold']
+    }
+}
+
 // TODO(addingVersion)
 def mcReleaseVersions = [
         11605: ["1.16.5"],
@@ -300,7 +332,15 @@ def mcReleaseVersions = [
         11902: ["1.19", "1.19.1", "1.19.2"],
         12001: ["1.20", "1.20.1"],
         12002: ["1.20.2", "1.20.3", "1.20.4"],
-        12005: ["1.20.5"],
+        12005: ["1.20.5"], // TODO: Still in snapshot
+][mcVersion]
+
+def cfSnapshots = [
+        12005: ["1.20.5-Snapshot"],
+][mcVersion]
+
+def mrSnapshots = [
+        12005: ["24w09a"],
 ][mcVersion]
 
 publishMods {
@@ -330,7 +370,13 @@ publishMods {
             accessToken = cfToken
             projectId = project.curseforge_project
 
-            for (final def mcVer in mcReleaseVersions) {
+            if (cfSnapshots == null) {
+                for (final def mcVer in mcReleaseVersions) {
+                    minecraftVersions.add(mcVer)
+                }
+            }
+
+            for (final def mcVer in cfSnapshots) {
                 minecraftVersions.add(mcVer)
             }
 
@@ -346,7 +392,13 @@ publishMods {
             accessToken = mrToken
             projectId = project.modrinth_project
 
-            for (final def mcVer in mcReleaseVersions) {
+            if (mrSnapshots == null) {
+                for (final def mcVer in mcReleaseVersions) {
+                    minecraftVersions.add(mcVer)
+                }
+            }
+
+            for (final def mcVer in mrSnapshots) {
                 minecraftVersions.add(mcVer)
             }
         }

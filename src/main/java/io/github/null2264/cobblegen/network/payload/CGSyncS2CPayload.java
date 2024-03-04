@@ -19,7 +19,7 @@ import net.minecraft.world.level.material.Fluid;
 import java.util.List;
 import java.util.Map;
 
-import static io.github.null2264.cobblegen.util.Constants.CG_SYNC;
+import static io.github.null2264.cobblegen.util.Constants.CG_SYNC_SERVER;
 
 //#if MC<=1.16.5
 //$$ public class CGSyncS2CPayload
@@ -28,7 +28,7 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
 //#endif
         implements CGPacketPayload
 {
-    public static final CGIdentifier ID = CG_SYNC;
+    public static final CGIdentifier ID = CG_SYNC_SERVER;
 
     //#if MC<=1.16.5
     //$$ private final Boolean isReload;
@@ -65,20 +65,7 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
 
     //#if MC>=1.20.5
     //$$ public static final StreamCodec<FriendlyByteBuf, CGSyncS2CPayload> STREAM_CODEC =
-    //$$     StreamCodec.composite(
-    //$$         ByteBufCodecs.BOOL,
-    //$$         CGSyncS2CPayload::isReload,
-    //$$         ByteBufCodecs.map(
-    //$$             Maps::newHashMapWithExpectedSize,
-    //$$             Constants.FLUID_CODEC,
-    //$$             ByteBufCodecs.collection(
-    //$$                 Lists::newArrayListWithCapacity,
-    //$$                 Generator.CODEC
-    //$$             )
-    //$$         ),
-    //$$         CGSyncS2CPayload::recipe,
-    //$$         CGSyncS2CPayload::new
-    //$$     );
+    //$$     CustomPacketPayload.codec(CGSyncS2CPayload::write, CGSyncS2CPayload::new);
     //$$ public static final CustomPacketPayload.Type<CGSyncS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
     //$$
     //$$ @Override

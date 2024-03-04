@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.data.model;
 
 //#if MC>=1.20.5
-//$$ import io.github.null2264.cobblegen.compat.ByteBufCompat;
 //$$ import io.github.null2264.cobblegen.data.model.Generator;
 //$$ import io.netty.buffer.ByteBuf;
 //#endif
@@ -33,12 +32,12 @@ public interface Generator extends PacketSerializable<Generator>
     //$$ {
     //$$     @Override
     //$$     public Generator decode(ByteBuf buf) {
-    //$$         return Generator.fromPacket(new ByteBufCompat(buf));
+    //$$         return Generator.fromPacket(new FriendlyByteBuf(buf));
     //$$     }
     //$$
     //$$     @Override
     //$$     public void encode(ByteBuf buf, Generator generator) {
-    //$$         ByteBufCompat newBuf = ByteBufCompat.unpooled();
+    //$$         FriendlyByteBuf newBuf = FriendlyByteBuf.unpooled();
     //$$         generator.toPacket(newBuf);
     //$$         buf.writeBytes(newBuf);
     //$$     }

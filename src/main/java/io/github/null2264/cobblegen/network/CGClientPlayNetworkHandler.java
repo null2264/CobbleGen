@@ -14,7 +14,6 @@ import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.network.payload.*;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
-import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -75,7 +74,7 @@ public class CGClientPlayNetworkHandler
     @ApiStatus.Internal
     private static ServerboundCustomPayloadPacket createC2SPacket(CGPacketPayload payload) {
         //#if MC<=1.20.1
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        FriendlyByteBuf buf = FriendlyByteBuf.unpooled();
         payload.write(buf);
         return new ServerboundCustomPayloadPacket(payload.id(), buf);
         //#else
