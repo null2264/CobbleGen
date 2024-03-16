@@ -159,14 +159,14 @@ public class FluidInteraction
      * Create Pipe support
      */
     @ApiStatus.Internal
-    public boolean interactFromPipe(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
+    public Optional<BlockState> interactFromPipeState(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
         Fluid source;
         Fluid neighbour;
         List<Generator> generators = generatorMap.get(fluid1);
         if (generators == null) {
             generators = generatorMap.get(fluid2);
             if (generators == null)
-                return false;
+                return Optional.empty();
             source = fluid2;
             neighbour = fluid1;
         } else {
@@ -185,9 +185,17 @@ public class FluidInteraction
 
             final Optional<BlockState> result = generator.tryGenerate(level, pos, source.defaultFluidState(), neighbour.defaultFluidState());
             if (result.isPresent()) {
-                level.setBlockAndUpdate(pos, result.get());
-                return true;
+                return result;
             }
+        }
+        return Optional.empty();
+    }
+
+    public boolean interactFromPipe(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
+        final Optional<BlockState> result = interactFromPipeState(level, pos, fluid1, fluid2);
+        if (result.isPresent()) {
+            level.setBlockAndUpdate(pos, result.get());
+            return true;
         }
         return false;
     }
