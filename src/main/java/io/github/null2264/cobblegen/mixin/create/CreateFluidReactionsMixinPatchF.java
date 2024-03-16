@@ -2,11 +2,9 @@
 package io.github.null2264.cobblegen.mixin.create;
 
 import com.simibubi.create.api.event.PipeCollisionEvent;
-import com.simibubi.create.content.fluids.FluidReactions;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -18,7 +16,8 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 /**
  * Mixin for Create Fabric Patch F
  */
-@Mixin(FluidReactions.class)
+@Pseudo
+@Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
 public abstract class CreateFluidReactionsMixinPatchF
 {
     @Inject(

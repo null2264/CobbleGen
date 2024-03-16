@@ -7,13 +7,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
-@Mixin(com.simibubi.create.content.fluids.FluidReactions.class)
+@Pseudo
+@Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
 public abstract class CreateFluidReactionsMixin
 {
     @Inject(

@@ -50,8 +50,5 @@
     "depends": {
         "fabricloader": "*",
         "minecraft": "${mcversion}"
-    },
-    "breaks": {
-        "create": ">=0.5.1"
     }
 }
