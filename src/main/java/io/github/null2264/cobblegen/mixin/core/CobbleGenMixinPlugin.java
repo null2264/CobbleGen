@@ -21,17 +21,17 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         return null;
     }
 
-    private boolean isPatchFOrNewer() {
+    private int isPatchFOrNewer() {
         //#if FABRIC<=0
-        //$$ return false;
+        //$$ return -1;
         //#else
         try {
             String version =
                 net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("create")
                     .orElseThrow().getMetadata().getVersion().getFriendlyString();
-            return version.startsWith("0.5.1-f") || version.startsWith("0.5.1.f");
+            if (version.startsWith("0.5.1-f") || version.startsWith("0.5.1.f")) return 1;
         } catch (java.util.NoSuchElementException exc) {
-            return false;
+            return 0;
         }
         //#endif
     }
@@ -41,8 +41,8 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         if (mixinClassName.startsWith("CreateFluidReactionsMixin")) {
             if (!LoaderCompat.isModLoaded("create")) return false;
 
-            if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer();
-            if (mixinClassName.endsWith("PatchE")) return !isPatchFOrNewer();
+            if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer() > 0;
+            if (mixinClassName.endsWith("PatchE")) return isPatchFOrNewer() < 1;
 
             return !CobbleGen.META_CONFIG.create.disablePipe;
         }
