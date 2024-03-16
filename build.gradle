@@ -50,6 +50,7 @@ repositories {
     maven { url = "https://maven.tterrag.com/" }
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url = "https://maven.neoforged.net/releases" }
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
 }
 
 archivesBaseName = project.archives_base_name
@@ -149,6 +150,9 @@ dependencies {
         // These act like a dummy, technically only here to provide their modules/packages
         if (isFabric) {
             modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+            modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+        } else {
+            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.1.e-318:slim") { transitive = false }
         }
 
         // <- EMI

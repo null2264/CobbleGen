@@ -14,7 +14,7 @@
         "CommandsMixin",
         "MinecraftServerMixin",
         //#if MC>1.16.5
-        "fluid.CreateFluidReactionsMixin",
+        "create.CreateFluidReactionsMixin",
         //#endif
         "fluid.FluidEventMixin",
         "fluid.LavaEventMixin"

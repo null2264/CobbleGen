@@ -1,5 +1,5 @@
 //#if MC>1.16.5
-package io.github.null2264.cobblegen.mixin.fluid;
+package io.github.null2264.cobblegen.mixin.create;
 
 //#if FABRIC>=1
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
@@ -27,7 +27,7 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 @SuppressWarnings("UnresolvedMixinReference") // False positive
 @Pseudo
-@Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
+@Mixin(com.simibubi.create.content.fluids.FluidReactions.class)
 public abstract class CreateFluidReactionsMixin
 {
     @Unique
