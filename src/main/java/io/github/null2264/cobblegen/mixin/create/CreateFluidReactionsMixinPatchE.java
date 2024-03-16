@@ -1,3 +1,4 @@
+//#if MC>1.16.5
 package io.github.null2264.cobblegen.mixin.create;
 
 //#if FABRIC>=1
@@ -42,3 +43,4 @@ public abstract class CreateFluidReactionsMixinPatchE
             ci.cancel();
     }
 }
+//#endif

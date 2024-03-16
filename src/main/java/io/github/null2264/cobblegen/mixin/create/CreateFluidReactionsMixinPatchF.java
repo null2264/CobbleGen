@@ -1,4 +1,4 @@
-//#if FABRIC
+//#if FABRIC && MC>1.16.5
 package io.github.null2264.cobblegen.mixin.create;
 
 import com.simibubi.create.api.event.PipeCollisionEvent;
