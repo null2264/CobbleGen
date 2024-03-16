@@ -34,9 +34,11 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         } catch (java.util.NoSuchElementException exc) {
             return 0;
         }
-        //#endif
-        //#endif
         return 0;
+        //#else
+        //$$ return 0;  // We don't support create integration for MC1.16.5
+        //#endif
+        //#endif
     }
 
     @Override
