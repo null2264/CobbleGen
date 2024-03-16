@@ -25,6 +25,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         //#if FABRIC<=0
         //$$ return -1;
         //#else
+        //#if MC>1.16.5
         try {
             String version =
                 net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("create")
@@ -33,6 +34,9 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         } catch (java.util.NoSuchElementException exc) {
             return 0;
         }
+        //#else
+        return 0;  // We don't support create integration for MC1.16.5
+        //#endif
         //#endif
     }
 
