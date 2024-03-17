@@ -21,9 +21,13 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         return null;
     }
 
+    /**
+     * Checks if loaded Create mod is patch F or newer
+     * @return 1 for Patch F, 0 for not Patch E, -1 for always Patch E
+     */
     private int isPatchFOrNewer() {
         //#if FABRIC<=0
-        //$$ return -1;
+        //$$ return -1;  // Always use Patch E mixin for Forge-alike
         //#else
         //#if MC>1.16.5
         try {
