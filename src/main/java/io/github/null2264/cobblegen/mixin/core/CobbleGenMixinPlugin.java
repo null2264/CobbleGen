@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.mixin.core;
 
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -50,10 +49,8 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         if (mixinClassName.contains("CreateFluidReactionsMixin")) {
             if (!LoaderCompat.isModLoaded("create")) return false;
 
-            if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer() >= 1 && !CobbleGen.META_CONFIG.create.disablePipe;
-            if (mixinClassName.endsWith("PatchE")) return isPatchFOrNewer() <= 0 && !CobbleGen.META_CONFIG.create.disablePipe;
-
-            return !CobbleGen.META_CONFIG.create.disablePipe;
+            if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer() >= 1;
+            if (mixinClassName.endsWith("PatchE")) return isPatchFOrNewer() <= 0;
         }
         return true;
     }
