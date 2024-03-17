@@ -235,10 +235,10 @@ dependencies {
     } else {
         // slf4j is not included by MC in 1.16.5
         shade("org.slf4j:slf4j-api:1.7.36")
-        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
         if (!isFabric) {
             forgeRuntimeLibrary("org.slf4j:slf4j-api:1.7.36")
-            forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+            forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
         }
     }
 }
