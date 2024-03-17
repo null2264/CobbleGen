@@ -235,20 +235,20 @@ dependencies {
     } else {
         // slf4j is not included by MC in 1.16.5
         shade("org.slf4j:slf4j-api:1.7.36")
-        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
+        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
         if (!isFabric) {
             forgeRuntimeLibrary("org.slf4j:slf4j-api:1.7.36")
-            forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.17.0")
+            forgeRuntimeLibrary("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
         }
     }
 }
 
 shadowJar {
     zip64 true
-    relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
+    relocate "blue.endless.jankson", "io.github.null2264.shadowed.jankson"
     if (mcVersion < 12000) {
-        relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
-        relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
+        relocate "org.slf4j", "io.github.null2264.shadowed.slf4j"
+        relocate "org.apache.logging", "io.github.null2264.shadowed.log4j"
     }
     relocate "manifold", "io.github.null2264.shadowed.manifold"
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
