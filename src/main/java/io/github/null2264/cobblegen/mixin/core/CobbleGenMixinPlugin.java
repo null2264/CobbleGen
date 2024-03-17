@@ -50,8 +50,8 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         if (mixinClassName.startsWith("CreateFluidReactionsMixin")) {
             if (!LoaderCompat.isModLoaded("create")) return false;
 
-            if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer() > 0;
-            if (mixinClassName.endsWith("PatchE")) return isPatchFOrNewer() < 1;
+            if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer() > 0 && !CobbleGen.META_CONFIG.create.disablePipe;
+            if (mixinClassName.endsWith("PatchE")) return isPatchFOrNewer() < 1 && !CobbleGen.META_CONFIG.create.disablePipe;
 
             return !CobbleGen.META_CONFIG.create.disablePipe;
         }
