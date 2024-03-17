@@ -47,7 +47,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (mixinClassName.startsWith("CreateFluidReactionsMixin")) {
+        if (mixinClassName.contains("CreateFluidReactionsMixin")) {
             if (!LoaderCompat.isModLoaded("create")) return false;
 
             if (mixinClassName.endsWith("PatchF")) return isPatchFOrNewer() >= 1 && !CobbleGen.META_CONFIG.create.disablePipe;
