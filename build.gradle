@@ -245,10 +245,10 @@ dependencies {
 
 shadowJar {
     zip64 true
-    relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
+    relocate "blue.endless.jankson", "io.github.null2264.shadowed.jankson"
     if (mcVersion < 12000) {
-        relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
-        relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
+        relocate "org.slf4j", "io.github.null2264.shadowed.slf4j"
+        relocate "org.apache.logging", "io.github.null2264.shadowed.log4j"
     }
     relocate "manifold", "io.github.null2264.shadowed.manifold"
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
