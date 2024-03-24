@@ -1,10 +1,15 @@
 package io.github.null2264.cobblegen.data.config;
 
 import blue.endless.jankson.Comment;
+import io.github.null2264.cobblegen.data.CGSemVer;
 import org.jetbrains.annotations.NotNull;
 
 public class ConfigMetaData implements Config
 {
+    @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
+    @NotNull
+    public CGSemVer formatVersion = CGSemVer.fromString("1.1");
+
     @Comment(value="Enable Recipe Viewer support (EMI/REI/JEI)")
     @NotNull
     public Boolean enableRecipeViewer = true;
