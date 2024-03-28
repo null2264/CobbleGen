@@ -13,6 +13,8 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: Compile NeoForge snapshot
+        run: ./.scripts/compile_kits.sh
       - run: chmod +x ./gradlew
       - uses: actions/cache@v4
         with:
