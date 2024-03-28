@@ -8,7 +8,7 @@ function prop {
     grep "${1}" gradle.properties | cut -d'=' -f2
 }
 
-MC_VERSION=$(prop minecraft_version)
+MC_VERSION="24w12a"
 
 if [[ $MC_VERSION == *"w"** ]]; then
     branch=port/${MC_VERSION}
