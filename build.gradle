@@ -187,7 +187,7 @@ dependencies {
                 11904: "11.0.621",
                 12001: "12.0.625",
                 12002: "13.0.685",
-                12005: "14.0.689-alpha",
+                12005: isFabric ? "14.0.689-alpha" : null,
         ]
         if (isFabric)
             modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: "13.0.685"}")
