@@ -4,11 +4,7 @@
 
 set -e
 
-function prop {
-    grep "${1}" gradle.properties | cut -d'=' -f2
-}
-
-MC_VERSION="24w12a"
+MC_VERSION=$(cat snapshot_version 2>/dev/null)
 
 if [[ $MC_VERSION == *"w"** ]]; then
     branch=port/${MC_VERSION}
