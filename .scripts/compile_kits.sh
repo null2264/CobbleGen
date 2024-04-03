@@ -1,5 +1,7 @@
 #!/bin/bash
 
+[ -d Kits ] && exit 0
+
 # REF: https://github.com/embeddedt/embeddium/blob/310ff4ca5d5a0ba49c72f2011d51f35d7308f57f/scripts/compile_kits.sh
 
 set -e
