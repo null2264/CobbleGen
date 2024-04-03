@@ -40,9 +40,10 @@ public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements J
 
     @Deserializer
     public static GeneratorMap fromJson(JsonObject json) {
-        if (json == null) return null;
-
         GeneratorMap result = new GeneratorMap();
+
+        if (json == null) return result;
+
         json.forEach((k, v) -> {
             if (!(v instanceof JsonArray)) return;
             result.put(CGIdentifier.of(k), ResultList.fromJson(v));
