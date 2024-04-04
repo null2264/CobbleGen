@@ -15,8 +15,18 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: NeoForge Kits Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/Kits
+          key: ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
+          restore-keys: |
+            ${{ runner.os }}-Kits-
+      - name: Compile NeoForge snapshot
+        run: ./.scripts/compile_kits.sh
       - run: chmod +x ./gradlew
-      - uses: actions/cache@v4
+      - name: Gradle Cache
+        uses: actions/cache@v4
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle.properties') }}
