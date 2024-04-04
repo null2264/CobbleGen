@@ -11,7 +11,6 @@ MC_VERSION=$(cat snapshot_version 2>/dev/null)
 if [[ $MC_VERSION == *"w"** ]]; then
     branch=port/${MC_VERSION}
     echo "Detected MC snapshot ${MC_VERSION}"
-    cd $(mktemp -d)
     echo "Downloading Kits ${branch}..."
     git clone -q -b ${branch} --depth 1 https://github.com/neoforged/NeoForge Kits >/dev/null
     cd Kits
