@@ -1,5 +1,5 @@
 plugins {
-    id "dev.architectury.loom" version "1.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.6-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
     id "io.github.null2264.preprocess"
     id "me.modmuss50.mod-publish-plugin" version "0.3.5"
@@ -92,7 +92,7 @@ configurations {
 dependencies {
     // TODO(addingVersion): For snapshots
     def mc = [
-            12005: "24w12a",
+            12005: isFabric ? "24w14a" : "24w13a",
     ]
     minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
@@ -290,7 +290,13 @@ processResources {
     }
 }
 
-def targetJavaVersion = mcVersion >= 11700 ? 17 : 8
+def targetJavaVersion =
+    if (mcVersion >= 12005 && isFabric)  // FIXME: At the moment we only have access to Fabric for 24w14a
+        21
+    else if (mcVersion >= 11700)
+        17
+    else
+        8
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -347,7 +353,7 @@ def cfSnapshots = [
 ][mcVersion]
 
 def mrSnapshots = [
-        12005: ["24w12a", "24w13a", "24w14a"],
+        12005: ["24w14a"],
 ][mcVersion]
 
 publishMods {
