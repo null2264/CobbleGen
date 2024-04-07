@@ -1,5 +1,5 @@
 plugins {
-    id "dev.architectury.loom" version "1.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.6-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
     id "io.github.null2264.preprocess"
     id "me.modmuss50.mod-publish-plugin" version "0.3.5"
@@ -50,6 +50,8 @@ repositories {
     maven { url = "https://maven.tterrag.com/" }
     maven { url = "https://maven.theillusivec4.top/" }
     maven { url = "https://maven.neoforged.net/releases" }
+    maven { url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/" }
+    mavenLocal()
 }
 
 archivesBaseName = project.archives_base_name
@@ -90,7 +92,7 @@ configurations {
 dependencies {
     // TODO(addingVersion): For snapshots
     def mc = [
-            12005: "24w09a"
+            12005: isFabric ? "24w14a" : "24w13a",
     ]
     minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
@@ -130,6 +132,7 @@ dependencies {
             // TODO(addingVersion)
             neoForge "net.neoforged:neoforge:" + [
                     12002: "20.2.86",
+                    12005: "20.5.0-alpha.${mc[mcVersion]}.+",
             ][mcVersion]
         }
     }
@@ -149,6 +152,9 @@ dependencies {
         // These act like a dummy, technically only here to provide their modules/packages
         if (isFabric) {
             modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
+            modCompileOnly("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+        } else {
+            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.1.e-318:slim") { transitive = false }
         }
 
         // <- EMI
@@ -163,6 +169,7 @@ dependencies {
                     11904: "1.19.4",
                     12001: "1.20.1",
                     12002: "1.20.2",
+                    12005: "1.20.2", // FIXME: Use 1.20.5 version of EMI
             ]
             // EMI support multiple platform since 1.0.0
             // EMI seems to also skip 1.19 and 1.19.1
@@ -180,7 +187,7 @@ dependencies {
                 11904: "11.0.621",
                 12001: "12.0.625",
                 12002: "13.0.685",
-                12005: "14.0.689-alpha",
+                12005: isFabric ? "14.0.689-alpha" : null,
         ]
         if (isFabric)
             modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: "13.0.685"}")
@@ -241,10 +248,10 @@ dependencies {
 
 shadowJar {
     zip64 true
-    relocate "blue.endless.jankson", "io.github.null2264.shadowed.blue.endless.jankson"
-    if (mcVersion < 12000) {
-        relocate "org.slf4j", "io.github.null2264.shadowed.org.slf4j"
-        relocate "org.apache.logging.slf4j", "io.github.null2264.shadowed.org.apache.logging.slf4j"
+    relocate "blue.endless.jankson", "io.github.null2264.shadowed.jankson"
+    if (mcVersion <= 11605) {
+        relocate "org.slf4j", "io.github.null2264.shadowed.slf4j"
+        relocate "org.apache.logging", "io.github.null2264.shadowed.log4j"
     }
     relocate "manifold", "io.github.null2264.shadowed.manifold"
     exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
@@ -283,7 +290,13 @@ processResources {
     }
 }
 
-def targetJavaVersion = mcVersion >= 11700 ? 17 : 8
+def targetJavaVersion =
+    if (mcVersion >= 12005 && isFabric)  // FIXME: At the moment we only have access to Fabric for 24w14a
+        21
+    else if (mcVersion >= 11700)
+        17
+    else
+        8
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -340,7 +353,7 @@ def cfSnapshots = [
 ][mcVersion]
 
 def mrSnapshots = [
-        12005: ["24w09a"],
+        12005: ["24w14a"],
 ][mcVersion]
 
 publishMods {
