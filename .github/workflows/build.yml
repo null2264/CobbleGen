@@ -8,10 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v2
-      - name: Setup JDK17 for NeoForge
-        run: |
-          # REF: https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
-          echo "JAVA_HOME=$(echo $JAVA_HOME_17_X64)" >> "$GITHUB_ENV"
       # - name: NeoForge Kits Cache
       #   uses: actions/cache@v4
       #   with:
@@ -20,7 +16,8 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-Kits-
       - name: Compile NeoForge snapshot
-        run: ./.scripts/compile_kits.sh
+        run: |
+          env JAVA_HOME="$(echo $JAVA_HOME_17_X64)" ./.scripts/compile_kits.sh
       - name: Setup JDK21
         run: |
           # REF: https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
