@@ -19,9 +19,10 @@ jobs:
         run: |
           env JAVA_HOME="$(echo $JAVA_HOME_17_X64)" ./.scripts/compile_kits.sh
       - name: Setup JDK21
-        run: |
-          # REF: https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
-          echo "JAVA_HOME=$(echo $JAVA_HOME_21_X64)" >> "$GITHUB_ENV"
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
       - run: chmod +x ./gradlew
       - name: Gradle Cache
         uses: actions/cache@v4
