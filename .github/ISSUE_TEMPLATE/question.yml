@@ -1,0 +1,62 @@
+name: ❓ Question
+description: Ask some question regarding the mod
+labels: [question]
+body:
+
+  - type: textarea
+    id: question
+    attributes:
+      label: What happened?
+      description: Your question
+      placeholder: |
+        Example: "My config doesn't work, what did I do wrong? Here is my config..."
+    validations:
+      required: true
+
+  - type: input
+    id: mod-version
+    attributes:
+      label: Mod version
+      description: You can find the mod feature from its jar file (e.g. cobblegen-**5.3.4**+1.16.5b40-BETA-fabric.jar), or you can just type the jar filename.
+      placeholder: |
+        Example: "5.3.4 or cobblegen-5.3.4+1.16.5b40-BETA-fabric"
+    validations:
+      required: true
+
+  - type: input
+    id: game-version
+    attributes:
+      label: Game version
+      description: You can find this somewhere in your launcher.
+      placeholder: |
+        Example: "1.20.4"
+    validations:
+      required: true
+
+  - type: input
+    id: loader
+    attributes:
+      label: Modloader
+      description: The loader you're using.
+      placeholder: |
+        Example: "Fabric, Quilt, or NeoForge"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: Read this carefully, we will close and ignore your issue if you skimmed through this.
+      options:
+        - label: I have searched the existing issues and this is a new ticket, **NOT** a duplicate or related to another open issue.
+          required: true
+        - label: I have written a short but informative title.
+          required: true
+        - label: If I'm writing customGen configuration, I acknowledge that there are only 3 type of gens that exists which are `cobbleGen`, `stoneGen`, and `basaltGen`. Using any other type (such as `oreGen`) would cause it to stop working.
+          required: true
+        - label: I have updated the mod to version **[5.3.4](https://github.com/null2264/CobbleGen/releases/latest)**.
+          required: true
+        - label: I have admitted that I am a clown by having checked this box, as I have not read these acknowledgements.
+        - label: I have filled out all of the requested information in this form.
+          required: true
