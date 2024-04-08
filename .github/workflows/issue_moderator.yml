@@ -13,7 +13,7 @@ jobs:
     - name: Moderate issues
       uses: keiyoushi/issue-moderator-action@a017be83547db6e107431ce7575f53c1dfa3296a # v2
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.ISSUE_PAT }}
         auto-close-rules: |
           [
             {
