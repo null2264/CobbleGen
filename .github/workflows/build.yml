@@ -28,6 +28,8 @@ jobs:
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
           echo "org.gradle.jvmargs=-Xms2G -Xmx12G -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxHeapSize=256m" >> gradle.properties
           echo "org.gradle.parallel=true" >> gradle.properties
+          echo "org.gradle.daemon=false" >> gradle.properties
+          echo "org.gradle.configureondemand=true" >> gradle.properties
       - name: Gradle Cache
         uses: actions/cache@v4
         with:
