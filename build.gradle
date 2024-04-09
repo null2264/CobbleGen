@@ -1,5 +1,4 @@
 plugins {
-    id "org.gradle.toolchains.foojay-resolver-convention"
     id "dev.architectury.loom" version "1.6-SNAPSHOT"
     id "com.github.johnrengelman.shadow"
     id "io.github.null2264.preprocess"
