@@ -290,8 +290,7 @@ processResources {
     }
 }
 
-def targetJavaVersion = (mcVersion >= 12005 && isFabric) ? 21  // FIXME: At the moment we only have access to Fabric for 24w14a
-    : (mcVersion >= 11700 ? 17 : 8)
+def targetJavaVersion = (mcVersion >= 12005) ? 21 : (mcVersion >= 11700 ? 17 : 8)
 tasks.withType(JavaCompile).configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly

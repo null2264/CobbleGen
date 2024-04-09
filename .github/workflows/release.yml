@@ -10,16 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: gradle/wrapper-validation-action@v2
-      # - name: NeoForge Kits Cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/Kits
-      #     key: ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-Kits-
+      - name: NeoForge Kits Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/Kits
+          key: ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
+          restore-keys: |
+            ${{ runner.os }}-Kits-
       - name: Compile NeoForge snapshot
         run: |
-          env JAVA_HOME="$(echo $JAVA_HOME_17_X64)" ./.scripts/compile_kits.sh
+          ./.scripts/compile_kits.sh
       - name: Setup JDK21
         run: |
           # REF: https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
