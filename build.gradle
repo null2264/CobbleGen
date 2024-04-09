@@ -92,7 +92,7 @@ configurations {
 dependencies {
     // TODO(addingVersion): For snapshots
     def mc = [
-            12005: isFabric ? "24w14a" : "24w13a",
+            12005: "24w14a",
     ]
     minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
