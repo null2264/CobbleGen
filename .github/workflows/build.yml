@@ -22,7 +22,11 @@ jobs:
         run: |
           # REF: https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
           echo "JAVA_HOME=$(echo $JAVA_HOME_21_X64)" >> "$GITHUB_ENV"
-      - run: chmod +x ./gradlew
+      - name: Setup build environment
+        run:
+          chmod +x ./gradlew
+          echo "org.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
+          echo "org.gradle.jvmargs=-Xmx8G" >> gradle.properties
       - name: Gradle Cache
         uses: actions/cache@v4
         with:
