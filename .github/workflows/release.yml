@@ -14,9 +14,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Kits
-          key: ${{ runner.os }}-Kits-${{ hashFiles('**/snapshot_version') }}
+          key: ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
           restore-keys: |
-            ${{ runner.os }}-Kits-
+            ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
       - name: Compile NeoForge snapshot
         run: |
           ./.scripts/compile_kits.sh
