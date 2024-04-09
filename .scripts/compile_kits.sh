@@ -12,7 +12,7 @@ if [[ $MC_VERSION == *"w"** ]]; then
     echo "Detected MC snapshot ${MC_VERSION}"
     echo "Downloading Kits ${branch}..."
     cd ~
-    git clone -q -b ${branch} --depth 1 https://github.com/neoforged/NeoForge Kits >/dev/null || $(SHOULD_COMPILE="n"; echo "Already exists, skipping...")
+    git clone -q -b ${branch} --depth 1 https://github.com/neoforged/NeoForge Kits >/dev/null || (SHOULD_COMPILE="n"; echo "Already exists, skipping...")
     cd Kits
     [ $SHOULD_COMPILE = "y" ] && echo "Compiling Kits" && ./gradlew neoforge:setup
     ./gradlew neoforge:publishToMavenLocal
