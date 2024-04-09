@@ -26,7 +26,7 @@ jobs:
         run: |
           chmod +x ./gradlew
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
-          echo "org.gradle.jvmargs=-Xms2G -Xmx6G -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8 -XX:MaxHeapSize=256m" >> gradle.properties
+          echo "org.gradle.jvmargs=-Xmx6G" >> gradle.properties
           echo "org.gradle.parallel=true" >> gradle.properties
           echo "org.gradle.cache.cleanup=false" >> gradle.properties
           echo "org.gradle.daemon=false" >> gradle.properties
