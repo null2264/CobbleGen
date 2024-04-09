@@ -37,7 +37,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build with Gradle
-        run: ./gradlew build --stacktrace
+        run: ./.scripts/compile.sh
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst versions/*/build/libs
       - name: Upload build folder
