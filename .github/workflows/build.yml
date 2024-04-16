@@ -13,7 +13,7 @@ jobs:
         uses: null2264/actions/neoforge-snapshot@6712f98d592b126629afd27dc4870c93b53426b4
         with:
           mc-version: 24w14a
-          gradle-no-cache-if: false  # FIXME: For debugging, for prod use expression
+          gradle-no-cache-if: true  # Cache doesn't work
 
       - name: Setup Gradle
         uses: null2264/actions/gradle-setup@6712f98d592b126629afd27dc4870c93b53426b4
