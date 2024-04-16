@@ -17,7 +17,7 @@ jobs:
       - name: Get mod versions
         id: get-mod-versions
         run: |
-          echo "versions=\"$(ls -1 versions | grep -e '.\.')\"" >> $GITHUB_OUTPUT
+          echo "versions=\"$(ls versions | tr '\n' ' ' | grep -e '.\.')\"" >> $GITHUB_OUTPUT
       - uses: null2264/actions/replaymod-preprocessor-compile@d458cba90251e858b20fe655d89ff78626318b0c
         with:
           versions: ${{ steps.get-mod-versions.outputs.versions }}
