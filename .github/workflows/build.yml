@@ -18,7 +18,6 @@ jobs:
         uses: null2264/actions/neoforge-snapshot@8ec887de92fe1614714e8e2e061ffe3299ae68aa
         with:
           mc-version: 24w14a
-          java-version: 21
           skip-gradle-setup: 'true'
 
       - name: Get mod versions
