@@ -7,21 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: gradle/wrapper-validation-action@v2
-      - name: NeoForge Kits Cache
-        uses: actions/cache@v4
+      - uses: null2264/actions/gradle-setup@master
         with:
-          path: ~/Kits
-          key: ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
-          restore-keys: |
-            ${{ runner.os }}-Kits-${{ hashFiles('snapshot_version') }}
-      - name: Compile NeoForge snapshot
-        run: |
-          ./.scripts/compile_kits.sh
-      - name: Setup JDK21
-        run: |
-          # REF: https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
-          echo "JAVA_HOME=$(echo $JAVA_HOME_21_X64)" >> "$GITHUB_ENV"
+          java: 21
+      - uses: null2264/actions/neoforge-snapshot@master
+        with:
+          mc-version: 24w14a
       - name: Setup build environment
         run: |
           chmod +x ./gradlew
