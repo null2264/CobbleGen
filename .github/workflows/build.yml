@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: null2264/actions/gradle-setup@b06102633176b385fb532d2997c64543425f4509
+      - uses: null2264/actions/gradle-setup@8d41de2596a082b0cc1fa5cd2bd40a6afa601c90
         with:
           java: 21
-      - uses: null2264/actions/neoforge-snapshot@b06102633176b385fb532d2997c64543425f4509
+      - uses: null2264/actions/neoforge-snapshot@8d41de2596a082b0cc1fa5cd2bd40a6afa601c90
         with:
           mc-version: 24w14a
       - name: Setup build environment
