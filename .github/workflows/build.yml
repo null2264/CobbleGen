@@ -10,14 +10,14 @@ jobs:
       - uses: null2264/actions/gradle-setup@d458cba90251e858b20fe655d89ff78626318b0c
         with:
           java: 21
+      - name: Get mod versions
+        id: get-mod-versions
+        run: |
+          echo "versions=$(ls versions | grep -e '.\.' | tr '\n' ' ')" >> $GITHUB_OUTPUT
       - uses: null2264/actions/neoforge-snapshot@d458cba90251e858b20fe655d89ff78626318b0c
         with:
           mc-version: 24w14a
           java-version: 21
-      - name: Get mod versions
-        id: get-mod-versions
-        run: |
-          echo "versions=\"$(ls versions | grep -e '.\.' | tr '\n' ' ')\"" >> $GITHUB_OUTPUT
       - uses: null2264/actions/replaymod-preprocessor-compile@d458cba90251e858b20fe655d89ff78626318b0c
         with:
           versions: ${{ steps.get-mod-versions.outputs.versions }}
