@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Gradle
-        uses: null2264/actions/gradle-setup@aaab4a46352b2207f739607a0426cc3b22633c0e
+        uses: null2264/actions/gradle-setup@1cc44b9be27b8914ca577a0905288e99c67df067
         with:
           java: 21
           gradle-home-cache-includes: |
@@ -18,10 +18,10 @@ jobs:
             notifications
             Kits/.gradle/caches
             Kits/.gradle/notifications
-          gradle-cache-if: true  # FIXME: For debugging, for prod use expression
+          gradle-no-cache-if: false  # FIXME: For debugging, for prod use expression
 
       - name: Setup NeoForge Kits for snapshots
-        uses: null2264/actions/neoforge-snapshot@aaab4a46352b2207f739607a0426cc3b22633c0e
+        uses: null2264/actions/neoforge-snapshot@1cc44b9be27b8914ca577a0905288e99c67df067
         with:
           mc-version: 24w14a
           skip-gradle-setup: 'true'
@@ -32,7 +32,7 @@ jobs:
           echo "versions=$(ls versions | grep -e '.\.' | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - name: Build with Gradle
-        uses: null2264/actions/replaymod-preprocessor-compile@aaab4a46352b2207f739607a0426cc3b22633c0e
+        uses: null2264/actions/replaymod-preprocessor-compile@1cc44b9be27b8914ca577a0905288e99c67df067
         with:
           versions: ${{ steps.get-mod-versions.outputs.versions }}
 
