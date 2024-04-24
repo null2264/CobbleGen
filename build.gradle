@@ -255,7 +255,13 @@ shadowJar {
         relocate "org.apache.logging", "io.github.null2264.shadowed.log4j"
     }
     relocate "manifold", "io.github.null2264.shadowed.manifold"
-    exclude (isFabric ? "META-INF/mods.toml" : "fabric.mod.json")
+    if (isFabric) {
+        exclude("META-INF/mods.toml")
+        exclude("META-INF/neoforge.mods.toml")
+    } else if (isForge) {
+        exclude("fabric.mod.json")
+        exclude((isNeo && mcVersion >= 12005) ? "META-INF/mods.toml" : "META-INF/neoforge.mods.toml")
+    }
     exclude "architectury.common.json"
 
     configurations = [project.configurations.shade]
@@ -285,7 +291,14 @@ processResources {
     inputs.property "mcversion", metadataMCVersion
     filteringCharset "UTF-8"
 
-    filesMatching(isFabric ? "fabric.mod.json" : "META-INF/mods.toml") {
+    def metadataFilename = ""
+    if (isFabric) {
+        metadataFilename = "fabric.mod.json"
+    } else if (isForge) {
+        metadataFilename = (isNeo && mcVersion >= 12005) ? "META-INF/neoforge.mods.toml" : "META-INF/mods.toml"
+    }
+
+    filesMatching(metadataFilename) {
         filter { line -> line.trim().startsWith('//') ? '' : line }  // strip comments
         expand "version": metadataVersion, "mcversion": metadataMCVersion, "forge": (isNeo ? "neoforge" : "forge")
     }
