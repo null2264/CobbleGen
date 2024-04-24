@@ -92,7 +92,6 @@ configurations {
 dependencies {
     // TODO(addingVersion): For snapshots
     def mc = [
-            12005: "24w14a",
     ]
     minecraft "com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}"
 
@@ -104,7 +103,7 @@ dependencies {
         else if (mcVersion <= 12001)
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
         else
-            modImplementation "net.fabricmc:fabric-loader:0.15.7"
+            modImplementation "net.fabricmc:fabric-loader:0.15.10"
 
         // For testing
         if (project.recipe_viewer != "none" && mcVersion > 11605)
@@ -132,7 +131,9 @@ dependencies {
             // TODO(addingVersion)
             neoForge "net.neoforged:neoforge:" + [
                     12002: "20.2.86",
-                    12005: "20.5.0-alpha.${mc[mcVersion]}.+",
+                    12005: "20.5.0-beta",
+                    // snapshot version format:
+                    // "20.5.0-alpha.${mc[mcVersion]}.+"
             ][mcVersion]
         }
     }
@@ -339,15 +340,13 @@ def mcReleaseVersions = [
         11902: ["1.19", "1.19.1", "1.19.2"],
         12001: ["1.20", "1.20.1"],
         12002: ["1.20.2", "1.20.3", "1.20.4"],
-        12005: ["1.20.5"], // TODO: Still in snapshot
+        12005: ["1.20.5"],
 ][mcVersion]
 
 def cfSnapshots = [
-        12005: ["1.20.5-Snapshot"],
 ][mcVersion]
 
 def mrSnapshots = [
-        12005: ["24w14a"],
 ][mcVersion]
 
 publishMods {
