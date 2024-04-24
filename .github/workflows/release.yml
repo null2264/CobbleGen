@@ -16,12 +16,6 @@ jobs:
         with:
           java: 21
 
-      - name: Setup NeoForge Kits for snapshots
-        uses: null2264/actions/neoforge-snapshot@1cc44b9be27b8914ca577a0905288e99c67df067
-        with:
-          mc-version: 24w14a
-          skip-gradle-setup: 'true'
-
       - name: Get mod versions
         id: get-mod-versions
         run: |
