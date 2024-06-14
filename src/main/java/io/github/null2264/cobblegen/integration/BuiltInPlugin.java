@@ -40,19 +40,21 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
     private boolean isReload = false;
 
-    private Optional<Fluid> getFluidFromString(String string) {
+    @Nullable
+    private Fluid getFluidFromString(String string) {
         try {
-            return Optional.of(Util.getFluid(ResourceLocation.tryParse(string)));
+            return Util.getFluid(ResourceLocation.tryParse(string));
         } catch (Exception e) {
-            return Optional.empty();
+            return null;
         }
     }
 
-    private Optional<Block> getBlockFromString(String string) {
+    @Nullable
+    private Block getBlockFromString(String string) {
         try {
-            return Optional.of(Util.getBlock(ResourceLocation.tryParse(string)));
+            return Util.getBlock(ResourceLocation.tryParse(string));
         } catch (Exception e) {
-            return Optional.empty();
+            return null;
         }
     }
 
@@ -80,8 +82,8 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {
-                Optional<Fluid> actualFluid = getFluidFromString(fluid);
-                if (actualFluid.isEmpty()) return;
+                Fluid actualFluid = getFluidFromString(fluid);
+                if (actualFluid == null) return;
 
                 value.forEach((neighbour, gen) -> {
                     final GeneratorMap results = gen.results;
@@ -91,13 +93,13 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);
 
                     if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
-                        Optional<Fluid> neighbourFluid = getFluidFromString(neighbour);
-                        if (neighbourFluid.isPresent()) {
+                        Fluid neighbourFluid = getFluidFromString(neighbour);
+                        if (neighbourFluid != null) {
                             registry.addGenerator(
-                                    actualFluid.get(),
+                                    actualFluid,
                                     new StoneGenerator(
                                             gen.resultsFromTop,
-                                            neighbourFluid.get(),
+                                            neighbourFluid,
                                             gen.silent
                                     )
                             );
@@ -108,17 +110,17 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (!results.isEmpty()) {
                         Generator generator = null;
                         if (isNeighbourBlock) {
-                            Optional<Block> neighbourBlock = getBlockFromString(neighbour);
-                            if (neighbourBlock.isPresent())
-                                generator = new BasaltGenerator(results, neighbourBlock.get(), gen.silent);
+                            Block neighbourBlock = getBlockFromString(neighbour);
+                            if (neighbourBlock != null)
+                                generator = new BasaltGenerator(results, neighbourBlock, gen.silent);
                         } else {
-                            Optional<Fluid> neighbourFluid = getFluidFromString(neighbour);
-                            if (neighbourFluid.isPresent())
-                                generator = new CobbleGenerator(results, neighbourFluid.get(), gen.silent, obi);
+                            Fluid neighbourFluid = getFluidFromString(neighbour);
+                            if (neighbourFluid != null)
+                                generator = new CobbleGenerator(results, neighbourFluid, gen.silent, obi);
                         }
 
                         if (generator != null) {
-                            registry.addGenerator(actualFluid.get(), generator);
+                            registry.addGenerator(actualFluid, generator);
                             count.getAndIncrement();
                         }
                     }
