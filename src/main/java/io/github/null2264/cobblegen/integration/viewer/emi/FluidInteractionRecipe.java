@@ -26,6 +26,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.github.null2264.cobblegen.util.Util.identifierOf;
+
 public class FluidInteractionRecipe extends FluidInteractionRecipeHolder implements EmiRecipe
 {
     private final int initialHeight;
@@ -149,7 +151,12 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         List<String> recipeWhitelist = getResult().dimensions;
         try {
             for (String dim : recipeWhitelist) {
-                ResourceLocation id = new ResourceLocation(dim);
+                ResourceLocation id;
+                try {
+                    id = ResourceLocation.tryParse(dim);
+                } catch (Exception e) {
+                    continue;
+                }
                 whitelist.add(ClientTooltipComponent.create(TextCompat.literal("- " + id).getVisualOrderText()));
             }
         } catch (NullPointerException ignored) {
@@ -172,7 +179,12 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         List<String> recipeBlacklist = getResult().excludedDimensions;
         try {
             for (String dim : recipeBlacklist) {
-                ResourceLocation id = new ResourceLocation(dim);
+                ResourceLocation id;
+                try {
+                    id = ResourceLocation.tryParse(dim);
+                } catch (Exception e) {
+                    continue;
+                }
                 blacklist.add(ClientTooltipComponent.create(TextCompat.literal("- " + id).getVisualOrderText()));
             }
         } catch (NullPointerException ignored) {
@@ -188,17 +200,22 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     @Override
     public ResourceLocation getId() {
-        ResourceLocation resultId = new ResourceLocation(getResult().id);
+        ResourceLocation resultId;
+        try {
+            resultId = ResourceLocation.tryParse(getResult().id);
+        } catch (Exception e) {
+            resultId = identifierOf(getResult().id);
+        }
         ResourceLocation source = Util.getFluidId(getSourceFluid());
         ResourceLocation neighbour;
         if (getNeighbourBlock().equals(Blocks.AIR))
             neighbour = Util.getFluidId(getNeighbourFluid());
         else
             neighbour = Util.getBlockId(getNeighbourBlock());
-        ResourceLocation modifierId = Util.identifierOf("none");
+        ResourceLocation modifierId = identifierOf("none");
         if (!(getModifier().equals(Blocks.AIR)))
             modifierId = Util.getBlockId(getModifier());
-        return Util.identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
+        return identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
                 .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName());
     }
 }

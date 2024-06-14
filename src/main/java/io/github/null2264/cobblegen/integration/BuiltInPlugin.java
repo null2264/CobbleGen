@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
@@ -39,12 +40,20 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
     private boolean isReload = false;
 
-    private Fluid getFluidFromString(String string) {
-        return Util.getFluid(new ResourceLocation(string));
+    private Optional<Fluid> getFluidFromString(String string) {
+        try {
+            return Optional.of(Util.getFluid(ResourceLocation.tryParse(string)));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
-    private Block getBlockFromString(String string) {
-        return Util.getBlock(new ResourceLocation(string));
+    private Optional<Block> getBlockFromString(String string) {
+        try {
+            return Optional.of(Util.getBlock(ResourceLocation.tryParse(string)));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -71,7 +80,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {
-                Fluid actualFluid = getFluidFromString(fluid);
+                Optional<Fluid> actualFluid = getFluidFromString(fluid);
+                if (actualFluid.isEmpty()) return;
+
                 value.forEach((neighbour, gen) -> {
                     final GeneratorMap results = gen.results;
                     final GeneratorMap obi = gen.obsidian;
@@ -80,26 +91,36 @@ public class BuiltInPlugin implements CobbleGenPlugin
                     if (isNeighbourBlock) neighbour = neighbour.substring(2);
 
                     if (gen.resultsFromTop != null && !gen.resultsFromTop.isEmpty()) {
-                        registry.addGenerator(
-                                actualFluid,
-                                new StoneGenerator(
-                                        gen.resultsFromTop,
-                                        getFluidFromString(neighbour),
-                                        gen.silent
-                                )
-                        );
-                        count.getAndIncrement();
+                        Optional<Fluid> neighbourFluid = getFluidFromString(neighbour);
+                        if (neighbourFluid.isPresent()) {
+                            registry.addGenerator(
+                                    actualFluid.get(),
+                                    new StoneGenerator(
+                                            gen.resultsFromTop,
+                                            neighbourFluid.get(),
+                                            gen.silent
+                                    )
+                            );
+                            count.getAndIncrement();
+                        }
                     }
 
                     if (!results.isEmpty()) {
-                        Generator generator;
-                        if (isNeighbourBlock)
-                            generator = new BasaltGenerator(results, getBlockFromString(neighbour), gen.silent);
-                        else
-                            generator = new CobbleGenerator(results, getFluidFromString(neighbour), gen.silent, obi);
+                        Generator generator = null;
+                        if (isNeighbourBlock) {
+                            Optional<Block> neighbourBlock = getBlockFromString(neighbour);
+                            if (neighbourBlock.isPresent())
+                                generator = new BasaltGenerator(results, neighbourBlock.get(), gen.silent);
+                        } else {
+                            Optional<Fluid> neighbourFluid = getFluidFromString(neighbour);
+                            if (neighbourFluid.isPresent())
+                                generator = new CobbleGenerator(results, neighbourFluid.get(), gen.silent, obi);
+                        }
 
-                        registry.addGenerator(actualFluid, generator);
-                        count.getAndIncrement();
+                        if (generator != null) {
+                            registry.addGenerator(actualFluid.get(), generator);
+                            count.getAndIncrement();
+                        }
                     }
                 });
             });

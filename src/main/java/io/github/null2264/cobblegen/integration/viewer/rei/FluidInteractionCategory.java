@@ -144,7 +144,12 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         List<String> recipeWhitelist = display.getResult().dimensions;
         try {
             for (String dim : recipeWhitelist) {
-                ResourceLocation id = new ResourceLocation(dim);
+                ResourceLocation id;
+                try {
+                    id = ResourceLocation.tryParse(dim);
+                } catch (Exception e) {
+                    continue;
+                }
                 whitelist.add(TextCompat.literal("- " + id));
             }
         } catch (NullPointerException ignored) {
@@ -169,7 +174,12 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         List<String> recipeBlacklist = display.getResult().excludedDimensions;
         try {
             for (String dim : recipeBlacklist) {
-                ResourceLocation id = new ResourceLocation(dim);
+                ResourceLocation id;
+                try {
+                    id = ResourceLocation.tryParse(dim);
+                } catch (Exception e) {
+                    continue;
+                }
                 blacklist.add(TextCompat.literal("- " + id));
             }
         } catch (NullPointerException ignored) {

@@ -28,11 +28,19 @@ import net.minecraft.tags.TagKey;
 public class Util
 {
     public static ResourceLocation identifierOf(GeneratorType type) {
-        return new ResourceLocation(MOD_ID, type.name().toLowerCase());
+        return identifierOf(type.name().toLowerCase());
     }
 
     public static ResourceLocation identifierOf(String id) {
-        return new ResourceLocation(MOD_ID, id);
+        return identifierOf(MOD_ID, id);
+    }
+
+    public static ResourceLocation identifierOf(String namespace, String id) {
+        //#if MC>=12100
+        //$$ return ResourceLocation.fromNamespaceAndPath(namespace, id);
+        //#else
+        return new ResourceLocation(namespace, id);
+        //#endif
     }
 
     @NotNull

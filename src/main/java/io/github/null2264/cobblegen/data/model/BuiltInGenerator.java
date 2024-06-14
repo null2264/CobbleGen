@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static io.github.null2264.cobblegen.util.Util.identifierOf;
+
 @ApiStatus.Internal
 public interface BuiltInGenerator extends Generator
 {
@@ -45,10 +47,13 @@ public interface BuiltInGenerator extends Generator
             if (block.minY != null && block.minY >= yLevel) continue;
 
             if (block.id.startsWith("#")) {
-                List<ResourceLocation> taggedBlocks = Util.getTaggedBlockIds(new ResourceLocation(block.id.substring(1)));
-                for (ResourceLocation taggedBlock : taggedBlocks) {
-                    filteredBlockIds.add(new WeightedBlock(taggedBlock.toString(), block.weight));
-                    totalWeight.updateAndGet(v -> v + block.weight);
+                try {
+                    List<ResourceLocation> taggedBlocks = Util.getTaggedBlockIds(ResourceLocation.tryParse(block.id.substring(1)));
+                    for (ResourceLocation taggedBlock : taggedBlocks) {
+                        filteredBlockIds.add(new WeightedBlock(taggedBlock.toString(), block.weight));
+                        totalWeight.updateAndGet(v -> v + block.weight);
+                    }
+                } catch (Exception ignored) {
                 }
             } else {
                 filteredBlockIds.add(block);
@@ -87,6 +92,12 @@ public interface BuiltInGenerator extends Generator
             return Optional.empty();
         }
 
-        return Optional.of(Util.getBlock(new ResourceLocation(replacementId)).defaultBlockState());
+        ResourceLocation id;
+        try {
+            id = ResourceLocation.tryParse(replacementId);
+        } catch (Exception e) {
+            id = identifierOf(replacementId);
+        }
+        return Optional.of(Util.getBlock(id).defaultBlockState());
     }
 }

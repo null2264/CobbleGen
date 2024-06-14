@@ -121,7 +121,12 @@ public class CGEMIPlugin implements EmiPlugin
                         }
 
                         for (WeightedBlock block : blocks) {
-                            ResourceLocation resultId = new ResourceLocation(block.id);
+                            ResourceLocation resultId;
+                            try {
+                                resultId = ResourceLocation.tryParse(block.id);
+                            } catch (Exception e) {
+                                continue;
+                            }
                             EmiStack output = EmiStack.of(Util.getBlock(resultId));
 
                             ResourceLocation source = Util.getFluidId(fluid);
@@ -202,7 +207,12 @@ public class CGEMIPlugin implements EmiPlugin
                                         List<String> recipeBlacklist = block.excludedDimensions;
                                         try {
                                             for (String dim : recipeBlacklist) {
-                                                ResourceLocation dimId = new ResourceLocation(dim);
+                                                ResourceLocation dimId;
+                                                try {
+                                                    dimId = ResourceLocation.tryParse(dim);
+                                                } catch (Exception e) {
+                                                    continue;
+                                                }
                                                 s.appendTooltip(TextCompat.literal("- " + dimId));
                                             }
                                         } catch (NullPointerException ignored) {
@@ -214,7 +224,12 @@ public class CGEMIPlugin implements EmiPlugin
                                         List<String> recipeWhitelist = block.dimensions;
                                         try {
                                             for (String dim : recipeWhitelist) {
-                                                ResourceLocation dimId = new ResourceLocation(dim);
+                                                ResourceLocation dimId;
+                                                try {
+                                                    dimId = ResourceLocation.tryParse(dim);
+                                                } catch (Exception e) {
+                                                    continue;
+                                                }
                                                 s.appendTooltip(TextCompat.literal("- " + dimId));
                                             }
                                         } catch (NullPointerException ignored) {

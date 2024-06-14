@@ -22,7 +22,8 @@ def supportedVersionRange = [
         11902: ["1.19-", "1.19.2"],
         12001: ["1.20-", "1.20.1"],
         12002: ["1.20.2-", "1.20.4"],
-        12005: ["1.20.5-", null],
+        12005: ["1.20.5-", "1.20.6"],
+        12100: ["1.21-", null],
 ][mcVersion]
 
 preprocess {
@@ -103,7 +104,7 @@ dependencies {
         else if (mcVersion <= 12001)
             modImplementation "net.fabricmc:fabric-loader:0.14.21"
         else
-            modImplementation "net.fabricmc:fabric-loader:0.15.10"
+            modImplementation "net.fabricmc:fabric-loader:0.15.11"
 
         // For testing
         if (project.recipe_viewer != "none" && mcVersion > 11605)
@@ -115,7 +116,8 @@ dependencies {
                     11904: "0.83.0+1.19.4",
                     12001: "0.83.1+1.20.1",
                     12002: "0.89.0+1.20.2",
-                    12005: "0.96.2+1.20.5",
+                    12005: "0.97.8+1.20.5",
+                    12100: "0.100.1+1.21",
             ][mcVersion])
     } else {
         if (!isNeo) {
@@ -131,7 +133,8 @@ dependencies {
             // TODO(addingVersion)
             neoForge "net.neoforged:neoforge:" + [
                     12002: "20.2.86",
-                    12005: "20.5.0-beta",
+                    12005: "20.5.21-beta",
+                    12100: "21.0.2-beta",
                     // snapshot version format:
                     // "20.5.0-alpha.${mc[mcVersion]}.+"
             ][mcVersion]
@@ -170,13 +173,14 @@ dependencies {
                     11904: "1.19.4",
                     12001: "1.20.1",
                     12002: "1.20.2",
-                    12005: "1.20.2", // FIXME: Use 1.20.5 version of EMI
+                    12005: "1.20.6",
+                    12100: "1.20.6", // FIXME: Use 1.21 version of EMI
             ]
             // EMI support multiple platform since 1.0.0
             // EMI seems to also skip 1.19 and 1.19.1
-            modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? (suffix[mcVersion] ?: "1.20.2") : "1.19.2"}:api")
+            modCompileOnly("dev.emi:emi-${isFabric ? "fabric" : (mcVersion >= 12005 ? "neoforge" : "forge")}:${project.emi_version}+${mcVersion >= 11902 ? (suffix[mcVersion] ?: "1.20.2") : "1.19.2"}:api")
             if (project.recipe_viewer == "emi" && suffix[mcVersion] != null)
-                modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : "forge"}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : "1.19.2"}")
+                modLocalRuntime("dev.emi:emi-${isFabric ? "fabric" : (mcVersion >= 12005 ? "neoforge" : "forge")}:${project.emi_version}+${mcVersion >= 11902 ? suffix[mcVersion] : "1.19.2"}")
         }
         // EMI ->
 
@@ -188,16 +192,18 @@ dependencies {
                 11904: "11.0.621",
                 12001: "12.0.625",
                 12002: "13.0.685",
-                12005: isFabric ? "14.0.689-alpha" : null,
+                12005: "15.0.728",
+                12100: null,
         ]
+        def reiFallback = "15.0.728"
         if (isFabric)
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: "13.0.685"}")
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: reiFallback}")
         // NOTE: I need the full package for Forge(-like) loaders since for whatever reason @REIPluginClient
         // is not included in API, thanks REI
         else if (!isNeo)
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${(reiVersions[mcVersion] ?: "13.0.685")}")
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${(reiVersions[mcVersion] ?: reiFallback)}")
         else
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${(reiVersions[mcVersion] ?: "13.0.685")}")
+            modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${(reiVersions[mcVersion] ?: reiFallback)}")
         if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
@@ -218,10 +224,11 @@ dependencies {
                 12001: "15.0.0.12",
                 12002: "16.0.0.28",
         ]
-        def fallbackJeiVer = "16.0.0.28"
-        def fallbackJeiMcVer = "1.20.2"
+        def fallbackJeiVer = "18.0.0.62"
+        def fallbackJeiMcVer = "1.20.6"
         def jeiMc = [
-                12005: fallbackJeiMcVer,
+                12005: fallbackJeiMcVer,  // JEI skipped 1.20.5
+                12100: fallbackJeiMcVer,
         ]
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersions[mcVersion] ?: fallbackJeiVer}")
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${isFabric ? "fabric" : "forge"}-api:${jeiVersions[mcVersion] ?: fallbackJeiVer}")
@@ -353,7 +360,8 @@ def mcReleaseVersions = [
         11902: ["1.19", "1.19.1", "1.19.2"],
         12001: ["1.20", "1.20.1"],
         12002: ["1.20.2", "1.20.3", "1.20.4"],
-        12005: ["1.20.5"],
+        12005: ["1.20.5", "1.20.6"],
+        12100: ["1.21"],
 ][mcVersion]
 
 def cfSnapshots = [

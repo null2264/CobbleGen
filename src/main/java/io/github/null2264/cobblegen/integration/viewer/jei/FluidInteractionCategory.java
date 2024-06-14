@@ -194,7 +194,12 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             List<String> recipeDimList = recipe.getResult().dimensions;
             try {
                 for (String dim : recipeDimList) {
-                    ResourceLocation id = new ResourceLocation(dim);
+                    ResourceLocation id;
+                    try {
+                        id = ResourceLocation.tryParse(dim);
+                    } catch (Exception e) {
+                        continue;
+                    }
                     biomeList.add(TextCompat.literal("- " + id));
                 }
             } catch (NullPointerException ignored) {
@@ -211,7 +216,12 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             List<String> recipeDimList = recipe.getResult().excludedDimensions;
             try {
                 for (String dim : recipeDimList) {
-                    ResourceLocation id = new ResourceLocation(dim);
+                    ResourceLocation id;
+                    try {
+                        id = ResourceLocation.tryParse(dim);
+                    } catch (Exception e) {
+                        continue;
+                    }
                     biomeList.add(TextCompat.literal("- " + id));
                 }
             } catch (NullPointerException ignored) {

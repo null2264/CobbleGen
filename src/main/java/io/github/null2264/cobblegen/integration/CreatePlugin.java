@@ -25,16 +25,16 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "limestone")), 1.0)),
-                        Util.getFluid(new ResourceLocation("create", "honey")),
+                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(Util.identifierOf("create", "limestone")), 1.0)),
+                        Util.getFluid(Util.identifierOf("create", "honey")),
                         false
                 )
         );
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(new ResourceLocation("create", "scoria")), 1.0)),
-                        Util.getFluid(new ResourceLocation("create", "chocolate")),
+                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(Util.identifierOf("create", "scoria")), 1.0)),
+                        Util.getFluid(Util.identifierOf("create", "chocolate")),
                         false
                 )
         );

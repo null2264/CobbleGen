@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
+import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 //#if MC<=1.16.5
 //$$ public class CGIdentifier
@@ -75,7 +76,7 @@ public record CGIdentifier(String modid, String name)
 
     public ResourceLocation toMC() {
         if (isWildcard()) throw new RuntimeException("Wildcard is not a valid MC ID");
-        return new ResourceLocation(modid, name);
+        return identifierOf(modid, name);
     }
 
     public static CGIdentifier fromBlock(Block block) {
