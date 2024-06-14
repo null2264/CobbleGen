@@ -16,8 +16,13 @@ public abstract class ConnectionMixin {
     //#if MC>=1.20.2
     //$$ @Shadow public abstract boolean isConnected();
     //$$
+    //#if MC>=1.21.0
+    //$$ @Inject(method = "disconnect(Lnet/minecraft/network/DisconnectionDetails;)V", at = @At("TAIL"))
+    //$$ private void disconnect(net.minecraft.network.DisconnectionDetails details, CallbackInfo ci) {
+    //#else
     //$$ @Inject(method = "disconnect", at = @At("TAIL"))
-    //$$ private void disconnect(Component component, CallbackInfo ci) {
+    //$$ private void disconnect(net.minecraft.network.chat.Component component, CallbackInfo ci) {
+    //#endif
     //$$     if (this.isConnected())
     //$$         FLUID_INTERACTION.disconnect();
     //$$ }
