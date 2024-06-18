@@ -107,10 +107,7 @@ public class Util
         blockList.ifPresent(t -> t.stream().forEach(taggedBlock -> {
             //#if MC>1.16.5
             Optional<ResourceKey<Block>> key = taggedBlock.unwrapKey();
-            if (key.isPresent()) {
-                ResourceKey<Block> actualKey = key.get();
-                blockIds.add(actualKey.registry());
-            }
+            key.ifPresent(k -> blockIds.add(k.location()));
             //#else
             //$$ blockIds.add(getBlockId(taggedBlock));
             //#endif
