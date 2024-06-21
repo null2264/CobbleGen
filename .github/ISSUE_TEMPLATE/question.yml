@@ -55,7 +55,7 @@ body:
           required: true
         - label: If I'm writing customGen configuration, I acknowledge that there are only 3 type of gens that exists which are `cobbleGen`, `stoneGen`, and `basaltGen`. Using any other type (such as `oreGen`) would cause it to stop working.
           required: true
-        - label: I have updated the mod to version **[5.3.8](https://github.com/null2264/CobbleGen/releases/latest)**.
+        - label: I have updated the mod to version **[5.3.9](https://github.com/null2264/CobbleGen/releases/latest)**.
           required: true
         - label: I have admitted that I am a clown by having checked this box, as I have not read these acknowledgements.
         - label: I have filled out all of the requested information in this form.
