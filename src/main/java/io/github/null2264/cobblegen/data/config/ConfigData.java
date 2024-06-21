@@ -148,7 +148,7 @@ public class ConfigData implements Config, JanksonSerializable
          */
         config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
-        config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
+        config.basaltGen = ResultList.fromJson(json.get("basaltGen"));
         config.customGen = CustomGen.fromJson(json.getObject("customGen"));
         config.advanced = FluidInteractionMap.fromJson(json.getObject("advanced"));
         return config;
