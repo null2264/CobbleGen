@@ -59,7 +59,7 @@ repositories {
 
 val archivesBaseName = project.properties["archives_base_name"]
 
-val buildNumber = System.getenv("GITHUB_RUN_NUMBER")
+val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
 project.version = (project.properties["mod_version"] as String? ?: "") + "+${mcVersionStr}" + (if (buildNumber != null) "b${buildNumber}-" else "-") + (project.properties["version_stage"] ?: "") + (if (isFabric) "-fabric" else (if (isNeo) "-neoforge" else "-forge"))
 
 group = project.properties["maven_group"] as String
@@ -87,7 +87,7 @@ loom {
     }
 }
 
-val shade by configurations.creating {
+val shade: Configuration by configurations.creating {
     configurations.modImplementation.get().extendsFrom(this)
 }
 
@@ -159,7 +159,7 @@ dependencies {
             modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.properties["port_lib_version_1_18_2"]}")
             modCompileOnly("com.simibubi.create:create-fabric-${project.properties["minecraft_version_1_18_2"]}:${project.properties["create_version_1_18_2"]}")
         } else {
-            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.1.e-318:slim") { setTransitive(false) }
+            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.1.e-318:slim") { isTransitive = false }
         }
 
         // <- EMI
