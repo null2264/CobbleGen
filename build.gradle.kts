@@ -62,7 +62,7 @@ val archivesBaseName = project.properties["archives_base_name"]
 val buildNumber = System.getenv("GITHUB_RUN_NUMBER")
 project.version = (project.properties["mod_version"] as String? ?: "") + "+${mcVersionStr}" + (if (buildNumber != null) "b${buildNumber}-" else "-") + (project.properties["version_stage"] ?: "") + (if (isFabric) "-fabric" else (if (isNeo) "-neoforge" else "-forge"))
 
-group = project.properties["maven_group"]
+group = project.properties["maven_group"] as String
 
 loom {
     silentMojangMappingsLicense()
@@ -280,7 +280,7 @@ artifacts.add("archives", shadowJar)
 
 val remapJar by tasks.getting(RemapJarTask::class) {
     dependsOn(shadowJar)
-    input.set(shadowJar.archiveFile)
+    inputFile.set(shadowJar.archiveFile)
 }
 
 val processResources by tasks.getting(ProcessResources::class) {
@@ -387,12 +387,11 @@ publishMods {
         if (mcVersion == 12001 || isNeo)
             modLoaders.add("neoforge")
     }
-    if (project.properties["version_stage"] == "ALPHA")
-        type = ALPHA
-    else if (project.properties["version_stage"] == "BETA")
-        type = BETA
-    else
-        type = STABLE
+    type = when(project.properties["version_stage"]) {
+        "ALPHA" -> ALPHA
+        "BETA" -> BETA
+        else -> STABLE
+    }
 
     val cfToken = System.getenv("CURSEFORGE")
     if (cfToken != null) {
