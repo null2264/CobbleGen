@@ -10,7 +10,7 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        id("com.github.johnrengelman.shadow") version("8.1.1")
+        id("com.gradleup.shadow") version("8.3.0")
         id("io.github.null2264.preprocess") version("1.0-SNAPSHOT")
         id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
     }

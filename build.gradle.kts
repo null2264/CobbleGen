@@ -3,7 +3,7 @@ import net.fabricmc.loom.task.RemapJarTask
 
 plugins {
     id("dev.architectury.loom") version "1.7-SNAPSHOT"
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
     id("io.github.null2264.preprocess")
     id("me.modmuss50.mod-publish-plugin") version "0.3.5"
 }
