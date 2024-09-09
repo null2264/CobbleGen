@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
+import io.github.null2264.cobblegen.data.config.ConfigData;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;
@@ -35,9 +36,15 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
     @ApiStatus.Internal
     public static final FluidInteraction FLUID_INTERACTION = new FluidInteraction();
     private static final Path configPath = LoaderCompat.getConfigDir();
-    private static final File configFile = new File(configPath + File.separator + MOD_ID + "-meta.json5");
+    private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
+    private static final File metaConfigFile = new File(configPath + File.separator + MOD_ID + "-meta.json5");
     @ApiStatus.Internal
-    public static ConfigMetaData META_CONFIG = loadConfig(false, configFile, null, new ConfigMetaData(), ConfigMetaData.class);
+    public static ConfigMetaData META_CONFIG = loadConfig(false, metaConfigFile, null, new ConfigMetaData(), ConfigMetaData.class);
+
+    public CobbleGen() {
+        // Force config to be generated when loading up the game instead of having to load a world
+        loadConfig(false, configFile, null, new ConfigData(), ConfigData.class);
+    }
 
     //#if FABRIC>=1
     @Override
@@ -50,7 +57,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
                 LiteralArgumentBuilder.<CommandSourceStack>literal("cobblegen")
                         .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").requires(arg -> arg.hasPermission(OP_LEVEL_GAMEMASTERS)).executes(c -> {
                             CGLog.info("Reloading meta config...");
-                            META_CONFIG = loadConfig(true, configFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
+                            META_CONFIG = loadConfig(true, metaConfigFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
                             c.getSource().sendSuccess(
                                 //#if MC>=1.20.1
                                 //$$ () ->
