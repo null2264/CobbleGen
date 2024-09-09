@@ -77,10 +77,6 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return fromBlock(block, weight, null, null, null, null);
     }
 
-    public Optional<List<String>> getDimensions() {
-        return Util.optional(dimensions);
-    }
-
     public static WeightedBlock fromBlock(
             Block block,
             Double weight,
@@ -97,6 +93,10 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.getBlock(ResourceLocation.tryParse(id));
     }
 
+    public Optional<List<String>> getDimensions() {
+        return Util.optional(dimensions);
+    }
+
     public Optional<List<String>> getExcludedDimensions() {
         return Util.optional(excludedDimensions);
     }
@@ -107,6 +107,14 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
     public Optional<Integer> getMinY() {
         return Util.optional(minY);
+    }
+
+    public Optional<List<String>> getBiomes() {
+        return Util.optional(biomes);
+    }
+
+    public Optional<List<String>> getExcludedBiomes() {
+        return Util.optional(excludedBiomes);
     }
 
     @Override

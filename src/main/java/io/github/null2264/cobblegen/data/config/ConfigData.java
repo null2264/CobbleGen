@@ -77,8 +77,10 @@ public class ConfigData implements Config, JanksonSerializable
                 null,
                 null,
                 0,
+                null,
+                null,
                 null
-        ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null));
+        ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null, null, null));
         config.stoneGen = ResultList.of(new WeightedBlock("minecraft:stone", 100.0));
         config.basaltGen = ResultList.of(new WeightedBlock("minecraft:basalt", 100.0));
         config.customGen = new CustomGen(
