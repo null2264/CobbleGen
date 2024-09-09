@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -124,5 +125,17 @@ public class Util
                 //#endif
         ).getKey(level.dimensionType());
         return dim != null ? dim.toString() : "minecraft:overworld";
+    }
+
+    @Nullable
+    public static String getBiome(LevelAccessor level, BlockPos position) {
+        ResourceLocation biome = level.registryAccess().registryOrThrow(
+                //#if MC<=11902
+                Registry.BIOME_REGISTRY
+                //#else
+                //$$ net.minecraft.core.registries.Registries.BIOME
+                //#endif
+        ).getKey(level.getBiome(position).value());
+        return biome != null ? biome.toString() : null;
     }
 }

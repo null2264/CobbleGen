@@ -1,5 +1,6 @@
 package io.github.null2264.cobblegen.data.model;
 
+import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +30,7 @@ public interface BuiltInGenerator extends Generator
     //#else
     private String
     //#endif
-    randomizeBlockId(Block key, String dim, Integer yLevel, GeneratorMap candidates) {
+    randomizeBlockId(Block key, String dim, Integer yLevel, GeneratorMap candidates, @Nullable String biome) {
         ResultList blockIds = candidates.getOrDefault(
                 CGIdentifier.fromMC(Util.getBlockId(key)),
                 candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())
@@ -41,6 +43,12 @@ public interface BuiltInGenerator extends Generator
             if (block.dimensions != null && !block.dimensions.contains(dim)) continue;
 
             if (block.excludedDimensions != null && block.excludedDimensions.contains(dim)) continue;
+
+            if (biome != null && CobbleGen.META_CONFIG.enableExperimentalFeatures) {
+                if (block.biomes != null && !block.biomes.contains(biome)) continue;
+
+                if (block.excludedBiomes != null && block.excludedBiomes.contains(biome)) continue;
+            }
 
             if (block.maxY != null && block.maxY <= yLevel) continue;
 
@@ -83,7 +91,8 @@ public interface BuiltInGenerator extends Generator
                 level.getBlockState(pos.below()).getBlock(),
                 Util.getDimension(level),
                 pos.getY(),
-                candidates
+                candidates,
+                Util.getBiome(level, pos)
         );
 
         if (replacementId == null) {

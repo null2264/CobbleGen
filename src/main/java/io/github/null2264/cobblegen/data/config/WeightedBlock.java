@@ -34,6 +34,10 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     public Integer minY;
     @Nullable
     public List<String> neighbours;
+    @Nullable
+    public List<String> biomes;
+    @Nullable
+    public List<String> excludedBiomes;
 
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);
@@ -44,7 +48,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     }
 
     public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions) {
-        this(id, weight, dimIds, excludedDimensions, null, null, null);
+        this(id, weight, dimIds, excludedDimensions, null, null, null, null, null);
     }
 
     public WeightedBlock(
@@ -54,7 +58,9 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             @Nullable List<String> excludedDimensions,
             @Nullable Integer maxY,
             @Nullable Integer minY,
-            @Nullable List<String> neighbours
+            @Nullable List<String> neighbours,
+            @Nullable List<String> biomes,
+            @Nullable List<String> excludedBiomes
     ) {
         this.id = id;
         this.weight = weight;
@@ -63,6 +69,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         this.maxY = maxY;
         this.minY = minY;
         this.neighbours = neighbours;
+        this.biomes = biomes;
+        this.excludedBiomes = excludedBiomes;
     }
 
     public static WeightedBlock fromBlock(Block block, Double weight) {
@@ -82,7 +90,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             Integer minY
     ) {
         final String id = Util.getBlockId(block).toString();
-        return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY, null);
+        return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY, null, null, null);
     }
 
     public Block getBlock() {
@@ -111,6 +119,9 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
         buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
+
+        buf.writeOptional(Util.optional(biomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(Util.optional(excludedBiomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
     }
 
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
@@ -123,6 +134,9 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         Optional<Integer> maxY = buf.readOptional(FriendlyByteBuf::readInt);
         Optional<Integer> minY = buf.readOptional(FriendlyByteBuf::readInt);
 
+        Optional<List<String>> biomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+        Optional<List<String>> excludedBiomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+
         return new WeightedBlock(
                 id,
                 weight,
@@ -130,7 +144,9 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
                 excludedDimensions.orElse(null),
                 maxY.orElse(null),
                 minY.orElse(null),
-                null
+                null,
+                biomes.orElse(null),
+                excludedBiomes.orElse(null)
         );
     }
 
@@ -144,6 +160,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         json.put("excludedDimensions", JANKSON.toJson(excludedDimensions));
         json.put("maxY", JANKSON.toJson(maxY));
         json.put("minY", JANKSON.toJson(minY));
+        json.put("biomes", JANKSON.toJson(biomes));
+        json.put("excludedBiomes", JANKSON.toJson(excludedBiomes));
         return json;
     }
 
@@ -190,6 +208,26 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             minY = ((JsonPrimitive) _minY).asInt(0);
         }
 
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null);
+        @Nullable
+        List<String> biomes;
+        JsonElement _biomes = json.get("biomes");
+        if (_biomes instanceof JsonArray) {
+            biomes = new ArrayList<>();
+            ((JsonArray) _biomes).forEach(value -> biomes.add(((JsonPrimitive) value).asString()));
+        } else {
+            biomes = null;
+        }
+
+        @Nullable
+        List<String> excludedBiomes;
+        JsonElement _excludedBiomes = json.get("excludedBiomes");
+        if (_excludedBiomes instanceof JsonArray) {
+            excludedBiomes = new ArrayList<>();
+            ((JsonArray) _excludedBiomes).forEach(value -> excludedBiomes.add(((JsonPrimitive) value).asString()));
+        } else {
+            excludedBiomes = null;
+        }
+
+        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null, biomes, excludedBiomes);
     }
 }
