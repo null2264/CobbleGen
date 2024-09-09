@@ -158,36 +158,36 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         @Nullable
         List<String> dimensions;
-        if (json.get("dimensions") instanceof JsonArray) {
-            JsonArray _dimensions = (JsonArray) json.get("dimensions");
+        JsonElement _dimensions = json.get("dimensions");
+        if (_dimensions instanceof JsonArray) {
             dimensions = new ArrayList<>();
-            _dimensions.forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
+            ((JsonArray) _dimensions).forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
         } else {
             dimensions = null;
         }
 
         @Nullable
         List<String> excludedDimensions;
-        if (json.get("excludedDimensions") instanceof JsonArray) {
-            JsonArray _excludedDimensions = (JsonArray) json.get("excludedDimensions");
+        JsonElement _excludedDimensions = json.get("excludedDimensions");
+        if (_excludedDimensions instanceof JsonArray) {
             excludedDimensions = new ArrayList<>();
-            _excludedDimensions.forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
+            ((JsonArray) _excludedDimensions).forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
         } else {
             excludedDimensions = null;
         }
 
         @Nullable
         Integer maxY = null;
-        if (json.get("maxY") instanceof JsonPrimitive) {
-            JsonPrimitive _maxY = (JsonPrimitive) json.get("maxY");
-            maxY = _maxY.asInt(0);
+        JsonElement _maxY = json.get("maxY");
+        if (_maxY instanceof JsonPrimitive) {
+            maxY = ((JsonPrimitive) _maxY).asInt(0);
         }
 
         @Nullable
         Integer minY = null;
-        if (json.get("minY") instanceof JsonPrimitive) {
-            JsonPrimitive _minY = (JsonPrimitive) json.get("minY");
-            minY = _minY.asInt(0);
+        JsonElement _minY = json.get("minY");
+        if (_minY instanceof JsonPrimitive) {
+            minY = ((JsonPrimitive) _minY).asInt(0);
         }
 
         return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null);
