@@ -17,7 +17,7 @@ val (major, minor, patch) = mcVersionStr
     .toMutableList()
     .apply { if (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
-// TODO(addingVersion): Add "-" suffix to support snapshots
+// TODO: addingVersion - Add "-" suffix to support snapshots
 val supportedVersionRange: List<String?> = mapOf(
         11605 to listOf(null, "1.16.5"),
         11802 to listOf(null, "1.18.2"),
@@ -109,7 +109,7 @@ dependencies {
 
         // For testing
         if (project.properties["recipe_viewer"] != "none" && mcVersion > 11605)
-            // TODO(addingVersion)
+            // TODO: addingVersion
             modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + mapOf(
                     11605 to "0.42.0+1.16",
                     11802 to "0.76.0+1.18.2",
@@ -131,7 +131,7 @@ dependencies {
                     12002 to "48.0.13",
             )[mcVersion])
         } else {
-            // TODO(addingVersion)
+            // TODO: addingVersion
             "neoForge"("net.neoforged:neoforge:" + mapOf(
                     12002 to "20.2.86",
                     12005 to "20.5.21-beta",
@@ -168,7 +168,7 @@ dependencies {
             if (project.properties["recipe_viewer"] == "emi")
                 modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
         } else {
-            // TODO(addingVersion): EMI
+            // TODO: addingVersion - EMI
             val suffix = mapOf(
                     11902 to "1.19.2",
                     11904 to "1.19.4",
@@ -186,7 +186,7 @@ dependencies {
         // EMI ->
 
         // <- REI
-        // TODO(addingVersion): REI
+        // TODO: addingVersion - REI
         val reiVersions = mapOf(
                 11802 to "8.3.618",
                 11902 to "9.1.619",
@@ -217,7 +217,7 @@ dependencies {
         // REI ->
 
         // <- JEI
-        // TODO(addingVersion): JEI
+        // TODO: addingVersion - JEI
         val jeiVersions = mapOf(
                 11802 to "10.2.1.1004",
                 11902 to "11.6.0.1015",
@@ -356,7 +356,7 @@ if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
     }
 }
 
-// TODO(addingVersion)
+// TODO: addingVersion
 val mcReleaseVersions = mapOf(
         11605 to listOf("1.16.5"),
         11802 to listOf("1.18.2"),
@@ -364,7 +364,7 @@ val mcReleaseVersions = mapOf(
         12001 to listOf("1.20", "1.20.1"),
         12002 to listOf("1.20.2", "1.20.3", "1.20.4"),
         12005 to listOf("1.20.5", "1.20.6"),
-        12100 to listOf("1.21"),
+        12100 to listOf("1.21", "1.21.1"),
 )[mcVersion] ?: listOf()
 
 val cfSnapshots = mapOf<Int, List<String>>(
