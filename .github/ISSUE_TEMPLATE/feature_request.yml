@@ -31,7 +31,7 @@ body:
           required: true
         - label: I have written a short but informative title.
           required: true
-        - label: I have updated the mod to version **[5.3.9](https://github.com/null2264/CobbleGen/releases/latest)**.
+        - label: I have updated the mod to version **[5.3.10](https://github.com/null2264/CobbleGen/releases/latest)**.
           required: true
         - label: I have checked the mod config for my feature.
           required: true
