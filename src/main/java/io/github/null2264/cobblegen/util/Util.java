@@ -135,7 +135,12 @@ public class Util
                 //#else
                 //$$ net.minecraft.core.registries.Registries.BIOME
                 //#endif
-        ).getKey(level.getBiome(position).value());
+        ).getKey(
+                level.getBiome(position)
+                //#if MC>=1.18.2
+                    .value()
+                //#endif
+        );
         return biome != null ? biome.toString() : null;
     }
 }
