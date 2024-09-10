@@ -57,10 +57,10 @@ repositories {
     mavenLocal()
 }
 
-val archivesBaseName = project.properties["archives_base_name"]
+base.archivesBaseName = project.properties["archives_base_name"] as? String ?: ""
 
 val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
-project.version = (project.properties["mod_version"] as String? ?: "") + "+${mcVersionStr}" + (if (buildNumber != null) "b${buildNumber}-" else "-") + (project.properties["version_stage"] ?: "") + (if (isFabric) "-fabric" else (if (isNeo) "-neoforge" else "-forge"))
+project.version = (project.properties["mod_version"] as? String ?: "") + "+${mcVersionStr}" + (if (buildNumber != null) "b${buildNumber}-" else "-") + (project.properties["version_stage"] ?: "") + (if (isFabric) "-fabric" else (if (isNeo) "-neoforge" else "-forge"))
 
 group = project.properties["maven_group"] as String
 
@@ -339,7 +339,7 @@ java {
 
 tasks.jar {
     from("LICENSE") {
-        rename { "${it}_${archivesBaseName}" }
+        rename { "${it}_${base.archivesBaseName}" }
     }
 }
 
