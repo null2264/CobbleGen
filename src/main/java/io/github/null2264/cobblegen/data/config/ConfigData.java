@@ -4,18 +4,24 @@ import blue.endless.jankson.*;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.CGSemVer;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static io.github.null2264.cobblegen.CobbleGen.META_CONFIG;
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 
 @SuppressWarnings("TextBlockMigration")
 public class ConfigData implements Config, JanksonSerializable
 {
+    /**
+     * Deprecated, moved to {@link io.github.null2264.cobblegen.data.config.ConfigMetaData}
+     */
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
     @NotNull
+    @Deprecated
     public String formatVersion = "1.0";
 
     @Nullable
@@ -129,7 +135,6 @@ public class ConfigData implements Config, JanksonSerializable
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.put("formatVersion", JsonPrimitive.of(formatVersion));
         if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
         if (stoneGen != null) json.put("stoneGen", stoneGen.toJson());
         if (basaltGen != null) json.put("basaltGen", basaltGen.toJson());
@@ -141,13 +146,7 @@ public class ConfigData implements Config, JanksonSerializable
     @Deserializer
     public static ConfigData fromJson(JsonObject json) {
         ConfigData config = new ConfigData();
-        JsonElement formatVersion = json.get("formatVersion");
-        config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
-        /* TODO
-        if (config.formatVersion.equals("1.0")) {
-            // TODO: Migrate to 2.0
-        }
-         */
+        config.formatVersion = META_CONFIG.formatVersion.toString();
         config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
         config.basaltGen = ResultList.fromJson(json.get("basaltGen"));
