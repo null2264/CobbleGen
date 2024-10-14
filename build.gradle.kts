@@ -25,7 +25,8 @@ val supportedVersionRange: List<String?> = mapOf(
         12001 to listOf("1.20-", "1.20.1"),
         12002 to listOf("1.20.2-", "1.20.4"),
         12005 to listOf("1.20.5-", "1.20.6"),
-        12100 to listOf("1.21-", null),
+        12100 to listOf("1.21-", "1.21.1"),
+        12102 to listOf("1.21.2-", null),
 )[mcVersion] ?: listOf()
 
 preprocess {
@@ -57,7 +58,7 @@ repositories {
     mavenLocal()
 }
 
-base.archivesBaseName = project.properties["archives_base_name"] as? String ?: ""
+base.archivesName.set(project.properties["archives_base_name"] as? String ?: "")
 
 val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
 project.version = (project.properties["mod_version"] as? String ?: "") + "+${mcVersionStr}" + (if (buildNumber != null) "b${buildNumber}-" else "-") + (project.properties["version_stage"] ?: "") + (if (isFabric) "-fabric" else (if (isNeo) "-neoforge" else "-forge"))
@@ -81,7 +82,7 @@ loom {
     if (!isFabric && !isNeo) {
         forge {
             mixinConfigs = listOf(
-                    "cobblegen.mixins.json"
+                "cobblegen.mixins.json"
             )
         }
     }
@@ -94,6 +95,7 @@ val shade: Configuration by configurations.creating {
 dependencies {
     // TODO(addingVersion): For snapshots
     val mc: Map<Int, String> = mapOf(
+        12102 to "1.21.2-pre3"
     )
     minecraft("com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}")
 
@@ -105,39 +107,42 @@ dependencies {
         else if (mcVersion <= 12001)
             modImplementation("net.fabricmc:fabric-loader:0.14.21")
         else
-            modImplementation("net.fabricmc:fabric-loader:0.15.11")
+            modImplementation("net.fabricmc:fabric-loader:0.16.7")
 
         // For testing
         if (project.properties["recipe_viewer"] != "none" && mcVersion > 11605)
             // TODO: addingVersion
             modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + mapOf(
-                    11605 to "0.42.0+1.16",
-                    11802 to "0.76.0+1.18.2",
-                    11902 to "0.76.0+1.19.2",
-                    11904 to "0.83.0+1.19.4",
-                    12001 to "0.83.1+1.20.1",
-                    12002 to "0.89.0+1.20.2",
-                    12005 to "0.97.8+1.20.5",
-                    12100 to "0.100.1+1.21",
+                11605 to "0.42.0+1.16",
+                11802 to "0.76.0+1.18.2",
+                11902 to "0.76.0+1.19.2",
+                11904 to "0.83.0+1.19.4",
+                12001 to "0.83.1+1.20.1",
+                12002 to "0.89.0+1.20.2",
+                12005 to "0.97.8+1.20.5",
+                12100 to "0.100.1+1.21",
+                12102 to "0.105.4+1.21.2",
             )[mcVersion])
     } else {
         if (!isNeo) {
             "forge"("net.minecraftforge:forge:${mcVersionStr}-" + mapOf(
-                    11605 to "36.2.41",
-                    11802 to "40.2.9",
-                    11902 to "43.2.14",
-                    11904 to "45.1.0",
-                    12001 to "47.0.3",
-                    12002 to "48.0.13",
+                11605 to "36.2.41",
+                11802 to "40.2.9",
+                11902 to "43.2.14",
+                11904 to "45.1.0",
+                12001 to "47.0.3",
+                12002 to "48.0.13",
+                // LexForge is no longer supported
             )[mcVersion])
         } else {
             // TODO: addingVersion
+            // snapshot version format:
+            // "20.5.0-alpha.${mc[mcVersion]}.+"
             "neoForge"("net.neoforged:neoforge:" + mapOf(
-                    12002 to "20.2.86",
-                    12005 to "20.5.21-beta",
-                    12100 to "21.0.2-beta",
-                    // snapshot version format:
-                    // "20.5.0-alpha.${mc[mcVersion]}.+"
+                12002 to "20.2.86",
+                12005 to "20.5.21-beta",
+                12100 to "21.0.2-beta",
+                // FIXME: 1.21.2
             )[mcVersion])
         }
     }
@@ -168,35 +173,38 @@ dependencies {
             if (project.properties["recipe_viewer"] == "emi")
                 modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
         } else {
-            // TODO: addingVersion - EMI
+            // TODO: addingVersion - EMI. They didn't break API on MC version upgrade so mismatch should be fine
             val suffix = mapOf(
-                    11902 to "1.19.2",
-                    11904 to "1.19.4",
-                    12001 to "1.20.1",
-                    12002 to "1.20.2",
-                    12005 to "1.20.6",
-                    12100 to "1.20.6", // FIXME: Use 1.21 version of EMI
+                11902 to "1.19.2",
+                11904 to "1.19.4",
+                12001 to "1.20.1",
+                12002 to "1.20.2",
+                12005 to "1.20.6",
+                12100 to "1.21.1",
+                12105 to "1.21.1", // FIXME: .
             )
+            val emiVersion = "1.1.16+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}"
             // EMI support multiple platform since 1.0.0
             // EMI seems to also skip 1.19 and 1.19.1
-            modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12005) "neoforge" else "forge")}:${project.properties["emi_version"]}+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}:api")
+            modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12005) "neoforge" else "forge")}:$emiVersion:api")
             if (project.properties["recipe_viewer"] == "emi" && suffix[mcVersion] != null)
-                modLocalRuntime("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12005) "neoforge" else "forge")}:${project.properties["emi_version"]}+${if (mcVersion >= 11902) suffix[mcVersion] else "1.19.2"}")
+                modLocalRuntime("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12005) "neoforge" else "forge")}:$emiVersion")
         }
         // EMI ->
 
         // <- REI
         // TODO: addingVersion - REI
         val reiVersions = mapOf(
-                11802 to "8.3.618",
-                11902 to "9.1.619",
-                11904 to "11.0.621",
-                12001 to "12.0.625",
-                12002 to "13.0.685",
-                12005 to "15.0.728",
-                12100 to null,
+            11802 to "8.3.618",
+            11902 to "9.1.619",
+            11904 to "11.0.621",
+            12001 to "12.0.625",
+            12002 to "13.0.685",
+            12005 to "15.0.728",
+            12100 to "16.0.783",
+            12102 to null,
         )
-        val reiFallback = "15.0.728"
+        val reiFallback = "16.0.783"
         if (isFabric)
             modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: reiFallback}")
         // NOTE: I need the full package for Forge(-like) loaders since for whatever reason @REIPluginClient
@@ -219,22 +227,29 @@ dependencies {
         // <- JEI
         // TODO: addingVersion - JEI
         val jeiVersions = mapOf(
-                11802 to "10.2.1.1004",
-                11902 to "11.6.0.1015",
-                11904 to "13.1.0.13",
-                12001 to "15.0.0.12",
-                12002 to "16.0.0.28",
+            11802 to "10.2.1.1004",
+            11902 to "11.6.0.1015",
+            11904 to "13.1.0.13",
+            12001 to "15.0.0.12",
+            12002 to "16.0.0.28",
+            12005 to "18.0.0.62",  // JEI skipped 1.20.5, so we use 1.20.6 version instead.
+            12100 to "19.21.0.246",
+            12102 to null,
         )
-        val fallbackJeiVer = "18.0.0.62"
-        val fallbackJeiMcVer = "1.20.6"
+        val jeiVersion = jeiVersions[mcVersion]
+        // <- fallback - should be the latest version
+        val fallbackJeiVer = "19.21.0.246"
+        val fallbackJeiMcVer = "1.21.1"
+        // fallback ->
         val jeiMc = mapOf(
-                12005 to fallbackJeiMcVer,  // JEI skipped 1.20.5
-                12100 to fallbackJeiMcVer,
+            12005 to "1.20.6",  // JEI skipped 1.20.5
+            12100 to "1.21.1",  // Works for both 1.21 and 1.21.1, but internally defined 1.21.1
+            12102 to fallbackJeiMcVer,
         )
-        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersions[mcVersion] ?: fallbackJeiVer}")
-        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}-api:${jeiVersions[mcVersion] ?: fallbackJeiVer}")
-        if (project.properties["recipe_viewer"] == "jei" && jeiVersions[mcVersion] != null)
-            modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}:${jeiVersions[mcVersion]}")
+        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersion ?: fallbackJeiVer}")
+        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}-api:${jeiVersion ?: fallbackJeiVer}")
+        if (project.properties["recipe_viewer"] == "jei" && jeiVersion != null)
+            modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}:${jeiVersion}")
         // JEI ->
 
         /* FIXME: Broken, somehow
@@ -339,7 +354,7 @@ java {
 
 tasks.jar {
     from("LICENSE") {
-        rename { "${it}_${base.archivesBaseName}" }
+        rename { "${it}_${base.archivesName.get()}" }
     }
 }
 
@@ -357,20 +372,25 @@ if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
 }
 
 // TODO: addingVersion
-val mcReleaseVersions = mapOf(
-        11605 to listOf("1.16.5"),
-        11802 to listOf("1.18.2"),
-        11902 to listOf("1.19", "1.19.1", "1.19.2"),
-        12001 to listOf("1.20", "1.20.1"),
-        12002 to listOf("1.20.2", "1.20.3", "1.20.4"),
-        12005 to listOf("1.20.5", "1.20.6"),
-        12100 to listOf("1.21", "1.21.1"),
-)[mcVersion] ?: listOf()
+val mcReleaseVersions = mapOf<Int, List<String>>(
+    11605 to listOf("1.16.5"),
+    11802 to listOf("1.18.2"),
+    11902 to listOf("1.19", "1.19.1", "1.19.2"),
+    12001 to listOf("1.20", "1.20.1"),
+    12002 to listOf("1.20.2", "1.20.3", "1.20.4"),
+    12005 to listOf("1.20.5", "1.20.6"),
+    12100 to listOf("1.21", "1.21.1"),
+    12102 to listOf("1.21.2")
+)[mcVersion] ?: throw IllegalStateException("Should not be empty!")
 
+// These overwrites mcReleaseVersions
 val cfSnapshots = mapOf<Int, List<String>>(
+    12102 to listOf("1.21.2-Snapshot"),
 )[mcVersion]
 
+// These overwrites mcReleaseVersions
 val mrSnapshots = mapOf<Int, List<String>>(
+    12102 to listOf("1.21.2-pre3"),
 )[mcVersion]
 
 publishMods {
