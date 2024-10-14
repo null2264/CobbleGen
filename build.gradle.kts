@@ -181,7 +181,7 @@ dependencies {
                 12002 to "1.20.2",
                 12005 to "1.20.6",
                 12100 to "1.21.1",
-                12105 to "1.21.1", // FIXME: .
+                12102 to "1.21.1", // FIXME: .
             )
             val emiVersion = "1.1.16+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}"
             // EMI support multiple platform since 1.0.0
@@ -205,14 +205,8 @@ dependencies {
             12102 to null,
         )
         val reiFallback = "16.0.783"
-        if (isFabric)
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-fabric:${reiVersions[mcVersion] ?: reiFallback}")
-        // NOTE: I need the full package for Forge(-like) loaders since for whatever reason @REIPluginClient
-        // is not included in API, thanks REI
-        else if (!isNeo)
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-forge:${(reiVersions[mcVersion] ?: reiFallback)}")
-        else
-            modCompileOnly("me.shedaniel:RoughlyEnoughItems-neoforge:${(reiVersions[mcVersion] ?: reiFallback)}")
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${reiVersions[mcVersion] ?: reiFallback}")
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-${if (isFabric) "fabric" else if (!isNeo) "forge" else "neoforge"}:${reiVersions[mcVersion] ?: reiFallback}")
         if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
