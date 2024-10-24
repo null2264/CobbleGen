@@ -24,9 +24,9 @@ val supportedVersionRange: List<String?> = mapOf(
         11902 to listOf("1.19-", "1.19.2"),
         12001 to listOf("1.20-", "1.20.1"),
         12002 to listOf("1.20.2-", "1.20.4"),
-        12005 to listOf("1.20.5-", "1.20.6"),
-        12100 to listOf("1.21-", "1.21.1"),
-        12102 to listOf("1.21.2-", null),
+        12006 to listOf("1.20.5-", "1.20.6"),
+        12101 to listOf("1.21-", "1.21.1"),
+        12103 to listOf("1.21.2-", null),
 )[mcVersion] ?: listOf()
 
 preprocess {
@@ -108,7 +108,6 @@ val shade: Configuration by configurations.creating {
 dependencies {
     // TODO(addingVersion): For snapshots
     val mc: Map<Int, String> = mapOf(
-        12102 to "1.21.2-pre3"
     )
     minecraft("com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}")
 
@@ -132,9 +131,9 @@ dependencies {
                 11904 to "0.83.0+1.19.4",
                 12001 to "0.83.1+1.20.1",
                 12002 to "0.89.0+1.20.2",
-                12005 to "0.97.8+1.20.5",
-                12100 to "0.100.1+1.21",
-                12102 to "0.105.4+1.21.2",
+                12006 to "0.100.8+1.20.6",
+                12101 to "0.106.0+1.21.1",
+                12103 to "0.106.1+1.21.3",
             )[mcVersion])
     } else {
         if (!isNeo) {
@@ -153,8 +152,9 @@ dependencies {
             // "20.5.0-alpha.${mc[mcVersion]}.+"
             "neoForge"("net.neoforged:neoforge:" + mapOf(
                 12002 to "20.2.86",
-                12005 to "20.5.21-beta",
-                12100 to "21.0.2-beta",
+                12006 to "20.6.121",
+                12101 to "21.1.72",
+                12103 to "21.3.1-beta",
                 // FIXME: 1.21.2
             )[mcVersion])
         }
@@ -192,16 +192,16 @@ dependencies {
                 11904 to "1.19.4",
                 12001 to "1.20.1",
                 12002 to "1.20.2",
-                12005 to "1.20.6",
-                12100 to "1.21.1",
-                12102 to "1.21.1", // FIXME: .
+                12006 to "1.20.6",
+                12101 to "1.21.1",
+                12103 to "1.21.1", // FIXME: .
             )
             val emiVersion = "1.1.16+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}"
             // EMI support multiple platform since 1.0.0
             // EMI seems to also skip 1.19 and 1.19.1
-            modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12005) "neoforge" else "forge")}:$emiVersion:api")
+            modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion:api")
             if (project.properties["recipe_viewer"] == "emi" && suffix[mcVersion] != null)
-                modLocalRuntime("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12005) "neoforge" else "forge")}:$emiVersion")
+                modLocalRuntime("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion")
         }
         // EMI ->
 
@@ -213,9 +213,11 @@ dependencies {
             11904 to "11.0.621",
             12001 to "12.0.625",
             12002 to "13.0.685",
-            12005 to "15.0.728",
-            12100 to "16.0.777",
-            12102 to null,
+            12006 to "15.0.728",
+            // FIXME: Stays at 16.0.777 until missing API jar is fixed
+            // REF: https://github.com/shedaniel/RoughlyEnoughItems/issues/1740
+            12101 to "16.0.777",
+            12103 to null,
         )
         val reiFallback = "16.0.777"
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
@@ -239,9 +241,9 @@ dependencies {
             11904 to "13.1.0.13",
             12001 to "15.0.0.12",
             12002 to "16.0.0.28",
-            12005 to "18.0.0.62",  // JEI skipped 1.20.5, so we use 1.20.6 version instead.
-            12100 to "19.21.0.246",
-            12102 to null,
+            12006 to "18.0.0.62",
+            12101 to "19.21.0.246",
+            12103 to null,
         )
         val jeiVersion = jeiVersions[mcVersion]
         // <- fallback - should be the latest version
@@ -249,9 +251,8 @@ dependencies {
         val fallbackJeiMcVer = "1.21.1"
         // fallback ->
         val jeiMc = mapOf(
-            12005 to "1.20.6",  // JEI skipped 1.20.5
-            12100 to "1.21.1",  // Works for both 1.21 and 1.21.1, but internally defined 1.21.1
-            12102 to fallbackJeiMcVer,
+            12006 to "1.20.6",  // JEI skipped 1.20.5
+            12103 to fallbackJeiMcVer,
         )
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersion ?: fallbackJeiVer}")
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}-api:${jeiVersion ?: fallbackJeiVer}")
@@ -290,7 +291,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
         exclude("META-INF/neoforge.mods.toml")
     } else if (isForge) {
         exclude("fabric.mod.json")
-        exclude(if (isNeo && mcVersion >= 12005) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
+        exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
     }
     exclude("architectury.common.json")
 
@@ -327,7 +328,7 @@ val processResources by tasks.getting(ProcessResources::class) {
         if (isFabric) {
             "fabric.mod.json"
         } else {
-            if (isNeo && mcVersion >= 12005) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
+            if (isNeo && mcVersion >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
         }
 
     filesMatching(metadataFilename) {
@@ -336,7 +337,7 @@ val processResources by tasks.getting(ProcessResources::class) {
     }
 }
 
-val targetJavaVersion = if (mcVersion >= 12005) 21 else (if (mcVersion >= 11700) 17 else 8)
+val targetJavaVersion = if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
 tasks.withType<JavaCompile>().configureEach {
     // ensure that the encoding is set to UTF-8, no matter what the system default is
     // this fixes some edge cases with special characters not displaying correctly
@@ -385,19 +386,19 @@ val mcReleaseVersions = mapOf<Int, List<String>>(
     11902 to listOf("1.19", "1.19.1", "1.19.2"),
     12001 to listOf("1.20", "1.20.1"),
     12002 to listOf("1.20.2", "1.20.3", "1.20.4"),
-    12005 to listOf("1.20.5", "1.20.6"),
-    12100 to listOf("1.21", "1.21.1"),
-    12102 to listOf("1.21.2")
+    12006 to listOf("1.20.5", "1.20.6"),
+    12101 to listOf("1.21", "1.21.1"),
+    12103 to listOf("1.21.2", "1.21.3")
 )[mcVersion] ?: throw IllegalStateException("Should not be empty!")
 
 // These overwrites mcReleaseVersions
 val cfSnapshots = mapOf<Int, List<String>>(
-    12102 to listOf("1.21.2-Snapshot"),
+//    12102 to listOf("1.21.2-Snapshot"),
 )[mcVersion]
 
 // These overwrites mcReleaseVersions
 val mrSnapshots = mapOf<Int, List<String>>(
-    12102 to listOf("1.21.2-pre3"),
+//    12102 to listOf("1.21.2-pre3"),
 )[mcVersion]
 
 publishMods {
