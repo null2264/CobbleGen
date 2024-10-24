@@ -205,8 +205,8 @@ dependencies {
             12102 to null,
         )
         val reiFallback = "16.0.783"
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api:${reiVersions[mcVersion] ?: reiFallback}")
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-api-${if (isFabric) "fabric" else if (!isNeo) "forge" else "neoforge"}:${reiVersions[mcVersion] ?: reiFallback}")
+        // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
+        modCompileOnly("me.shedaniel:RoughlyEnoughItems-${if (isFabric) "api-fabric" else if (!isNeo) "forge" else "neoforge"}:${reiVersions[mcVersion] ?: reiFallback}")
         if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
