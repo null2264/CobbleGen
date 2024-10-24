@@ -19,7 +19,7 @@ jobs:
       - name: Get mod versions
         id: get-mod-versions
         run: |
-          echo "versions=$(ls versions | grep -e '.\.' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          echo "versions=$(ls versions | grep -e '.\.' | grep -v 'mapping-' | tr '\n' ' ')" >> $GITHUB_OUTPUT
 
       - name: Build with Gradle
         uses: null2264/actions/replaymod-preprocessor-compile@1cc44b9be27b8914ca577a0905288e99c67df067

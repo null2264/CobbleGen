@@ -155,7 +155,6 @@ dependencies {
                 12006 to "20.6.121",
                 12101 to "21.1.72",
                 12103 to "21.3.1-beta",
-                // FIXME: 1.21.2
             )[mcVersion])
         }
     }
@@ -251,7 +250,6 @@ dependencies {
         val fallbackJeiMcVer = "1.21.1"
         // fallback ->
         val jeiMc = mapOf(
-            12006 to "1.20.6",  // JEI skipped 1.20.5
             12103 to fallbackJeiMcVer,
         )
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersion ?: fallbackJeiVer}")
