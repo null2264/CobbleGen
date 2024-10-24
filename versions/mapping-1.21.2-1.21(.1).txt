@@ -1,0 +1,1 @@
+net.minecraft.core.DefaultedRegistry getValue() net.minecraft.core.DefaultedRegistry get()

@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
@@ -99,7 +100,12 @@ public class Util
         //#endif
 
         //#if MC>1.16.5
-        final Optional<HolderSet.Named<Block>> blockList = RegistryCompat.block().getTag(blockTag);
+        final Optional<HolderSet.Named<Block>> blockList = RegistryCompat.block()
+            //#if MC>=1.21.2
+            //$$ .get(blockTag);
+            //#else
+            .getTag(blockTag);
+            //#endif
         //#else
         //$$ final Optional<List<Block>> blockList = Optional.ofNullable(blockTag != null ? blockTag.getValues() : null);
         //#endif

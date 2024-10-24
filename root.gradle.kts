@@ -30,7 +30,7 @@ preprocess {
     forge11802.link(fabric11802)
     forge11605.link(fabric11605)
 
-    fabric12103.link(fabric12101)
+    fabric12103.link(fabric12101, file("versions/mapping-fabric-1.21.3-1.21(.1).txt"))
     fabric12101.link(fabric12006)
     fabric12006.link(fabric12002)
     fabric12002.link(fabric12001)
