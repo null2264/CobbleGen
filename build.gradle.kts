@@ -31,8 +31,21 @@ val supportedVersionRange: List<String?> = mapOf(
 
 preprocess {
     vars.put("MC", mcVersion)
-    vars.put("FABRIC", if (isFabric) 1 else 0)
-    vars.put("FORGE", if (isForge) 1 + (if (isNeo) 1 else 0) else 0)
+    vars.put("FABRIC",
+        when {
+            // isFabric && isQuilt -> 2
+            // isFabric && !isQuilt -> 1
+            isFabric -> 1
+            else -> 0
+        }
+    )
+    vars.put("FORGE",
+        when {
+            isForge && isNeo -> 2
+            isForge && !isNeo -> 1
+            else -> 0
+        }
+    )
 
     patternAnnotation.set("io.github.null2264.gradle.Pattern")
 }
