@@ -1,3 +1,5 @@
+# NeoForge validates modded payloads before sending it, seems to happened at 1.20.x
+
 services:
   mc:
     image: itzg/minecraft-server
@@ -10,7 +12,7 @@ services:
       TYPE: NEOFORGE
       VERSION: "21.1.72"
       MODS: |
-        https://cdn.modrinth.com/data/qRogT5Gy/versions/Hea09LyB/1.21-neoforge-5.3.10%2B1.21b46-BETA-neoforge.jar
+        https://cdn.modrinth.com/data/qRogT5Gy/versions/C4DpAZTb/cobblegen-5.3.11%2B1.21.1b47-BETA-neoforge.jar
       ONLINE_MODE: "FALSE"
     volumes:
       - ./data:/data
