@@ -82,7 +82,11 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         return TextCompat.translatable("cobblegen.generators." + type.name().toLowerCase());
     }
 
+    //#if MC<1.21.0
     @NotNull
+    //#else
+    //$$ @org.jetbrains.annotations.Nullable
+    //#endif
     @Override
     public IDrawable getBackground() {
         return background;
@@ -162,12 +166,12 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         var y = 0;
         for (Component text : texts) {
             int width = font.width(text);
-            GraphicsCompat.drawString(graphicsTarget, text, getBackground().getWidth() - width, y, 0xFF808080);
+            GraphicsCompat.drawString(graphicsTarget, text, background.getWidth() - width, y, 0xFF808080);
             y += font.lineHeight;
         }
         Component text = TextCompat.translatable("cobblegen.info.dimensions");
         var deepestY = initialHeight + 9;
-        GraphicsCompat.drawString(graphicsTarget, text, (int) (((float) getBackground().getWidth() / 2) - ((float) font.width(text) / 2)), deepestY, 0xFF808080);
+        GraphicsCompat.drawString(graphicsTarget, text, (int) (((float) background.getWidth() / 2) - ((float) font.width(text) / 2)), deepestY, 0xFF808080);
         deepestY = deepestY + font.lineHeight + 9;
         dimensionIconsY = deepestY;
         whitelistIcon.draw(
@@ -177,22 +181,36 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         );
         blacklistIcon.draw(
                 graphicsTarget,
-                getBackground().getWidth() - 15 - 18,
+                background.getWidth() - 15 - 18,
                 deepestY
         );
     }
 
+    //#if MC<1.21.0
     @NotNull
     @Override
-    public List<Component> getTooltipStrings(
-            FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY
+    public List<Component> getTooltipStrings(FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        return getTooltip(recipe, recipeSlotsView, mouseX, mouseY);
+    }
+    //#else
+    //$$ @Override
+    //$$ public void getTooltip(ITooltipBuilder tooltip, FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    //$$     tooltip.addAll(getTooltip(recipe, recipeSlotsView, mouseX, mouseY));
+    //$$ }
+    //#endif
+
+    @NotNull
+    public List<Component> getTooltip(
+        FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY
     ) {
         if ((mouseX > 18 && mouseX < 18 + 15) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
-            ArrayList<Component> biomeList = new ArrayList<>();
-            biomeList.add(TextCompat.translatable("cobblegen.info.whitelistedDim"));
+            ArrayList<Component> dimList = new ArrayList<>();
+            dimList.add(TextCompat.translatable("cobblegen.info.whitelistedDim"));
 
             List<String> recipeDimList = recipe.getResult().dimensions;
-            try {
+            if (recipeDimList == null) {
+                dimList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.any")));
+            } else {
                 for (String dim : recipeDimList) {
                     ResourceLocation id;
                     try {
@@ -200,21 +218,21 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                     } catch (Exception e) {
                         continue;
                     }
-                    biomeList.add(TextCompat.literal("- " + id));
+                    dimList.add(TextCompat.literal("- " + id));
                 }
-            } catch (NullPointerException ignored) {
-                biomeList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.any")));
             }
-            return biomeList;
+            return dimList;
         }
 
-        final int aetherX = getBackground().getWidth() - 18;
+        final int aetherX = background.getWidth() - 18;
         if ((mouseX > aetherX - 15 && mouseX < aetherX) && (mouseY > dimensionIconsY && mouseY < dimensionIconsY + 20)) {
-            ArrayList<Component> biomeList = new ArrayList<>();
-            biomeList.add(TextCompat.translatable("cobblegen.info.blacklistedDim"));
+            ArrayList<Component> dimList = new ArrayList<>();
+            dimList.add(TextCompat.translatable("cobblegen.info.blacklistedDim"));
 
             List<String> recipeDimList = recipe.getResult().excludedDimensions;
-            try {
+            if (recipeDimList == null) {
+                dimList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.none")));
+            } else {
                 for (String dim : recipeDimList) {
                     ResourceLocation id;
                     try {
@@ -222,12 +240,10 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                     } catch (Exception e) {
                         continue;
                     }
-                    biomeList.add(TextCompat.literal("- " + id));
+                    dimList.add(TextCompat.literal("- " + id));
                 }
-            } catch (NullPointerException ignored) {
-                biomeList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.none")));
             }
-            return biomeList;
+            return dimList;
         }
         return List.of();
     }
