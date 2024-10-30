@@ -11,3 +11,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed REI integration due to API breaking changes in MC 1.21.2 or newer
 - Adjust JEI integration due to deprecations in JEI 19 or newer
+- Fixed issues with sending packet on NeoForge caused by Network Refactor

@@ -23,7 +23,8 @@ val supportedVersionRange: List<String?> = mapOf(
         11802 to listOf(null, "1.18.2"),
         11902 to listOf("1.19-", "1.19.2"),
         12001 to listOf("1.20-", "1.20.1"),
-        12002 to listOf("1.20.2-", "1.20.4"),
+        12002 to listOf("1.20.2-", if (!isNeo) "1.20.4" else "1.20.3"),
+        12004 to listOf(null, "1.20.4"),  // for Neo
         12006 to listOf("1.20.5-", "1.20.6"),
         12101 to listOf("1.21-", "1.21.1"),
         12103 to listOf("1.21.2-", null),
@@ -152,6 +153,7 @@ dependencies {
             // "20.5.0-alpha.${mc[mcVersion]}.+"
             "neoForge"("net.neoforged:neoforge:" + mapOf(
                 12002 to "20.2.86",
+                12004 to "20.4.237",
                 12006 to "20.6.121",
                 12101 to "21.1.72",
                 12103 to "21.3.1-beta",
@@ -191,6 +193,7 @@ dependencies {
                 11904 to "1.19.4",
                 12001 to "1.20.1",
                 12002 to "1.20.2",
+                12004 to "1.20.2",  // For Neo, the same 1.20.2
                 12006 to "1.20.6",
                 12101 to "1.21.1",
                 12103 to "1.21.1", // FIXME: .
@@ -212,6 +215,7 @@ dependencies {
             11904 to "11.0.621",
             12001 to "12.0.625",
             12002 to "13.0.685",
+            12004 to "13.0.685",  // for Neo
             12006 to "15.0.787",
             12101 to "16.0.788",
             12103 to "17.0.789",
@@ -238,6 +242,7 @@ dependencies {
             11904 to "13.1.0.13",
             12001 to "15.0.0.12",
             12002 to "16.0.0.28",
+            12004 to "16.0.0.28",  // for Neo
             12006 to "18.0.0.62",
             12101 to "19.21.0.246",
             12103 to null,
@@ -248,6 +253,7 @@ dependencies {
         val fallbackJeiMcVer = "1.21.1"
         // fallback ->
         val jeiMc = mapOf(
+            12004 to "1.20.2",  // for Neo
             12103 to fallbackJeiMcVer,
         )
         modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersion ?: fallbackJeiVer}")
@@ -381,7 +387,13 @@ val mcReleaseVersions = mapOf<Int, List<String>>(
     11802 to listOf("1.18.2"),
     11902 to listOf("1.19", "1.19.1", "1.19.2"),
     12001 to listOf("1.20", "1.20.1"),
-    12002 to listOf("1.20.2", "1.20.3", "1.20.4"),
+    12002 to listOf("1.20.2", "1.20.3").let {
+        val rt = it.toMutableList()
+        if (!isNeo) rt.add("1.20.4")
+
+        rt
+    },
+    12004 to listOf("1.20.4"),  // for Neo
     12006 to listOf("1.20.5", "1.20.6"),
     12101 to listOf("1.21", "1.21.1"),
     12103 to listOf("1.21.2", "1.21.3")

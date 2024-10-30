@@ -5,7 +5,13 @@ import net.minecraft.network.chat.Component;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //#else
+//$$ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+//$$ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+//$$ import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
+//$$ import net.minecraft.network.protocol.Packet;
+//$$ import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 //$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+//$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //#endif
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -55,5 +61,25 @@ public abstract class ClientCommonPacketListenerMixin
     private void handleDisconnect(Component reason, CallbackInfo ci) {
         CGClientPlayNetworkHandler.onDisconnect();
     }
+    //#endif
+
+    //#if MC>=1.20.4 && FORGE>=1
+    //$$ @WrapOperation(
+    //$$     method = "send",
+    //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)V")
+    //$$ )
+    //$$ private void validateCobbleGen(Packet<?> packet, ClientCommonPacketListener listener, Operation<Void> original) {
+    //$$     try {
+    //$$         original.call(packet, listener);
+    //$$     } catch (UnsupportedOperationException e) {
+    //$$         if (!(packet instanceof ServerboundCustomPayloadPacket customPayloadPacket)) {
+    //$$             throw e;
+    //$$         }
+
+    //$$         if (!(customPayloadPacket.payload() instanceof CGPacketPayload)) {
+    //$$             throw e;
+    //$$         }
+    //$$     }
+    //$$ }
     //#endif
 }
