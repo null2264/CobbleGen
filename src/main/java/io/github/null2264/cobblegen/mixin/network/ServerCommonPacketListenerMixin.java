@@ -3,15 +3,17 @@ package io.github.null2264.cobblegen.mixin.network;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#else
-//#if MC>=1.20.4 && MC<1.20.5
-//$$ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-//#else if MC>=1.20.5
-//$$ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-//$$ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+//#if MC>=1.20.4
 //$$ import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
 //$$ import net.minecraft.network.protocol.Packet;
 //$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+//#if MC<1.20.5
+//$$ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+//#else
+//$$ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+//$$ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 //$$ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+//#endif
 //#endif
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //#endif
@@ -70,8 +72,8 @@ public abstract class ServerCommonPacketListenerMixin
         }
     }
 
-    //#if FORGE>1
-    //#if MC>=1.20.4 && MC<1.20.5
+    //#if MC>=1.20.4 && FORGE>1
+    //#if MC<1.20.5
     //$$ @ModifyExpressionValue(
     //$$     method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
     //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;canSendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)Z")
