@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.3.12]
+
 ### Fixed
 
 - Fixed REI integration due to API breaking changes in MC 1.21.2 or newer
