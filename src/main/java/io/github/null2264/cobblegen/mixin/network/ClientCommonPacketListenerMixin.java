@@ -1,18 +1,23 @@
 package io.github.null2264.cobblegen.mixin.network;
 
-import io.github.null2264.cobblegen.network.CGClientPlayNetworkHandler;
-import net.minecraft.network.chat.Component;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 //#else
+//#if MC>=1.20.4 && MC<1.20.5
+//$$ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+//#else if MC>=1.20.5
 //$$ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 //$$ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 //$$ import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
 //$$ import net.minecraft.network.protocol.Packet;
 //$$ import net.minecraft.network.protocol.common.ClientCommonPacketListener;
-//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //#endif
+//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+//#endif
+
+import io.github.null2264.cobblegen.network.CGClientPlayNetworkHandler;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -63,7 +68,21 @@ public abstract class ClientCommonPacketListenerMixin
     }
     //#endif
 
-    //#if MC>=1.20.4 && FORGE>=1
+    //#if FORGE>1
+    //#if MC>=1.20.4 && MC<1.20.5
+    //$$ @ModifyExpressionValue(
+    //$$     method = "send",
+    //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;canSendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)Z")
+    //$$ )
+    //$$ private boolean validateCobbleGen(boolean original, Packet<?> packet) {
+    //$$     if (packet instanceof ServerboundCustomPayloadPacket customPayloadPacket) {
+    //$$         if (customPayloadPacket.payload() instanceof CGPacketPayload) {
+    //$$             return true;
+    //$$         }
+    //$$     }
+    //$$     return original;
+    //$$ }
+    //#else if MC>=1.20.5
     //$$ @WrapOperation(
     //$$     method = "send",
     //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)V")
@@ -81,5 +100,6 @@ public abstract class ClientCommonPacketListenerMixin
     //$$         }
     //$$     }
     //$$ }
+    //#endif
     //#endif
 }

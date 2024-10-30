@@ -3,14 +3,19 @@ package io.github.null2264.cobblegen.mixin.network;
 //#if MC<1.20.2
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#else
+//#if MC>=1.20.4 && MC<1.20.5
+//$$ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+//#else if MC>=1.20.5
 //$$ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 //$$ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 //$$ import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
 //$$ import net.minecraft.network.protocol.Packet;
 //$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 //$$ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+//#endif
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //#endif
+
 import io.github.null2264.cobblegen.network.CGServerPlayNetworkHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -65,7 +70,21 @@ public abstract class ServerCommonPacketListenerMixin
         }
     }
 
-    //#if MC>=1.20.4 && FORGE>=1
+    //#if FORGE>1
+    //#if MC>=1.20.4 && MC<1.20.5
+    //$$ @ModifyExpressionValue(
+    //$$     method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
+    //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;canSendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)Z")
+    //$$ )
+    //$$ private boolean validateCobbleGen(boolean original, Packet<?> packet) {
+    //$$     if (packet instanceof ClientboundCustomPayloadPacket customPayloadPacket) {
+    //$$         if (customPayloadPacket.payload() instanceof CGPacketPayload) {
+    //$$             return true;
+    //$$         }
+    //$$     }
+    //$$     return original;
+    //$$ }
+    //#else if MC>=1.20.5
     //$$ @WrapOperation(
     //$$     method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
     //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)V")
@@ -83,5 +102,6 @@ public abstract class ServerCommonPacketListenerMixin
     //$$         }
     //$$     }
     //$$ }
+    //#endif
     //#endif
 }
