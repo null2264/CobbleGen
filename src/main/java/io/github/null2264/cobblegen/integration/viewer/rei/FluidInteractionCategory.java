@@ -23,7 +23,6 @@ import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.List;
 
-// FIXME: https://hackmd.io/@shedaniel/rei17_primer
 public class FluidInteractionCategory implements DisplayCategory<FluidInteractionRecipe>
 {
     public static String ID_PREFIX = "fluid_interaction_";
