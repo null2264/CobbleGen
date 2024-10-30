@@ -1,6 +1,10 @@
 //#if MC>1.16.5
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
+//#if MC>=1.21.0
+//$$ import mezz.jei.api.gui.builder.ITooltipBuilder;
+//#endif
+
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
