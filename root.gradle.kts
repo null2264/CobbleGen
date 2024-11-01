@@ -3,6 +3,8 @@ plugins {
 }
 
 preprocess {
+    strictExtraMappings.set(true)
+
     val neo12103 = createNode("1.21.3-neoforge", 12102, "mojang")
     val fabric12103 = createNode("1.21.3-fabric", 12102, "mojang")
     val neo12101 = createNode("1.21.1-neoforge", 12100, "mojang")

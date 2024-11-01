@@ -11,7 +11,7 @@ pluginManagement {
     }
     plugins {
         id("com.gradleup.shadow") version("8.3.0")
-        id("io.github.null2264.preprocess") version("1.0-SNAPSHOT")
+        id("io.github.null2264.preprocess") version("1.0.2")
         id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
     }
 }
