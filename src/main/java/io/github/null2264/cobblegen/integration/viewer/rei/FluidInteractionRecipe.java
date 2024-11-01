@@ -65,7 +65,7 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         return FluidInteractionCategory.generateIdentifier(getType());
     }
 
-    //#if MC>=1.21.1
+    //#if MC>=1.21.2
     //$$ @Override
     //$$ public Optional<ResourceLocation> getDisplayLocation() {
     //$$     return Optional.empty();
