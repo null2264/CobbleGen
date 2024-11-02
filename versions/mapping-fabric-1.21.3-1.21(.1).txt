@@ -1,1 +1,1 @@
-net.minecraft.core.DefaultedRegistry getValue(Lnet/minecraft/resources/ResourceLocation;)Ljava/lang/Object; net.minecraft.core.DefaultedRegistry get(Lnet/minecraft/resources/ResourceLocation;)Ljava/lang/Object;
+net.minecraft.core.DefaultedRegistry getValue(Lnet/minecraft/resources/ResourceLocation;)Ljava/lang/Object; get(Lnet/minecraft/resources/ResourceLocation;)Ljava/lang/Object;
