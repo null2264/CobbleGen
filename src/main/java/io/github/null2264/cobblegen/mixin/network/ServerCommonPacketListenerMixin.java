@@ -86,7 +86,7 @@ public abstract class ServerCommonPacketListenerMixin
     //$$     }
     //$$     return original;
     //$$ }
-    //#else if MC>=1.20.5
+    //#else
     //$$ @WrapOperation(
     //$$     method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
     //$$     at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)V")
