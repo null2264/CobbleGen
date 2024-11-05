@@ -198,7 +198,7 @@ dependencies {
                 12101 to "1.21.1",
                 12103 to "1.21.1", // FIXME: .
             )
-            val emiVersion = "1.1.16+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}"
+            val emiVersion = "1.1.18+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}"
             // EMI support multiple platform since 1.0.0
             // EMI seems to also skip 1.19 and 1.19.1
             modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion:api")
