@@ -1,7 +1,14 @@
 name: release
+
+run-name: ${{ format('Build and Release v{0}', github.event.inputs.version) }}
+
 on:
-  release:
-    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (without "v" prefix)'
+        required: true
+        type: string
 
 jobs:
   deploy:
@@ -16,15 +23,31 @@ jobs:
         with:
           java: 21
 
-      - name: Get mod versions
-        id: get-mod-versions
+      - name: Setup CHANGELOG parser
+        uses: taiki-e/install-action@parse-changelog
+
+      - name: Get MC versions
+        id: get-mc-versions
         run: |
           echo "versions=$(ls versions | grep -e '.\.' | grep -v 'mapping-' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+
+      - name: Get changelog
+        id: changelog
+        shell: bash
+        run: |
+          # extended SemVer (major.minor.patch.hotfix)
+          VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
+          {
+            echo "CHANGELOG<<END_OF_FILE"
+            parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'Unreleased' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo ""
+            echo ""
+            echo "END_OF_FILE"
+          } >> "$GITHUB_OUTPUT" 2> /dev/null
 
       - name: Build with Gradle
         uses: null2264/actions/replaymod-preprocessor-compile@1cc44b9be27b8914ca577a0905288e99c67df067
         with:
-          versions: ${{ steps.get-mod-versions.outputs.versions }}
+          versions: ${{ steps.get-mc-versions.outputs.versions }}
 
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst versions/*/build/libs
@@ -37,30 +60,21 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
-      - name: Upload to CurseForge and Modrinth
+      - name: Deploy to CurseForge and Modrinth
         run: ./gradlew publishMods --stacktrace --no-daemon --max-workers 1
         env:
-          CHANGELOG: ${{ github.event.release.body }}
+          CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
           CURSEFORGE: ${{ secrets.CURSEFORGE }}
           MODRINTH: ${{ secrets.MODRINTH }}
 
-  upload-release-artifacts:
-    name: Upload Release Artifacts
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-
-      - name: Unpack build artifact
-        run: tar axf build.tar.zst
-
-      - name: Upload Release Artifact
+      - name: Deploy to GitHub
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          tag_name: v${{github.event.inputs.version}}
+          name: v${{github.event.inputs.version}}
+          body: |
+            ${{ steps.changelog.outputs.CHANGELOG }}
           files: |
             versions/*/build/libs/!(*-dev-shade|*-sources).jar
