@@ -22,6 +22,7 @@ val supportedVersionRange: List<String?> = mapOf(
         11605 to listOf(null, "1.16.5"),
         11802 to listOf(null, "1.18.2"),
         11902 to listOf("1.19-", "1.19.2"),
+        11904 to listOf("1.19.3-", "1.19.4"),
         12001 to listOf("1.20-", "1.20.1"),
         12002 to listOf("1.20.2-", if (!isNeo) "1.20.4" else "1.20.3"),
         12004 to listOf(null, "1.20.4"),  // for Neo
@@ -198,7 +199,7 @@ dependencies {
                 12101 to "1.21.1",
                 12103 to "1.21.1", // FIXME: .
             )
-            val emiVersion = "1.1.18+${if (mcVersion >= 11902) (suffix[mcVersion] ?: "1.20.2") else "1.19.2"}"
+            val emiVersion = "1.1.18+${suffix[mcVersion] ?: "1.20.2"}"
             // EMI support multiple platform since 1.0.0
             // EMI seems to also skip 1.19 and 1.19.1
             modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion:api")
@@ -386,6 +387,7 @@ val mcReleaseVersions = mapOf<Int, List<String>>(
     11605 to listOf("1.16.5"),
     11802 to listOf("1.18.2"),
     11902 to listOf("1.19", "1.19.1", "1.19.2"),
+    11904 to listOf("1.19.3", "1.19.4"),
     12001 to listOf("1.20", "1.20.1"),
     12002 to listOf("1.20.2", "1.20.3").let {
         val rt = it.toMutableList()
