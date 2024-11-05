@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.3.13] - 2024-11-05
+
 ### Added
 
 - Re added support for MC 1.19.3-1.19.4
@@ -19,5 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adjust JEI integration due to deprecations in JEI 19 or newer
 - Fixed issues with sending packet on NeoForge caused by Network Refactor
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.12...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.13...main
+[v5.3.13]: https://github.com/null2264/CobbleGen/compare/v5.3.12...v5.3.13
 [v5.3.12]: https://github.com/null2264/CobbleGen/compare/v5.3.11...v5.3.12
