@@ -1,4 +1,11 @@
-# NeoForge validates modded payloads before sending it, seems to happened at 1.20.x
+# Bug:
+#  NeoForge validates modded payloads before sending it, seems to happened at 1.20.x
+#
+# Tracker:
+#  https://github.com/null2264/CobbleGen/issues/80
+#
+# Status:
+#  Solved
 
 services:
   mc:
@@ -10,7 +17,8 @@ services:
     environment:
       EULA: "TRUE"
       TYPE: NEOFORGE
-      VERSION: "21.1.72"
+      VERSION: "1.21.1"
+      NEOFORGE_VERSION: "21.1.72"
       MODS: |
         https://cdn.modrinth.com/data/qRogT5Gy/versions/C4DpAZTb/cobblegen-5.3.11%2B1.21.1b47-BETA-neoforge.jar
       ONLINE_MODE: "FALSE"
