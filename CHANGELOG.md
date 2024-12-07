@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update gradle to v8.11.1
 - Update archloom to v1.9
 - Update me.modmuss50.mod-publish-plugin to v0.8.1
+- Update com.gradleup.shadow to v8.3.5
 
 ## [v5.3.13] - 2024-11-05
 
