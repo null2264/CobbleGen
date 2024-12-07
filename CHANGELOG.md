@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Other
+
+- Update gradle to v8.11.1
+
 ## [v5.3.13] - 2024-11-05
 
 ### Added
