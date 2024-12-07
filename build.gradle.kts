@@ -5,7 +5,7 @@ plugins {
     id("dev.architectury.loom") version "1.9-SNAPSHOT"
     id("com.gradleup.shadow")
     id("io.github.null2264.preprocess")
-    id("me.modmuss50.mod-publish-plugin") version "0.3.5"
+    id("me.modmuss50.mod-publish-plugin") version "0.8.1"
 }
 
 val isForge = project.name.endsWith("forge")
