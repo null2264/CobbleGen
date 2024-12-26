@@ -46,3 +46,4 @@ listOf(
         buildFileName = "../../build.gradle.kts"
     }
 }
+include(":stubs")
