@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.3.14] - 2024-12-26
+
+### Fixed
+- Fix Create integration for Patch I and J
+
 ### Other
 - Update gradle to v8.11.1
 - Update archloom to v1.9
@@ -175,7 +180,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.13...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.14...main
+[v5.3.14]: https://github.com/null2264/CobbleGen/compare/v5.3.13...v5.3.14
 [v5.3.13]: https://github.com/null2264/CobbleGen/compare/v5.3.12...v5.3.13
 [v5.3.12]: https://github.com/null2264/CobbleGen/compare/v5.3.11...v5.3.12
 [v5.3.11]: https://github.com/null2264/CobbleGen/compare/v5.3.10...v5.3.11

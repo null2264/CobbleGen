@@ -398,7 +398,7 @@ val mcReleaseVersions = mapOf<Int, List<String>>(
     12004 to listOf("1.20.4"),  // for Neo
     12006 to listOf("1.20.5", "1.20.6"),
     12101 to listOf("1.21", "1.21.1"),
-    12103 to listOf("1.21.2", "1.21.3")
+    12103 to listOf("1.21.2", "1.21.3", "1.21.4")
 )[mcVersion] ?: throw IllegalStateException("Should not be empty!")
 
 // These overwrites mcReleaseVersions
