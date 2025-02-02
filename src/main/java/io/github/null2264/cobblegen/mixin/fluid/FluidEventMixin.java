@@ -56,12 +56,16 @@ public abstract class FluidEventMixin
     //$$ }
     //$$
     //$$ @Inject(method = "neighborChanged", at = @At("HEAD"), cancellable = true)
-    //$$ private void fluidInteraction$neighborChangede(
+    //$$ private void fluidInteraction$neighborChanged(
     //$$         BlockState state,
     //$$         Level level,
     //$$         BlockPos pos,
     //$$         net.minecraft.world.level.block.Block block,
-    //$$         BlockPos blockPos2,
+        //#if MC>=12102
+        //$$         net.minecraft.world.level.redstone.Orientation unused,
+        //#else
+        //$$         BlockPos unused,
+        //#endif
     //$$         boolean bl,
     //$$         CallbackInfo ci
     //$$ ) {

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix crashes due to MC breaking changes in MC 1.21.2 and newer
+
 ## [v5.3.14] - 2024-12-26
 
 ### Fixed
