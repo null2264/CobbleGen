@@ -46,3 +46,15 @@ preprocess {
     fabric11902.link(fabric11802)
     fabric11802.link(fabric11605)
 }
+
+subprojects {
+    val (_, minor) = name.split("-")[0].split(".")
+    val loader = when {
+        name.endsWith("-forge") -> "forge"
+        name.endsWith("-fabric") -> "fabric"
+        name.endsWith("-neoforge") -> "neoforge"
+        else -> ""
+    }
+    if (loader == "") throw java.lang.IllegalStateException("Invalid modloader")
+    extra.set("loom.platform", loader)
+}
