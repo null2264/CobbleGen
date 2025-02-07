@@ -48,7 +48,6 @@ preprocess {
 }
 
 subprojects {
-    val (_, minor) = name.split("-")[0].split(".")
     val loader = when {
         name.endsWith("-forge") -> "forge"
         name.endsWith("-fabric") -> "fabric"
