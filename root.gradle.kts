@@ -54,6 +54,8 @@ subprojects {
         name.endsWith("-neoforge") -> "neoforge"
         else -> ""
     }
-    if (loader == "") throw java.lang.IllegalStateException("Invalid modloader")
-    extra.set("loom.platform", loader)
+
+    if (loader != "") {
+        extra.set("loom.platform", loader)
+    }
 }
