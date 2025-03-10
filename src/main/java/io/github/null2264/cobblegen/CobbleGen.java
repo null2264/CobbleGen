@@ -43,7 +43,7 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
 
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
-        loadConfig(false, configFile, null, new ConfigData(), ConfigData.class);
+        loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
     }
 
     //#if FABRIC>=1
