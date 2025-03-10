@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v5.3.15] - 2025-03-10
+## [v5.3.16] - 2025-03-10
 
 ### Fixed
 - Fix CobbleGen generating empty config instead of default config
@@ -190,7 +190,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.15...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.16...main
+[v5.3.16]: https://github.com/null2264/CobbleGen/compare/v5.3.15...v5.3.16
 [v5.3.15]: https://github.com/null2264/CobbleGen/compare/v5.3.14...v5.3.15
 [v5.3.14]: https://github.com/null2264/CobbleGen/compare/v5.3.13...v5.3.14
 [v5.3.13]: https://github.com/null2264/CobbleGen/compare/v5.3.12...v5.3.13
