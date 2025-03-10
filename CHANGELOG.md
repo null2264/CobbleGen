@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.3.15] - 2025-03-10
+
+### Fixed
+- Fix CobbleGen generating empty config instead of default config
+
 ## [v5.3.15] - 2025-02-02
 
 ### Fixed
