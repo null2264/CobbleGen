@@ -20,7 +20,7 @@ Unfortunately due to irl stuff, the development will be on "maintenance mode", m
 
 ### Related Projects
 
-- [CobbleGen Configurator](https://git.sr.ht/~null2264/cobblegen-web)
+- [CobbleGen Configurator](https://sr.ht/~null2264/cobblegen-web/)
 
 ## License 
 This mod is licensed under [GNU LGPLv3 License](./LICENSE)
