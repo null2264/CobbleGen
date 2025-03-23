@@ -18,5 +18,9 @@ CobbleGen is an open source MC mod that allows you to customize and/or randomize
 
 Unfortunately due to irl stuff, the development will be on "maintenance mode", meaning new features will be halted and future update will only contains bugfixes.
 
+### Related Projects
+
+- [CobbleGen Configurator](https://git.sr.ht/~null2264/cobblegen-web)
+
 ## License 
 This mod is licensed under [GNU LGPLv3 License](./LICENSE)
