@@ -46,6 +46,7 @@ jobs:
 
   build:
     name: Build
+    needs: generate-matrix
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
