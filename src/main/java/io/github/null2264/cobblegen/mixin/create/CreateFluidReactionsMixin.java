@@ -1,4 +1,4 @@
-//#if MC>1.16.5
+#if MC>11605
 package io.github.null2264.cobblegen.mixin.create;
 
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -20,9 +20,9 @@ public abstract class CreateFluidReactionsMixin
 {
     @Inject(
             method = "handlePipeSpillCollision",
-            //#if FABRIC<=0
-            //$$ remap = false,
-            //#endif
+            #if FABRIC<=0
+            remap = false,
+            #endif
             at = @At(value = "HEAD"),
             cancellable = true
     )
@@ -35,4 +35,4 @@ public abstract class CreateFluidReactionsMixin
             ci.cancel();
     }
 }
-//#endif
+#endif

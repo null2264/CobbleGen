@@ -29,10 +29,11 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
      * @return -1 for Unsupported, 0 for Patch E or older, 1 for Patch F or newer
      */
     private int getPatchVersion() {
-        //#if FABRIC<=0
-        //$$ return 0;  // Always use Patch E mixin for Forge-alike
-        //#else
-        //#if MC>1.16.5
+        #if FORGE
+        return 0;  // Always use Patch E mixin for Forge-alike
+        #elif MC<=11605
+        return -1;  // We don't support create integration for MC1.16.5
+        #else
         try {
             String version =
                 net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("create")
@@ -72,10 +73,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
             CGLog.error(exc);
             return -1;
         }
-        //#else
-        //$$ return 0;  // We don't support create integration for MC1.16.5
-        //#endif
-        //#endif
+        #endif
     }
 
     @Override
@@ -93,7 +91,6 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-
     }
 
     @Override
@@ -103,11 +100,9 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
 
     @Override
     public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
     }
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
     }
 }

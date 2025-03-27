@@ -1,9 +1,9 @@
 package io.github.null2264.cobblegen.network.payload;
 
-//#if MC>=1.20.5
-//$$ import net.minecraft.network.codec.StreamCodec;
-//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-//#endif
+#if MC>=12005
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+#endif
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,26 +11,26 @@ import net.minecraft.resources.ResourceLocation;
 
 import static io.github.null2264.cobblegen.util.Constants.CG_PING_SERVER;
 
-//#if MC<=1.16.5
-//$$ public class CGPingS2CPayload
-//#else
+#if MC<=11605
+public class CGPingS2CPayload
+#else
 public record CGPingS2CPayload(Boolean reload)
-//#endif
+#endif
         implements CGPacketPayload
 {
     public static final CGIdentifier ID = CG_PING_SERVER;
 
-    //#if MC<=1.16.5
-    //$$ private final Boolean reload;
+    #if MC<=11605
+    private final Boolean reload;
 
-    //$$ public CGPingS2CPayload(Boolean reload) {
-    //$$     this.reload = reload;
-    //$$ }
+    public CGPingS2CPayload(Boolean reload) {
+        this.reload = reload;
+    }
 
-    //$$ public Boolean reload() {
-    //$$     return reload;
-    //$$ }
-    //#endif
+    public Boolean reload() {
+        return reload;
+    }
+    #endif
 
     public CGPingS2CPayload(FriendlyByteBuf buf) {
         this(buf.readBoolean());
@@ -46,14 +46,14 @@ public record CGPingS2CPayload(Boolean reload)
         return ID.toMC();
     }
 
-    //#if MC>=1.20.5
-    //$$ public static final StreamCodec<FriendlyByteBuf, CGPingS2CPayload> STREAM_CODEC =
-    //$$     CustomPacketPayload.codec(CGPingS2CPayload::write, CGPingS2CPayload::new);
-    //$$ public static final CustomPacketPayload.Type<CGPingS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
-    //$$
-    //$$ @Override
-    //$$ public Type<? extends CGPacketPayload> type() {
-    //$$     return TYPE;
-    //$$ }
-    //#endif
+    #if MC>=12005
+    public static final StreamCodec<FriendlyByteBuf, CGPingS2CPayload> STREAM_CODEC =
+        CustomPacketPayload.codec(CGPingS2CPayload::write, CGPingS2CPayload::new);
+    public static final CustomPacketPayload.Type<CGPingS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
+    
+    @Override
+    public Type<? extends CGPacketPayload> type() {
+        return TYPE;
+    }
+    #endif
 }

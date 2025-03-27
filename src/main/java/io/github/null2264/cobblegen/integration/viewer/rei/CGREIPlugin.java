@@ -1,4 +1,4 @@
-//#if MC>1.16.5
+#if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.CobbleGen;
@@ -14,9 +14,9 @@ import net.minecraft.world.level.material.Fluids;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
-//#if FABRIC<=0
-//$$ @me.shedaniel.rei.forge.REIPluginClient
-//#endif
+#if FORGE
+@me.shedaniel.rei.forge.REIPluginClient
+#endif
 public class CGREIPlugin implements REIClientPlugin
 {
     @Override
@@ -54,4 +54,4 @@ public class CGREIPlugin implements REIClientPlugin
                 })));
     }
 }
-//#endif
+#endif

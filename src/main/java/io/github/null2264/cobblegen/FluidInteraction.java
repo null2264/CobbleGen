@@ -70,9 +70,9 @@ public class FluidInteraction
 
     @ApiStatus.Internal
     @Deprecated
-    //#if MC>1.16.5
+    #if MC>11605
     (since = "5.1", forRemoval = true)
-    //#endif
+    #endif
     public void writeGeneratorsToPacket(FriendlyByteBuf buf) {
         write(generatorMap, buf);
     }

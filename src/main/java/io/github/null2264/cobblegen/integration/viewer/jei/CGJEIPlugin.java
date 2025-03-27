@@ -1,4 +1,4 @@
-//#if MC>1.16.5
+#if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
 import io.github.null2264.cobblegen.CobbleGen;
@@ -77,4 +77,4 @@ public class CGJEIPlugin implements IModPlugin
                 })));
     }
 }
-//#endif
+#endif

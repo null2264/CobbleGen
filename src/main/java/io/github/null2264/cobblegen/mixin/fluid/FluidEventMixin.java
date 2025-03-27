@@ -40,40 +40,40 @@ public abstract class FluidEventMixin
             cir.setReturnValue(false);
     }
 
-    //#if MC>=11900 && FABRIC<=0
-    //$$ @Inject(method = "onPlace", at = @At("HEAD"), cancellable = true)
-    //$$ private void fluidInteraction$onPlace(
-    //$$         BlockState state,
-    //$$         Level level,
-    //$$         BlockPos pos,
-    //$$         BlockState blockState2,
-    //$$         boolean bl,
-    //$$         CallbackInfo ci
-    //$$ ) {
-    //$$     // Forge 1.19.x completely changed Vanilla fluid behaviour
-    //$$     // REF: https://github.com/MinecraftForge/MinecraftForge/pull/8695
-    //$$     doInteraction(level, pos, state, ci);
-    //$$ }
-    //$$
-    //$$ @Inject(method = "neighborChanged", at = @At("HEAD"), cancellable = true)
-    //$$ private void fluidInteraction$neighborChanged(
-    //$$         BlockState state,
-    //$$         Level level,
-    //$$         BlockPos pos,
-    //$$         net.minecraft.world.level.block.Block block,
-        //#if MC>=12102
-        //$$         net.minecraft.world.level.redstone.Orientation unused,
-        //#else
-        //$$         BlockPos unused,
-        //#endif
-    //$$         boolean bl,
-    //$$         CallbackInfo ci
-    //$$ ) {
-    //$$     // Forge 1.19.x completely changed Vanilla fluid behaviour
-    //$$     // REF: https://github.com/MinecraftForge/MinecraftForge/pull/8695
-    //$$     doInteraction(level, pos, state, ci);
-    //$$ }
-    //#endif
+    #if MC>=11900 && FABRIC<=0
+    @Inject(method = "onPlace", at = @At("HEAD"), cancellable = true)
+    private void fluidInteraction$onPlace(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            BlockState blockState2,
+            boolean bl,
+            CallbackInfo ci
+    ) {
+        // Forge 1.19.x completely changed Vanilla fluid behaviour
+        // REF: https://github.com/MinecraftForge/MinecraftForge/pull/8695
+        doInteraction(level, pos, state, ci);
+    }
+    
+    @Inject(method = "neighborChanged", at = @At("HEAD"), cancellable = true)
+    private void fluidInteraction$neighborChanged(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            net.minecraft.world.level.block.Block block,
+            #if MC>=12102
+            net.minecraft.world.level.redstone.Orientation unused,
+            #else
+            BlockPos unused,
+            #endif
+            boolean bl,
+            CallbackInfo ci
+    ) {
+        // Forge 1.19.x completely changed Vanilla fluid behaviour
+        // REF: https://github.com/MinecraftForge/MinecraftForge/pull/8695
+        doInteraction(level, pos, state, ci);
+    }
+    #endif
 
     @Inject(method = "shouldSpreadLiquid", at = @At("HEAD"), cancellable = true)
     private void fluidInteraction$shouldSpreadLiquids(

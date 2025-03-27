@@ -1,9 +1,9 @@
 package io.github.null2264.cobblegen.data.model;
 
-//#if MC>=1.20.5
-//$$ import io.github.null2264.cobblegen.data.model.Generator;
-//$$ import io.netty.buffer.ByteBuf;
-//#endif
+#if MC>=12005
+import io.github.null2264.cobblegen.data.model.Generator;
+import io.netty.buffer.ByteBuf;
+#endif
 
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.util.CGLog;
@@ -26,23 +26,23 @@ import java.util.Optional;
 
 public interface Generator extends PacketSerializable<Generator>
 {
-    //#if MC>=1.20.5
-    //$$ public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> CODEC =
-    //$$ new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
-    //$$ {
-    //$$     @Override
-    //$$     public Generator decode(ByteBuf buf) {
-    //$$         return Generator.fromPacket(new FriendlyByteBuf(buf));
-    //$$     }
-    //$$
-    //$$     @Override
-    //$$     public void encode(ByteBuf buf, Generator generator) {
-    //$$         FriendlyByteBuf newBuf = FriendlyByteBuf.unpooled();
-    //$$         generator.toPacket(newBuf);
-    //$$         buf.writeBytes(newBuf);
-    //$$     }
-    //$$ };
-    //#endif
+    #if MC>=1.20.5
+    public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> CODEC =
+    new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
+    {
+        @Override
+        public Generator decode(ByteBuf buf) {
+            return Generator.fromPacket(new FriendlyByteBuf(buf));
+        }
+    
+        @Override
+        public void encode(ByteBuf buf, Generator generator) {
+            FriendlyByteBuf newBuf = FriendlyByteBuf.unpooled();
+            generator.toPacket(newBuf);
+            buf.writeBytes(newBuf);
+        }
+    };
+    #endif
 
     static Fluid getStillFluid(FluidState fluidState) {
         try {

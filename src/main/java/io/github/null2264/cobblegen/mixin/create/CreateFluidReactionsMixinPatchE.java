@@ -1,15 +1,15 @@
-//#if MC>1.16.5
+#if MC>11605
 package io.github.null2264.cobblegen.mixin.create;
 
-//#if FABRIC>=1
+#if FABRIC
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
-//#else
-    //#if FORGE>=2 && MC>=1.20.2
-    //$$ import net.neoforged.neoforge.fluids.FluidStack;
-    //#else
-    //$$ import net.minecraftforge.fluids.FluidStack;
-    //#endif
-//#endif
+#else
+    #if FORGE>=2 && MC>=12002
+import net.neoforged.neoforge.fluids.FluidStack;
+    #else
+import net.minecraftforge.fluids.FluidStack;
+    #endif
+#endif
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -30,9 +30,9 @@ public abstract class CreateFluidReactionsMixinPatchE
 {
     @Inject(
         method = "handlePipeFlowCollision",
-        //#if FABRIC<=0
-        //$$ remap = false,
-        //#endif
+        #if FORGE
+        remap = false,
+        #endif
         at = @At(value = "HEAD"), cancellable = true
     )
     private static void generator$handlePipeFlowCollision(
@@ -43,4 +43,4 @@ public abstract class CreateFluidReactionsMixinPatchE
             ci.cancel();
     }
 }
-//#endif
+#endif

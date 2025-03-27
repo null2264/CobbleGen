@@ -24,12 +24,12 @@ import static io.github.null2264.cobblegen.util.Util.identifierOf;
 public interface BuiltInGenerator extends Generator
 {
     // https://stackoverflow.com/a/6737362
-    //#if MC<=1.16.5
-    //$$ @ApiStatus.Internal
-    //$$ default String
-    //#else
+    #if MC<=11605
+    @ApiStatus.Internal
+    default String
+    #else
     private String
-    //#endif
+    #endif
     randomizeBlockId(Block key, String dim, Integer yLevel, GeneratorMap candidates, @Nullable String biome) {
         ResultList blockIds = candidates.getOrDefault(
                 CGIdentifier.fromMC(Util.getBlockId(key)),

@@ -1,4 +1,4 @@
-//#if MC<1.20.2
+#if MC<12002
 package io.github.null2264.cobblegen.mixin.network;
 
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,4 +15,4 @@ public interface ServerboundCustomPayloadPacketAccessor {
     @Accessor("data")
     FriendlyByteBuf getByte();
 }
-//#endif
+#endif

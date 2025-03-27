@@ -17,16 +17,15 @@ import java.nio.file.Path;
 import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
-//#if FORGE>=1
-    //#if FORGE==2
-    //$$ @net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
-    //#else
-    //$$ @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
-    //#endif
-//$$ public class CobbleGen
-//#else
-public class CobbleGen implements net.fabricmc.api.ModInitializer
-//#endif
+#if FORGE==2
+@net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
+#elif FORGE==1
+@net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
+#endif
+public class CobbleGen
+#if FABRIC
+    implements net.fabricmc.api.ModInitializer
+#endif
 {
     public static final String MOD_ID = "cobblegen";
     /**
@@ -46,10 +45,10 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
         loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
     }
 
-    //#if FABRIC>=1
+    #if FABRIC
     @Override
     public void onInitialize() {}
-    //#endif
+    #endif
 
     public static void initCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
         CGLog.info("Registering command...");
@@ -59,9 +58,9 @@ public class CobbleGen implements net.fabricmc.api.ModInitializer
                             CGLog.info("Reloading meta config...");
                             META_CONFIG = loadConfig(true, metaConfigFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
                             c.getSource().sendSuccess(
-                                //#if MC>=1.20.1
-                                //$$ () ->
-                                //#endif
+                                #if MC>=12001
+                                () ->
+                                #endif
                                 TextCompat.literal("Meta config has been reloaded"), false
                             );
                             CGLog.info("Meta config has been reloaded");

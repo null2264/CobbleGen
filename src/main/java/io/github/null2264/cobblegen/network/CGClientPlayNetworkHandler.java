@@ -1,14 +1,14 @@
 package io.github.null2264.cobblegen.network;
 
-//#if MC<1.20.2
+#if MC<12002
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-//#else
-//$$ import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
-//$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
-//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-//#endif
+#else
+import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
+import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+#endif
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.network.payload.*;
@@ -23,26 +23,27 @@ import static io.github.null2264.cobblegen.util.Constants.*;
 public class CGClientPlayNetworkHandler
 {
     public static boolean handlePacket(
-            //#if MC<1.20.2
+            #if MC<12002
             ClientPacketListener listener,
             ClientboundCustomPayloadPacket packet
-            //#else
-            //$$ ClientCommonPacketListenerImpl listener,
-            //$$ CustomPacketPayload payload
-            //#endif
+            #else
+            ClientCommonPacketListenerImpl listener,
+            CustomPacketPayload payload
+            #endif
     ) {
         // FIXME: Enable REI integration for 1.16.5
-        //#if MC<=1.16.5
-        //$$ return false;
-        //#else
-        //#if MC<1.20.2
+        #if MC<=1.16.5
+        return false;
+        #else
+
+        #if MC<1.20.2
         CGIdentifier id = CGIdentifier.fromMC(packet.getIdentifier());
         FriendlyByteBuf packetData = packet.getData();
 
         CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_CLIENT_PAYLOADS.get(id);
         if (reader == null) return false;
         CGPacketPayload payload = reader.apply(packetData);
-        //#endif
+        #endif
 
         if (payload instanceof CGSyncS2CPayload) {
             Boolean isReload = ((CGSyncS2CPayload) payload).isReload();
@@ -64,7 +65,7 @@ public class CGClientPlayNetworkHandler
         }
 
         return false;
-        //#endif
+        #endif
     }
 
     public static void onDisconnect() {
@@ -73,12 +74,12 @@ public class CGClientPlayNetworkHandler
 
     @ApiStatus.Internal
     private static ServerboundCustomPayloadPacket createC2SPacket(CGPacketPayload payload) {
-        //#if MC<=1.20.1
+        #if MC<=12001
         FriendlyByteBuf buf = FriendlyByteBuf.unpooled();
         payload.write(buf);
         return new ServerboundCustomPayloadPacket(payload.id(), buf);
-        //#else
-        //$$ return new ServerboundCustomPayloadPacket(payload);
-        //#endif
+        #else
+        return new ServerboundCustomPayloadPacket(payload);
+        #endif
     }
 }

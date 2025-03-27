@@ -1,14 +1,14 @@
 package io.github.null2264.cobblegen.network;
 
-//#if MC<1.20.2
+#if MC<12002
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-//#else
-//$$ import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
-//$$ import net.minecraft.server.network.ServerCommonPacketListenerImpl;
-//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-//#endif
+#else
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
+import net.minecraft.server.network.ServerCommonPacketListenerImpl;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+#endif
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.network.payload.*;
@@ -22,21 +22,21 @@ import static io.github.null2264.cobblegen.util.Constants.*;
 public class CGServerPlayNetworkHandler
 {
     public static void trySync(
-            //#if MC<1.20.2
+            #if MC<12002
             ServerGamePacketListenerImpl listener
-            //#else
-            //$$ ServerCommonPacketListenerImpl listener
-            //#endif
+            #else
+            ServerCommonPacketListenerImpl listener
+            #endif
     ) {
         trySync(listener, false);
     }
 
     public static void trySync(
-            //#if MC<1.20.2
+            #if MC<12002
             ServerGamePacketListenerImpl listener,
-            //#else
-            //$$ ServerCommonPacketListenerImpl listener,
-            //#endif
+            #else
+            ServerCommonPacketListenerImpl listener,
+            #endif
             boolean isReload
     ) {
         if (isReload)
@@ -48,27 +48,27 @@ public class CGServerPlayNetworkHandler
     }
 
     public static boolean handlePacket(
-            //#if MC<1.20.2
+            #if MC<12002
             ServerGamePacketListenerImpl listener,
             ServerboundCustomPayloadPacket packet
-            //#else
-            //$$ ServerCommonPacketListenerImpl listener,
-            //$$ CustomPacketPayload payload
-            //#endif
+            #else
+            ServerCommonPacketListenerImpl listener,
+            CustomPacketPayload payload
+            #endif
     ) {
         // FIXME: Enable REI integration
-        //#if MC<=1.16.5
-        //$$ return false;
-        //#else
+        #if MC<=11605
+        return false;
+        #else
 
-        //#if MC<1.20.2
+        #if MC<12002
         CGIdentifier id = CGIdentifier.fromMC(packet.getIdentifier());
         FriendlyByteBuf packetData = packet.getData();
 
         CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_SERVER_PAYLOADS.get(id);
         if (reader == null) return false;
         CGPacketPayload payload = reader.apply(packetData);
-        //#endif
+        #endif
 
         if (payload instanceof CGPingC2SPayload) {
             if (((CGPingC2SPayload) payload).hasRecipeViewer()) {
@@ -86,26 +86,26 @@ public class CGServerPlayNetworkHandler
         }
 
         return false;
-        //#endif
+        #endif
     }
 
-    //#if MC<1.20.2
+    #if MC<12002
     public static void sync(ServerGamePacketListenerImpl handler, boolean isReload) {
-    //#else
-    //$$ public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
-    //#endif
+    #else
+    public static void sync(ServerCommonPacketListenerImpl handler, boolean isReload) {
+    #endif
         CGPacketPayload payload = new CGSyncS2CPayload(isReload, FLUID_INTERACTION.getLocalGenerators());
         handler.send(createS2CPacket(payload));
     }
 
     @ApiStatus.Internal
     public static ClientboundCustomPayloadPacket createS2CPacket(CGPacketPayload payload) {
-        //#if MC<=1.20.1
+        #if MC<=12001
         FriendlyByteBuf buf = FriendlyByteBuf.unpooled();
         payload.write(buf);
         return new ClientboundCustomPayloadPacket(payload.id(), buf);
-        //#else
-        //$$ return new ClientboundCustomPayloadPacket(payload);
-        //#endif
+        #else
+        return new ClientboundCustomPayloadPacket(payload);
+        #endif
     }
 }

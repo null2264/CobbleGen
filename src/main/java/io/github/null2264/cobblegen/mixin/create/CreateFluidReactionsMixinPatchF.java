@@ -1,4 +1,4 @@
-//#if FABRIC && MC>1.16.5
+#if FABRIC && MC>11605
 package io.github.null2264.cobblegen.mixin.create;
 
 import com.simibubi.create.api.event.PipeCollisionEvent;
@@ -33,4 +33,4 @@ public abstract class CreateFluidReactionsMixinPatchF
         }
     }
 }
-//#endif
+#endif

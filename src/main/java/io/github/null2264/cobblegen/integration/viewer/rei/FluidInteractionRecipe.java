@@ -1,13 +1,13 @@
-//#if MC>1.16.5
+#if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
-//#if MC>=1.21.2
-//$$ import me.shedaniel.rei.api.common.display.DisplaySerializer;
-//$$ import net.minecraft.resources.ResourceLocation;
-//$$ import org.jetbrains.annotations.Nullable;
+#if MC>=12102
+import me.shedaniel.rei.api.common.display.DisplaySerializer;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.Nullable;
 
-//$$ import java.util.Optional;
-//#endif
+import java.util.Optional;
+#endif
 
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
@@ -65,19 +65,19 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         return FluidInteractionCategory.generateIdentifier(getType());
     }
 
-    //#if MC>=1.21.2
-    //$$ @Override
-    //$$ public Optional<ResourceLocation> getDisplayLocation() {
-    //$$     return Optional.empty();
-    //$$ }
+    #if MC>=12102
+    @Override
+    public Optional<ResourceLocation> getDisplayLocation() {
+        return Optional.empty();
+    }
 
-    //$$ @Nullable
-    //$$ @Override
-    //$$ public DisplaySerializer<? extends Display> getSerializer() {
-    //$$     // We never register Display to server, should be fine to leave it null. Tho I should probably do that...
-    //$$     // REF: https://hackmd.io/@shedaniel/rei17_primer
-    //$$     return null;
-    //$$ }
-    //#endif
+    @Nullable
+    @Override
+    public DisplaySerializer<? extends Display> getSerializer() {
+        // We never register Display to server, should be fine to leave it null. Tho I should probably do that...
+        // REF: https://hackmd.io/@shedaniel/rei17_primer
+        return null;
+    }
+    #endif
 }
-//#endif
+#endif

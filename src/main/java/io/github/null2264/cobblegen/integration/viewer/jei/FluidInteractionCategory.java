@@ -1,9 +1,9 @@
-//#if MC>1.16.5
+#if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
-//#if MC>=1.21.0
-//$$ import mezz.jei.api.gui.builder.ITooltipBuilder;
-//#endif
+#if MC>=12100
+import mezz.jei.api.gui.builder.ITooltipBuilder;
+#endif
 
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
@@ -86,11 +86,11 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         return TextCompat.translatable("cobblegen.generators." + type.name().toLowerCase());
     }
 
-    //#if MC<1.21.0
+    #if MC<12100
     @NotNull
-    //#else
-    //$$ @org.jetbrains.annotations.Nullable
-    //#endif
+    #else
+    @org.jetbrains.annotations.Nullable
+    #endif
     @Override
     public IDrawable getBackground() {
         return background;
@@ -144,11 +144,11 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public void draw(
             FluidInteractionRecipeHolder recipe,
             IRecipeSlotsView recipeSlotsView,
-            //#if MC<12000
+            #if MC<12000
             com.mojang.blaze3d.vertex.PoseStack graphicsTarget,
-            //#else
-            //$$ net.minecraft.client.gui.GuiGraphics graphicsTarget,
-            //#endif
+            #else
+            net.minecraft.client.gui.GuiGraphics graphicsTarget,
+            #endif
             double mouseX,
             double mouseY
     ) {
@@ -190,18 +190,18 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         );
     }
 
-    //#if MC<1.21.0
+    #if MC<12100
     @NotNull
     @Override
     public List<Component> getTooltipStrings(FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
         return getTooltip(recipe, recipeSlotsView, mouseX, mouseY);
     }
-    //#else
-    //$$ @Override
-    //$$ public void getTooltip(ITooltipBuilder tooltip, FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-    //$$     tooltip.addAll(getTooltip(recipe, recipeSlotsView, mouseX, mouseY));
-    //$$ }
-    //#endif
+    #else
+    @Override
+    public void getTooltip(ITooltipBuilder tooltip, FluidInteractionRecipeHolder recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+        tooltip.addAll(getTooltip(recipe, recipeSlotsView, mouseX, mouseY));
+    }
+    #endif
 
     @NotNull
     public List<Component> getTooltip(
@@ -252,7 +252,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         return List.of();
     }
 
-    //#if MC<11900
+    #if MC<11900
     @SuppressWarnings("removal")
     @Deprecated
     @NotNull
@@ -266,6 +266,6 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public Class<? extends FluidInteractionRecipeHolder> getRecipeClass() {
         return FluidInteractionRecipeHolder.class;
     }
-    //#endif
+    #endif
 }
-//#endif
+#endif

@@ -1,4 +1,4 @@
-//#if FABRIC>=1 && MC<=1.18.2 && MC>1.16.5 || MC>=1.19
+#if FABRIC && MC<=11802 && MC>11605 || MC>=11900
 package io.github.null2264.cobblegen.integration.viewer.emi;
 
 import dev.emi.emi.api.EmiPlugin;
@@ -26,9 +26,9 @@ import java.util.function.Function;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
-//#if MC>=11900
-//$$ @dev.emi.emi.api.EmiEntrypoint
-//#endif
+#if MC>=11900
+@dev.emi.emi.api.EmiEntrypoint
+#endif
 public class CGEMIPlugin implements EmiPlugin
 {
     public static final String ID_PREFIX = "fluid_interaction_";
@@ -246,4 +246,4 @@ public class CGEMIPlugin implements EmiPlugin
         }
     }
 }
-//#endif
+#endif

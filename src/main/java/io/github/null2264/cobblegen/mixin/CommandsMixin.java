@@ -18,9 +18,9 @@ public abstract class CommandsMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     private void registerCustomCommands(
             Commands.CommandSelection commandSelection,
-            //#if MC>1.18.2
-            //$$ net.minecraft.commands.CommandBuildContext commandBuildContext,
-            //#endif
+            #if MC>11802
+            net.minecraft.commands.CommandBuildContext commandBuildContext,
+            #endif
             CallbackInfo ci
     ) {
         CobbleGen.initCommands(this.dispatcher);
