@@ -11,39 +11,10 @@ pluginManagement {
     }
     plugins {
         id("com.gradleup.shadow") version("8.3.5")
-        id("io.github.null2264.preprocess") version("1.0.2")
         id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
     }
 }
 
 rootProject.name = "CobbleGen"
-// rootProject.buildFileName = "root.gradle.kts"
 
-// listOf(
-//     "1.16.5-fabric",
-//     "1.16.5-forge",
-//     "1.18.2-fabric",
-//     "1.18.2-forge",
-//     "1.19.2-fabric",
-//     "1.19.2-forge",
-//     "1.19.4-fabric",
-//     "1.19.4-forge",
-//     "1.20.1-fabric",
-//     "1.20.1-forge",
-//     "1.20.2-fabric",
-//     "1.20.2-neoforge",
-//     "1.20.4-neoforge",
-//     "1.20.6-fabric",
-//     "1.20.6-neoforge",
-//     "1.21.1-fabric",
-//     "1.21.1-neoforge",
-//     "1.21.3-fabric",
-//     "1.21.3-neoforge",
-// ).forEach { version ->
-//     include(":$version")
-//     project(":$version").apply {
-//         projectDir = file("versions/$version")
-//         buildFileName = "../../build.gradle.kts"
-//     }
-// }
 include(":stubs")

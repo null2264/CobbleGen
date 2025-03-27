@@ -4,7 +4,6 @@ import net.fabricmc.loom.task.RemapJarTask
 plugins {
     id("dev.architectury.loom") version "1.9-SNAPSHOT"
     id("com.gradleup.shadow")
-    id("io.github.null2264.preprocess")
     id("me.modmuss50.mod-publish-plugin") version "0.8.1"
 }
 
@@ -31,27 +30,6 @@ val supportedVersionRange: List<String?> = mapOf(
         12101 to listOf("1.21-", "1.21.1"),
         12103 to listOf("1.21.2-", null),
 )[mcVersion] ?: listOf()
-
-preprocess {
-    vars.put("MC", mcVersion)
-    vars.put("FABRIC",
-        when {
-            // isFabric && isQuilt -> 2
-            // isFabric && !isQuilt -> 1
-            isFabric -> 1
-            else -> 0
-        }
-    )
-    vars.put("FORGE",
-        when {
-            isForge && isNeo -> 2
-            isForge && !isNeo -> 1
-            else -> 0
-        }
-    )
-
-    patternAnnotation.set("io.github.null2264.gradle.Pattern")
-}
 
 repositories {
     maven("https://jitpack.io")
@@ -167,11 +145,14 @@ dependencies {
     if (!isFabric)
         "forgeRuntimeLibrary"("blue.endless:jankson:${project.properties["jankson_version"]}")
 
-    shade("systems.manifold:manifold-ext-rt:${project.properties["manifold_version"]}")
+    val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
+    shade("systems.manifold:manifold-ext-rt:${manifoldVersion}")
     if (!isFabric)
-        "forgeRuntimeLibrary"("systems.manifold:manifold-ext-rt:${project.properties["manifold_version"]}")
-    annotationProcessor("systems.manifold:manifold-ext:${project.properties["manifold_version"]}")
-    testAnnotationProcessor("systems.manifold:manifold-ext:${project.properties["manifold_version"]}")
+        "forgeRuntimeLibrary"("systems.manifold:manifold-ext-rt:${manifoldVersion}")
+    annotationProcessor("systems.manifold:manifold-ext:${manifoldVersion}")
+    testAnnotationProcessor("systems.manifold:manifold-ext:${manifoldVersion}")
+    annotationProcessor("systems.manifold:manifold-preprocessor:${manifoldVersion}")
+    testAnnotationProcessor("systems.manifold:manifold-preprocessor:${manifoldVersion}")
 
     // Don't wanna deal with these atm
     if (mcVersion > 11605) {
@@ -310,6 +291,7 @@ val remapJar by tasks.getting(RemapJarTask::class) {
     inputFile.set(shadowJar.archiveFile)
 }
 
+// FIXME: Can no longer preprocess resources
 val processResources by tasks.getting(ProcessResources::class) {
     val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
     val metadataMCVersion =
