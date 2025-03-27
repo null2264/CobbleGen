@@ -35,7 +35,7 @@ fun writeBuildGradlePredefine() {
     val sb = StringBuilder();
 
     sb.append("# DON'T TOUCH THIS FILE, This is handled by the build script\n");
-    sb.append("MC_VER=${mcVersion}")
+    sb.append("MC=${mcVersion}")
     if (isFabric) sb.append("FABRIC=${isFabric}")
     if (isForge) sb.append("FORGE=${isForge}")
 
