@@ -31,17 +31,17 @@ val supportedVersionRange: List<String?> = mapOf(
         12103 to listOf("1.21.2-", null),
 )[mcVersion] ?: listOf()
 
-fun writeBuildGradlePredefine() {
+fun setupPreprocessor() {
     val sb = StringBuilder();
 
     sb.append("# DON'T TOUCH THIS FILE, This is handled by the build script\n");
-    sb.append("MC=${mcVersion}")
-    if (isFabric) sb.append("FABRIC=${isFabric}")
-    if (isForge) sb.append("FORGE=${isForge}")
+    sb.append("MC=${mcVersion}\n")
+    if (isFabric) sb.append("FABRIC=${isFabric}\n")
+    if (isForge) sb.append("FORGE=${isForge}\n")
 
     File(projectDir, "build.properties").writeText(sb.toString())
 }
-writeBuildGradlePredefine()
+setupPreprocessor()
 
 repositories {
     maven("https://jitpack.io")

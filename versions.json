@@ -1,5 +1,6 @@
 {
     "include": [
-        { "mc": "1.21.3", "loader": "fabric" }
+        { "mc": "1.21.3", "loader": "fabric" },
+        { "mc": "1.21.3", "loader": "neoforge" }
     ]
 }
