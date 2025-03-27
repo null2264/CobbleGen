@@ -11,7 +11,7 @@ val loaderName = project.properties["loaderName"] as? String ?: "fabric"
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
-val mcVersionStr = project.properties["mcVer"]
+val mcVersionStr = project.properties["mcVer"] as? String ?: ""
 val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
