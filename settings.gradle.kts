@@ -17,4 +17,6 @@ pluginManagement {
 
 rootProject.name = "CobbleGen"
 
+extra.set("loom.platform", extra["loaderName"] as? String ?: "fabric")
+
 include(":stubs")
