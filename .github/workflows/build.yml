@@ -31,9 +31,24 @@ jobs:
           push: true
           tags: ghcr.io/null2264/cobblegen-configurator:web
 
+  generate-matrix:
+    name: Generate Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup matrix
+        id: matrix
+        run: echo "matrix=$(jq -cr . ./versions.json)" >> $GITHUB_OUTPUT
+
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,15 +58,9 @@ jobs:
         with:
           java: 21
 
-      - name: Get mod versions
-        id: get-mod-versions
-        run: |
-          echo "versions=$(ls versions | grep -e '.\.' | grep -v 'mapping-' | tr '\n' ' ')" >> $GITHUB_OUTPUT
-
       - name: Build with Gradle
-        uses: null2264/actions/replaymod-preprocessor-compile@6712f98d592b126629afd27dc4870c93b53426b4
-        with:
-          versions: ${{ steps.get-mod-versions.outputs.versions }}
+        run: |
+          ./gradlew build -PmcVer="${{ matrix.mc }}" -PloaderName="${{ matrix.loader }}"
 
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst versions/*/build/libs

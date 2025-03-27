@@ -8,10 +8,11 @@ plugins {
     id("me.modmuss50.mod-publish-plugin") version "0.8.1"
 }
 
-val isForge = project.name.endsWith("forge")
-val isNeo = project.name.endsWith("neoforge")
-val isFabric = project.name.endsWith("fabric")
-val mcVersionStr = project.name.split("-")[0]
+val loaderName = project.properties["loaderName"] as? String ?: "fabric"
+val isForge = loaderName.endsWith("forge")
+val isNeo = loaderName.endsWith("neoforge")
+val isFabric = loaderName.endsWith("fabric")
+val mcVersionStr = project.properties["mcVer"]
 val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
