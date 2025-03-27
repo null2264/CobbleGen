@@ -39,7 +39,7 @@ fun writeBuildGradlePredefine() {
     if (isFabric) sb.append("FABRIC=${isFabric}")
     if (isForge) sb.append("FORGE=${isForge}")
 
-    File(projectDir, "build.properties").text = sb.toString()
+    File(projectDir, "build.properties").writeText(sb.toString())
 }
 writeBuildGradlePredefine()
 
