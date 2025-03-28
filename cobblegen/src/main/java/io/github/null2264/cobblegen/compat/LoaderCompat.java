@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
     #endif
-#else
+#elif FORGE
     #if FORGE>=2 && MC>=12002
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.fml.ModList;
@@ -19,6 +19,8 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.LoadingModList;
     #endif
+#else
+    #error "Invalid loader name"
 #endif
 
 public class LoaderCompat {
@@ -35,7 +37,7 @@ public class LoaderCompat {
 
     public static Path getConfigDir() {
         #if FABRIC
-            #if MC>1.16.5
+            #if MC>11605
         return FabricLoader.getInstance().getConfigDir();
             #else
             // Not ideal, but configDir is null somehow in 1.16.5
@@ -49,26 +51,28 @@ public class LoaderCompat {
         }
         return configDir;
             #endif
-        #else
+        #elif FORGE
         return FMLPaths.CONFIGDIR.get();
+        #else
+        #error "Invalid loader name"
         #endif
     }
 
     public static LoaderType getType() {
-        #if FABRIC>=1
+        #if FABRIC
             #if FABRIC==1
         return LoaderType.FABRIC;
             #else
         return LoaderType.QUILT;
             #endif
-        #elif FORGE>=1
+        #elif FORGE
             #if FORGE==1
         return LoaderType.FORGE;
             #else
         return LoaderType.NEOFORGE;
             #endif
         #else
-        throw new RuntimeException("Unsupported Loader");
+        #error "Invalid loader name"
         #endif
     }
 

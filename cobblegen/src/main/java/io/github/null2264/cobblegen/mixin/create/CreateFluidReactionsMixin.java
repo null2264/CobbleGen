@@ -20,7 +20,7 @@ public abstract class CreateFluidReactionsMixin
 {
     @Inject(
             method = "handlePipeSpillCollision",
-            #if FABRIC<=0
+            #if FORGE
             remap = false,
             #endif
             at = @At(value = "HEAD"),

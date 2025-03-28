@@ -40,7 +40,7 @@ public abstract class FluidEventMixin
             cir.setReturnValue(false);
     }
 
-    #if MC>=11900 && FABRIC<=0
+    #if MC>=11900 && FORGE
     @Inject(method = "onPlace", at = @At("HEAD"), cancellable = true)
     private void fluidInteraction$onPlace(
             BlockState state,
