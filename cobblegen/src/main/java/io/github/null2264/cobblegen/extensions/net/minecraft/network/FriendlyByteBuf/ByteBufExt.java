@@ -1,4 +1,4 @@
-package cobblegen.extensions.net.minecraft.network.FriendlyByteBuf;
+package io.github.null2264.cobblegen.extensions.net.minecraft.network.FriendlyByteBuf;
 
 #if MC<=11605
 import com.google.common.collect.Lists;
@@ -22,7 +22,6 @@ import net.minecraft.network.FriendlyByteBuf;
 @Extension
 public class ByteBufExt
 {
-    @Extension
     public static FriendlyByteBuf unpooled() {
         return new FriendlyByteBuf(Unpooled.buffer());
     }

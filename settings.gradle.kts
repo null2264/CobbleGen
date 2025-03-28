@@ -15,7 +15,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "cobblegen"
+rootProject.name = "CobbleGen"
 
 include(":cobblegen")  // TODO: Maybe split?
 include(":stubs")
