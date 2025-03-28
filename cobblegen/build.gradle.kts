@@ -30,8 +30,6 @@ val supportedVersionRange: List<String?> = mapOf(
         12103 to listOf("1.21.2-", null),
 )[mcVersion] ?: listOf()
 
-group = project.properties["maven_group"] as String
-
 loom {
     silentMojangMappingsLicense()
 
@@ -325,8 +323,7 @@ tasks.jar {
     }
 }
 
-if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
-        sourceSets.main.get().allJava.files.any {it.name == "module-info.java"}) {
+if (JavaVersion.current() != JavaVersion.VERSION_1_8 && sourceSets.main.get().allJava.files.any {it.name == "module-info.java"}) {
     tasks.withType<JavaCompile>() {
         // if you DO define a module-info.java file:
         options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "--module-path", classpath.asPath))
