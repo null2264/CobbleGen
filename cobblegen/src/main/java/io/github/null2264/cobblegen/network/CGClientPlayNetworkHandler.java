@@ -32,11 +32,11 @@ public class CGClientPlayNetworkHandler
             #endif
     ) {
         // FIXME: Enable REI integration for 1.16.5
-        #if MC<=1.16.5
+        #if MC<=11605
         return false;
         #else
 
-        #if MC<1.20.2
+        #if MC<12002
         CGIdentifier id = CGIdentifier.fromMC(packet.getIdentifier());
         FriendlyByteBuf packetData = packet.getData();
 

@@ -17,6 +17,5 @@ pluginManagement {
 
 rootProject.name = "CobbleGen"
 
-extra.set("loom.platform", extra["loaderName"] as? String ?: "fabric")
-
+include(":cobblegen")  // TODO: Maybe split?
 include(":stubs")

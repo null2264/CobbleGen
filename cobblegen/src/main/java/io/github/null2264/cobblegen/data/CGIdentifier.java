@@ -14,7 +14,7 @@ import java.util.Objects;
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
-#if MC<=1.16.5
+#if MC<=11605
 public class CGIdentifier
 #else
 /**
@@ -25,7 +25,7 @@ public class CGIdentifier
 public record CGIdentifier(String modid, String name)
 #endif
 {
-    #if MC<=1.16.5
+    #if MC<=11605
     private final String modid;
     private final String name;
 
