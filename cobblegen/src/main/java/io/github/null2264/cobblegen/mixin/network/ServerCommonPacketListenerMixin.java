@@ -72,7 +72,7 @@ public abstract class ServerCommonPacketListenerMixin
         }
     }
 
-    #if MC>=12004 && FORGE>1
+    #if MC>=12004 && FORGE && FORGE>1
     #if MC<12005
     @ModifyExpressionValue(
         method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",

@@ -17,10 +17,12 @@ import java.nio.file.Path;
 import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
-#if FORGE==2
+#if FORGE
+    #if FORGE==2
 @net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
-#elif FORGE==1
+    #elif FORGE==1
 @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
+    #endif
 #endif
 public class CobbleGen
 #if FABRIC

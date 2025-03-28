@@ -70,7 +70,7 @@ public abstract class ClientCommonPacketListenerMixin
     }
     #endif
 
-    #if MC>=12004 && FORGE>1
+    #if MC>=12004 && FORGE && FORGE>1
         #if MC<12005
     @ModifyExpressionValue(
         method = "send",
