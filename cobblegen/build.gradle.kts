@@ -324,16 +324,3 @@ tasks.jar {
         rename { "${it}_${base.archivesName.get()}" }
     }
 }
-
-if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
-        sourceSets.main.get().allJava.files.any {it.name == "module-info.java"}) {
-    tasks.withType<JavaCompile>() {
-        // if you DO define a module-info.java file:
-        options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "--module-path", classpath.asPath))
-    }
-} else {
-    tasks.withType<JavaCompile>() {
-        // If you DO NOT define a module-info.java file:
-        options.compilerArgs.addAll(listOf("-Xplugin:Manifold"))
-    }
-}
