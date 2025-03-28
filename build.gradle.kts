@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("dev.architectury.loom") version "1.9-SNAPSHOT" apply false
     id("com.gradleup.shadow")
+    id("systems.manifold.manifold-gradle-plugin") version "0.0.2-alpha"
 }
 
 val loaderName = project.properties["loaderName"] as? String ?: "fabric"
@@ -83,23 +84,14 @@ allprojects {
         maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
         mavenLocal()
     }
-
-    if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
-        sourceSets.main.get().allJava.files.any {it.name == "module-info.java"}) {
-        tasks.withType<JavaCompile>() {
-            // if you DO define a module-info.java file:
-            options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "--module-path", classpath.asPath))
-        }
-    } else {
-        tasks.withType<JavaCompile>() {
-            // If you DO NOT define a module-info.java file:
-            options.compilerArgs.addAll(listOf("-Xplugin:Manifold"))
-        }
-    }
 }
 
 subprojects {
+    apply(plugin = "systems.manifold.manifold-gradle-plugin")
     extra.set("loom.platform", rootProject.properties["loaderName"] as? String ?: "fabric")
+    manifold {
+        manifoldVersion.set(rootProject.properties["manifold_version"] as String)
+    }
 }
 
 // TODO: addingVersion
