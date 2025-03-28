@@ -12,7 +12,7 @@ import net.fabricmc.loader.api.FabricLoader;
 #else
 import java.lang.reflect.Constructor;
 import io.github.null2264.cobblegen.CGPlugin;
-    #if FORGE>=2 && MC>=1.20.2
+    #if FORGE>=2 && MC>=12002
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforgespi.language.IModInfo;
 import net.neoforged.neoforgespi.language.ModFileScanData;

@@ -59,7 +59,7 @@ public class Constants
     public static final int OP_LEVEL_GAMEMASTERS = 2;
     //public static final int OP_LEVEL_ADMINS = 3;
     //public static final int OP_LEVEL_OWNERS = 4;
-    #if MC>=1.20.5
+    #if MC>=12005
     public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Fluid> FLUID_CODEC =
         new net.minecraft.network.codec.StreamCodec<ByteBuf, Fluid>()
         {

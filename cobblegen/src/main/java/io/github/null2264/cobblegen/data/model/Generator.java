@@ -26,7 +26,7 @@ import java.util.Optional;
 
 public interface Generator extends PacketSerializable<Generator>
 {
-    #if MC>=1.20.5
+    #if MC>=12005
     public static final net.minecraft.network.codec.StreamCodec<ByteBuf, Generator> CODEC =
     new net.minecraft.network.codec.StreamCodec<ByteBuf, Generator>()
     {

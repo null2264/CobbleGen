@@ -3,11 +3,11 @@ package io.github.null2264.cobblegen.mixin.network;
 #if MC<12002
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 #else
-    #if MC>=1.20.4
+    #if MC>=12004
 import net.minecraft.network.protocol.Packet;
 import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
-        #if MC<1.20.5
+        #if MC<12005
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
         #else
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;

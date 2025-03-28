@@ -30,10 +30,10 @@ val supportedVersionRange: List<String?> = mapOf(
 
 fun setupPreprocessor() {
     val buildProps = buildString {
-        append("# DON'T TOUCH THIS FILE, This is handled by the build script\n");
+        append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
         append("MC=${mcVersion}\n")
-        if (isFabric) append("FABRIC=${isFabric}\n")
-        if (isForge) append("FORGE=${isForge}\n")
+        if (isFabric) append("FABRIC=1\n")
+        if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
 
     File(projectDir, "build.properties").writeText(buildProps)
