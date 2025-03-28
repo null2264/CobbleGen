@@ -70,7 +70,12 @@ public class Util
     }
 
     public static Fluid getFluid(ResourceLocation id) {
-        return RegistryCompat.fluid().get(id);
+        return RegistryCompat.fluid()
+            #if MC>12101
+            .getValue(id);
+            #else
+            .get(id);
+            #endif
     }
 
     public static ResourceLocation getFluidId(Fluid fluid) {
@@ -78,7 +83,12 @@ public class Util
     }
 
     public static Block getBlock(ResourceLocation id) {
-        return RegistryCompat.block().get(id);
+        return RegistryCompat.block()
+            #if MC>12101
+            .getValue(id);
+            #else
+            .get(id);
+            #endif
     }
 
     public static ResourceLocation getBlockId(Block block) {
@@ -123,30 +133,40 @@ public class Util
     }
 
     public static String getDimension(LevelAccessor level) {
-        ResourceLocation dim = level.registryAccess().registryOrThrow(
-                #if MC<=11902
-                Registry.DIMENSION_TYPE_REGISTRY
-                #else
-                net.minecraft.core.registries.Registries.DIMENSION_TYPE
-                #endif
-        ).getKey(level.dimensionType());
+        ResourceLocation dim = level.registryAccess()
+            #if MC>12101
+            .lookupOrThrow(
+            #else
+            .registryOrThrow(
+            #endif
+                    #if MC<=11902
+                    Registry.DIMENSION_TYPE_REGISTRY
+                    #else
+                    net.minecraft.core.registries.Registries.DIMENSION_TYPE
+                    #endif
+            ).getKey(level.dimensionType());
         return dim != null ? dim.toString() : "minecraft:overworld";
     }
 
     @Nullable
     public static String getBiome(LevelAccessor level, BlockPos position) {
-        ResourceLocation biome = level.registryAccess().registryOrThrow(
-                #if MC<=11902
-                Registry.BIOME_REGISTRY
-                #else
-                net.minecraft.core.registries.Registries.BIOME
-                #endif
-        ).getKey(
-                level.getBiome(position)
-                #if MC>=11802
-                    .value()
-                #endif
-        );
+        ResourceLocation biome = level.registryAccess()
+            #if MC>12101
+            .lookupOrThrow(
+            #else
+            .registryOrThrow(
+            #endif
+                    #if MC<=11902
+                    Registry.BIOME_REGISTRY
+                    #else
+                    net.minecraft.core.registries.Registries.BIOME
+                    #endif
+            ).getKey(
+                    level.getBiome(position)
+                    #if MC>=11802
+                        .value()
+                    #endif
+            );
         return biome != null ? biome.toString() : null;
     }
 }

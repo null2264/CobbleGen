@@ -19,7 +19,6 @@ import io.netty.buffer.Unpooled;
 import manifold.ext.rt.api.Extension;
 import net.minecraft.network.FriendlyByteBuf;
 
-@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 @Extension
 public class ByteBufExt
 {

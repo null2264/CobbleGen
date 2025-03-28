@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen.compat;
 
-import io.github.null2264.gradle.Pattern;
 import net.minecraft.network.chat.MutableComponent;
 
 public class TextCompat {
