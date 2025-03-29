@@ -64,6 +64,10 @@ jobs:
         run: |
           ./gradlew build -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
 
+      - name: Tests
+        run: |
+          echo "${{ join(matrix.testVersions, ' ') }}"
+
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst cobblegen/build/libs/*
 
