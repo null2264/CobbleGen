@@ -6,7 +6,7 @@ plugins {
     id("com.gradleup.shadow") apply false
 }
 
-val loaderName = project.properties["loaderName"] as? String ?: ""
+val loaderName = project.properties["loom.platform"] as? String ?: ""
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
@@ -112,8 +112,6 @@ subprojects {
     if (isModModule) {
         apply(plugin = "dev.architectury.loom")
     }
-
-    extra.set("loom.platform", loaderName)
 
     val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
 

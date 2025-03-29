@@ -62,7 +62,7 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew build -PmcVer="${{ matrix.mc }}" -PloaderName="${{ matrix.loader }}"
+          ./gradlew build -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
 
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst versions/*/build/libs
