@@ -70,7 +70,7 @@ jobs:
       - name: Upload build folder
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: mc${{ matrix.mc }}-${{ matrix.loader }}-build-artifacts
           path: build.tar.zst
           if-no-files-found: error
           retention-days: 3
