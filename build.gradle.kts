@@ -111,8 +111,9 @@ subprojects {
     apply(plugin = "com.gradleup.shadow")
     if (isModModule) {
         apply(plugin = "dev.architectury.loom")
-        extra.set("loom.platform", rootProject.properties["loaderName"] as? String ?: "fabric")
     }
+
+    extra.set("loom.platform", rootProject.properties["loaderName"] as? String ?: "fabric")
 
     val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
 
