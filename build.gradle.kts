@@ -134,7 +134,8 @@ subprojects {
     }
 
     if (isModModule && !isFabric) {
-        configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
+        val forgeRuntimeLibrary: Configuration by configurations.creating
+        forgeRuntimeLibrary.extendsFrom(shade)
     }
 
     dependencies {
