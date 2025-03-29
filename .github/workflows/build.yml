@@ -65,7 +65,7 @@ jobs:
           ./gradlew build -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
 
       - name: Archive build results
-        run: tar -I zstd -cf build.tar.zst versions/*/build/libs
+        run: tar -I zstd -cf build.tar.zst cobblegen/build/libs/*
 
       - name: Upload build folder
         uses: actions/upload-artifact@v4
