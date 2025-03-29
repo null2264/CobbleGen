@@ -1,21 +1,16 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.task.RemapJarTask
+import net.fabricmc.loom.task.RunGameTask
 
 plugins {
-    id("dev.architectury.loom") version "1.9-SNAPSHOT"
-    id("com.gradleup.shadow")
 }
 
-val loaderName = project.properties["loaderName"] as? String ?: "fabric"
-val isForge = loaderName.endsWith("forge")
-val isNeo = loaderName.endsWith("neoforge")
-val isFabric = loaderName.endsWith("fabric")
-val mcVersionStr = project.properties["mcVer"] as? String ?: ""
-val (major, minor, patch) = mcVersionStr
-    .split(".")
-    .toMutableList()
-    .apply { if (this.size < 3) this.add("") }
-val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
+val mcVersion = ext["mcVersion"] as Int
+val mcVersionStr = ext["mcVersionStr"] as String
+val isFabric = ext["isFabric"] as Boolean
+val isForge = ext["isForge"] as Boolean
+val isNeo = ext["isNeo"] as Boolean
+
 // TODO: addingVersion - Add "-" suffix to support snapshots
 val supportedVersionRange: List<String?> = mapOf(
         11605 to listOf(null, "1.16.5"),
@@ -37,11 +32,11 @@ loom {
 
     runConfigs {
         named("client") {
-            runDir = "../../run/client"
+            runDir = "../run/client"
             ideConfigGenerated(true)
         }
         named("server") {
-            runDir = "../../run/server"
+            runDir = "../run/server"
             ideConfigGenerated(true)
         }
     }
@@ -53,10 +48,6 @@ loom {
             )
         }
     }
-}
-
-val shade: Configuration by configurations.creating {
-    configurations.modImplementation.get().extendsFrom(this)
 }
 
 dependencies {
@@ -113,19 +104,6 @@ dependencies {
             )[mcVersion])
         }
     }
-
-    shade("blue.endless:jankson:${project.properties["jankson_version"]}")
-    if (!isFabric)
-        "forgeRuntimeLibrary"("blue.endless:jankson:${project.properties["jankson_version"]}")
-
-    val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
-    shade("systems.manifold:manifold-ext-rt:${manifoldVersion}")
-    if (!isFabric)
-        "forgeRuntimeLibrary"("systems.manifold:manifold-ext-rt:${manifoldVersion}")
-    annotationProcessor("systems.manifold:manifold-ext:${manifoldVersion}")
-    testAnnotationProcessor("systems.manifold:manifold-ext:${manifoldVersion}")
-    annotationProcessor("systems.manifold:manifold-preprocessor:${manifoldVersion}")
-    testAnnotationProcessor("systems.manifold:manifold-preprocessor:${manifoldVersion}")
 
     // Don't wanna deal with these atm
     if (mcVersion > 11605) {
@@ -225,102 +203,30 @@ dependencies {
             modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
         }
          */
-    } else {
-        // slf4j is not included by MC in 1.16.5
-        shade("org.slf4j:slf4j-api:1.7.36")
-        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-        if (!isFabric) {
-            "forgeRuntimeLibrary"("org.slf4j:slf4j-api:1.7.36")
-            "forgeRuntimeLibrary"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-        }
     }
 }
-
-val shadowJar by tasks.getting(ShadowJar::class) {
-    isZip64 = true
-    relocate("blue.endless.jankson", "io.github.null2264.shadowed.jankson")
-    if (mcVersion <= 11605) {
-        relocate("org.slf4j", "io.github.null2264.shadowed.slf4j")
-        relocate("org.apache.logging", "io.github.null2264.shadowed.log4j")
-    }
-    relocate("manifold", "io.github.null2264.shadowed.manifold")
-    if (isFabric) {
-        exclude("META-INF/mods.toml")
-        exclude("META-INF/neoforge.mods.toml")
-    } else if (isForge) {
-        exclude("fabric.mod.json")
-        exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
-    }
-    exclude("architectury.common.json")
-
-    configurations = listOf(shade)
-    archiveClassifier.set("dev-shade")
-}
-
-artifacts.add("archives", shadowJar)
 
 val remapJar by tasks.getting(RemapJarTask::class) {
+    val shadowJar by tasks.getting(ShadowJar::class)
     dependsOn(shadowJar)
     inputFile.set(shadowJar.archiveFile)
 }
 
-// FIXME: Can no longer preprocess resources
-val processResources by tasks.getting(ProcessResources::class) {
-    val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
-    val metadataMCVersion =
-            if (supportedVersionRange[0] != null) (
-            (if (isFabric) ">=" else "[") +
-            supportedVersionRange[0] +
-            (if (supportedVersionRange[1] == null)
-                    (if (isFabric) "" else ",)")
-                    else ((if (isFabric) " <=" else ",") + supportedVersionRange[1] + (if (isFabric) "" else "]")))
-            ) else (if (isFabric) supportedVersionRange[1] else "[${supportedVersionRange[1]}]")
-    val properties = mapOf(
-        "version" to metadataVersion,
-        "mcversion" to metadataMCVersion,
-        "forge" to (if (isNeo) "neoforge" else "forge"),
-    )
-    inputs.properties(properties)
-    filteringCharset = Charsets.UTF_8.name()
+//val deleteResources by tasks.creating(Delete::class) {
+//    delete(file("build/resources/main"))
+//}
 
-    val metadataFilename =
-        if (isFabric) {
-            "fabric.mod.json"
-        } else {
-            if (isNeo && mcVersion >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
-        }
+//tasks.processResources {
+//    dependsOn(tasks.named("copyCommonLoaderResources"))
+//}
 
-    filesMatching(metadataFilename) {
-        filter { line -> if (line.trim().startsWith("//")) "" else line }  // strip comments
-        expand(properties)
-    }
-}
+//tasks.getting(RunGameTask::class) {
+//    dependsOn(tasks.named("copyCommonLoaderResources"))
+//    finalizedBy(deleteResources)
+//}
 
-val targetJavaVersion = if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
-tasks.withType<JavaCompile>().configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    options.encoding = "UTF-8"
-    if (targetJavaVersion > 8) {
-        options.release = targetJavaVersion
-    }
-}
-
-java {
-    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() != javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    withSourcesJar()
-}
-
-tasks.jar {
-    from("LICENSE") {
-        rename { "${it}_${base.archivesName.get()}" }
-    }
-}
+//tasks.sourcesJar {
+//    val commonSources = project(":common").tasks.sourcesJar.get()
+//    dependsOn(commonSources)
+//    from(commonSources.archiveFile.map { zipTree(it) })
+//}

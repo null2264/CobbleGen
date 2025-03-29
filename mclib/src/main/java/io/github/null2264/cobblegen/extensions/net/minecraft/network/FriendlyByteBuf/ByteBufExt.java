@@ -16,12 +16,13 @@ import java.util.function.IntFunction;
 #endif
 
 import io.netty.buffer.Unpooled;
-import manifold.ext.rt.api.Extension;
 import net.minecraft.network.FriendlyByteBuf;
 
-@Extension
-public class ByteBufExt
-{
+// I need to use the full namespace because for some reason javac keep crying about not being able to find "@Extension()"
+@manifold.ext.rt.api.Extension
+public final class ByteBufExt {
+
+    @manifold.ext.rt.api.Extension
     public static FriendlyByteBuf unpooled() {
         return new FriendlyByteBuf(Unpooled.buffer());
     }
