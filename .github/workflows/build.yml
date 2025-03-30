@@ -91,7 +91,7 @@ jobs:
 
       - name: Tests
         run: |
-          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}-BETA-${{ matrix.loader }}.jar "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
 
           TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }}")
           for i in "${TEST_VERSIONS[@]}"; do
