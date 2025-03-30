@@ -94,19 +94,26 @@ jobs:
         run: |
           cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
+          echo "[TEST] Initializing..."
           TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }})
           for i in "${TEST_VERSIONS[@]}"; do
+            echo "[TEST] Testing MC $i (${{ matrix.loader }})..."
+
+            echo "[TEST] Downloading Runtime Test Mod... [0/3]"
             json="$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
+            echo "[TEST] Downloading Runtime Test Mod... [1/3]"
             url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $i | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }})"
+            echo "[TEST] Downloading Runtime Test Mod... [2/3]"
             curl -Ls -o "mc-runtime-test.jar" $url
+            echo "[TEST] Downloading Runtime Test Mod... [3/3]"
             mv -f ./mc-runtime-test.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
-            # Download MC
-            java -jar ./headlessmc-launcher.jar --command download ${{ matrix.mc }}
-            # Download Mod Loader
-            java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} ${{ matrix.mc }}
-            # Launch MC headless
-            java -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:${{ matrix.mc }} -lwjgl --jvm -Djava.awt.headless=true
+            echo "[TEST] Downloading MC..."
+            java -jar ./headlessmc-launcher.jar --command download $i
+            echo "[TEST] Downloading Mod Loader..."
+            java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} $i
+            echo "[TEST] Launching MC Headless..."
+            java -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i -lwjgl --jvm -Djava.awt.headless=true
           done
 
       - name: Archive build results
