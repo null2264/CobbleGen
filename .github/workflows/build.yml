@@ -85,18 +85,27 @@ jobs:
           hmc.exit.on.failed.command=true
           EOF
 
-          json="$(curl -s "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/latest" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
+          json="$(curl -s "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.5.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
           url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
           curl -Ls -o "headlessmc-launcher.jar" $url
 
-          # Download MC
-          java -jar ./headlessmc-launcher.jar --command download ${{ matrix.mc }}
-          # Download Mod Loader
-          java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} ${{ matrix.mc }}
-
       - name: Tests
         run: |
-          echo "${{ join(matrix.testVersions, ' ') }}"
+          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}-BETA-${{ matrix.loader }}.jar "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+
+          TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }}")
+          for i in "${TEST_VERSIONS[@]}"; do
+            json="$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
+            url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $i | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }})"
+            curl -Ls -o "mc-runtime-test.jar" $url
+            mv -f ./mc-runtime-test.jar "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+
+            # Download MC
+            java -jar ./headlessmc-launcher.jar --command download ${{ matrix.mc }}
+            # Download Mod Loader
+            java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} ${{ matrix.mc }}
+            java -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:${{ matrix.mc }} -lwjgl --jvm -Djava.awt.headless=true
+          done
 
       - name: Archive build results
         run: tar -I zstd -cf build.tar.zst cobblegen/build/libs/*
