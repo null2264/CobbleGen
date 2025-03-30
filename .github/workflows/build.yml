@@ -89,7 +89,10 @@ jobs:
           url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
           curl -Ls -o "headlessmc-launcher.jar" $url
 
-          java -jar ./headlessmc-launcher.jar --command download ${{ matrix.loader }}:${{ matrix.mc }}
+          # Download MC
+          java -jar ./headlessmc-launcher.jar --command download ${{ matrix.mc }}
+          # Download Mod Loader
+          java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} ${{ matrix.mc }}
 
       - name: Tests
         run: |
