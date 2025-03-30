@@ -64,6 +64,29 @@ jobs:
         run: |
           ./gradlew build -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
 
+      - name: Setup Java for Test
+        run: |
+          curl -s "https://get.sdkman.io" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdk install java ${{ matrix.java }}
+
+      - name: Setup HeadlessMC
+        run: |
+          mkdir -p HeadlessMC "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+          cat <<EOF >> HeadlessMC/config.properties
+          hmc.java.versions="$HOME/.sdkman/candidates/java/${{ matrix.java }}"
+          hmc.gamedir="$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}"
+          hmc.offline=true
+          hmc.rethrow.launch.exceptions=true
+          hmc.exit.on.failed.command=true
+          EOF
+
+          json="$(curl -s "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/latest" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
+          url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
+          curl -Ls -o "headlessmc-launcher.jar" $url
+
+          java -jar ./headlessmc-launcher.jar --command download ${{ matrix.loader }}:${{ matrix.mc }}
+
       - name: Tests
         run: |
           echo "${{ join(matrix.testVersions, ' ') }}"
