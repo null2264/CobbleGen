@@ -78,8 +78,8 @@ jobs:
         run: |
           mkdir -p HeadlessMC "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
           cat <<EOF >> HeadlessMC/config.properties
-          hmc.java.versions="$HOME/.sdkman/candidates/java/${{ matrix.java }}"
-          hmc.gamedir="$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}"
+          hmc.java.versions=$HOME/.sdkman/candidates/java/${{ matrix.java }}
+          hmc.gamedir=$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}
           hmc.offline=true
           hmc.rethrow.launch.exceptions=true
           hmc.exit.on.failed.command=true
