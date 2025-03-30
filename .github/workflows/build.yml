@@ -76,7 +76,7 @@ jobs:
 
       - name: Setup HeadlessMC
         run: |
-          mkdir -p HeadlessMC "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+          mkdir -p HeadlessMC run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
           cat <<EOF >> HeadlessMC/config.properties
           hmc.java.versions=$(sdk home java ${{ matrix.java }})
           hmc.gamedir=$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}
@@ -91,19 +91,20 @@ jobs:
 
       - name: Tests
         run: |
-          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
           TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }}")
           for i in "${TEST_VERSIONS[@]}"; do
             json="$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
             url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $i | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }})"
             curl -Ls -o "mc-runtime-test.jar" $url
-            mv -f ./mc-runtime-test.jar "run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods"
+            mv -f ./mc-runtime-test.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
             # Download MC
             java -jar ./headlessmc-launcher.jar --command download ${{ matrix.mc }}
             # Download Mod Loader
             java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} ${{ matrix.mc }}
+            # Launch MC headless
             java -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:${{ matrix.mc }} -lwjgl --jvm -Djava.awt.headless=true
           done
 
