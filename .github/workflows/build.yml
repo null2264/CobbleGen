@@ -76,6 +76,7 @@ jobs:
 
       - name: Setup HeadlessMC
         run: |
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
           mkdir -p HeadlessMC run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
           cat <<EOF >> HeadlessMC/config.properties
           hmc.java.versions=$(sdk home java ${{ matrix.java }})
