@@ -101,6 +101,7 @@ jobs:
 
             echo "[TEST] Downloading Runtime Test Mod... [0/3]"
             json="$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
+            echo $json
             echo "[TEST] Downloading Runtime Test Mod... [1/3]"
             url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $i | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }})"
             echo "[TEST] Downloading Runtime Test Mod... [2/3]"
