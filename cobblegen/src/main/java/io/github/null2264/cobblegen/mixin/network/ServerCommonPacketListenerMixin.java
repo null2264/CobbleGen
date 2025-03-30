@@ -62,7 +62,7 @@ public abstract class ServerCommonPacketListenerMixin
     private void handleCustomPayload(ServerboundCustomPayloadPacket packet, CallbackInfo ci) {
         if (CGServerPlayNetworkHandler.handlePacket(
                 getListener(),
-                #if MC<1.20.2
+                #if MC<12002
                 packet
                 #else
                 packet.payload()
