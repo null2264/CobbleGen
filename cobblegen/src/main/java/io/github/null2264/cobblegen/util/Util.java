@@ -132,6 +132,7 @@ public class Util
         return blockIds;
     }
 
+    // FIXME: registryAccess() is in Level not LevelAccessor?
     public static String getDimension(LevelAccessor level) {
         ResourceLocation dim = level.registryAccess()
             #if MC>12101
