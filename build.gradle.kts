@@ -1,9 +1,22 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.buildJsonObject
+import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
+}
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    }
 }
 
 val loaderName = project.properties["loom.platform"] as? String ?: ""
@@ -38,7 +51,7 @@ fun setupPreprocessor() {
         if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
 
-    File(projectDir, "build.properties").writeText(buildProps)
+    project.file("build.properties").writeText(buildProps)
 }
 setupPreprocessor()
 
@@ -184,8 +197,9 @@ subprojects {
 
     artifacts.add("archives", shadowJar)
 
-    // FIXME: Can no longer preprocess resources
     val processResources by tasks.getting(ProcessResources::class) {
+        if (!isModModule) return@getting
+
         val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
         val metadataMCVersion =
             if (supportedVersionRange[0] != null) (
@@ -211,8 +225,80 @@ subprojects {
             }
 
         filesMatching(metadataFilename) {
-            filter { line -> if (line.trim().startsWith("//")) "" else line }  // strip comments
+            filter<StripJavaComments>()
             expand(properties)
+        }
+
+        filesMatching("cobblegen.mixins.json") {
+            filter<StripJavaComments>()
+        }
+
+        // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
+        doLast {
+            val prettyJson = Json { prettyPrint = true }
+            fun MutableList<JsonElement>.addJson(value: String) {
+                add(JsonPrimitive(value))
+            }
+
+            val mixinsFile = project.file("build/resources/main/cobblegen.mixins.json")
+            val both = buildList {
+                if (mcVersion >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
+                addJson("CommandsMixin")
+                addJson("MinecraftServerMixin")
+                if (mcVersion > 11605) {
+                    addJson("create.CreateFluidReactionsMixin")
+                    addJson("create.CreateFluidReactionsMixinPatchE")
+                    if (isFabric) addJson("create.CreateFluidReactionsMixinPatchF")
+                }
+                addJson("fluid.FluidEventMixin")
+                addJson("fluid.LavaEventMixin")
+            }
+            val client = buildList {
+                if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
+                addJson("network.ClientCommonPacketListenerMixin")
+                addJson("network.ConnectionMixin")
+            }
+            val server = buildList {
+                addJson("network.PlayerManagerMixin")
+                if (mcVersion < 12002) addJson("network.ServerboundCustomPayloadPacketAccessor")
+                else addJson("network.ServerConfigurationPacketListenerMixin")
+                if (mcVersion < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
+                addJson("network.ServerCommonPacketListenerMixin")
+            }
+            val mixinsJson = JsonObject(
+                Json.decodeFromString<JsonObject>(mixinsFile.readText(Charsets.UTF_8)).toMutableMap().apply {
+                    set("compatibilityLevel", JsonPrimitive(if (mcVersion <= 11605) "JAVA_8" else "JAVA_17"))
+                    set("mixins", JsonArray(both))
+                    set("client", JsonArray(client))
+                    set("server", JsonArray(server))
+                }
+            )
+            mixinsFile.writeText(prettyJson.encodeToString(JsonObject.serializer(), mixinsJson))
+
+            if (!isFabric) return@doLast
+
+            val fabricMetadataFile = project.file("build/resources/main/fabric.mod.json")
+            val fabricMetadataJson = JsonObject(
+                Json.decodeFromString<JsonObject>(fabricMetadataFile.readText(Charsets.UTF_8)).toMutableMap().apply {
+                    (get("entrypoints") as? JsonObject)?.toMutableMap()?.apply {
+                        if (mcVersion > 11605) {
+                            set("jei_mod_plugin", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"))))
+                            set("rei_client", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"))))
+                            set("emi", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"))))
+                        }
+                        set(
+                            "cobblegen_plugin",
+                            JsonArray(buildList {
+                                addJson("io.github.null2264.cobblegen.integration.BuiltInPlugin")
+                                if (mcVersion > 11605) addJson("io.github.null2264.cobblegen.integration.CreatePlugin")
+                            }),
+                        )
+                    }?.let {
+                        set("entrypoints", JsonObject(it))
+                    }
+                }
+            )
+            fabricMetadataFile.writeText(prettyJson.encodeToString(JsonObject.serializer(), fabricMetadataJson))
         }
     }
 

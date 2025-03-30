@@ -19,22 +19,17 @@
         "main": [
             "io.github.null2264.cobblegen.CobbleGen"
         ],
-        //#if MC>1.16.5
         "jei_mod_plugin": [
-            "io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"
+            // Will be added by build script (build.gradle.kts)
         ],
         "rei_client": [
-            "io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"
+            // Will be added by build script (build.gradle.kts)
         ],
         "emi": [
-            "io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"
+            // Will be added by build script (build.gradle.kts)
         ],
-        //#endif
         "cobblegen_plugin": [
-            "io.github.null2264.cobblegen.integration.BuiltInPlugin"
-            //#if MC>1.16.5
-            ,"io.github.null2264.cobblegen.integration.CreatePlugin"
-            //#endif
+            // Will be added by build script (build.gradle.kts)
         ]
     },
     "mixins": [
@@ -43,7 +38,8 @@
     "custom": {
         "modmenu": {
             "links": {
-                "modmenu.discord": "https://discord.gg/sP9xRy6"
+                "modmenu.discord": "https://discord.gg/sP9xRy6",
+                "modmenu.website": "https://cobblegen.aap.my.id"
             }
         }
     },
