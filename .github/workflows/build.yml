@@ -94,7 +94,7 @@ jobs:
         run: |
           cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
-          TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }}")
+          TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }})
           for i in "${TEST_VERSIONS[@]}"; do
             json="$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")"
             url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $i | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }})"
