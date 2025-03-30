@@ -89,8 +89,8 @@ jobs:
       - id: json-releases
         name: Retrieve JSON
         run: |
-          echo "headlessmc=$(curl -s "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.5.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")" >> $GITHUB_OUTPUT
-          echo "mc-runtime-test=$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")" >> $GITHUB_OUTPUT
+          echo "headlessmc=\"$(curl -s "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.5.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")\"" >> $GITHUB_OUTPUT
+          echo "mc-runtime-test=\"$(curl -s "https://api.github.com/repos/headlesshq/mc-runtime-test/releases/tags/3.0.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}")\"" >> $GITHUB_OUTPUT
 
       - name: Setup HeadlessMC
         run: |
