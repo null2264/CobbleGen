@@ -233,8 +233,15 @@ subprojects {
             filter<StripJavaComments>()
         }
 
-        // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
+
         doLast {
+            if (mcVersion >= 12100) {
+                // For some reason Fabric rename the directory on MC 1.21
+                project.file("build/resources/main/data/cobblegen/gametest/structures")
+                    .renameTo(project.file("build/resources/main/data/cobblegen/gametest/structure"))
+            }
+
+            // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             val prettyJson = Json { prettyPrint = true }
             fun MutableList<JsonElement>.addJson(value: String) {
                 add(JsonPrimitive(value))

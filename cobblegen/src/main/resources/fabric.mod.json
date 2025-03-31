@@ -30,6 +30,9 @@
         ],
         "cobblegen_plugin": [
             // Will be added by build script (build.gradle.kts)
+        ],
+        "fabric-gametest" : [
+            "io.github.null2264.cobblegen.gametest.BlockGenerationTest"
         ]
     },
     "mixins": [

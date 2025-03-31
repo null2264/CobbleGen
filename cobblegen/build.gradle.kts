@@ -66,8 +66,8 @@ dependencies {
         else
             modImplementation("net.fabricmc:fabric-loader:0.16.7")
 
-        // For testing
-        if (project.properties["recipe_viewer"] != "none" && mcVersion > 11605)
+        // Mainly for testing
+        if (mcVersion > 11605)
             // TODO: addingVersion
             modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + mapOf(
                 11605 to "0.42.0+1.16",
