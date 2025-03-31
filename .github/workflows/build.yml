@@ -103,6 +103,11 @@ jobs:
           hmc.exit.on.failed.command=true
           EOF
 
+          cat <<EOF >> run/test-${{ matrix.mc }}-${{ matrix.loader }}/options.txt
+          onboardAccessibility:false
+          pauseOnLostFocus:false
+          EOF
+
           json="$(cat ./headlessmc.json)"
           url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
           curl -Ls -o "headlessmc-launcher.jar" $url
