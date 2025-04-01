@@ -1,9 +1,15 @@
-name: build
+name: Build and Release
 on:
   push:
     branches:
       - root
   pull_request:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (without "v" prefix)'
+        required: true
+        type: string
 
 jobs:
   build-configurator:
@@ -199,3 +205,9 @@ jobs:
             echo "[TEST] Launching MC Headless..."
             xvfb-run java -Dhmc.check.xvfb -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --jvm -Djava.awt.headless=true
           done
+
+      - name: Release
+        if: github.event_name == 'pull_request'
+        run: |
+          # TODO:
+          echo "Me when release"
