@@ -1,3 +1,4 @@
+#if MC>=11801
 package io.github.null2264.cobblegen.gametest;
 
 import net.minecraft.core.BlockPos;
@@ -5,9 +6,23 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
+// NOTE: Mojang didn't ship GameTest until 1.17.0 but Forge didn't support GameTest until 1.18.1
+#if FORGE && MC<12105
+    #if FORGE==2
+@net.neoforged.neoforge.gametest.GameTestHolder("cobblegen")
+    #else
+@net.minecraftforge.gametest.GameTestHolder("cobblegen")
+    #endif
+#endif
 public class BlockGenerationTest {
-    // FIXME: Forge can't find this template, workaround is needed (mixin?)
-    @GameTest(template = "cobblegen:empty", timeoutTicks = 120)
+    @GameTest(
+        #if FORGE && MC<12105
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
     public void cobbleGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the water
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
@@ -39,7 +54,14 @@ public class BlockGenerationTest {
         );
     }
 
-    @GameTest(template = "cobblegen:empty", timeoutTicks = 120)
+    @GameTest(
+        #if FORGE && MC<12105
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
     public void basaltGenerationTest(GameTestHelper context) {
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
         // << Barrier wrapping the lava
@@ -59,3 +81,4 @@ public class BlockGenerationTest {
         );
     }
 }
+#endif
