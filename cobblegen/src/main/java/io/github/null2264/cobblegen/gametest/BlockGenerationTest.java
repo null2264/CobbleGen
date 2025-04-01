@@ -7,16 +7,18 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
 // NOTE: Mojang didn't ship GameTest until 1.17.0 but Forge didn't support GameTest until 1.18.1
-#if FORGE && MC<12105
-    #if FORGE==2
-@net.neoforged.neoforge.gametest.GameTestHolder("cobblegen")
-    #else
-@net.minecraftforge.gametest.GameTestHolder("cobblegen")
-    #endif
-#endif
 public class BlockGenerationTest {
+    // Basically telling Forge to stop being weird
+    #if FORGE && MC<12105
+        #if FORGE==2
+    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
+        #elif FORGE==1
+    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
+        #endif
+    #endif
     @GameTest(
         #if FORGE && MC<12105
+        templateNamespace = "cobblegen",
         template = "empty",
         #else
         template = "cobblegen:empty",
@@ -54,8 +56,16 @@ public class BlockGenerationTest {
         );
     }
 
+    #if FORGE && MC<12105
+        #if FORGE==2
+    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
+        #elif FORGE==1
+    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
+        #endif
+    #endif
     @GameTest(
         #if FORGE && MC<12105
+        templateNamespace = "cobblegen",
         template = "empty",
         #else
         template = "cobblegen:empty",

@@ -7,12 +7,14 @@ import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.data.config.ConfigData;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
+import io.github.null2264.cobblegen.gametest.BlockGenerationTest;
 import io.github.null2264.cobblegen.util.CGLog;
 import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 
 import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
@@ -45,6 +47,10 @@ public class CobbleGen
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
         loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
+        #if FORGE && MC>=12105
+        // I was gonna do RegisterGameTestsEvent like a normal person, there doesn't seems to be a way to provide "enabled namespaces" other than gradle properties
+        net.minecraft.gametest.framework.GameTestRegistry.register(List.of(BlockGenerationTest.class), List.of(MOD_ID));
+        #endif
     }
 
     #if FABRIC
