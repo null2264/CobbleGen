@@ -5,7 +5,6 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.buildJsonObject
 import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
@@ -234,11 +233,11 @@ subprojects {
             filter<StripJavaComments>()
         }
 
-        from(project.file("build/resources/main/data/cobblegen/gametest/structures")) {
-            into(file(project.file("build/resources/main/data/cobblegen/gametest/structure")))
-        }
-
         doLast {
+            // For some reason Fabric rename the directory on MC 1.21
+            project.file("build/resources/main/data/cobblegen/gametest/structures")
+                .copyRecursively(project.file("build/resources/main/data/cobblegen/gametest/structure"))
+
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             val prettyJson = Json { prettyPrint = true }
             @OptIn(ExperimentalSerializationApi::class)
