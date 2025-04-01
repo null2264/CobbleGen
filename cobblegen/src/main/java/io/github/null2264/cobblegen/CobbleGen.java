@@ -19,7 +19,11 @@ import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
 #if FORGE
     #if FORGE==2
+        #if MC>12004
 import net.neoforged.fml.common.EventBusSubscriber;
+        #else
+import net.neoforged.fml.common.Mod.EventBusSubscriber;
+        #endif
 import net.neoforged.fml.common.Mod;
     #elif FORGE==1
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
