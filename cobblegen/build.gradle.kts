@@ -59,12 +59,7 @@ dependencies {
     mappings(loom.officialMojangMappings())
 
     if (isFabric) {
-        if (mcVersion <= 11902 && project.properties["recipe_viewer"] == "rei")
-            modImplementation("net.fabricmc:fabric-loader:0.14.14")  // I don't get it, REI hate 0.14.21 in 1.19.2 or lower, wtf?
-        else if (mcVersion <= 12001)
-            modImplementation("net.fabricmc:fabric-loader:0.14.21")
-        else
-            modImplementation("net.fabricmc:fabric-loader:0.16.7")
+        modImplementation("net.fabricmc:fabric-loader:0.16.10")
 
         // Mainly for testing
         if (mcVersion > 11605)
