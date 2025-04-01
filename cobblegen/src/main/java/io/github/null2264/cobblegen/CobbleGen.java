@@ -74,6 +74,11 @@ public class CobbleGen
     }
 
     #if FORGE && MC>=11801 && MC<12105
+        #if FORGE==2
+    @net.neoforged.bus.api.SubscribeEvent
+        #elif FORGE==1
+    @net.minecraftforge.eventbus.api.SubscribeEvent
+        #endif
     public static void onRegisterGameTests(
         #if FORGE==2
         net.neoforged.neoforge.event.RegisterGameTestsEvent event
