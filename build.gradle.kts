@@ -1,10 +1,26 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.builtins.ByteArraySerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import net.benwoodworth.knbt.Nbt
+import net.benwoodworth.knbt.NbtCompound
+import net.benwoodworth.knbt.NbtCompression
+import net.benwoodworth.knbt.NbtInt
+import net.benwoodworth.knbt.NbtString
+import net.benwoodworth.knbt.NbtTag
+import net.benwoodworth.knbt.NbtVariant
+import net.benwoodworth.knbt.StringifiedNbt
+import net.benwoodworth.knbt.add
+import net.benwoodworth.knbt.addNbtCompound
+import net.benwoodworth.knbt.buildNbtCompound
+import net.benwoodworth.knbt.encodeToStream
+import net.benwoodworth.knbt.put
+import net.benwoodworth.knbt.putNbtCompound
+import net.benwoodworth.knbt.putNbtList
 import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
@@ -16,6 +32,7 @@ plugins {
 buildscript {
     dependencies {
         classpath("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+        classpath("net.benwoodworth.knbt:knbt:0.11.8")
     }
 }
 
@@ -233,11 +250,65 @@ subprojects {
         }
 
         doLast {
-            val structures = project.file("build/resources/main/data/cobblegen/gametest/structures")
-            if (isFabric)  // For some reason Fabric rename the directory on MC 1.21
-                structures.copyRecursively(project.file("build/resources/main/data/cobblegen/gametest/structure"))
-            else  // For Forge-alike
-                structures.renameTo(project.file("build/resources/main/data/cobblegen/structures"))
+            val nbt = Nbt {
+                variant = NbtVariant.Java
+                compression = NbtCompression.Gzip
+            }
+            val snbt = StringifiedNbt {}
+            val data = buildNbtCompound {
+                put("DataVersion", 2730)
+                putNbtList<NbtInt>("size") {
+                    add(8)
+                    add(8)
+                    add(8)
+                }
+                putNbtList("data") {
+                    for (i in 0..7) {
+                        for (j in 0..7) {
+                            for (k in 0..7) {
+                                addNbtCompound {
+                                    putNbtList("pos") {
+                                        add(i)
+                                        add(j)
+                                        add(k)
+                                    }
+                                    if (isFabric)
+                                        put("state", "minecraft:air")
+                                    else
+                                        put("state", 0)
+                                }
+                            }
+                        }
+                    }
+                }
+                putNbtList<NbtString>("entities") {}
+                if (isFabric)
+                    putNbtList("palette") {
+                        add("minecraft:air")
+                    }
+                else
+                    putNbtList("palette") {
+                        addNbtCompound {
+                            put("Name", "minecraft:air")
+                        }
+                    }
+            }
+            if (isFabric) {
+                project.file("build/resources/main/data/cobblegen/gametest/structures/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/gametest/structures/empty.snbt").writeText(
+                    snbt.encodeToString(NbtCompound.serializer(), data)
+                )
+                // For some reason Fabric rename the directory on MC 1.21
+                project.file("build/resources/main/data/cobblegen/gametest/structure/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/gametest/structure/empty.snbt").writeText(
+                    snbt.encodeToString(NbtCompound.serializer(), data)
+                )
+            } else {  // For Forge-alike
+                project.file("build/resources/main/data/cobblegen/structures/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/structures/empty.nbt").outputStream().use { output ->
+                    nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
+                }
+            }
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             val prettyJson = Json { prettyPrint = true }
