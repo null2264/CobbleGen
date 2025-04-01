@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.Blocks;
 public class BlockGenerationTest {
     // FIXME: Forge can't find this template, workaround is needed (mixin?)
     @GameTest(template = "cobblegen:empty", timeoutTicks = 120)
-    public void generationTest(GameTestHelper context) {
+    public void cobbleGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the water
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
         context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
@@ -33,6 +33,27 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.runAtTickTime(
             50,  // Lava flows 30 ticks per block while Water is 8 ticks per block
+            () -> {
+                // A special config is needed for this test
+                context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
+            }
+        );
+    }
+
+    @GameTest(template = "cobblegen:empty", timeoutTicks = 120)
+    public void basaltGenerationTest(GameTestHelper context) {
+        context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
+        // << Barrier wrapping the lava
+        context.setBlock(new BlockPos(2, 2, 4), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 2, 4), Blocks.BARRIER);
+        context.setBlock(new BlockPos(1, 2, 5), Blocks.BARRIER);
+        // >>
+        context.setBlock(new BlockPos(1, 1, 4), Blocks.BARRIER);  // Barrier under lava
+        context.setBlock(new BlockPos(1, 2, 4), Blocks.LAVA);
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.SOUL_SOIL);  // For basalt generators
+        BlockPos generatedPos = new BlockPos(1, 2, 3);
+        context.runAtTickTime(
+            50,
             () -> {
                 // A special config is needed for this test
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
