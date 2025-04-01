@@ -13,15 +13,16 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 
 import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
 #if FORGE
     #if FORGE==2
+@net.neoforged.fml.common.Mod.EventBusSubscriber()
 @net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
     #elif FORGE==1
+@net.minecraftforge.fml.common.Mod.EventBusSubscriber()
 @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
     #endif
 #endif
@@ -46,10 +47,6 @@ public class CobbleGen
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
         loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
-        #if FORGE && MC>=11801 && MC<12105
-        // I was gonna do RegisterGameTestsEvent like a normal person, there doesn't seems to be a way to provide "enabled namespaces" other than gradle properties
-        net.minecraft.gametest.framework.GameTestRegistry.register(List.of(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class), List.of(MOD_ID));
-        #endif
     }
 
     #if FABRIC
@@ -75,6 +72,18 @@ public class CobbleGen
                         }))
         );
     }
+
+    #if FORGE && MC>=11801 && MC<12105
+    public static void onRegisterGameTests(
+        #if FORGE==2
+        net.neoforged.neoforge.event.RegisterGameTestsEvent event
+        #elif FORGE==1
+        net.minecraftforge.event.RegisterGameTestsEvent event
+        #endif
+    ) {
+        event.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class);
+    }
+    #endif
 
     public enum Channel {
         PING,
