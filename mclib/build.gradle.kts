@@ -7,6 +7,10 @@ minecraft {
     version(project.ext["mcVersionStr"] as String)
 }
 
+repositories {
+    maven("https://repo.spongepowered.org/maven/")
+}
+
 dependencies {
     // In case I'll be doing mixin
     compileOnly("org.spongepowered:mixin:0.8.5")

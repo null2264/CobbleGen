@@ -103,7 +103,6 @@ allprojects {
         maven("https://maven.theillusivec4.top/")
         maven("https://maven.neoforged.net/releases")
         maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
-        maven("https://repo.spongepowered.org/maven/")
         mavenLocal()
     }
 
