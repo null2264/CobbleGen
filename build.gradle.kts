@@ -233,9 +233,11 @@ subprojects {
         }
 
         doLast {
-            // For some reason Fabric rename the directory on MC 1.21
-            project.file("build/resources/main/data/cobblegen/gametest/structures")
-                .copyRecursively(project.file("build/resources/main/data/cobblegen/gametest/structure"))
+            val structures = project.file("build/resources/main/data/cobblegen/gametest/structures")
+            if (isFabric)  // For some reason Fabric rename the directory on MC 1.21
+                structures.copyRecursively(project.file("build/resources/main/data/cobblegen/gametest/structure"))
+            else  // For Forge-alike
+                structures.renameTo(project.file("build/resources/main/data/cobblegen/structures"))
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             val prettyJson = Json { prettyPrint = true }
