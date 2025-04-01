@@ -19,21 +19,10 @@ import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
 #if FORGE
     #if FORGE==2
-        #if MC>12004
-import net.neoforged.fml.common.EventBusSubscriber;
-        #else
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
-        #endif
-import net.neoforged.fml.common.Mod;
+@net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
     #elif FORGE==1
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod;
+@net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
     #endif
-#endif
-
-#if FORGE
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
-@Mod(CobbleGen.MOD_ID)
 #endif
 public class CobbleGen
 #if FABRIC
@@ -56,6 +45,10 @@ public class CobbleGen
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
         loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
+        #if FORGE && MC>=11801 && MC<12105
+        // I was gonna do RegisterGameTestsEvent like a normal person, but there's a check that I need to bypass otherwise Forge won't register my test
+        net.minecraft.gametest.framework.GameTestRegistry.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class, java.util.List.of(MOD_ID));
+        #endif
     }
 
     #if FABRIC
@@ -81,23 +74,6 @@ public class CobbleGen
                         }))
         );
     }
-
-    #if FORGE && MC>=11801 && MC<12105
-        #if FORGE==2
-    @net.neoforged.bus.api.SubscribeEvent
-        #elif FORGE==1
-    @net.minecraftforge.eventbus.api.SubscribeEvent
-        #endif
-    public static void onRegisterGameTests(
-        #if FORGE==2
-        net.neoforged.neoforge.event.RegisterGameTestsEvent event
-        #elif FORGE==1
-        net.minecraftforge.event.RegisterGameTestsEvent event
-        #endif
-    ) {
-        event.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class);
-    }
-    #endif
 
     public enum Channel {
         PING,
