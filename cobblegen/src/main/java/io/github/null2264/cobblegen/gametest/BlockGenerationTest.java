@@ -31,8 +31,7 @@ public class BlockGenerationTest {
         context.setBlock(new BlockPos(1, 2, 4), Blocks.LAVA);
         context.setBlock(new BlockPos(1, 1, 3), Blocks.BARRIER);  // Barrier under the generated block
         BlockPos generatedPos = new BlockPos(1, 2, 3);
-        context.runAtTickTime(
-            50,  // Lava flows 30 ticks per block while Water is 8 ticks per block
+        context.succeedWhen(
             () -> {
                 // A special config is needed for this test
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
@@ -52,8 +51,7 @@ public class BlockGenerationTest {
         context.setBlock(new BlockPos(1, 2, 4), Blocks.LAVA);
         context.setBlock(new BlockPos(1, 1, 3), Blocks.SOUL_SOIL);  // For basalt generators
         BlockPos generatedPos = new BlockPos(1, 2, 3);
-        context.runAtTickTime(
-            50,
+        context.succeedWhen(
             () -> {
                 // A special config is needed for this test
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
