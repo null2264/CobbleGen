@@ -19,10 +19,8 @@ import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
 #if FORGE
     #if FORGE==2
-@net.neoforged.fml.common.Mod.EventBusSubscriber()
 @net.neoforged.fml.common.Mod(CobbleGen.MOD_ID)
     #elif FORGE==1
-@net.minecraftforge.fml.common.Mod.EventBusSubscriber()
 @net.minecraftforge.fml.common.Mod(CobbleGen.MOD_ID)
     #endif
 #endif
@@ -47,6 +45,14 @@ public class CobbleGen
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
         loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
+        #if FORGE && MC>=11801 && MC<12105
+            #if FORGE==2
+        net.neoforged.neoforge.common.NeoForge.EVENT_BUS
+            #elif FORGE==1
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS
+            #endif
+            .addListener(CobbleGen::onRegisterGameTests);
+        #endif
     }
 
     #if FABRIC
@@ -74,11 +80,6 @@ public class CobbleGen
     }
 
     #if FORGE && MC>=11801 && MC<12105
-        #if FORGE==2
-    @net.neoforged.bus.api.SubscribeEvent
-        #elif FORGE==1
-    @net.minecraftforge.eventbus.api.SubscribeEvent
-        #endif
     public static void onRegisterGameTests(
         #if FORGE==2
         net.neoforged.neoforge.event.RegisterGameTestsEvent event
