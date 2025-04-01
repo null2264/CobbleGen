@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -243,6 +244,11 @@ subprojects {
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             val prettyJson = Json { prettyPrint = true }
+            @OptIn(ExperimentalSerializationApi::class)
+            val lenientJson = Json {
+                allowComments = true
+                allowTrailingComma = true
+            }
             fun MutableList<JsonElement>.addJson(value: String) {
                 add(JsonPrimitive(value))
             }
@@ -273,7 +279,7 @@ subprojects {
                 addJson("network.ServerCommonPacketListenerMixin")
             }
             val mixinsJson = JsonObject(
-                Json.decodeFromString<JsonObject>(mixinsFile.readText(Charsets.UTF_8)).toMutableMap().apply {
+                lenientJson.decodeFromString<JsonObject>(mixinsFile.readText(Charsets.UTF_8)).toMutableMap().apply {
                     set("compatibilityLevel", JsonPrimitive(if (mcVersion <= 11605) "JAVA_8" else "JAVA_17"))
                     set("mixins", JsonArray(both))
                     set("client", JsonArray(client))
@@ -286,7 +292,7 @@ subprojects {
 
             val fabricMetadataFile = project.file("build/resources/main/fabric.mod.json")
             val fabricMetadataJson = JsonObject(
-                Json.decodeFromString<JsonObject>(fabricMetadataFile.readText(Charsets.UTF_8)).toMutableMap().apply {
+                lenientJson.decodeFromString<JsonObject>(fabricMetadataFile.readText(Charsets.UTF_8)).toMutableMap().apply {
                     (get("entrypoints") as? JsonObject)?.toMutableMap()?.apply {
                         if (mcVersion > 11605) {
                             set("jei_mod_plugin", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"))))
