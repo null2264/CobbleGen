@@ -47,7 +47,7 @@ public class CobbleGen
         loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
         #if FORGE && MC>=11801 && MC<12105
         // I was gonna do RegisterGameTestsEvent like a normal person, but there's a check that I need to bypass otherwise Forge won't register my test
-        net.minecraft.gametest.framework.GameTestRegistry.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class, java.util.List.of(MOD_ID));
+        net.minecraft.gametest.framework.GameTestRegistry.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class);
         #endif
     }
 
