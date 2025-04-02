@@ -293,24 +293,16 @@ subprojects {
                         }
                     }
             }
+            // For some reason Mojang rename the structure directory on MC 1.21 to singular form
+            val structureDirName = if (mcVersion >= 12100) "structure" else "structures"
             if (isFabric) {
-                project.file("build/resources/main/data/cobblegen/gametest/structures/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/gametest/structures/empty.snbt").writeText(
+                project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt").writeText(
                     snbt.encodeToString(NbtCompound.serializer(), data)
                 )
-                // For some reason Mojang rename the structure directory on MC 1.21 to singular form
-                project.file("build/resources/main/data/cobblegen/gametest/structure/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/gametest/structure/empty.snbt").writeText(
-                    snbt.encodeToString(NbtCompound.serializer(), data)
-                )
-            } else {  // For Forge-alike
-                project.file("build/resources/main/data/cobblegen/structures/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/structures/empty.nbt").outputStream().use { output ->
-                    nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
-                }
-                // For some reason Mojang rename the structure directory on MC 1.21 to singular form
-                project.file("build/resources/main/data/cobblegen/structure/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/structure/empty.nbt").outputStream().use { output ->
+            } else {
+                project.file("build/resources/main/data/cobblegen/${structureDirName}/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt").outputStream().use { output ->
                     nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
                 }
             }
