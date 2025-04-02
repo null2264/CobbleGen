@@ -5,7 +5,7 @@ import manifold.ext.rt.api.This;
 import net.minecraft.world.level.Level;
 
 @Extension
-public class LevelExt {
+public final class LevelExt {
     #if MC>12101
     public static int getMinBuildHeight(@This Level thiz) {
         return thiz.getMinY();

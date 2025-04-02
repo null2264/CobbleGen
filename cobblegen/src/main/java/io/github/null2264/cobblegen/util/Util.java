@@ -132,9 +132,8 @@ public class Util
         return blockIds;
     }
 
-    // FIXME: registryAccess() is in Level not LevelAccessor?
     public static String getDimension(LevelAccessor level) {
-        ResourceLocation dim = level.registryAccess()
+        ResourceLocation dim = level.registryAccessCompat()
             #if MC>12101
             .lookupOrThrow(
             #else
@@ -151,7 +150,7 @@ public class Util
 
     @Nullable
     public static String getBiome(LevelAccessor level, BlockPos position) {
-        ResourceLocation biome = level.registryAccess()
+        ResourceLocation biome = level.registryAccessCompat()
             #if MC>12101
             .lookupOrThrow(
             #else
