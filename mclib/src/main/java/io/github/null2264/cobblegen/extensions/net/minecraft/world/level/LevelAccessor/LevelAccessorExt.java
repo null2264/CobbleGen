@@ -15,7 +15,8 @@ public final class LevelAccessorExt {
         #else
         // Pre-runtime-mojmap forge pain
         String func = "";
-        String version = net.minecraft.DetectedVersion.BUILT_IN.getName();
+        String version =
+            ((net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion) net.minecraft.DetectedVersion.BUILT_IN.jailbreak()).name;
         // SRG moment
         switch (version) {
             case "1.19.3":
