@@ -298,7 +298,7 @@ subprojects {
                 project.file("build/resources/main/data/cobblegen/gametest/structures/empty.snbt").writeText(
                     snbt.encodeToString(NbtCompound.serializer(), data)
                 )
-                // For some reason Fabric rename the directory on MC 1.21
+                // For some reason Mojang rename the structure directory on MC 1.21 to singular form
                 project.file("build/resources/main/data/cobblegen/gametest/structure/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/gametest/structure/empty.snbt").writeText(
                     snbt.encodeToString(NbtCompound.serializer(), data)
@@ -306,6 +306,11 @@ subprojects {
             } else {  // For Forge-alike
                 project.file("build/resources/main/data/cobblegen/structures/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/structures/empty.nbt").outputStream().use { output ->
+                    nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
+                }
+                // For some reason Mojang rename the structure directory on MC 1.21 to singular form
+                project.file("build/resources/main/data/cobblegen/structure/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/structure/empty.nbt").outputStream().use { output ->
                     nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
                 }
             }
