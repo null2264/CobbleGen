@@ -7,6 +7,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.NotNull;
@@ -132,42 +133,53 @@ public class Util
         return blockIds;
     }
 
-    // FIXME: registryAccess() is in Level not LevelAccessor?
     public static String getDimension(LevelAccessor level) {
-        ResourceLocation dim = level.registryAccess()
+        ResourceLocation dim =
+        #if MC>11903 && MC<=11904 && FORGE
+            ((LevelReader) level)
+        #else
+            level
+        #endif
+                .registryAccess()
             #if MC>12101
-            .lookupOrThrow(
+                .lookupOrThrow(
             #else
-            .registryOrThrow(
+                .registryOrThrow(
             #endif
                     #if MC<=11902
                     Registry.DIMENSION_TYPE_REGISTRY
                     #else
                     net.minecraft.core.registries.Registries.DIMENSION_TYPE
                     #endif
-            ).getKey(level.dimensionType());
+                ).getKey(level.dimensionType());
         return dim != null ? dim.toString() : "minecraft:overworld";
     }
 
     @Nullable
     public static String getBiome(LevelAccessor level, BlockPos position) {
-        ResourceLocation biome = level.registryAccess()
+        ResourceLocation biome =
+        #if MC>11903 && MC<=11904 && FORGE
+            ((LevelReader) level)
+        #else
+            level
+        #endif
+                .registryAccess()
             #if MC>12101
-            .lookupOrThrow(
+                .lookupOrThrow(
             #else
-            .registryOrThrow(
+                .registryOrThrow(
             #endif
                     #if MC<=11902
                     Registry.BIOME_REGISTRY
                     #else
                     net.minecraft.core.registries.Registries.BIOME
                     #endif
-            ).getKey(
+                ).getKey(
                     level.getBiome(position)
                     #if MC>=11802
                         .value()
                     #endif
-            );
+                );
         return biome != null ? biome.toString() : null;
     }
 }
