@@ -220,9 +220,10 @@ jobs:
                 rm -f run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods/fapi-resource.jar
 
                 resource="$(yq -M ".[\"$i\"]" fabric-resource-versions.yaml || echo 'null')"
+                echo "$resource" >> $GITHUB_STEP_SUMMARY;
                 [ "$resource" = "null" ] && (
                   url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-resource-loader-v0/$resource/fabric-resource-loader-v0-$resource.jar"
-                  echo $url
+                  echo "$url" >> $GITHUB_STEP_SUMMARY;
                   curl -Ls -o "fapi-resource.jar" $url
                   mv -f ./fapi-resource.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
                 )
