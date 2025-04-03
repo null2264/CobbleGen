@@ -24,11 +24,11 @@ data class VersionRange(
         return buildString {
             if (upper != null) {
                 append(">")
-                append(upper)
+                append(upper.replace(".x", ".9999", true))
             }
             if (lower != null) {
                 append(" <=")
-                append(lower)
+                append(lower.replace(".x", ".9999", true))
             }
         }
     }
@@ -45,7 +45,7 @@ fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
         12004 -> VersionRange("1.20.3", "1.20.4")  // for Neo
         in 12005..12006 -> VersionRange("1.20.4", "1.20.6")
         in 12100..12101 -> VersionRange("1.20.x", "1.21.1")
-        in 12102..12103 -> VersionRange("1.21.1", null)
+        in 12102..12104 -> VersionRange("1.21.1", null)
         else -> VersionRange(null, null)
     }
 }
