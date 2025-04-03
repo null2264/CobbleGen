@@ -2,7 +2,10 @@ package dependencies
 
 fun emi(loader: String? = null, api: Boolean = false) = Dependency(
     group = "dev.emi",
-    name = if (loader != null) "emi-$loader" else "emi",
+    name = if (loader != null) {
+        // EMI migrate to NeoForge after 1.20.2
+        if (loader != "fabric" && mcVersion <= 12002) "emi-forge" else "emi-$loader"
+    } else "emi",
     version = { mcVersion ->
         buildString {
             if (mcVersion <= 11802) {
