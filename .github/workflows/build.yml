@@ -209,14 +209,18 @@ jobs:
 
             [ "${{ matrix.loader }}" = "fabric" ] && (
               fapi="$(yq -M ".[\"$i\"]" fabric-versions.yaml)"
-              url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$fapi+$i/fabric-api-$fapi+$i.jar"
-              curl -Ls -o "fapi.jar" $url
-              mv -f ./fapi.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+              [ "$fapi" = "null" ] || (
+                url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$fapi+$i/fabric-api-$fapi+$i.jar"
+                curl -Ls -o "fapi.jar" $url
+                mv -f ./fapi.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+              )
 
               gametest="$(yq -M ".[\"$i\"]" fabric-gametest-versions.yaml)"
-              url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$gametest/fabric-gametest-api-v1-$gametest.jar"
-              curl -Ls -o "fapi-gametest.jar" $url
-              mv -f ./fapi-gametest.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+              [ "$gametest" = "null" ] || (
+                url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$gametest/fabric-gametest-api-v1-$gametest.jar"
+                curl -Ls -o "fapi-gametest.jar" $url
+                mv -f ./fapi-gametest.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+              )
             )
 
             echo "[TEST] Downloading MC..."
