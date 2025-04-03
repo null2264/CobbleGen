@@ -94,9 +94,9 @@ dependencies {
             if (project.properties["recipe_viewer"] == "emi")
                 modLocalRuntime(emi().versioned(mcVersion))
         } else {
-            modCompileOnly(emi(if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge", api = true).versioned(mcVersion))
+            modCompileOnly(emi(if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge"), api = true).versioned(mcVersion))
             if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime(emi(if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge").versioned(mcVersion))
+                modLocalRuntime(emi(if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")).versioned(mcVersion))
         }
         // EMI ->
 
