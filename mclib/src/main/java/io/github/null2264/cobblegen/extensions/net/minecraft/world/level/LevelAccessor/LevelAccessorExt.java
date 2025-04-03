@@ -19,7 +19,7 @@ public final class LevelAccessorExt {
             new net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion();
         String version = "";
         try {
-            java.lang.reflect.Field field = mcVersion.getClass().getField("f_132479_");
+            java.lang.reflect.Field field = mcVersion.getClass().getDeclaredField("f_132479_");
             field.setAccessible(true);
             version = (String) field.get(mcVersion);
         } catch (NoSuchFieldException | IllegalAccessException ignored) {
