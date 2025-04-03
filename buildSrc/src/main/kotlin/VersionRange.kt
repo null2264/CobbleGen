@@ -6,10 +6,10 @@ data class VersionRange(
     private val upper: String?,
     private val lower: String?,
 ) {
-    fun mavenStyle() {
+    fun mavenStyle(): String {
         require(upper != null || lower != null) { "Upper and lower can't all be null" }
 
-        buildString {
+        return buildString {
             append("(")
             if (upper != null) append(upper.replace(".x", ".9999", true))
             append(",")
@@ -18,10 +18,10 @@ data class VersionRange(
         }
     }
 
-    fun semverStyle() {
+    fun semverStyle(): String {
         require(upper != null || lower != null) { "Upper and lower can't all be null" }
 
-        buildString {
+        return buildString {
             if (upper != null) {
                 append(">")
                 append(upper)
