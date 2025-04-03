@@ -1,6 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import dependencies.*
 import net.fabricmc.loom.task.RemapJarTask
-import net.fabricmc.loom.task.RunGameTask
 
 plugins {
 }
@@ -66,39 +66,15 @@ dependencies {
         // Mainly for testing
         if (mcVersion > 11605)
             // TODO: addingVersion
-            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + mapOf(
-                11605 to "0.42.0+1.16",
-                11802 to "0.76.0+1.18.2",
-                11902 to "0.76.0+1.19.2",
-                11904 to "0.83.0+1.19.4",
-                12001 to "0.83.1+1.20.1",
-                12002 to "0.89.0+1.20.2",
-                12006 to "0.100.8+1.20.6",
-                12101 to "0.106.0+1.21.1",
-                12103 to "0.106.1+1.21.3",
-            )[mcVersion])
+            modLocalRuntime(fapi.versioned(mcVersion))
     } else {
         if (!isNeo) {
-            "forge"("net.minecraftforge:forge:${mcVersionStr}-" + mapOf(
-                11605 to "36.2.41",
-                11802 to "40.2.9",
-                11902 to "43.2.14",
-                11904 to "45.1.0",
-                12001 to "47.0.3",
-                12002 to "48.0.13",
-                // LexForge is no longer supported
-            )[mcVersion])
+            "forge"(lexForge.versioned(mcVersion))
         } else {
             // TODO: addingVersion
             // snapshot version format:
             // "20.5.0-alpha.${mc[mcVersion]}.+"
-            "neoForge"("net.neoforged:neoforge:" + mapOf(
-                12002 to "20.2.86",
-                12004 to "20.4.237",
-                12006 to "20.6.121",
-                12101 to "21.1.72",
-                12103 to "21.3.1-beta",
-            )[mcVersion])
+            "neoForge"(neoForge.versioned(mcVersion))
         }
     }
 
@@ -114,27 +90,13 @@ dependencies {
 
         // <- EMI
         if (mcVersion <= 11802 && isFabric) {
-            modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
+            modCompileOnly(emi(api = true).versioned(mcVersion))
             if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
+                modLocalRuntime(emi().versioned(mcVersion))
         } else {
-            // TODO: addingVersion - EMI. They didn't break API on MC version upgrade so mismatch should be fine
-            val suffix = mapOf(
-                11902 to "1.19.2",
-                11904 to "1.19.4",
-                12001 to "1.20.1",
-                12002 to "1.20.2",
-                12004 to "1.20.2",  // For Neo, the same 1.20.2
-                12006 to "1.20.6",
-                12101 to "1.21.1",
-                12103 to "1.21.1", // FIXME: .
-            )
-            val emiVersion = "1.1.18+${suffix[mcVersion] ?: "1.20.2"}"
-            // EMI support multiple platform since 1.0.0
-            // EMI seems to also skip 1.19 and 1.19.1
-            modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion:api")
-            if (project.properties["recipe_viewer"] == "emi" && suffix[mcVersion] != null)
-                modLocalRuntime("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion")
+            modCompileOnly(emi(if (mcVersion >= 12004) "neoforge" else "forge", api = true).versioned(mcVersion))
+            if (project.properties["recipe_viewer"] == "emi")
+                modLocalRuntime(emi(if (mcVersion >= 12004) "neoforge" else "forge").versioned(mcVersion))
         }
         // EMI ->
 
