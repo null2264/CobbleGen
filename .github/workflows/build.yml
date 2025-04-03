@@ -172,6 +172,11 @@ jobs:
 
       - name: Tests with HeadlessMC
         run: |
+          VERSION=v4.45.1
+          BINARY=yq_linux_amd64
+          wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
+            tar xz && sudo mv ${BINARY} /usr/bin/yq
+
           cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
           echo "# [$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') - ${{ matrix.mc }}] Test results" >> $GITHUB_STEP_SUMMARY;
@@ -201,6 +206,18 @@ jobs:
             curl -Ls -o "mc-runtime-test.jar" $url
             echo "[TEST] Downloading Runtime Test Mod... [3/3]"
             mv -f ./mc-runtime-test.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+
+            [ "${{ matrix.loader }}" = "fabric" ] && (
+              fapi="$(yq -M ".[\"$i\"]" fabric-versions.yaml)"
+              url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$fapi+$i/fabric-api-$fapi+$i.jar"
+              curl -Ls -o "fapi.jar" $url
+              mv -f ./fapi.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+
+              gametest="$(yq -M ".[\"$i\"]" fabric-gametest-versions.yaml)"
+              url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$gametest/fabric-gametest-api-v1-$gametest.jar"
+              curl -Ls -o "fapi-gametest.jar" $url
+              mv -f ./fapi-gametest.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+            )
 
             echo "[TEST] Downloading MC..."
             java -jar ./headlessmc-launcher.jar --command download $i
@@ -258,7 +275,7 @@ jobs:
           files: |
             cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
 
-          github-tag: ${{ github.event.inputs.version }}+mc${{ matrix.mc }}
+          github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           modrinth-token: ${{ secrets.CURSEFORGE }}
           curseforge-token: ${{ secrets.MODRINTH }}
