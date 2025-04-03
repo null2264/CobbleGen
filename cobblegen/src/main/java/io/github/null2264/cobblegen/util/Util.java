@@ -4,6 +4,7 @@ import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
@@ -133,7 +134,8 @@ public class Util
     }
 
     public static String getDimension(LevelAccessor level) {
-        ResourceLocation dim = level.registryAccessCompat()
+        RegistryAccess access = level.registryAccessCompat();
+        ResourceLocation dim = access
             #if MC>12101
             .lookupOrThrow(
             #else
@@ -150,7 +152,8 @@ public class Util
 
     @Nullable
     public static String getBiome(LevelAccessor level, BlockPos position) {
-        ResourceLocation biome = level.registryAccessCompat()
+        RegistryAccess access = level.registryAccessCompat();
+        ResourceLocation biome = access
             #if MC>12101
             .lookupOrThrow(
             #else
