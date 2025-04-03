@@ -51,7 +51,7 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
     },
 )
 
-fun jei(mcVersion: Int, isFabric: Boolean, common: Boolean = false, api: Boolean = false) = Dependency(
+fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = false) = Dependency(
     group = "mezz.jei",
     name = buildString {
         append("jei-")
@@ -72,7 +72,9 @@ fun jei(mcVersion: Int, isFabric: Boolean, common: Boolean = false, api: Boolean
             if (common) {
                 append("-common")
             } else {
-                if (isFabric) append("-fabric") else append("-forge")
+                append("-")
+                if (loader != "fabric" && mcVersion < 12100) append("forge")
+                else append(loader)
             }
             append ("-api")
         }

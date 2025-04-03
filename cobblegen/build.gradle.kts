@@ -113,10 +113,10 @@ dependencies {
         // REI ->
 
         // <- JEI
-        modCompileOnly(jei(mcVersion, isFabric, common = true, api = true).versioned(0))
-        modCompileOnly(jei(mcVersion, isFabric, common = false, api = true).versioned(0))
+        modCompileOnly(jei(mcVersion, loaderName, common = true, api = true).versioned(0))
+        modCompileOnly(jei(mcVersion, loaderName, common = false, api = true).versioned(0))
         if (project.properties["recipe_viewer"] == "jei")
-            modCompileOnly(jei(mcVersion, isFabric, common = false, api = false).versioned(0))
+            modCompileOnly(jei(mcVersion, loaderName, common = false, api = false).versioned(0))
         // JEI ->
 
         /* FIXME: Broken, somehow
