@@ -174,6 +174,12 @@ jobs:
         run: |
           cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
+          echo "# [$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') - ${{ matrix.mc }}] Test results\n" >> $GITHUB_STEP_SUMMARY;
+          echo "<table>" >> $GITHUB_STEP_SUMMARY;
+          echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+          echo "<th>Runtime Version</th><th>Status</th>" >> $GITHUB_STEP_SUMMARY;
+          echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+
           echo "[TEST] Initializing..."
           TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }})
           for i in "${TEST_VERSIONS[@]}"; do
@@ -201,8 +207,19 @@ jobs:
             echo "[TEST] Downloading Mod Loader..."
             java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} $i
             echo "[TEST] Launching MC Headless..."
-            timeout 3m xvfb-run java -Dhmc.check.xvfb -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1" && echo "[TEST] Test complete ($i)" || (echo "[TEST] Test timed out ($i)"; true;)
+            timeout 3m xvfb-run java -Dhmc.check.xvfb -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1" && (
+              echo "[TEST] Test complete ($i)"; true;
+              echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+              echo "<td>$i</td><td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+            ) || (
+              echo "[TEST] Test failed or timed out ($i)"; true;
+              echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+              echo "<td>$i</td><td>Failed / Timed Out</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+            )
           done
+          echo "</table>" >> $GITHUB_STEP_SUMMARY;
 
       - name: Release
         if: github.event_name == 'pull_request'
