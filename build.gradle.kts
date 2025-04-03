@@ -47,6 +47,7 @@ val (major, minor, patch) = mcVersionStr
     .apply { if (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 // TODO: addingVersion - Add "-" suffix to support snapshots
+// FIXME: >=1.19- is invalid, use >1.18.x instead (or '(1.18.9999,)' for Forge)
 val supportedVersionRange: List<String?> = mapOf(
         11605 to listOf(null, "1.16.5"),
         11802 to listOf(null, "1.18.2"),
