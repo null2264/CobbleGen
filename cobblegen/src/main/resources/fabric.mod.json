@@ -44,6 +44,11 @@
                 "modmenu.discord": "https://discord.gg/sP9xRy6",
                 "modmenu.website": "https://cobblegen.aap.my.id"
             }
+        },
+        "mc-publish": {
+            "modrinth": "qRogT5Gy",
+            "curseforge": 581293,
+            "loaders": ["fabric", "quilt"]
         }
     },
     "depends": {

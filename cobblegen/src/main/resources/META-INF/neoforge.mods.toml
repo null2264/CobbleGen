@@ -28,3 +28,7 @@ mandatory = true
 versionRange = "${mcversion}"
 ordering = "NONE"
 side = "BOTH"
+
+[mc-publish]
+modrinth = "qRogT5Gy"
+curseforge = 581293

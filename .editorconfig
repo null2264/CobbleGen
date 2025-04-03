@@ -1,7 +1,7 @@
 [*]
 insert_final_newline=true
 
-[*.{java,kt,kts}]
+[*.{java,kt,kts,json}]
 indent_style=space
 indent_size=4
 ij_kotlin_allow_trailing_comma=true
