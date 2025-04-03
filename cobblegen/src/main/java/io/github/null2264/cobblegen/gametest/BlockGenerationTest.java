@@ -7,6 +7,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
 // NOTE: Mojang didn't ship GameTest until 1.17.0 but Forge didn't support GameTest until 1.18.1
+// TODO: Stone generation test
 public class BlockGenerationTest {
     // Basically telling Forge to stop being weird
     #if FORGE && MC<12105
