@@ -215,8 +215,11 @@ jobs:
             ) || (
               echo "[TEST] Test failed or timed out ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
-              STATUS="Timed out";
-              [ "$?" = "-1" ] && STATUS="Failed"
+              STATUS="Unknown error ($?)";
+              [ "$?" = "-1" ] && STATUS="Test failed"
+              [ "$?" = "125" ] && STATUS="Timed out"
+              [ "$?" = "124" ] && STATUS="Timed out"
+              [ "$?" = "255" ] && STATUS="Crashed"
               echo "<td>$i</td><td>$STATUS</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
             )
