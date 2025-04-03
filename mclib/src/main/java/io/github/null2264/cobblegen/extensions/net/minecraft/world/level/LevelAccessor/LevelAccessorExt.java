@@ -10,14 +10,22 @@ public final class LevelAccessorExt {
     public static RegistryAccess registryAccessCompat(@This LevelAccessor thiz) {
         //noinspection UnusedAssignment
         RegistryAccess access = null;
-        #if FABRIC || (MC>=12002 && FORGE)
+        #if FABRIC || (FORGE && !(MC>11902 && MC<=11904))
         access = thiz.registryAccess();
         #else
         // Pre-runtime-mojmap forge pain
         String func = "";
         net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion mcVersion =
             new net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion();
-        String version = mcVersion.name;
+        String version = "";
+        try {
+            java.lang.reflect.Field field = mcVersion.getClass().getField("f_132479_");
+            field.setAccessible(true);
+            version = (String) field.get(mcVersion);
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            // Fallback
+            version = mcVersion.getName();
+        }
         // SRG moment
         switch (version) {
             case "1.19.3":
