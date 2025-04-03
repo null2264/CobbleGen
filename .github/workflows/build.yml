@@ -217,6 +217,14 @@ jobs:
 
               gametest="$(yq -M ".[\"$i\"]" fabric-gametest-versions.yaml || echo 'null')"
               [ "$gametest" = "null" ] || (
+                rm -f ./fapi-resource.jar
+
+                [ "${{ matrix.mc }}" = "1.18.2" ] && (
+                  url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-resource-loader-v0/0.5.3+047a5ecb60/fabric-resource-loader-v0-0.5.3+047a5ecb60.jar"
+                  curl -Ls -o "fapi-resource.jar" $url
+                  mv -f ./fapi-resource.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+                )
+
                 url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$gametest/fabric-gametest-api-v1-$gametest.jar"
                 curl -Ls -o "fapi-gametest.jar" $url
                 mv -f ./fapi-gametest.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
@@ -238,12 +246,32 @@ jobs:
               echo "[TEST] Test failed or timed out ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
               STATUS="Unknown error ($EXIT_CODE)";
-              [ "$EXIT_CODE" = "-1" ] && STATUS="Test failed"
-              [ "$EXIT_CODE" = "125" ] && STATUS="Timed out"
-              [ "$EXIT_CODE" = "124" ] && STATUS="Timed out"
-              [ "$EXIT_CODE" = "255" ] && STATUS="Crashed"
+
+              case "$EXIT_CODE" in
+                "-1")
+                  STATUS="Test failed"
+                  ;;
+                "125" | "124")
+                  STATUS="Timed out"
+                  ;;
+                "255" | "1")
+                  STATUS="Crashed"
+                  ;;
+                *)
+                  ;;
+              esac
+
               echo "<td>$i</td><td>$STATUS</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+
+              case "$EXIT_CODE" in
+                "255" | "1")
+                  echo "</table>" >> $GITHUB_STEP_SUMMARY
+                  exit $EXIT_CODE
+                  ;;
+                *)
+                  ;;
+              esac
             )
           done
           echo "</table>" >> $GITHUB_STEP_SUMMARY;
