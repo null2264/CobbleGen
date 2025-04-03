@@ -46,20 +46,6 @@ val (major, minor, patch) = mcVersionStr
     .toMutableList()
     .apply { if (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
-// TODO: addingVersion - Add "-" suffix to support snapshots
-// FIXME: >=1.19- is invalid, use >1.18.x instead (or '(1.18.9999,)' for Forge)
-val supportedVersionRange: List<String?> = mapOf(
-        11605 to listOf(null, "1.16.5"),
-        11802 to listOf(null, "1.18.2"),
-        11902 to listOf("1.19-", "1.19.2"),
-        11904 to listOf("1.19.3-", "1.19.4"),
-        12001 to listOf("1.20-", "1.20.1"),
-        12002 to listOf("1.20.2-", if (!isNeo) "1.20.4" else "1.20.3"),
-        12004 to listOf(null, "1.20.4"),  // for Neo
-        12006 to listOf("1.20.5-", "1.20.6"),
-        12101 to listOf("1.21-", "1.21.1"),
-        12103 to listOf("1.21.2-", null),
-)[mcVersion] ?: listOf()
 
 fun setupPreprocessor() {
     val buildProps = buildString {
@@ -218,14 +204,8 @@ subprojects {
         if (!isModModule) return@getting
 
         val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
-        val metadataMCVersion =
-            if (supportedVersionRange[0] != null) (
-                (if (isFabric) ">=" else "[") +
-                    supportedVersionRange[0] +
-                    (if (supportedVersionRange[1] == null)
-                        (if (isFabric) "" else ",)")
-                    else ((if (isFabric) " <=" else ",") + supportedVersionRange[1] + (if (isFabric) "" else "]")))
-                ) else (if (isFabric) supportedVersionRange[1] else "[${supportedVersionRange[1]}]")
+        val versionRange = supportedVersionRange(mcVersion, loaderName)
+        val metadataMCVersion = if (isForge) versionRange.mavenStyle() else versionRange.semverStyle()
         val properties = mapOf(
             "version" to metadataVersion,
             "mcversion" to metadataMCVersion,
@@ -307,6 +287,17 @@ subprojects {
                     nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
                 }
             }
+
+            val modsTomlFile = project.file("build/resources/main/META-INF/mods.toml")
+            val modsTomlContent = modsTomlFile.readText(Charsets.UTF_8).let {
+                when {
+                    mcVersion == 12001 -> it.replace("#==", "")
+                    isNeo -> it.replace("#<<", "")
+                    isForge -> it.replace("#>>", "")
+                    else -> it
+                }
+            }
+            modsTomlFile.writeText(modsTomlContent)
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             val prettyJson = Json { prettyPrint = true }
