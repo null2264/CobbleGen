@@ -33,10 +33,12 @@ loom {
     runConfigs {
         named("client") {
             runDir = "../run/client"
+            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + "Client"
             ideConfigGenerated(true)
         }
         named("server") {
             runDir = "../run/server"
+            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + "Server"
             ideConfigGenerated(true)
         }
     }
