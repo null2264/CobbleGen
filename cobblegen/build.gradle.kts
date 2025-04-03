@@ -7,6 +7,7 @@ plugins {
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
+val loaderName = ext["loaderName"] as String
 val isFabric = ext["isFabric"] as Boolean
 val isForge = ext["isForge"] as Boolean
 val isNeo = ext["isNeo"] as Boolean
@@ -53,10 +54,7 @@ loom {
 }
 
 dependencies {
-    // TODO(addingVersion): For snapshots
-    val mc: Map<Int, String> = mapOf(
-    )
-    minecraft("com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}")
+    minecraft(minecraft.versioned(mcVersion))
 
     mappings(loom.officialMojangMappings())
 
@@ -94,65 +92,31 @@ dependencies {
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
                 modLocalRuntime(emi().versioned(mcVersion))
         } else {
-            modCompileOnly(emi(if (isFabric) "fabric" else (if (mcVersion >= 12004) "neoforge" else "forge"), api = true).versioned(mcVersion))
+            modCompileOnly(emi(loaderName, api = true).versioned(mcVersion))
             if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime(emi(if (isFabric) "fabric" else (if (mcVersion >= 12004) "neoforge" else "forge")).versioned(mcVersion))
+                modLocalRuntime(emi(loaderName).versioned(mcVersion))
         }
         // EMI ->
 
         // <- REI
-        // TODO: addingVersion - REI
-        val reiVersions = mapOf(
-            11802 to "8.3.618",
-            11902 to "9.1.619",
-            11904 to "11.0.621",
-            12001 to "12.0.625",
-            12002 to "13.0.685",
-            12004 to "13.0.685",  // for Neo
-            12006 to "15.0.787",
-            12101 to "16.0.788",
-            12103 to "17.0.789",
-        )
-        val reiFallback = "17.0.789"
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-${if (isFabric) "api-fabric" else if (!isNeo) "forge" else "neoforge"}:${reiVersions[mcVersion] ?: reiFallback}")
+        modCompileOnly(rei(loaderName, true).versioned(mcVersion))
         if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
         }
-        if (project.properties["recipe_viewer"] == "rei" && reiVersions[mcVersion] != null) {
+        if (project.properties["recipe_viewer"] == "rei") {
             if (mcVersion == 11902)  // REI's stupid dep bug
                 modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-            modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${if (isFabric) "fabric" else "forge"}:${reiVersions[mcVersion]}")
+            modLocalRuntime(rei(loaderName).versioned(mcVersion))
         }
         // REI ->
 
         // <- JEI
-        // TODO: addingVersion - JEI
-        val jeiVersions = mapOf(
-            11802 to "10.2.1.1004",
-            11902 to "11.6.0.1015",
-            11904 to "13.1.0.13",
-            12001 to "15.0.0.12",
-            12002 to "16.0.0.28",
-            12004 to "16.0.0.28",  // for Neo
-            12006 to "18.0.0.62",
-            12101 to "19.21.0.246",
-            12103 to null,
-        )
-        val jeiVersion = jeiVersions[mcVersion]
-        // <- fallback - should be the latest version
-        val fallbackJeiVer = "19.21.0.246"
-        val fallbackJeiMcVer = "1.21.1"
-        // fallback ->
-        val jeiMc = mapOf(
-            12004 to "1.20.2",  // for Neo
-            12103 to fallbackJeiMcVer,
-        )
-        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersion ?: fallbackJeiVer}")
-        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}-api:${jeiVersion ?: fallbackJeiVer}")
-        if (project.properties["recipe_viewer"] == "jei" && jeiVersion != null)
-            modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}:${jeiVersion}")
+        modCompileOnly(jei(mcVersion, isFabric, common = true, api = true).versioned(0))
+        modCompileOnly(jei(mcVersion, isFabric, common = false, api = true).versioned(0))
+        if (project.properties["recipe_viewer"] == "jei")
+            modCompileOnly(jei(mcVersion, isFabric, common = false, api = false).versioned(0))
         // JEI ->
 
         /* FIXME: Broken, somehow

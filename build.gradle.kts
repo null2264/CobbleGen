@@ -65,6 +65,7 @@ allprojects {
 
     ext["mcVersion"] = mcVersion
     ext["mcVersionStr"] = mcVersionStr
+    ext["loaderName"] = loaderName
     ext["isFabric"] = isFabric
     ext["isForge"] = isForge
     ext["isNeo"] = isNeo
