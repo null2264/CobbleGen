@@ -174,7 +174,7 @@ jobs:
         run: |
           cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
-          echo "# [$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') - ${{ matrix.mc }}] Test results\n" >> $GITHUB_STEP_SUMMARY;
+          echo "# [$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') - ${{ matrix.mc }}] Test results" >> $GITHUB_STEP_SUMMARY;
           echo "<table>" >> $GITHUB_STEP_SUMMARY;
           echo "<tr>" >> $GITHUB_STEP_SUMMARY;
           echo "<th>Runtime Version</th><th>Status</th>" >> $GITHUB_STEP_SUMMARY;
@@ -215,7 +215,9 @@ jobs:
             ) || (
               echo "[TEST] Test failed or timed out ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
-              echo "<td>$i</td><td>Failed / Timed Out</td>" >> $GITHUB_STEP_SUMMARY;
+              STATUS="Timed out";
+              [ "$?" = "-1" ] && STATUS="Failed"
+              echo "<td>$i</td><td>$STATUS</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
             )
           done
