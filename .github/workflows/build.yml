@@ -213,21 +213,56 @@ jobs:
               echo "<td>$i</td><td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
             ) || (
+              EXIT_CODE="$?"
               echo "[TEST] Test failed or timed out ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
-              STATUS="Unknown error ($?)";
-              [ "$?" = "-1" ] && STATUS="Test failed"
-              [ "$?" = "125" ] && STATUS="Timed out"
-              [ "$?" = "124" ] && STATUS="Timed out"
-              [ "$?" = "255" ] && STATUS="Crashed"
+              STATUS="Unknown error ($EXIT_CODE)";
+              [ "$EXIT_CODE" = "-1" ] && STATUS="Test failed"
+              [ "$EXIT_CODE" = "125" ] && STATUS="Timed out"
+              [ "$EXIT_CODE" = "124" ] && STATUS="Timed out"
+              [ "$EXIT_CODE" = "255" ] && STATUS="Crashed"
               echo "<td>$i</td><td>$STATUS</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
             )
           done
           echo "</table>" >> $GITHUB_STEP_SUMMARY;
 
-      - name: Release
-        if: github.event_name == 'pull_request'
+      - name: Setup release
+        id: release-setup
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
         run: |
-          # TODO:
-          echo "Me when release"
+          # extended SemVer (major.minor.patch.hotfix)
+          VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
+          {
+            echo "CHANGELOG<<END_OF_FILE"
+            parse-changelog CHANGELOG.md ${{ github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
+            echo ""
+            echo "END_OF_FILE"
+          } >> $GITHUB_OUTPUT 2> /dev/null
+
+          MC_VER="${{ matrix.mc }}"
+          VERSION_STAGE="BETA"
+          VERSION="${{ github.event.inputs.version }}+${{ matrix.mc }}b$GITHUB_RUN_NUMBER-$VERSION_STAGE-${{ matrix.loader }}"
+          TITLE="[$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') MC$MC_VER] $VERSION-$VERSION_STAGE"
+          [ "$MC_VER" = "1.16.5" ] && TITLE="$TITLE (LITE)"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "TITLE=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Release
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        uses: Kira-NT/mc-publish@v3.3
+        with:
+          name: ${{ steps.release-setup.outputs.TITLE }}
+          version: ${{ steps.release-setup.outputs.VERSION }}
+          version-type: beta
+          files: |
+            cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
+
+          github-tag: ${{ github.event.inputs.version }}+mc${{ matrix.mc }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          modrinth-token: ${{ secrets.CURSEFORGE }}
+          curseforge-token: ${{ secrets.MODRINTH }}
+          changelog: ${{ steps.release-setup.outputs.CHANGELOG }}
+          java: |
+            ${{ matrix.java }}
+          retry-attempts: 5  # lucky number... 5
