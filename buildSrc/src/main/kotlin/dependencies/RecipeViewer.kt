@@ -1,12 +1,12 @@
 package dependencies
 
-fun emi(loader: String? = null, api: Boolean = false) = Dependency(
+fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependency(
     group = "dev.emi",
     name = if (loader != null) {
         // EMI migrate to NeoForge after 1.20.2
         if (loader != "fabric" && mcVersion <= 12002) "emi-forge" else "emi-$loader"
     } else "emi",
-    version = { mcVersion ->
+    version = { _ ->
         buildString {
             if (mcVersion <= 11802) {
                 append("0.7.3+${versionStr(mcVersion)}")  // There are no multi-loader support in 1.18.2

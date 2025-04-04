@@ -88,13 +88,13 @@ dependencies {
 
         // <- EMI
         if (mcVersion <= 11802) {
-            modCompileOnly(emi(api = true).versioned(mcVersion))
+            modCompileOnly(emi(mcVersion, null, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
-                modLocalRuntime(emi().versioned(mcVersion))
+                modLocalRuntime(emi(mcVersion).versioned(0))
         } else {
-            modCompileOnly(emi(loaderName, api = true).versioned(mcVersion))
+            modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime(emi(loaderName).versioned(mcVersion))
+                modLocalRuntime(emi(mcVersion, loaderName).versioned(0))
         }
         // EMI ->
 
