@@ -25,12 +25,12 @@ public class BlockGenerationTest {
     #endif
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE
-        templateNamespace = BlockGenerationTest.TEMPLATE.modid(),
-        template = BlockGenerationTest.TEMPLATE.name(),
+        templateNamespace = "cobblegen",
+        template = "empty",
         #else
-        template = BlockGenerationTest.TEMPLATE.toString(),
+        template = "cobblegen:empty",
         #endif
-        timeoutTicks = BlockGenerationTest.TIMEOUT_TICKS
+        timeoutTicks = 120
     )
     #endif
     public void cobbleGenerationTest(GameTestHelper context) {
@@ -74,12 +74,12 @@ public class BlockGenerationTest {
     #endif
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE && MC<12105
-        templateNamespace = BlockGenerationTest.TEMPLATE.modid(),
-        template = BlockGenerationTest.TEMPLATE.name(),
+        templateNamespace = "cobblegen",
+        template = "empty",
         #else
-        template = BlockGenerationTest.TEMPLATE.toString(),
+        template = "cobblegen:empty",
         #endif
-        timeoutTicks = BlockGenerationTest.TIMEOUT_TICKS
+        timeoutTicks = 120
     )
     #endif
     public void basaltGenerationTest(GameTestHelper context) {
