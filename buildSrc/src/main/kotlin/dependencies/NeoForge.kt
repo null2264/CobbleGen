@@ -10,7 +10,7 @@ val neoForge = Dependency(
             in 12005..12006 -> "20.6.121"
             in 12100..12101 -> "21.1.72"
             in 12102..12104 -> "21.3.1-beta"
-            12105 -> "21.5.22-beta"
+            12105 -> "21.5.23-beta"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

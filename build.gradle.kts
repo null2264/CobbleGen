@@ -122,6 +122,8 @@ allprojects {
 }
 
 subprojects {
+    // NOTE: This here for when I finally split the API to its own module, hopefully on v6.0
+    val isApi = false;  // APIs shouldn't contain anything Minecraft related
     val isModModule = project == project(":cobblegen")
 
     apply(plugin = "java")
@@ -323,6 +325,7 @@ subprojects {
                 }
                 addJson("fluid.FluidEventMixin")
                 addJson("fluid.LavaEventMixin")
+                if (mcVersion >= 12105) addJson("gametest.GameTestInstancesMixin")
             }
             val client = buildList {
                 if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
@@ -373,7 +376,11 @@ subprojects {
         }
     }
 
-    val targetJavaVersion = if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
+    val targetJavaVersion = if (!isApi) {
+        if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
+    } else {
+        8  // APIs should always target Java 8
+    }
     tasks.withType<JavaCompile> {
         if (targetJavaVersion > 8) {
             options.release = targetJavaVersion
@@ -405,32 +412,3 @@ subprojects {
 //        }
 //    }
 }
-
-// TODO: addingVersion
-val mcReleaseVersions = mapOf<Int, List<String>>(
-    11605 to listOf("1.16.5"),
-    11802 to listOf("1.18.2"),
-    11902 to listOf("1.19", "1.19.1", "1.19.2"),
-    11904 to listOf("1.19.3", "1.19.4"),
-    12001 to listOf("1.20", "1.20.1"),
-    12002 to listOf("1.20.2", "1.20.3").let {
-        val rt = it.toMutableList()
-        if (!isNeo) rt.add("1.20.4")
-
-        rt
-    },
-    12004 to listOf("1.20.4"),  // for Neo
-    12006 to listOf("1.20.5", "1.20.6"),
-    12101 to listOf("1.21", "1.21.1"),
-    12103 to listOf("1.21.2", "1.21.3", "1.21.4")
-)[mcVersion] ?: throw IllegalStateException("Should not be empty!")
-
-// These overwrites mcReleaseVersions
-val cfSnapshots = mapOf<Int, List<String>>(
-//    12102 to listOf("1.21.2-Snapshot"),
-)[mcVersion]
-
-// These overwrites mcReleaseVersions
-val mrSnapshots = mapOf<Int, List<String>>(
-//    12102 to listOf("1.21.2-pre3"),
-)[mcVersion]

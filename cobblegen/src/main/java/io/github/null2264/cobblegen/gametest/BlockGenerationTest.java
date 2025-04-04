@@ -1,31 +1,38 @@
 #if MC>=11801
 package io.github.null2264.cobblegen.gametest;
 
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.core.BlockPos;
-import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
-// NOTE: Mojang didn't ship GameTest until 1.17.0 but Forge didn't support GameTest until 1.18.1
+// NOTE:
+//  Mojang didn't ship GameTest until 1.17.0 but Forge didn't support GameTest until 1.18.1
+//  In 1.21.5, Mojang removed @GameTest annotation
 // TODO: Stone generation test
 public class BlockGenerationTest {
+    public static final CGIdentifier TEMPLATE = CGIdentifier.of("empty");
+    public static final Integer TIMEOUT_TICKS = 120;
+
+    #if MC<12105
     // Basically telling Forge to stop being weird
-    #if FORGE && MC<12105
+    #if FORGE
         #if FORGE==2
     @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
         #elif FORGE==1
     @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
         #endif
     #endif
-    @GameTest(
-        #if FORGE && MC<12105
-        templateNamespace = "cobblegen",
-        template = "empty",
+    @net.minecraft.gametest.framework.GameTest(
+        #if FORGE
+        templateNamespace = BlockGenerationTest.TEMPLATE.modid(),
+        template = BlockGenerationTest.TEMPLATE.name(),
         #else
-        template = "cobblegen:empty",
+        template = BlockGenerationTest.TEMPLATE.toString(),
         #endif
-        timeoutTicks = 120
+        timeoutTicks = BlockGenerationTest.TIMEOUT_TICKS
     )
+    #endif
     public void cobbleGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the water
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
@@ -57,6 +64,7 @@ public class BlockGenerationTest {
         );
     }
 
+    #if MC<12105
     #if FORGE && MC<12105
         #if FORGE==2
     @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
@@ -64,15 +72,16 @@ public class BlockGenerationTest {
     @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
         #endif
     #endif
-    @GameTest(
+    @net.minecraft.gametest.framework.GameTest(
         #if FORGE && MC<12105
-        templateNamespace = "cobblegen",
-        template = "empty",
+        templateNamespace = BlockGenerationTest.TEMPLATE.modid(),
+        template = BlockGenerationTest.TEMPLATE.name(),
         #else
-        template = "cobblegen:empty",
+        template = BlockGenerationTest.TEMPLATE.toString(),
         #endif
-        timeoutTicks = 120
+        timeoutTicks = BlockGenerationTest.TIMEOUT_TICKS
     )
+    #endif
     public void basaltGenerationTest(GameTestHelper context) {
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
         // << Barrier wrapping the lava

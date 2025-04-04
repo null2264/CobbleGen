@@ -14,7 +14,7 @@ val fapi = Dependency(
             in 12005..12006 -> "0.100.8+1.20.6"
             in 12100..12101 -> "0.106.0+1.21.1"
             in 12102..12104 -> "0.106.1+1.21.3"
-            12105 -> "0.106.1+1.21.5"
+            12105 -> "0.119.6+1.21.5"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

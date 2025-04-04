@@ -48,7 +48,7 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
             in 12002..12004 -> "13.0.685"
             in 12005..12006 -> "15.0.787"
             in 12100..12101 -> "16.0.788"
-            in 12102..12104 -> "17.0.789"
+            in 12102..12105 -> "17.0.789"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
