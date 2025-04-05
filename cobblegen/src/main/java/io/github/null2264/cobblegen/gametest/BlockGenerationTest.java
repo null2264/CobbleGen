@@ -16,21 +16,26 @@ public class BlockGenerationTest {
 
     #if MC<12105
     // Basically telling Forge to stop being weird
-    #if FORGE
-        #if FORGE==2
-    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
-        #elif FORGE==1
-    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
-        #endif
-    #endif
-    @net.minecraft.gametest.framework.GameTest(
         #if FORGE
+            #if FORGE==2
+    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
+            #elif FORGE==1
+    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
+            #endif
+        #endif
+    @net.minecraft.gametest.framework.GameTest(
+            #if FORGE
         templateNamespace = "cobblegen",
         template = "empty",
-        #else
+            #else
         template = "cobblegen:empty",
-        #endif
+            #endif
         timeoutTicks = 120
+    )
+    #else
+    @net.fabricmc.fabric.api.gametest.v1.GameTest(
+        structure = "cobblegen:empty",
+        maxTicks = 120
     )
     #endif
     public void cobbleGenerationTest(GameTestHelper context) {
@@ -65,22 +70,29 @@ public class BlockGenerationTest {
     }
 
     #if MC<12105
-    #if FORGE && MC<12105
-        #if FORGE==2
-    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
-        #elif FORGE==1
-    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
-        #endif
-    #endif
-    @net.minecraft.gametest.framework.GameTest(
         #if FORGE && MC<12105
+            #if FORGE==2
+    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
+            #elif FORGE==1
+    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
+            #endif
+        #endif
+    @net.minecraft.gametest.framework.GameTest(
+            #if FORGE && MC<12105
         templateNamespace = "cobblegen",
         template = "empty",
-        #else
+            #else
         template = "cobblegen:empty",
-        #endif
+            #endif
         timeoutTicks = 120
     )
+    #else
+        #if FABRIC
+    @net.fabricmc.fabric.api.gametest.v1.GameTest(
+        structure = "cobblegen:empty",
+        maxTicks = 120
+    )
+        #endif
     #endif
     public void basaltGenerationTest(GameTestHelper context) {
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);

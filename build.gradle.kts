@@ -325,7 +325,6 @@ subprojects {
                 }
                 addJson("fluid.FluidEventMixin")
                 addJson("fluid.LavaEventMixin")
-                if (mcVersion >= 12105) addJson("gametest.GameTestInstancesMixin")
             }
             val client = buildList {
                 if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")

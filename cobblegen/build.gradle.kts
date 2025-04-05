@@ -62,10 +62,14 @@ dependencies {
         modImplementation("net.fabricmc:fabric-loader:0.16.12")
 
         // Mainly for testing
-        // Disabled for 1.21.5, it's causing crashes on dev env
+        // Only use gametest API for 1.21.5, it's causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
         if (mcVersion in 11606..12104) {
             modLocalRuntime(fapi.versioned(mcVersion))
+        } else if (mcVersion >= 12105) {
+            modLocalRuntime(modCompileOnly("net.fabricmc.fabric-api:fabric-gametest-api-v1:3.1.2+2a6ec84b49")!!)
+            // We need this to fix "Registry is already frozen"
+            modLocalRuntime("net.fabricmc.fabric-api:fabric-registry-sync-v0:6.1.20+b556383249")
         }
     } else {
         if (!isNeo) {
