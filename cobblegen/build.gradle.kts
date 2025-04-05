@@ -59,19 +59,18 @@ dependencies {
     mappings(loom.officialMojangMappings())
 
     if (isFabric) {
-        modImplementation("net.fabricmc:fabric-loader:0.16.10")
+        modImplementation("net.fabricmc:fabric-loader:0.16.12")
 
         // Mainly for testing
-        if (mcVersion > 11605)
-            // TODO: addingVersion
+        // Disabled for 1.21.5, it's causing crashes on dev env
+        // REF: https://github.com/FabricMC/fabric/issues/4491
+        if (mcVersion in 11606..12104) {
             modLocalRuntime(fapi.versioned(mcVersion))
+        }
     } else {
         if (!isNeo) {
             "forge"(lexForge.versioned(mcVersion))
         } else {
-            // TODO: addingVersion
-            // snapshot version format:
-            // "20.5.0-alpha.${mc[mcVersion]}.+"
             "neoForge"(neoForge.versioned(mcVersion))
         }
     }
@@ -101,7 +100,7 @@ dependencies {
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
         modCompileOnly(rei(loaderName, true).versioned(mcVersion))
-        if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
+        if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
         }
