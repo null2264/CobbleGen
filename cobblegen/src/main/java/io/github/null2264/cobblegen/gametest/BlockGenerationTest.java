@@ -33,10 +33,14 @@ public class BlockGenerationTest {
         timeoutTicks = 120
     )
     #else
+        #if FABRIC
     @net.fabricmc.fabric.api.gametest.v1.GameTest(
         structure = "cobblegen:empty",
         maxTicks = 120
     )
+        #elif FORGE
+    // FIXME: There currently no way to do this on NeoForge
+        #endif
     #endif
     public void cobbleGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the water
@@ -92,6 +96,8 @@ public class BlockGenerationTest {
         structure = "cobblegen:empty",
         maxTicks = 120
     )
+        #elif FORGE
+    // FIXME: There currently no way to do this on NeoForge
         #endif
     #endif
     public void basaltGenerationTest(GameTestHelper context) {
