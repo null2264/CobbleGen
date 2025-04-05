@@ -36,7 +36,8 @@ public class BlockGenerationTest {
         #if FABRIC
     @net.fabricmc.fabric.api.gametest.v1.GameTest(
         structure = "cobblegen:empty",
-        maxTicks = 120
+        maxTicks = 120,
+        rotation = net.minecraft.world.level.block.Rotation.NONE
     )
         #elif FORGE
     // FIXME: There currently no way to do this on NeoForge
@@ -94,7 +95,8 @@ public class BlockGenerationTest {
         #if FABRIC
     @net.fabricmc.fabric.api.gametest.v1.GameTest(
         structure = "cobblegen:empty",
-        maxTicks = 120
+        maxTicks = 120,
+        rotation = net.minecraft.world.level.block.Rotation.NONE
     )
         #elif FORGE
     // FIXME: There currently no way to do this on NeoForge
