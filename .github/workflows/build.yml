@@ -288,11 +288,12 @@ jobs:
           } >> $GITHUB_OUTPUT 2> /dev/null
 
           MC_VER="${{ matrix.mc }}"
-          VERSION_STAGE="BETA"
+          VERSION_STAGE="beta"
           VERSION="${{ github.event.inputs.version }}+${{ matrix.mc }}b$GITHUB_RUN_NUMBER-$VERSION_STAGE-${{ matrix.loader }}"
-          TITLE="[$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') MC$MC_VER] $VERSION-$VERSION_STAGE"
+          TITLE="[$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') MC$MC_VER] $VERSION-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
           [ "$MC_VER" = "1.16.5" ] && TITLE="$TITLE (LITE)"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_STAGE=$VERSION_STAGE" >> $GITHUB_OUTPUT
           echo "TITLE=$TITLE" >> $GITHUB_OUTPUT
 
       - name: Release
@@ -301,7 +302,7 @@ jobs:
         with:
           name: ${{ steps.release-setup.outputs.TITLE }}
           version: ${{ steps.release-setup.outputs.VERSION }}
-          version-type: beta
+          version-type: ${{ steps.release-setup.outputs.VERSION_STAGE }}
           files: |
             cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
 
