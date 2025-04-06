@@ -1,5 +1,15 @@
-name: build
-on: [pull_request, push]
+name: Build and Release
+on:
+  push:
+    branches:
+      - root
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (without "v" prefix)'
+        required: true
+        type: string
 
 jobs:
   build-configurator:
@@ -31,35 +41,282 @@ jobs:
           push: true
           tags: ghcr.io/null2264/cobblegen-configurator:web
 
+  generate-matrix:
+    name: Generate Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup matrix
+        id: matrix
+        run: echo "matrix=$(jq -cr . ./versions.json)" >> $GITHUB_OUTPUT
+
   build:
     name: Build
+    needs: generate-matrix
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false  # Don't cancel if one failed
+      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Gradle
-        uses: null2264/actions/gradle-setup@6712f98d592b126629afd27dc4870c93b53426b4
+        uses: null2264/actions/gradle-java-setup@363cb9cf3d66bd9c72ed6860142c6b2c121d7e94
         with:
-          java: 21
-
-      - name: Get mod versions
-        id: get-mod-versions
-        run: |
-          echo "versions=$(ls versions | grep -e '.\.' | grep -v 'mapping-' | tr '\n' ' ')" >> $GITHUB_OUTPUT
+          distro: temurin
+          java: |
+            8
+            17
+            21
 
       - name: Build with Gradle
-        uses: null2264/actions/replaymod-preprocessor-compile@6712f98d592b126629afd27dc4870c93b53426b4
-        with:
-          versions: ${{ steps.get-mod-versions.outputs.versions }}
+        run: |
+          echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
+          ./gradlew build -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
 
       - name: Archive build results
-        run: tar -I zstd -cf build.tar.zst versions/*/build/libs
+        run: tar -I zstd -cf build.tar.zst cobblegen/build/libs/*
 
       - name: Upload build folder
         uses: actions/upload-artifact@v4
         with:
-          name: build-artifacts
+          name: mc${{ matrix.mc }}-${{ matrix.loader }}-build-artifacts
           path: build.tar.zst
           if-no-files-found: error
           retention-days: 3
+
+      # To reduce api request, so we don't hit rate-limit
+      - name: Retrieve JSON
+        run: |
+          curl -Ls -o "headlessmc.json" "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.5.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+          curl -Ls -o "mc-runtime-test.json" "https://api.github.com/repos/null2264/mc-runtime-test/releases/tags/3.1.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+
+      - id: setup-headlessmc
+        name: Setup HeadlessMC
+        run: |
+          mkdir -p HeadlessMC run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods run/test-${{ matrix.mc }}-${{ matrix.loader }}/config
+
+          cat <<EOF >> HeadlessMC/config.properties
+          hmc.java.versions=$JAVA_HOME_${{ matrix.java }}_X64/bin/java
+          hmc.gamedir=$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}
+          hmc.offline=true
+          hmc.rethrow.launch.exceptions=true
+          hmc.exit.on.failed.command=true
+          EOF
+
+          cat <<EOF >> run/test-${{ matrix.mc }}-${{ matrix.loader }}/options.txt
+          onboardAccessibility:false
+          pauseOnLostFocus:false
+          EOF
+
+          cat <<EOF >> run/test-${{ matrix.mc }}-${{ matrix.loader }}/config/cobblegen.json5
+          {
+            "formatVersion": "1.0",
+            "cobbleGen": [
+              {
+                "id": "minecraft:bedrock",
+                "weight": 100.0,
+              },
+            ],
+            "stoneGen": [
+              {
+                "id": "minecraft:bedrock",
+                "weight": 100.0,
+              },
+            ],
+            "basaltGen": [
+              {
+                "id": "minecraft:bedrock",
+                "weight": 100.0,
+              },
+            ],
+            "customGen": {
+              "cobbleGen": {
+                "minecraft:bedrock": [
+                  {
+                    "id": "minecraft:bedrock",
+                    "weight": 100.0,
+                  },
+                ],
+              },
+              "stoneGen": {
+                "minecraft:bedrock": [
+                  {
+                    "id": "minecraft:bedrock",
+                    "weight": 100.0,
+                  },
+                ],
+              },
+              "basaltGen": {
+                "minecraft:bedrock": [
+                  {
+                    "id": "minecraft:bedrock",
+                    "weight": 100.0,
+                  },
+                ],
+              },
+            },
+          }
+          EOF
+
+          json="$(cat ./headlessmc.json)"
+          url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
+          curl -Ls -o "headlessmc-launcher.jar" $url
+
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
+
+      - name: Tests with HeadlessMC
+        env:
+          ENABLE_NULL2264_COBBLEGEN_GAMETEST: true
+        run: |
+          VERSION=v4.45.1
+          BINARY=yq_linux_amd64
+          wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
+            tar xz && sudo mv ${BINARY} /usr/bin/yq
+
+          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+
+          echo "# [$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') - ${{ matrix.mc }}] Test results" >> $GITHUB_STEP_SUMMARY;
+          echo "<table>" >> $GITHUB_STEP_SUMMARY;
+          echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+          echo "<th>Runtime Version</th><th>Status</th>" >> $GITHUB_STEP_SUMMARY;
+          echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+
+          echo "[TEST] Initializing..."
+          TEST_VERSIONS=(${{ join(matrix.testVersions, ' ') }})
+          for i in "${TEST_VERSIONS[@]}"; do
+            echo "[TEST] Testing MC $i (${{ matrix.loader }})..."
+
+            echo "[TEST] Downloading Runtime Test Mod... [0/3]"
+            json="$(cat ./mc-runtime-test.json)"
+            echo "[TEST] Downloading Runtime Test Mod... [1/3]"
+            TARGET=$i
+            url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $TARGET | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }} || echo "[FAIL]")"
+            [ "$url" = "[FAIL]" ] && (
+              >&2 echo "[FAIL] There's no Runtime Test Mod for MC $i!";
+              exit 1;
+            )
+            echo "[TEST] Downloading Runtime Test Mod... [2/3]"
+            curl -Ls -o "mc-runtime-test.jar" $url
+            echo "[TEST] Downloading Runtime Test Mod... [3/3]"
+            mv -f ./mc-runtime-test.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+
+            [ "${{ matrix.loader }}" = "fabric" ] && (
+              fapi="$(yq -M ".[\"$i\"]" fabric-versions.yaml || echo 'null')"
+              [ "$fapi" = "null" ] || (
+                url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$fapi+$i/fabric-api-$fapi+$i.jar"
+                curl -Ls -o "fapi.jar" $url
+                mv -f ./fapi.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+              )
+
+              gametest="$(yq -M ".[\"$i\"]" fabric-gametest-versions.yaml || echo 'null')"
+              [ "$gametest" = "null" ] || (
+                rm -f run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods/fapi-resource.jar
+
+                resource="$(yq -M ".[\"$i\"]" fabric-resource-versions.yaml || echo 'null')"
+                [ "$resource" = "null" ] || (
+                  url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-resource-loader-v0/$resource/fabric-resource-loader-v0-$resource.jar"
+                  curl -Ls -o "fapi-resource.jar" $url
+                  mv -f ./fapi-resource.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+                )
+
+                url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$gametest/fabric-gametest-api-v1-$gametest.jar"
+                curl -Ls -o "fapi-gametest.jar" $url
+                mv -f ./fapi-gametest.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+              )
+            )
+
+            echo "[TEST] Downloading MC..."
+            java -jar ./headlessmc-launcher.jar --command download $i
+            echo "[TEST] Downloading Mod Loader..."
+            java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} $i
+            echo "[TEST] Launching MC Headless..."
+            timeout 5m xvfb-run java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1" && (
+              echo "[TEST] Test complete ($i)"; true;
+              echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+              echo "<td>$i</td><td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+            ) || (
+              EXIT_CODE="$?"
+              echo "[TEST] Test failed or timed out ($i)"; true;
+              echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+              STATUS="Unknown error ($EXIT_CODE)";
+
+              case "$EXIT_CODE" in
+                "-1")
+                  STATUS="Test failed"
+                  ;;
+                "125" | "124")
+                  STATUS="Timed out"
+                  ;;
+                "255" | "1")
+                  STATUS="Crashed"
+                  ;;
+                *)
+                  ;;
+              esac
+
+              echo "<td>$i</td><td>$STATUS</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+
+              case "$EXIT_CODE" in
+                "255" | "1")
+                  echo "</table>" >> $GITHUB_STEP_SUMMARY
+                  exit $EXIT_CODE
+                  ;;
+                *)
+                  ;;
+              esac
+            )
+          done
+          echo "</table>" >> $GITHUB_STEP_SUMMARY;
+
+      - name: Setup release
+        id: release-setup
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        run: |
+          # extended SemVer (major.minor.patch.hotfix)
+          VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
+          {
+            echo "CHANGELOG<<END_OF_FILE"
+            parse-changelog CHANGELOG.md ${{ github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
+            echo ""
+            echo "END_OF_FILE"
+          } >> $GITHUB_OUTPUT 2> /dev/null
+
+          MC_VER="${{ matrix.mc }}"
+          __TMP="${{ matrix.testVersions }}"
+          __TMP2="$(echo __TMP | jq -cr '.[-1]')"
+          [ "$(echo $__TMP | jq -cr '. | length')" -gt 1 ] && MC_VER="$MC_VER-$__TMP2"
+          LOADER="$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]')"
+          VERSION_STAGE="beta"
+          VERSION="${{ github.event.inputs.version }}+${{ matrix.mc }}b$GITHUB_RUN_NUMBER-$VERSION_STAGE-${{ matrix.loader }}"
+          TITLE="[$LOADER MC$MC_VER] $VERSION-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
+          [ "$MC_VER" = "1.16.5" ] && TITLE="$TITLE (LITE)"
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_STAGE=$VERSION_STAGE" >> $GITHUB_OUTPUT
+          echo "TITLE=$TITLE" >> $GITHUB_OUTPUT
+
+      - name: Release
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        uses: Kira-NT/mc-publish@v3.3
+        with:
+          name: ${{ steps.release-setup.outputs.TITLE }}
+          version: ${{ steps.release-setup.outputs.VERSION }}
+          version-type: ${{ steps.release-setup.outputs.VERSION_STAGE }}
+          files: |
+            cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
+
+          github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          modrinth-token: ${{ secrets.CURSEFORGE }}
+          curseforge-token: ${{ secrets.MODRINTH }}
+          changelog: ${{ steps.release-setup.outputs.CHANGELOG }}
+          java: |
+            ${{ matrix.java }}
+          retry-attempts: 5  # lucky number... 5

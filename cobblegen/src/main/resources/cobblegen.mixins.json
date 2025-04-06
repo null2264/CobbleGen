@@ -1,0 +1,19 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "io.github.null2264.cobblegen.mixin",
+    "compatibilityLevel": "JAVA_17",
+    "mixins": [
+        // Will be added by build script (build.gradle.kts)
+    ],
+    "client": [
+        // Will be added by build script (build.gradle.kts)
+    ],
+    "server": [
+        // Will be added by build script (build.gradle.kts)
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "plugin": "io.github.null2264.cobblegen.mixin.core.CobbleGenMixinPlugin"
+}

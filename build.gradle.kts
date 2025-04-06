@@ -1,473 +1,419 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import net.fabricmc.loom.task.RemapJarTask
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.builtins.ByteArraySerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import net.benwoodworth.knbt.Nbt
+import net.benwoodworth.knbt.NbtCompound
+import net.benwoodworth.knbt.NbtCompression
+import net.benwoodworth.knbt.NbtInt
+import net.benwoodworth.knbt.NbtString
+import net.benwoodworth.knbt.NbtTag
+import net.benwoodworth.knbt.NbtVariant
+import net.benwoodworth.knbt.StringifiedNbt
+import net.benwoodworth.knbt.add
+import net.benwoodworth.knbt.addNbtCompound
+import net.benwoodworth.knbt.buildNbtCompound
+import net.benwoodworth.knbt.encodeToStream
+import net.benwoodworth.knbt.put
+import net.benwoodworth.knbt.putNbtCompound
+import net.benwoodworth.knbt.putNbtList
+import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
-    id("dev.architectury.loom") version "1.9-SNAPSHOT"
-    id("com.gradleup.shadow")
-    id("io.github.null2264.preprocess")
-    id("me.modmuss50.mod-publish-plugin") version "0.8.1"
+    id("java")
+    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
+    id("com.gradleup.shadow") apply false
 }
 
-val isForge = project.name.endsWith("forge")
-val isNeo = project.name.endsWith("neoforge")
-val isFabric = project.name.endsWith("fabric")
-val mcVersionStr = project.name.split("-")[0]
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+        classpath("net.benwoodworth.knbt:knbt:0.11.8")
+    }
+}
+
+val loaderName = project.properties["loom.platform"] as? String ?: ""
+val isForge = loaderName.endsWith("forge")
+val isNeo = loaderName.endsWith("neoforge")
+val isFabric = loaderName.endsWith("fabric")
+val mcVersionStr = project.properties["mcVer"] as? String ?: ""
 val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
     .apply { if (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
-// TODO: addingVersion - Add "-" suffix to support snapshots
-val supportedVersionRange: List<String?> = mapOf(
-        11605 to listOf(null, "1.16.5"),
-        11802 to listOf(null, "1.18.2"),
-        11902 to listOf("1.19-", "1.19.2"),
-        11904 to listOf("1.19.3-", "1.19.4"),
-        12001 to listOf("1.20-", "1.20.1"),
-        12002 to listOf("1.20.2-", if (!isNeo) "1.20.4" else "1.20.3"),
-        12004 to listOf(null, "1.20.4"),  // for Neo
-        12006 to listOf("1.20.5-", "1.20.6"),
-        12101 to listOf("1.21-", "1.21.1"),
-        12103 to listOf("1.21.2-", null),
-)[mcVersion] ?: listOf()
 
-preprocess {
-    vars.put("MC", mcVersion)
-    vars.put("FABRIC",
-        when {
-            // isFabric && isQuilt -> 2
-            // isFabric && !isQuilt -> 1
-            isFabric -> 1
-            else -> 0
-        }
-    )
-    vars.put("FORGE",
-        when {
-            isForge && isNeo -> 2
-            isForge && !isNeo -> 1
-            else -> 0
-        }
-    )
-
-    patternAnnotation.set("io.github.null2264.gradle.Pattern")
-}
-
-repositories {
-    maven("https://jitpack.io")
-    maven {
-        url = uri("https://maven.blamejared.com/")
-        content {
-            includeGroup("mezz.jei")
-        }
-    }
-    maven("https://maven.shedaniel.me/")
-    maven("https://maven.terraformersmc.com/")
-    maven("https://api.modrinth.com/maven/")
-    maven("https://cursemaven.com/")
-    maven("https://mvn.devos.one/snapshots/")
-    maven("https://maven.jamieswhiteshirt.com/libs-release")
-    maven("https://maven.tterrag.com/")
-    maven("https://maven.theillusivec4.top/")
-    maven("https://maven.neoforged.net/releases")
-    maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
-    mavenLocal()
-}
-
-base.archivesName.set(project.properties["archives_base_name"] as? String ?: "")
-
-val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
-project.version = (project.properties["mod_version"] as? String ?: "") + "+${mcVersionStr}" + (if (buildNumber != null) "b${buildNumber}-" else "-") + (project.properties["version_stage"] ?: "") + (if (isFabric) "-fabric" else (if (isNeo) "-neoforge" else "-forge"))
-
-group = project.properties["maven_group"] as String
-
-loom {
-    silentMojangMappingsLicense()
-
-    runConfigs {
-        named("client") {
-            runDir = "../../run/client"
-            ideConfigGenerated(true)
-        }
-        named("server") {
-            runDir = "../../run/server"
-            ideConfigGenerated(true)
-        }
+fun setupPreprocessor() {
+    val buildProps = buildString {
+        append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
+        append("MC=${mcVersion}\n")
+        if (isFabric) append("FABRIC=1\n")
+        if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
 
-    if (!isFabric && !isNeo) {
-        forge {
-            mixinConfigs = listOf(
-                "cobblegen.mixins.json"
-            )
+    project.file("build.properties").writeText(buildProps)
+}
+setupPreprocessor()
+
+allprojects {
+    apply(plugin = "java")
+    apply(plugin = "maven-publish")
+
+    ext["mcVersion"] = mcVersion
+    ext["mcVersionStr"] = mcVersionStr
+    ext["loaderName"] = loaderName
+    ext["isFabric"] = isFabric
+    ext["isForge"] = isForge
+    ext["isNeo"] = isNeo
+
+    base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
+
+    val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
+    version = buildString {
+        append(rootProject.properties["mod_version"])
+        append("+")
+        append(mcVersionStr)
+        if (buildNumber != null) {
+            append("b")
+            append(buildNumber)
         }
-    }
-}
-
-val shade: Configuration by configurations.creating {
-    configurations.modImplementation.get().extendsFrom(this)
-}
-
-dependencies {
-    // TODO(addingVersion): For snapshots
-    val mc: Map<Int, String> = mapOf(
-    )
-    minecraft("com.mojang:minecraft:${mc[mcVersion] ?: mcVersionStr}")
-
-    mappings(loom.officialMojangMappings())
-
-    if (isFabric) {
-        if (mcVersion <= 11902 && project.properties["recipe_viewer"] == "rei")
-            modImplementation("net.fabricmc:fabric-loader:0.14.14")  // I don't get it, REI hate 0.14.21 in 1.19.2 or lower, wtf?
-        else if (mcVersion <= 12001)
-            modImplementation("net.fabricmc:fabric-loader:0.14.21")
+        append("-")
+        append(rootProject.properties["version_stage"])
+        if (isFabric)
+            append("-fabric")
         else
-            modImplementation("net.fabricmc:fabric-loader:0.16.7")
+            append(if (isNeo) "-neoforge" else "-forge")
+    }
+    group = rootProject.properties["maven_group"] as String
 
-        // For testing
-        if (project.properties["recipe_viewer"] != "none" && mcVersion > 11605)
-            // TODO: addingVersion
-            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:" + mapOf(
-                11605 to "0.42.0+1.16",
-                11802 to "0.76.0+1.18.2",
-                11902 to "0.76.0+1.19.2",
-                11904 to "0.83.0+1.19.4",
-                12001 to "0.83.1+1.20.1",
-                12002 to "0.89.0+1.20.2",
-                12006 to "0.100.8+1.20.6",
-                12101 to "0.106.0+1.21.1",
-                12103 to "0.106.1+1.21.3",
-            )[mcVersion])
-    } else {
-        if (!isNeo) {
-            "forge"("net.minecraftforge:forge:${mcVersionStr}-" + mapOf(
-                11605 to "36.2.41",
-                11802 to "40.2.9",
-                11902 to "43.2.14",
-                11904 to "45.1.0",
-                12001 to "47.0.3",
-                12002 to "48.0.13",
-                // LexForge is no longer supported
-            )[mcVersion])
-        } else {
-            // TODO: addingVersion
-            // snapshot version format:
-            // "20.5.0-alpha.${mc[mcVersion]}.+"
-            "neoForge"("net.neoforged:neoforge:" + mapOf(
-                12002 to "20.2.86",
-                12004 to "20.4.237",
-                12006 to "20.6.121",
-                12101 to "21.1.72",
-                12103 to "21.3.1-beta",
-            )[mcVersion])
+    repositories {
+        maven("https://jitpack.io")
+        maven {
+            url = uri("https://maven.blamejared.com/")
+            content {
+                includeGroup("mezz.jei")
+            }
+        }
+        maven("https://maven.shedaniel.me/")
+        maven("https://maven.terraformersmc.com/")
+        maven("https://api.modrinth.com/maven/")
+        maven("https://cursemaven.com/")
+        maven("https://mvn.devos.one/snapshots/")
+        maven("https://maven.jamieswhiteshirt.com/libs-release")
+        maven("https://maven.tterrag.com/")
+        maven("https://maven.theillusivec4.top/")
+        maven("https://maven.neoforged.net/releases")
+        maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
+        mavenLocal()
+    }
+
+    tasks.withType<JavaCompile> {
+        // ensure that the encoding is set to UTF-8, no matter what the system default is
+        // this fixes some edge cases with special characters not displaying correctly
+        // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
+        // If Javadoc is generated, this must be specified in that task too.
+        options.encoding = "UTF-8"
+        options.compilerArgs.add("-Xplugin:Manifold")
+    }
+}
+
+subprojects {
+    // NOTE: This here for when I finally split the API to its own module, hopefully on v6.0
+    val isApi = false;  // APIs shouldn't contain anything Minecraft related
+    val isModModule = project == project(":cobblegen")
+
+    apply(plugin = "java")
+    apply(plugin = "com.gradleup.shadow")
+    if (isModModule) {
+        apply(plugin = "dev.architectury.loom")
+    }
+
+    val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
+
+    val shade: Configuration by configurations.creating {
+        configurations.implementation.get().extendsFrom(this)
+    }
+
+    // For internal libraries
+    val compileInternal: Configuration by configurations.creating {
+        shade.extendsFrom(this)
+        configurations.compileClasspath.get().extendsFrom(this)
+        configurations.runtimeClasspath.get().extendsFrom(this)
+    }
+
+    val manifoldCompile: Configuration by configurations.creating {
+        configurations.compileOnly.get().extendsFrom(this)
+        configurations.annotationProcessor.get().extendsFrom(this)
+        configurations.testAnnotationProcessor.get().extendsFrom(this)
+    }
+
+    if (isModModule && !isFabric) {
+        configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
+    }
+
+    dependencies {
+        shade("blue.endless:jankson:${project.properties["jankson_version"]}")
+
+        shade("systems.manifold:manifold-ext-rt:${manifoldVersion}")
+        manifoldCompile("systems.manifold:manifold-ext:${manifoldVersion}")
+        manifoldCompile("systems.manifold:manifold-preprocessor:${manifoldVersion}")
+
+        if (isModModule) {
+            compileInternal(project(":mclib")) {
+                // Remove Junit test libraries
+                exclude(group = "org.junit.jupiter", module = "junit-jupiter")
+                exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
+                exclude(group = "junit", module = "junit")
+                // Removed dependencies
+                isTransitive = false
+            }
+
+            if (mcVersion <= 11605) {
+                // slf4j is not included by MC in 1.16.5
+                shade("org.slf4j:slf4j-api:1.7.36")
+                shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
+            }
         }
     }
 
-    shade("blue.endless:jankson:${project.properties["jankson_version"]}")
-    if (!isFabric)
-        "forgeRuntimeLibrary"("blue.endless:jankson:${project.properties["jankson_version"]}")
-
-    shade("systems.manifold:manifold-ext-rt:${project.properties["manifold_version"]}")
-    if (!isFabric)
-        "forgeRuntimeLibrary"("systems.manifold:manifold-ext-rt:${project.properties["manifold_version"]}")
-    annotationProcessor("systems.manifold:manifold-ext:${project.properties["manifold_version"]}")
-    testAnnotationProcessor("systems.manifold:manifold-ext:${project.properties["manifold_version"]}")
-
-    // Don't wanna deal with these atm
-    if (mcVersion > 11605) {
-        // These act like a dummy, technically only here to provide their modules/packages
+    val shadowJar by tasks.getting(ShadowJar::class) {
+        isZip64 = true
+        relocate("blue.endless.jankson", "io.github.null2264.shadowed.jankson")
+        if (mcVersion <= 11605) {
+            relocate("org.slf4j", "io.github.null2264.shadowed.slf4j")
+            relocate("org.apache.logging", "io.github.null2264.shadowed.log4j")
+        }
+        relocate("manifold", "io.github.null2264.shadowed.manifold")
         if (isFabric) {
-            modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.properties["port_lib_version_1_18_2"]}")
-            modCompileOnly("com.simibubi.create:create-fabric-${project.properties["minecraft_version_1_18_2"]}:${project.properties["create_version_1_18_2"]}")
-        } else {
-            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.1.e-318:slim") { isTransitive = false }
+            exclude("META-INF/mods.toml")
+            exclude("META-INF/neoforge.mods.toml")
+        } else if (isForge) {
+            exclude("fabric.mod.json")
+            exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
+        }
+        exclude("architectury.common.json")
+
+        configurations = listOf(shade)
+        archiveClassifier.set("dev-shade")
+    }
+
+    artifacts.add("archives", shadowJar)
+
+    val processResources by tasks.getting(ProcessResources::class) {
+        if (!isModModule) return@getting
+
+        val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
+        val versionRange = supportedVersionRange(mcVersion, loaderName)
+        val metadataMCVersion = if (isForge) versionRange.mavenStyle() else versionRange.semverStyle()
+        val properties = mapOf(
+            "version" to metadataVersion,
+            "mcversion" to metadataMCVersion,
+            "forge" to (if (isNeo) "neoforge" else "forge"),
+        )
+        inputs.properties(properties)
+        filteringCharset = Charsets.UTF_8.name()
+
+        val metadataFilename =
+            if (isFabric) {
+                "fabric.mod.json"
+            } else {
+                if (isNeo && mcVersion >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
+            }
+
+        filesMatching(metadataFilename) {
+            filter<StripJavaComments>()
+            expand(properties)
         }
 
-        // <- EMI
-        if (mcVersion <= 11802 && isFabric) {
-            modCompileOnly("dev.emi:emi:0.7.3+${mcVersionStr}:api")
-            if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime("dev.emi:emi:0.7.3+${mcVersionStr}")
-        } else {
-            // TODO: addingVersion - EMI. They didn't break API on MC version upgrade so mismatch should be fine
-            val suffix = mapOf(
-                11902 to "1.19.2",
-                11904 to "1.19.4",
-                12001 to "1.20.1",
-                12002 to "1.20.2",
-                12004 to "1.20.2",  // For Neo, the same 1.20.2
-                12006 to "1.20.6",
-                12101 to "1.21.1",
-                12103 to "1.21.1", // FIXME: .
+        filesMatching("cobblegen.mixins.json") {
+            filter<StripJavaComments>()
+        }
+
+        doLast {
+            val nbt = Nbt {
+                variant = NbtVariant.Java
+                compression = NbtCompression.Gzip
+            }
+            val snbt = StringifiedNbt {}
+            val data = { binaryForm: Boolean ->
+                buildNbtCompound {
+                    put("DataVersion", 2730)
+                    putNbtList<NbtInt>("size") {
+                        add(8)
+                        add(8)
+                        add(8)
+                    }
+                    putNbtList("data") {
+                        for (i in 0..7) {
+                            for (j in 0..7) {
+                                for (k in 0..7) {
+                                    addNbtCompound {
+                                        putNbtList("pos") {
+                                            add(i)
+                                            add(j)
+                                            add(k)
+                                        }
+                                        if (!binaryForm)
+                                            put("state", "minecraft:air")
+                                        else
+                                            put("state", 0)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    putNbtList<NbtString>("entities") {}
+                    if (!binaryForm)
+                        putNbtList("palette") {
+                            add("minecraft:air")
+                        }
+                    else
+                        putNbtList("palette") {
+                            addNbtCompound {
+                                put("Name", "minecraft:air")
+                            }
+                        }
+                }
+            }
+            // For some reason Mojang rename the structure directory on MC 1.21 to singular form
+            val structureDirName = if (mcVersion >= 12100) "structure" else "structures"
+            if (isFabric || mcVersion >= 12105) {
+                project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt").writeText(
+                    snbt.encodeToString(NbtCompound.serializer(), data(false))
+                )
+            } else {
+                project.file("build/resources/main/data/cobblegen/${structureDirName}/").mkdirs()
+                project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt").outputStream().use { output ->
+                    nbt.encodeToStream(buildNbtCompound { put("", data(true)) }, output)
+                }
+            }
+
+            val modsTomlFile = project.file("build/resources/main/META-INF/mods.toml")
+            val modsTomlContent = modsTomlFile.readText(Charsets.UTF_8).let {
+                when {
+                    mcVersion == 12001 -> it.replace("#==", "")
+                    isNeo -> it.replace("#<<", "")
+                    isForge -> it.replace("#>>", "")
+                    else -> it
+                }
+            }
+            modsTomlFile.writeText(modsTomlContent)
+
+            // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
+            val prettyJson = Json { prettyPrint = true }
+            @OptIn(ExperimentalSerializationApi::class)
+            val lenientJson = Json {
+                allowComments = true
+                allowTrailingComma = true
+            }
+            fun MutableList<JsonElement>.addJson(value: String) {
+                add(JsonPrimitive(value))
+            }
+
+            val mixinsFile = project.file("build/resources/main/cobblegen.mixins.json")
+            val both = buildList {
+                if (mcVersion >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
+                addJson("CommandsMixin")
+                addJson("MinecraftServerMixin")
+                if (mcVersion > 11605) {
+                    addJson("create.CreateFluidReactionsMixin")
+                    addJson("create.CreateFluidReactionsMixinPatchE")
+                    if (isFabric) addJson("create.CreateFluidReactionsMixinPatchF")
+                }
+                addJson("fluid.FluidEventMixin")
+                addJson("fluid.LavaEventMixin")
+                if (mcVersion >= 12105) {
+                    addJson("gametest.RegistryDataLoaderMixin\$GameTest")
+                    addJson("gametest.StructureTemplateManagerMixin\$GameTest")
+                }
+            }
+            val client = buildList {
+                if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
+                addJson("network.ClientCommonPacketListenerMixin")
+                addJson("network.ConnectionMixin")
+            }
+            val server = buildList {
+                addJson("network.PlayerManagerMixin")
+                if (mcVersion < 12002) addJson("network.ServerboundCustomPayloadPacketAccessor")
+                else addJson("network.ServerConfigurationPacketListenerMixin")
+                if (mcVersion < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
+                addJson("network.ServerCommonPacketListenerMixin")
+            }
+            val mixinsJson = JsonObject(
+                lenientJson.decodeFromString<JsonObject>(mixinsFile.readText(Charsets.UTF_8)).toMutableMap().apply {
+                    set("compatibilityLevel", JsonPrimitive(if (mcVersion <= 11605) "JAVA_8" else "JAVA_17"))
+                    set("mixins", JsonArray(both))
+                    set("client", JsonArray(client))
+                    set("server", JsonArray(server))
+                }
             )
-            val emiVersion = "1.1.18+${suffix[mcVersion] ?: "1.20.2"}"
-            // EMI support multiple platform since 1.0.0
-            // EMI seems to also skip 1.19 and 1.19.1
-            modCompileOnly("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion:api")
-            if (project.properties["recipe_viewer"] == "emi" && suffix[mcVersion] != null)
-                modLocalRuntime("dev.emi:emi-${if (isFabric) "fabric" else (if (mcVersion >= 12006) "neoforge" else "forge")}:$emiVersion")
-        }
-        // EMI ->
+            mixinsFile.writeText(prettyJson.encodeToString(JsonObject.serializer(), mixinsJson))
 
-        // <- REI
-        // TODO: addingVersion - REI
-        val reiVersions = mapOf(
-            11802 to "8.3.618",
-            11902 to "9.1.619",
-            11904 to "11.0.621",
-            12001 to "12.0.625",
-            12002 to "13.0.685",
-            12004 to "13.0.685",  // for Neo
-            12006 to "15.0.787",
-            12101 to "16.0.788",
-            12103 to "17.0.789",
-        )
-        val reiFallback = "17.0.789"
-        // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
-        modCompileOnly("me.shedaniel:RoughlyEnoughItems-${if (isFabric) "api-fabric" else if (!isNeo) "forge" else "neoforge"}:${reiVersions[mcVersion] ?: reiFallback}")
-        if (mcVersion >= 12002) {  // FIXME: Not sure why it's not included
-            modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
-            modCompileOnly("dev.architectury:architectury:11.1.13")
-        }
-        if (project.properties["recipe_viewer"] == "rei" && reiVersions[mcVersion] != null) {
-            if (mcVersion == 11902)  // REI's stupid dep bug
-                modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-            modLocalRuntime("me.shedaniel:RoughlyEnoughItems-${if (isFabric) "fabric" else "forge"}:${reiVersions[mcVersion]}")
-        }
-        // REI ->
+            if (!isFabric) return@doLast
 
-        // <- JEI
-        // TODO: addingVersion - JEI
-        val jeiVersions = mapOf(
-            11802 to "10.2.1.1004",
-            11902 to "11.6.0.1015",
-            11904 to "13.1.0.13",
-            12001 to "15.0.0.12",
-            12002 to "16.0.0.28",
-            12004 to "16.0.0.28",  // for Neo
-            12006 to "18.0.0.62",
-            12101 to "19.21.0.246",
-            12103 to null,
-        )
-        val jeiVersion = jeiVersions[mcVersion]
-        // <- fallback - should be the latest version
-        val fallbackJeiVer = "19.21.0.246"
-        val fallbackJeiMcVer = "1.21.1"
-        // fallback ->
-        val jeiMc = mapOf(
-            12004 to "1.20.2",  // for Neo
-            12103 to fallbackJeiMcVer,
-        )
-        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-common-api:${jeiVersion ?: fallbackJeiVer}")
-        modCompileOnly("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}-api:${jeiVersion ?: fallbackJeiVer}")
-        if (project.properties["recipe_viewer"] == "jei" && jeiVersion != null)
-            modLocalRuntime("mezz.jei:jei-${jeiMc[mcVersion] ?: mcVersionStr}-${if (isFabric) "fabric" else "forge"}:${jeiVersion}")
-        // JEI ->
-
-        /* FIXME: Broken, somehow
-        if (mcVersion == 11802 && isFabric) {
-            modLocalRuntime("com.tterrag.registrate_fabric:Registrate:MC1.18.2-1.1.7")
-            modLocalRuntime("io.github.fabricators_of_create:Porting-Lib:${project.port_lib_version_1_18_2}")
-            modLocalRuntime("com.simibubi.create:create-fabric-${project.minecraft_version_1_18_2}:${project.create_version_1_18_2}")
+            val fabricMetadataFile = project.file("build/resources/main/fabric.mod.json")
+            val fabricMetadataJson = JsonObject(
+                lenientJson.decodeFromString<JsonObject>(fabricMetadataFile.readText(Charsets.UTF_8)).toMutableMap().apply {
+                    (get("entrypoints") as? JsonObject)?.toMutableMap()?.apply {
+                        if (mcVersion > 11605) {
+                            set("jei_mod_plugin", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"))))
+                            set("rei_client", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"))))
+                            set("emi", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"))))
+                        }
+                        set(
+                            "cobblegen_plugin",
+                            JsonArray(buildList {
+                                addJson("io.github.null2264.cobblegen.integration.BuiltInPlugin")
+                                if (mcVersion > 11605) addJson("io.github.null2264.cobblegen.integration.CreatePlugin")
+                            }),
+                        )
+                    }?.let {
+                        set("entrypoints", JsonObject(it))
+                    }
+                }
+            )
+            fabricMetadataFile.writeText(prettyJson.encodeToString(JsonObject.serializer(), fabricMetadataJson))
         }
-         */
+    }
+
+    val targetJavaVersion = if (!isApi) {
+        if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
     } else {
-        // slf4j is not included by MC in 1.16.5
-        shade("org.slf4j:slf4j-api:1.7.36")
-        shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-        if (!isFabric) {
-            "forgeRuntimeLibrary"("org.slf4j:slf4j-api:1.7.36")
-            "forgeRuntimeLibrary"("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
-        }
+        8  // APIs should always target Java 8
     }
-}
-
-val shadowJar by tasks.getting(ShadowJar::class) {
-    isZip64 = true
-    relocate("blue.endless.jankson", "io.github.null2264.shadowed.jankson")
-    if (mcVersion <= 11605) {
-        relocate("org.slf4j", "io.github.null2264.shadowed.slf4j")
-        relocate("org.apache.logging", "io.github.null2264.shadowed.log4j")
-    }
-    relocate("manifold", "io.github.null2264.shadowed.manifold")
-    if (isFabric) {
-        exclude("META-INF/mods.toml")
-        exclude("META-INF/neoforge.mods.toml")
-    } else if (isForge) {
-        exclude("fabric.mod.json")
-        exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
-    }
-    exclude("architectury.common.json")
-
-    configurations = listOf(shade)
-    archiveClassifier.set("dev-shade")
-}
-
-artifacts.add("archives", shadowJar)
-
-val remapJar by tasks.getting(RemapJarTask::class) {
-    dependsOn(shadowJar)
-    inputFile.set(shadowJar.archiveFile)
-}
-
-val processResources by tasks.getting(ProcessResources::class) {
-    val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
-    val metadataMCVersion =
-            if (supportedVersionRange[0] != null) (
-            (if (isFabric) ">=" else "[") +
-            supportedVersionRange[0] +
-            (if (supportedVersionRange[1] == null)
-                    (if (isFabric) "" else ",)")
-                    else ((if (isFabric) " <=" else ",") + supportedVersionRange[1] + (if (isFabric) "" else "]")))
-            ) else (if (isFabric) supportedVersionRange[1] else "[${supportedVersionRange[1]}]")
-    val properties = mapOf(
-        "version" to metadataVersion,
-        "mcversion" to metadataMCVersion,
-        "forge" to (if (isNeo) "neoforge" else "forge"),
-    )
-    inputs.properties(properties)
-    filteringCharset = Charsets.UTF_8.name()
-
-    val metadataFilename =
-        if (isFabric) {
-            "fabric.mod.json"
-        } else {
-            if (isNeo && mcVersion >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
-        }
-
-    filesMatching(metadataFilename) {
-        filter { line -> if (line.trim().startsWith("//")) "" else line }  // strip comments
-        expand(properties)
-    }
-}
-
-val targetJavaVersion = if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
-tasks.withType<JavaCompile>().configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
-    options.encoding = "UTF-8"
-    if (targetJavaVersion > 8) {
-        options.release = targetJavaVersion
-    }
-}
-
-java {
-    val javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    if (JavaVersion.current() != javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
-    withSourcesJar()
-}
-
-tasks.jar {
-    from("LICENSE") {
-        rename { "${it}_${base.archivesName.get()}" }
-    }
-}
-
-if (JavaVersion.current() != JavaVersion.VERSION_1_8 &&
-        sourceSets.main.get().allJava.files.any {it.name == "module-info.java"}) {
-    tasks.withType<JavaCompile>() {
-        // if you DO define a module-info.java file:
-        options.compilerArgs.addAll(listOf("-Xplugin:Manifold", "--module-path", classpath.asPath))
-    }
-} else {
-    tasks.withType<JavaCompile>() {
-        // If you DO NOT define a module-info.java file:
-        options.compilerArgs.addAll(listOf("-Xplugin:Manifold"))
-    }
-}
-
-// TODO: addingVersion
-val mcReleaseVersions = mapOf<Int, List<String>>(
-    11605 to listOf("1.16.5"),
-    11802 to listOf("1.18.2"),
-    11902 to listOf("1.19", "1.19.1", "1.19.2"),
-    11904 to listOf("1.19.3", "1.19.4"),
-    12001 to listOf("1.20", "1.20.1"),
-    12002 to listOf("1.20.2", "1.20.3").let {
-        val rt = it.toMutableList()
-        if (!isNeo) rt.add("1.20.4")
-
-        rt
-    },
-    12004 to listOf("1.20.4"),  // for Neo
-    12006 to listOf("1.20.5", "1.20.6"),
-    12101 to listOf("1.21", "1.21.1"),
-    12103 to listOf("1.21.2", "1.21.3", "1.21.4")
-)[mcVersion] ?: throw IllegalStateException("Should not be empty!")
-
-// These overwrites mcReleaseVersions
-val cfSnapshots = mapOf<Int, List<String>>(
-//    12102 to listOf("1.21.2-Snapshot"),
-)[mcVersion]
-
-// These overwrites mcReleaseVersions
-val mrSnapshots = mapOf<Int, List<String>>(
-//    12102 to listOf("1.21.2-pre3"),
-)[mcVersion]
-
-publishMods {
-    file.set(tasks.remapJar.get().archiveFile)
-    displayName.set("[${if (isFabric) "FABRIC" else (if (isNeo) "NEOFORGE" else "FORGE")} MC${mcReleaseVersions[0] + (if (mcReleaseVersions.size > 1) "+" else "")}] v${project.properties["mod_version"]}-${project.properties["version_stage"]}${if (mcVersion <= 11605) " (LITE)" else ""}")
-    changelog.set(System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog")
-    version.set(project.version.toString())
-    if (isFabric) {
-        modLoaders.add("fabric")
-        modLoaders.add("quilt")
-    } else {
-        if (mcVersion <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
-            modLoaders.add("forge")
-        if (mcVersion == 12001 || isNeo)
-            modLoaders.add("neoforge")
-    }
-    type = when(project.properties["version_stage"]) {
-        "ALPHA" -> ALPHA
-        "BETA" -> BETA
-        else -> STABLE
-    }
-
-    val cfToken = System.getenv("CURSEFORGE")
-    if (cfToken != null) {
-        curseforge {
-            accessToken = cfToken
-            projectId.set(project.properties["curseforge_project"] as String)
-
-            if (cfSnapshots == null) {
-                for (mcVer in mcReleaseVersions) {
-                    minecraftVersions.add(mcVer)
-                }
-            } else {
-                for (mcVer in cfSnapshots) {
-                    minecraftVersions.add(mcVer)
-                }
-            }
-
-            embeds {
-                slug = "jankson"
-            }
+    tasks.withType<JavaCompile> {
+        if (targetJavaVersion > 8) {
+            options.release = targetJavaVersion
         }
     }
 
-    val mrToken = System.getenv("MODRINTH")
-    if (mrToken != null) {
-        modrinth {
-            accessToken = mrToken
-            projectId.set(project.properties["modrinth_project"] as String)
+    java {
+        val javaVersion = JavaVersion.toVersion(targetJavaVersion)
+        if (JavaVersion.current() != javaVersion) {
+            toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+        }
+        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+        // if it is present.
+        // If you remove this line, sources will not be generated.
+        withSourcesJar()
+    }
 
-            if (mrSnapshots == null) {
-                for (mcVer in mcReleaseVersions) {
-                    minecraftVersions.add(mcVer)
-                }
-            } else {
-                for (mcVer in mrSnapshots) {
-                    minecraftVersions.add(mcVer)
-                }
-            }
+    tasks.jar {
+        from("LICENSE") {
+            rename { "${it}_${base.archivesName.get()}" }
         }
     }
+
+    // In case I decided to split :cobblegen to multi-loader modules
+//    tasks.create<Copy>("copyCommonLoaderResources") {
+//        from(project(":common").file("src/main/resources/....")) {
+//            into(file(project.file("build/resources/main")))
+//            rename("...", "...")
+//        }
+//    }
 }
