@@ -19,3 +19,14 @@ val fapi = Dependency(
         }
     },
 )
+
+val fapiResourceLoader = Dependency(
+    group = "net.fabricmc.fabric-api",
+    name = "fabric-resource-loader-v0",
+    version = { mcVersion ->
+        when (mcVersion) {
+            12105 -> "3.1.6+02ca679649"
+            else -> throw IllegalStateException("$mcVersion is not yet supported!")
+        }
+    },
+)

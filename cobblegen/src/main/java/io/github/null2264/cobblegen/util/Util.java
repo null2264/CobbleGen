@@ -134,7 +134,12 @@ public class Util
     }
 
     public static String getDimension(LevelAccessor level) {
-        RegistryAccess access = level.registryAccessCompat();
+        RegistryAccess access =
+            #if FORGE && MC<12002
+            level.registryAccessCompat();
+            #else
+            level.registryAccess();
+            #endif
         ResourceLocation dim = access
             #if MC>12101
             .lookupOrThrow(
@@ -152,7 +157,12 @@ public class Util
 
     @Nullable
     public static String getBiome(LevelAccessor level, BlockPos position) {
-        RegistryAccess access = level.registryAccessCompat();
+        RegistryAccess access =
+            #if FORGE && MC<12002
+            level.registryAccessCompat();
+            #else
+            level.registryAccess();
+            #endif
         ResourceLocation biome = access
             #if MC>12101
             .lookupOrThrow(

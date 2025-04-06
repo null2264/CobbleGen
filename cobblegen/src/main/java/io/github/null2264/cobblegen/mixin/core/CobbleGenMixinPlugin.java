@@ -15,7 +15,10 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
 {
     @Override
     public void onLoad(String mixinPackage) {
-
+        #if FORGE && MC>=12105
+        // This is the earliest entrypoint for Forge that I know of...
+        io.github.null2264.cobblegen.gametest.CobbleGenTestLoader.init();
+        #endif
     }
 
     @Override
@@ -86,6 +89,19 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
             if (mixinClassName.endsWith("PatchF")) return patchVersion >= 1;
             if (mixinClassName.endsWith("PatchE")) return patchVersion <= 0;
         }
+
+        #if MC>=12105
+        if (mixinClassName.endsWith("$GameTest") && io.github.null2264.cobblegen.gametest.CobbleGenTestLoader.ENABLED) {
+            // Datapack will not register automatically in Fabric without FAPI.
+            // I usually prefer not depending on FAPI, but I'll make this one an exception...
+            // because I ain't dealing with Resource Pack loading ever again
+            if (LoaderCompat.isFabricLike() && !LoaderCompat.isModLoaded("fabric-resource-loader-v0")) {
+                CGLog.warn(() -> "Fabric API is required to load CobbleGen's GameTests!");
+                return false;
+            }
+            return true;
+        }
+        #endif
         return true;
     }
 

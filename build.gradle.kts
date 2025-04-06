@@ -117,7 +117,7 @@ allprojects {
         // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
         // If Javadoc is generated, this must be specified in that task too.
         options.encoding = "UTF-8"
-        options.compilerArgs.add("-Xplugin:Manifold --no-bootstrap")
+        options.compilerArgs.add("-Xplugin:Manifold")
     }
 }
 
@@ -239,55 +239,57 @@ subprojects {
                 compression = NbtCompression.Gzip
             }
             val snbt = StringifiedNbt {}
-            val data = buildNbtCompound {
-                put("DataVersion", 2730)
-                putNbtList<NbtInt>("size") {
-                    add(8)
-                    add(8)
-                    add(8)
-                }
-                putNbtList("data") {
-                    for (i in 0..7) {
-                        for (j in 0..7) {
-                            for (k in 0..7) {
-                                addNbtCompound {
-                                    putNbtList("pos") {
-                                        add(i)
-                                        add(j)
-                                        add(k)
+            val data = { binaryForm: Boolean ->
+                buildNbtCompound {
+                    put("DataVersion", 2730)
+                    putNbtList<NbtInt>("size") {
+                        add(8)
+                        add(8)
+                        add(8)
+                    }
+                    putNbtList("data") {
+                        for (i in 0..7) {
+                            for (j in 0..7) {
+                                for (k in 0..7) {
+                                    addNbtCompound {
+                                        putNbtList("pos") {
+                                            add(i)
+                                            add(j)
+                                            add(k)
+                                        }
+                                        if (!binaryForm)
+                                            put("state", "minecraft:air")
+                                        else
+                                            put("state", 0)
                                     }
-                                    if (isFabric)
-                                        put("state", "minecraft:air")
-                                    else
-                                        put("state", 0)
                                 }
                             }
                         }
                     }
-                }
-                putNbtList<NbtString>("entities") {}
-                if (isFabric)
-                    putNbtList("palette") {
-                        add("minecraft:air")
-                    }
-                else
-                    putNbtList("palette") {
-                        addNbtCompound {
-                            put("Name", "minecraft:air")
+                    putNbtList<NbtString>("entities") {}
+                    if (!binaryForm)
+                        putNbtList("palette") {
+                            add("minecraft:air")
                         }
-                    }
+                    else
+                        putNbtList("palette") {
+                            addNbtCompound {
+                                put("Name", "minecraft:air")
+                            }
+                        }
+                }
             }
             // For some reason Mojang rename the structure directory on MC 1.21 to singular form
             val structureDirName = if (mcVersion >= 12100) "structure" else "structures"
-            if (isFabric) {
+            if (isFabric || mcVersion >= 12105) {
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt").writeText(
-                    snbt.encodeToString(NbtCompound.serializer(), data)
+                    snbt.encodeToString(NbtCompound.serializer(), data(false))
                 )
             } else {
                 project.file("build/resources/main/data/cobblegen/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt").outputStream().use { output ->
-                    nbt.encodeToStream(buildNbtCompound { put("", data) }, output)
+                    nbt.encodeToStream(buildNbtCompound { put("", data(true)) }, output)
                 }
             }
 
@@ -325,6 +327,10 @@ subprojects {
                 }
                 addJson("fluid.FluidEventMixin")
                 addJson("fluid.LavaEventMixin")
+                if (mcVersion >= 12105) {
+                    addJson("gametest.RegistryDataLoaderMixin\$GameTest")
+                    addJson("gametest.StructureTemplateManagerMixin\$GameTest")
+                }
             }
             val client = buildList {
                 if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")

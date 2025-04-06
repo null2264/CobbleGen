@@ -1,31 +1,16 @@
+#if FORGE && MC<12002
 package io.github.null2264.cobblegen.extensions.net.minecraft.world.level.LevelAccessor;
 
-import manifold.ext.rt.api.Extension;
-import manifold.ext.rt.api.This;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.LevelAccessor;
 
-@Extension
+@manifold.ext.rt.api.Extension
 public final class LevelAccessorExt {
-    public static RegistryAccess registryAccessCompat(@This LevelAccessor thiz) {
-        //noinspection UnusedAssignment
+    public static RegistryAccess registryAccessCompat(@manifold.ext.rt.api.This LevelAccessor thiz) {
         RegistryAccess access = null;
-        #if FABRIC || (FORGE && !(MC>11902 && MC<=11904))
-        access = thiz.registryAccess();
-        #else
-        // Pre-runtime-mojmap forge pain
+        // Pre-runtime-mojmap forge pain (which introduced on NeoForge around MC 1.20.2 and Forge around 1.20.6, be it partially)
         String func = "";
-        net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion mcVersion =
-            new net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion();
-        String version = "";
-        try {
-            java.lang.reflect.Field field = mcVersion.getClass().getDeclaredField("f_132479_");
-            field.setAccessible(true);
-            version = (String) field.get(mcVersion);
-        } catch (NoSuchFieldException | IllegalAccessException ignored) {
-            // Fallback
-            version = mcVersion.getName();
-        }
+        String version = getVersion();
         // SRG moment
         switch (version) {
             case "1.19.3":
@@ -49,7 +34,22 @@ public final class LevelAccessorExt {
         if (access == null) {
             access = thiz.registryAccess();
         }
-        #endif
         return access;
     }
+
+    private static String getVersion() {
+        net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion mcVersion =
+            new net.minecraft. @manifold.ext.rt.api.Jailbreak DetectedVersion();
+        String version;
+        try {
+            java.lang.reflect.Field field = mcVersion.getClass().getDeclaredField("f_132479_");
+            field.setAccessible(true);
+            version = (String) field.get(mcVersion);
+        } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            // Fallback
+            version = mcVersion.getName();
+        }
+        return version;
+    }
 }
+#endif

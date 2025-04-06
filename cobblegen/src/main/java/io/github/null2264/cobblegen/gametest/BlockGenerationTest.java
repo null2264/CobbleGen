@@ -6,13 +6,125 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
-// NOTE:
-//  Mojang didn't ship GameTest until 1.17.0 but Forge didn't support GameTest until 1.18.1
-//  In 1.21.5, Mojang removed @GameTest annotation
-// TODO: Stone generation test
+#if MC>=12105
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
+import net.minecraft.gametest.framework.FunctionGameTestInstance;
+import net.minecraft.gametest.framework.GameTestEnvironments;
+import net.minecraft.gametest.framework.GameTestInstance;
+import net.minecraft.gametest.framework.TestData;
+import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.resources.RegistryDataLoader;
+import net.minecraft.resources.ResourceKey;
+
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+#endif
+
+/**
+ * GameTest holder for CobbleGen Tests.
+ *
+ * Mojang starts shipping GameTest around 1.17 but Forge didn't support it until 1.18.1.
+ * In 1.21.5, Mojang completely overhauled GameTest from automatically register functions annotated with @GameTest,
+ * Mojang gave a more abstract API for modders to use.
+ *
+ * Basically, after 1.21.5 you need 3 things to be registered:
+ * - Test Function
+ * - Test Instance -> Holds TestData (eqv to the data held by @GameTest values)
+ * - Test Environment -> CobbleGen use 'minecraft:default', so no need to do this
+ * But for whatever reason Mojang only provides a way to register Test Function, fun! :^)
+ *
+ * CobbleGen's 1.21.5 GameTest register flow (Fabric):
+ * - Minecraft is being launched by the launcher
+ * - new CobbleGenPreLaunch()
+ *   -> CobbleGenTestLoader is registered -> Gated by -Dnull2264.cobblegen.gametest=true
+ * - TestFunctionLoader.runLoaders()
+ *   -> ...
+ *   -> BlockGenerationTest.registerFunctions(...)
+ *   -> ...
+ * - Minecraft is launched
+ * - new CobbleGen()
+ * - RegistryDataLoader loading its data
+ *   -> Intercepted by CobbleGen's mixin -> Gated by -Dnull2264.cobblegen.gametest=true
+ *   -> BlockGenerationTest.registerInstances(...)
+ */
 public class BlockGenerationTest {
     public static final CGIdentifier TEMPLATE = CGIdentifier.of("empty");
     public static final Integer TIMEOUT_TICKS = 120;
+
+    #if MC>=12105
+    private record TestHolder(
+        CGIdentifier id,
+        CGIdentifier structure,
+        Integer timeoutTicks,
+        Integer setupTicks,
+        Boolean isRequired,
+        Consumer<GameTestHelper> function
+    ) {
+        public GameTestInstance testInstance(Registry<TestEnvironmentDefinition> testEnvironmentRegistry) {
+            Holder.Reference<TestEnvironmentDefinition> testEnvironment = testEnvironmentRegistry.getOrThrow(GameTestEnvironments.DEFAULT_KEY);
+
+            return new FunctionGameTestInstance(
+                ResourceKey.create(Registries.TEST_FUNCTION, id.toMC()),
+                new TestData<>(
+                    testEnvironment,
+                    structure().toMC(),
+                    timeoutTicks(),
+                    setupTicks(),
+                    isRequired()
+                )
+            );
+        }
+
+        public ResourceKey<Consumer<GameTestHelper>> functionKey() {
+            return ResourceKey.create(Registries.TEST_FUNCTION, id().toMC());
+        }
+    }
+
+    private static final BlockGenerationTest holder = new BlockGenerationTest();
+    private static final TestHolder cobbleGenerationTest = new TestHolder(
+        CGIdentifier.of("cobble_generation"),
+        TEMPLATE,
+        TIMEOUT_TICKS,
+        0,
+        true,
+        holder::cobbleGenerationTest
+    );
+    private static final TestHolder basaltGenerationTest = new TestHolder(
+        CGIdentifier.of("basalt_generation"),
+        TEMPLATE,
+        TIMEOUT_TICKS,
+        0,
+        true,
+        holder::basaltGenerationTest
+    );
+
+    public static void registerFunctions(BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
+        registerer.accept(cobbleGenerationTest.functionKey(), cobbleGenerationTest.function());
+        registerer.accept(basaltGenerationTest.functionKey(), basaltGenerationTest.function());
+    }
+
+    public static void registerInstances(List<RegistryDataLoader.Loader<?>> registriesList) {
+        Map<ResourceKey<? extends Registry<?>>, Registry<?>> registries = new IdentityHashMap<>(registriesList.size());
+
+        for (RegistryDataLoader.Loader<?> entry : registriesList) {
+            registries.put(entry.registry().key(), entry.registry());
+        }
+
+        Registry<GameTestInstance> testInstances =
+            (Registry<GameTestInstance>) registries.get(Registries.TEST_INSTANCE);
+        Registry<TestEnvironmentDefinition> testEnvironmentRegistry =
+            (Registry<TestEnvironmentDefinition>) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
+
+        Registry.register(testInstances, cobbleGenerationTest.id().toMC(), cobbleGenerationTest.testInstance(testEnvironmentRegistry));
+        Registry.register(testInstances, basaltGenerationTest.id().toMC(), basaltGenerationTest.testInstance(testEnvironmentRegistry));
+    }
+    #endif
 
     #if MC<12105
     // Basically telling Forge to stop being weird
@@ -24,24 +136,14 @@ public class BlockGenerationTest {
             #endif
         #endif
     @net.minecraft.gametest.framework.GameTest(
-            #if FORGE
+        #if FORGE
         templateNamespace = "cobblegen",
         template = "empty",
-            #else
+        #else
         template = "cobblegen:empty",
-            #endif
+        #endif
         timeoutTicks = 120
     )
-    #else
-        #if FABRIC
-    @net.fabricmc.fabric.api.gametest.v1.GameTest(
-        structure = "cobblegen:empty",
-        maxTicks = 120,
-        rotation = net.minecraft.world.level.block.Rotation.NONE
-    )
-        #elif FORGE
-    // FIXME: There currently no way to do this on NeoForge
-        #endif
     #endif
     public void cobbleGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the water
@@ -83,24 +185,14 @@ public class BlockGenerationTest {
             #endif
         #endif
     @net.minecraft.gametest.framework.GameTest(
-            #if FORGE && MC<12105
+        #if FORGE && MC<12105
         templateNamespace = "cobblegen",
         template = "empty",
-            #else
+        #else
         template = "cobblegen:empty",
-            #endif
+        #endif
         timeoutTicks = 120
     )
-    #else
-        #if FABRIC
-    @net.fabricmc.fabric.api.gametest.v1.GameTest(
-        structure = "cobblegen:empty",
-        maxTicks = 120,
-        rotation = net.minecraft.world.level.block.Rotation.NONE
-    )
-        #elif FORGE
-    // FIXME: There currently no way to do this on NeoForge
-        #endif
     #endif
     public void basaltGenerationTest(GameTestHelper context) {
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);

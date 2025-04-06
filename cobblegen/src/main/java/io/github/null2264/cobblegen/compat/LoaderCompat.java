@@ -76,6 +76,18 @@ public class LoaderCompat {
         #endif
     }
 
+    public static Boolean isFabric() {
+        return getType() == LoaderType.FABRIC;
+    }
+
+    public static Boolean isQuilt() {
+        return getType() == LoaderType.QUILT;
+    }
+
+    public static Boolean isFabricLike() {
+        return isFabric() || isQuilt();
+    }
+
     public static Boolean isForge() {
         return getType() == LoaderType.FORGE;
     }

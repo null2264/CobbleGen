@@ -30,16 +30,19 @@ group = project.properties["maven_group"] as String
 
 loom {
     silentMojangMappingsLicense()
+    accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
 
     runConfigs {
         named("client") {
             runDir = "../run/client"
-            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + "Client"
+            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Client"
+            vmArgs += "-Dnull2264.cobblegen.gametest=true"
             ideConfigGenerated(true)
         }
         named("server") {
             runDir = "../run/server"
-            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + "Server"
+            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Server"
+            vmArgs += "-Dnull2264.cobblegen.gametest=true"
             ideConfigGenerated(true)
         }
     }
@@ -67,9 +70,7 @@ dependencies {
         if (mcVersion in 11606..12104) {
             modLocalRuntime(fapi.versioned(mcVersion))
         } else if (mcVersion >= 12105) {
-            modLocalRuntime(modCompileOnly("net.fabricmc.fabric-api:fabric-gametest-api-v1:3.1.2+2a6ec84b49")!!)
-            // We need this to fix "Registry is already frozen"
-            modLocalRuntime("net.fabricmc.fabric-api:fabric-registry-sync-v0:6.1.20+b556383249")
+            modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
         }
     } else {
         if (!isNeo) {

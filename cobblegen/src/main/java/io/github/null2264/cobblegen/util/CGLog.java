@@ -4,6 +4,8 @@ import io.github.null2264.cobblegen.CobbleGen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Supplier;
+
 public class CGLog {
     public static final Logger LOG = LoggerFactory.getLogger("CobbleGen");
     private static final String prefix = "[CobbleGen] ";
@@ -26,12 +28,20 @@ public class CGLog {
         LOG.info(rt.toString());
     }
 
+    public static void info(Supplier<String> lazyString) {
+        LOG.info(prefix + "{}", lazyString.get());
+    }
+
     public static void warn(String s, String... a) {
         StringBuilder rt = new StringBuilder(prefix + s);
         for (String s1 : a) {
             rt.append(" ").append(s1);
         }
         LOG.warn(rt.toString());
+    }
+
+    public static void warn(Supplier<String> lazyString) {
+        LOG.warn(prefix + "{}", lazyString.get());
     }
 
     public static void error(String s, String... a) {
