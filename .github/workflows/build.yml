@@ -266,7 +266,7 @@ jobs:
             parse-changelog CHANGELOG.md ${{ github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog"
             echo ""
             echo "END_OF_FILE"
-          } >> $GITHUB_OUTPUT 2> /dev/null
+          } >> $GITHUB_OUTPUT
 
           MC_VER="${{ matrix.mc }}"
           __TMP='${{ toJson(matrix.testVersions) }}'
@@ -275,7 +275,7 @@ jobs:
           LOADER="$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]')"
           VERSION_STAGE="beta"
           VERSION="${{ github.event.inputs.version }}+${{ matrix.mc }}b$GITHUB_RUN_NUMBER-$VERSION_STAGE-${{ matrix.loader }}"
-          TITLE="[$LOADER MC$MC_VER] $VERSION-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
+          TITLE="[$LOADER MC$MC_VER] ${{ github.event.inputs.version }}-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
           [ "$MC_VER" = "1.16.5" ] && TITLE="$TITLE (LITE)"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "VERSION_STAGE=$VERSION_STAGE" >> $GITHUB_OUTPUT
@@ -288,9 +288,8 @@ jobs:
           name: ${{ steps.release-setup.outputs.TITLE }}
           version: ${{ steps.release-setup.outputs.VERSION }}
           version-type: ${{ steps.release-setup.outputs.VERSION_STAGE }}
-          files: |
-            cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
-
+          game-version-filter: releases | min-major | min-minor
+          files: cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
           github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}+${{ matrix.loader }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           modrinth-token: ${{ secrets.MODRINTH }}
