@@ -290,8 +290,8 @@ jobs:
           version-type: ${{ steps.release-setup.outputs.VERSION_STAGE }}
           game-version-filter: releases | min-major | min-minor
           files: cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
-          github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}+${{ matrix.loader }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}+${{ matrix.loader }}
+          # github-token: ${{ secrets.GITHUB_TOKEN }}
           modrinth-token: ${{ secrets.MODRINTH }}
           curseforge-token: ${{ secrets.CURSEFORGE }}
           changelog: |
