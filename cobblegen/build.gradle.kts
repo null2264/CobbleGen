@@ -138,6 +138,9 @@ dependencies {
 val remapJar by tasks.getting(RemapJarTask::class) {
     val shadowJar by tasks.getting(ShadowJar::class)
     dependsOn(shadowJar)
+    if (isForge && mcVersion >= 12105) {
+        atAccessWideners.add("cobblegen.accesswidener")
+    }
     inputFile.set(shadowJar.archiveFile)
 }
 
