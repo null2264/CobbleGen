@@ -36,8 +36,8 @@ data class VersionRange(
 
 fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
     return when (mcVersion) {
-        11605 -> VersionRange(null, "1.16.5")
-        11802 -> VersionRange(null, "1.18.2")
+        11605 -> VersionRange("1.16.4", "1.16.5")
+        11802 -> VersionRange("1.18.1", "1.18.2")
         in 11900..11902 -> VersionRange("1.18.x", "1.19.2")
         in 11903..11904 -> VersionRange("1.19.2", "1.19.4")
         in 12000..12001 -> VersionRange("1.19.x", "1.20.1")
