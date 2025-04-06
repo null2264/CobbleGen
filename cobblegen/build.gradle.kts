@@ -30,7 +30,9 @@ group = project.properties["maven_group"] as String
 
 loom {
     silentMojangMappingsLicense()
-    accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
+    if (mcVersion >= 12105) {
+        accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
+    }
 
     runConfigs {
         named("client") {
