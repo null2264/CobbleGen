@@ -34,6 +34,7 @@ data class VersionRange(
     }
 }
 
+// FIXME: Exact version for 1.16.5 and 1.18.2
 fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
     return when (mcVersion) {
         11605 -> VersionRange("1.16.4", "1.16.5")

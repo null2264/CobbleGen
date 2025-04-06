@@ -293,7 +293,7 @@ jobs:
           # github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}+${{ matrix.loader }}
           # github-token: ${{ secrets.GITHUB_TOKEN }}
           modrinth-token: ${{ secrets.MODRINTH }}
-          curseforge-token: ${{ secrets.CURSEFORGE }}
+          # curseforge-token: ${{ secrets.CURSEFORGE }}
           changelog: |
             ${{ steps.release-setup.outputs.CHANGELOG }}
           java: |
