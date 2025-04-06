@@ -35,13 +35,16 @@ import java.util.function.Consumer;
  *
  * Basically, after 1.21.5 you need 3 things to be registered:
  * - Test Function
- * - Test Instance -> Holds TestData (eqv to the data held by @GameTest values)
- * - Test Environment -> CobbleGen use 'minecraft:default', so no need to do this
+ * - Test Instance
+ *   -> Holds Test Data (which sorta replacing @GameTest annotation's job)
+ *   -> Calls Test Function once the structure is placed
+ * - Test Environment
+ *   -> CobbleGen use 'minecraft:default', so no need to do this
  * But for whatever reason Mojang only provides a way to register Test Function, fun! :^)
  *
- * CobbleGen's 1.21.5 GameTest register flow (Fabric):
+ * CobbleGen's 1.21.5 GameTest register flow:
  * - Minecraft is being launched by the launcher
- * - new CobbleGenPreLaunch()
+ * - new CobbleGenPreLaunch() // CobbleGenMixinPlugin.onLoad()
  *   -> CobbleGenTestLoader is registered -> Gated by -Dnull2264.cobblegen.gametest=true
  * - TestFunctionLoader.runLoaders()
  *   -> ...
