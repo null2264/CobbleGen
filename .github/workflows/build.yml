@@ -288,9 +288,13 @@ jobs:
           } >> $GITHUB_OUTPUT 2> /dev/null
 
           MC_VER="${{ matrix.mc }}"
+          __TMP="${{ matrix.testVersions }}"
+          __TMP2="$(echo __TMP | jq -cr '.[-1]')"
+          [ "$(echo $__TMP | jq -cr '. | length')" -gt 1 ] && MC_VER="$MC_VER-$__TMP2"
+          LOADER="$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]')"
           VERSION_STAGE="beta"
           VERSION="${{ github.event.inputs.version }}+${{ matrix.mc }}b$GITHUB_RUN_NUMBER-$VERSION_STAGE-${{ matrix.loader }}"
-          TITLE="[$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') MC$MC_VER] $VERSION-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
+          TITLE="[$LOADER MC$MC_VER] $VERSION-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
           [ "$MC_VER" = "1.16.5" ] && TITLE="$TITLE (LITE)"
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "VERSION_STAGE=$VERSION_STAGE" >> $GITHUB_OUTPUT
