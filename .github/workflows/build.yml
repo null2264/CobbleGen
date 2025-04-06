@@ -270,7 +270,7 @@ jobs:
 
           MC_VER="${{ matrix.mc }}"
           __TMP='${{ toJson(matrix.testVersions) }}'
-          __TMP2="$(echo __TMP | jq -cr '.[-1]')"
+          __TMP2="$(echo $__TMP | jq -cr '.[-1]')"
           [ "$(echo $__TMP | jq -cr '. | length')" -gt 1 ] && MC_VER="$MC_VER-$__TMP2"
           LOADER="$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]')"
           VERSION_STAGE="beta"
