@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [v5.4.0] - 2025-04-06
+
+### Added
+- Support for MC 1.21.5
+- Add GameTest
+  - Add CI to test the mod using HeadlessMC
+
+### Other
+- Completely rework the project to use Manifold's preprocessor instead of ReplayMod's preprocessor
 
 ## [v5.3.16] - 2025-03-10
 
@@ -190,7 +198,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.3.16...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.0...main
+[v5.4.0]: https://github.com/null2264/CobbleGen/compare/v5.3.16...v5.4.0
 [v5.3.16]: https://github.com/null2264/CobbleGen/compare/v5.3.15...v5.3.16
 [v5.3.15]: https://github.com/null2264/CobbleGen/compare/v5.3.14...v5.3.15
 [v5.3.14]: https://github.com/null2264/CobbleGen/compare/v5.3.13...v5.3.14
