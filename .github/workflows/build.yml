@@ -291,7 +291,7 @@ jobs:
           files: |
             cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
 
-          github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}
+          github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}+${{ matrix.loader }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           modrinth-token: ${{ secrets.MODRINTH }}
           curseforge-token: ${{ secrets.CURSEFORGE }}
