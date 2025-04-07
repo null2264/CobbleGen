@@ -77,6 +77,14 @@ jobs:
           if-no-files-found: error
           retention-days: 3
 
+      - name: Upload jar files
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-mc${{ matrix.mc }}-${{ matrix.loader }}
+          path: cobblegen/build/libs/!(*-dev-shade|*-sources).jar
+          if-no-files-found: error
+          retention-days: 3
+
       # To reduce api request, so we don't hit rate-limit
       - name: Retrieve JSON
         if: github.event.inputs.bypass-test != 'true'
@@ -315,20 +323,24 @@ jobs:
       - name: Setup CHANGELOG parser
         uses: taiki-e/install-action@parse-changelog
 
-      - name: Merge artifacts
+      - name: Merge build artifacts
         uses: actions/upload-artifact/merge@v4
         with:
           name: build-artifacts
           pattern: build-artifacts-*
           delete-merged: true
 
+      - name: Merge jar artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: jars
+          pattern: jar-*
+          delete-merged: true
+
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: build-artifacts
-
-      - name: Unpack build artifact
-        run: tar axf build.tar.zst
+          name: jars
 
       - name: Download build artifact
         uses: actions/download-artifact@v4
