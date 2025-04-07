@@ -72,7 +72,7 @@ jobs:
       - name: Upload build folder
         uses: actions/upload-artifact@v4
         with:
-          name: mc${{ matrix.mc }}-${{ matrix.loader }}-build-artifacts
+          name: build-artifacts-mc${{ matrix.mc }}-${{ matrix.loader }}
           path: build.tar.zst
           if-no-files-found: error
           retention-days: 3
@@ -277,6 +277,8 @@ jobs:
           CHANGELOG="$(parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'Unreleased' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "")"
           [ "$CHANGELOG" = "" ] && exit 1
           
+          echo "$CHANGELOG" > ./current-changelog
+          
           {
             echo "CHANGELOG<<END_OF_FILE"
             echo "$CHANGELOG"
@@ -284,30 +286,74 @@ jobs:
             echo "END_OF_FILE"
           } >> "$GITHUB_OUTPUT" 2> /dev/null
 
+      - name: Upload build folder
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && steps.changelog.outputs.CHANGELOG != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: changelog
+          path: ./current-changelog
+          if-no-files-found: error
+          retention-days: 3
+
       - name: Release
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
         shell: bash
         run: |
-          echo "${{ steps.changelog.outputs.CHANGELOG }}"
-          ./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
+          #./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
         env:
           CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
-          #CURSEFORGE: ${{ secrets.CURSEFORGE }}
+          CURSEFORGE: ${{ secrets.CURSEFORGE }}
           MODRINTH: ${{ secrets.MODRINTH }}
 
-#  release:
-#    name: Release to GitHub
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Deploy to GitHub
-#        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && steps.changelog.outputs.CHANGELOG != ''
-#        uses: softprops/action-gh-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          tag_name: v${{github.event.inputs.version}}
-#          name: v${{github.event.inputs.version}}
-#          body: |
-#            ${{ steps.changelog.outputs.CHANGELOG }}
-#          files: |
-#            cobblegen/build/libs/!(*-dev-shade|*-sources).jar
+  release:
+    name: Release to GitHub
+    needs: [build]
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup CHANGELOG parser
+        uses: taiki-e/install-action@parse-changelog
+
+      - name: Merge artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: build-artifacts
+          pattern: build-artifacts-*
+          delete-merged: true
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+
+      - name: Unpack build artifact
+        run: tar axf build.tar.zst
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: changelog
+
+      - name: Get changelog
+        id: changelog
+        shell: bash
+        run: |
+          {
+            echo "CHANGELOG<<END_OF_FILE"
+            echo "$(cat ./current-changelog)"
+            echo ""
+            echo "END_OF_FILE"
+          } >> "$GITHUB_OUTPUT" 2> /dev/null
+
+      - name: Deploy to GitHub
+        if: steps.changelog.outputs.CHANGELOG != ''
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{github.event.inputs.version}}
+          name: v${{github.event.inputs.version}}
+          body: |
+            ${{ steps.changelog.outputs.CHANGELOG }}
+          files: |
+            cobblegen/build/libs/!(*-dev-shade|*-sources).jar
