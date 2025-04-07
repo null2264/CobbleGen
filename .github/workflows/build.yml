@@ -289,7 +289,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ steps.changelog.outputs.CHANGELOG }}"
-          #./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
+          ./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
         env:
           CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
           #CURSEFORGE: ${{ secrets.CURSEFORGE }}
