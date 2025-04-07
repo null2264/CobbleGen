@@ -270,7 +270,7 @@ subprojects {
 
 publishMods {
     val mainProject = project(":cobblegen")
-    file.set(mainProject.file("build/libs/${rootProject.properties["archives_base_name"]}-${mainProject.version}"))
+    file.set(mainProject.file("build/libs/${rootProject.properties["archives_base_name"]}-${mainProject.version}.jar"))
     val releaseVersions = mcVersions(versionRange, filters = listOf("release"))
     displayName.set(
         buildString {
