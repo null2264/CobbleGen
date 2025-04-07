@@ -301,7 +301,7 @@ publishMods {
         if (mcVersion == 12001 || isNeo)
             modLoaders.add("neoforge")
     }
-    type = when(project.properties["version_stage"]) {
+    type = when(rootProject.properties["version_stage"]) {
         "ALPHA" -> ALPHA
         "BETA" -> BETA
         else -> STABLE
@@ -311,7 +311,7 @@ publishMods {
     if (cfToken != null) {
         curseforge {
             accessToken = cfToken
-            projectId.set(project.properties["curseforge_project"] as String)
+            projectId.set(rootProject.properties["curseforge_project"] as String)
             // Because CF did it the lazy way and just group every snapshot as a single snapshot
             minecraftVersions =
                 releaseVersions
@@ -329,7 +329,7 @@ publishMods {
     if (mrToken != null) {
         modrinth {
             accessToken = mrToken
-            projectId.set(project.properties["modrinth_project"] as String)
+            projectId.set(rootProject.properties["modrinth_project"] as String)
 
             minecraftVersions = releaseVersions.map { it.toString() }
         }
