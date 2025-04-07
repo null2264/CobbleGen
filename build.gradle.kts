@@ -264,6 +264,10 @@ subprojects {
 //    }
 }
 
+//tasks.create("testMcVersions") {
+//    println(mcVersions(versionRange).map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }.distinct())
+//}
+
 publishMods {
     val mainProject = project(":cobblegen")
     file.set(mainProject.file("build/libs/${mainProject.base.archivesName}-${mainProject.version}"))
@@ -308,8 +312,12 @@ publishMods {
         curseforge {
             accessToken = cfToken
             projectId.set(project.properties["curseforge_project"] as String)
-
-            minecraftVersions = releaseVersions.map { it.toString() }
+            // Because CF did it the lazy way and just group every snapshot as a single snapshot
+            minecraftVersions =
+                releaseVersions
+                    .map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }
+                    .distinct()
+                    .map { it.toString() }
 
             embeds {
                 slug = "jankson"
