@@ -86,6 +86,10 @@ data class MojangVersionManifest(
     )
 }
 
+fun Version.toMojangString(): String =
+    "$major.$minor${if (patch > 0) ".$patch" else ""}${preRelease?.let { "-$preRelease" } ?: ""}" +
+        (buildMetadata?.let { "+$buildMetadata" } ?: "")
+
 fun mcVersions(target: VersionRange, filters: List<String> = listOf("release", "snapshot")): List<Version> {
     val client = HttpClient.newHttpClient()
     // TODO: Caching this is probably a good idea...

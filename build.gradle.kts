@@ -265,7 +265,8 @@ subprojects {
 }
 
 //tasks.create("testMcVersions") {
-//    println(mcVersions(versionRange).map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }.distinct())
+//    println(mcVersions(supportedVersionRange(11902, "fabric"))
+//        .map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }.distinct().map { it.toMojangString() })
 //}
 
 publishMods {
@@ -317,7 +318,7 @@ publishMods {
                 releaseVersions
                     .map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }
                     .distinct()
-                    .map { it.toString() }
+                    .map { it.toMojangString() }
 
             embeds {
                 slug = "jankson"
@@ -331,7 +332,8 @@ publishMods {
             accessToken = mrToken
             projectId.set(rootProject.properties["modrinth_project"] as String)
 
-            minecraftVersions = releaseVersions.map { it.toString() }
+            minecraftVersions =
+                releaseVersions.map { it.toMojangString() }
         }
     }
 }
