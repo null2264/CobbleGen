@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jar-mc${{ matrix.mc }}-${{ matrix.loader }}
-          path: cobblegen/build/libs/!(*-dev-shade|*-sources).jar
+          path: cobblegen/build/libs/*
           if-no-files-found: error
           retention-days: 3
 
@@ -308,7 +308,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
         shell: bash
         run: |
-          #./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
+          ./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
         env:
           CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
           CURSEFORGE: ${{ secrets.CURSEFORGE }}
