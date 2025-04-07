@@ -215,7 +215,7 @@ subprojects {
             } else {
                 project.file("build/resources/main/data/cobblegen/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt")
-                    .writeStructureAsSnbt(generateStructure(false))
+                    .writeStructureAsNbt(generateStructure(true))
             }
 
             project.file("build/resources/main/META-INF/mods.toml")
