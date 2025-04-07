@@ -2,6 +2,7 @@
 package io.github.null2264.cobblegen.gametest;
 
 import io.github.null2264.cobblegen.util.CGLog;
+import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.gametest.framework.TestFunctionLoader;
 import net.minecraft.resources.ResourceKey;
@@ -15,12 +16,13 @@ import java.util.function.Consumer;
 public class CobbleGenTestLoader extends TestFunctionLoader {
     private static final AtomicBoolean SHOULD_REGISTER = new AtomicBoolean(true);
     public static final boolean ENABLED = boolFromString(
-        System.getProperty("null2264.cobblegen.gametest", System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"))
+        System.getProperty(
+            "null2264.cobblegen.gametest",
+            Util.elvis(System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"), "false")
+        )
     );
 
     private static boolean boolFromString(String string) {
-        if (string == null) return false;
-
         List<String> yes = List.of("yes", "y", "true", "t", "1", "enable", "on");
         List<String> no = List.of("no", "n", "false", "f", "0", "disable", "off");
 

@@ -23,12 +23,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
-import static io.github.null2264.cobblegen.util.Util.notNullOr;
+import static io.github.null2264.cobblegen.util.Util.elvis;
 
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
@@ -76,9 +75,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
         if (config.customGen != null && config.customGen.basaltGen != null)
             basaltGen = config.customGen.basaltGen;
 
-        stoneGen.put(CGIdentifier.wildcard(), notNullOr(config.stoneGen, new ResultList()));
-        cobbleGen.put(CGIdentifier.wildcard(), notNullOr(config.cobbleGen, new ResultList()));
-        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ResultList()));
+        stoneGen.put(CGIdentifier.wildcard(), elvis(config.stoneGen, new ResultList()));
+        cobbleGen.put(CGIdentifier.wildcard(), elvis(config.cobbleGen, new ResultList()));
+        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), elvis(config.basaltGen, new ResultList()));
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {

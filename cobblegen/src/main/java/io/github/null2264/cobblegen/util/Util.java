@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.util;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
@@ -47,7 +45,7 @@ public class Util
     }
 
     @NotNull
-    public static <T> T notNullOr(@Nullable T nullable, @NotNull T notNull) {
+    public static <T> T elvis(@Nullable T nullable, @NotNull T notNull) {
         if (nullable == null)
             return notNull;
         return nullable;
