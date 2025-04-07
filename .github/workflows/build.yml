@@ -15,13 +15,19 @@ on:
         default: false
         required: false
         type: boolean
+      bypass-mod-publish:
+        description: 'Disable publishing the mods to mod hosts (Modrinth, CurseForge)'
+        default: false
+        required: false
+        type: boolean
 
 jobs:
-  generate-matrix:
-    name: Generate Matrix
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
+      changelog: ${{ steps.changelog.outputs.changelog }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -30,13 +36,33 @@ jobs:
         id: matrix
         run: echo "matrix=$(jq -cr . ./versions.json)" >> $GITHUB_OUTPUT
 
+      - name: Setup CHANGELOG parser
+        uses: taiki-e/install-action@parse-changelog
+
+      - name: Retrieve changelog
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        id: changelog
+        run: |
+          # extended SemVer (major.minor.patch.hotfix)
+          VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
+
+          CHANGELOG="$(parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'INVALID' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "")"
+          [ "$CHANGELOG" = "" ] && exit 1
+
+          {
+            echo "changelog<<END_OF_FILE"
+            echo "$CHANGELOG"
+            echo ""
+            echo "END_OF_FILE"
+          } >> $GITHUB_OUTPUT 2> /dev/null
+
   build:
     name: Build
-    needs: generate-matrix
+    needs: setup
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false  # Don't cancel if one failed
-      matrix: ${{ fromJson(needs.generate-matrix.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.setup.outputs.matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -57,9 +83,6 @@ jobs:
             17
             21
           gradle-no-cache-if: true
-
-      - name: Setup CHANGELOG parser
-        uses: taiki-e/install-action@parse-changelog
 
       - name: Build with Gradle
         run: |
@@ -274,49 +297,19 @@ jobs:
           done
           echo "</table>" >> $GITHUB_STEP_SUMMARY;
 
-      - name: Get changelog
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
-        id: changelog
-        shell: bash
-        run: |
-          # extended SemVer (major.minor.patch.hotfix)
-          VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
-          
-          CHANGELOG="$(parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'Unreleased' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "")"
-          [ "$CHANGELOG" = "" ] && exit 1
-          
-          echo "$CHANGELOG" > ./current-changelog
-          
-          {
-            echo "CHANGELOG<<END_OF_FILE"
-            echo "$CHANGELOG"
-            echo ""
-            echo "END_OF_FILE"
-          } >> "$GITHUB_OUTPUT" 2> /dev/null
-
-      - name: Upload build folder
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && steps.changelog.outputs.CHANGELOG != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: changelog
-          path: ./current-changelog
-          overwrite: true
-          if-no-files-found: error
-          retention-days: 3
-
       - name: Release
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && github.event.inputs.bypass-mod-publish != 'true'
         shell: bash
         run: |
           ./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
         env:
-          CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
+          CHANGELOG: ${{ needs.setup.outputs.changelog }}
           CURSEFORGE: ${{ secrets.CURSEFORGE }}
           MODRINTH: ${{ secrets.MODRINTH }}
 
   release:
     name: Release to GitHub
-    needs: [build]
+    needs: [setup, build]
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
     runs-on: ubuntu-latest
     steps:
@@ -342,24 +335,8 @@ jobs:
         with:
           name: jars
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: changelog
-
-      - name: Get changelog
-        id: changelog
-        shell: bash
-        run: |
-          {
-            echo "CHANGELOG<<END_OF_FILE"
-            echo "$(cat ./current-changelog)"
-            echo ""
-            echo "END_OF_FILE"
-          } >> "$GITHUB_OUTPUT" 2> /dev/null
-
       - name: Deploy to GitHub
-        if: steps.changelog.outputs.CHANGELOG != ''
+        if: needs.setup.outputs.changelog != ''
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -367,6 +344,6 @@ jobs:
           tag_name: v${{github.event.inputs.version}}
           name: v${{github.event.inputs.version}}
           body: |
-            ${{ steps.changelog.outputs.CHANGELOG }}
+            ${{ needs.setup.outputs.changelog }}
           files: |
-            cobblegen/build/libs/!(*-dev-shade|*-sources).jar
+            ./!(*-dev-shade|*-sources).jar
