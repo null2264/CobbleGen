@@ -58,6 +58,9 @@ jobs:
             21
           gradle-no-cache-if: true
 
+      - name: Setup CHANGELOG parser
+        uses: taiki-e/install-action@parse-changelog
+
       - name: Build with Gradle
         run: |
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
@@ -270,15 +273,19 @@ jobs:
         run: |
           # extended SemVer (major.minor.patch.hotfix)
           VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
+          
+          CHANGELOG="$(parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'Unreleased' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "")"
+          [ "$CHANGELOG" = "" ] && exit 1
+          
           {
             echo "CHANGELOG<<END_OF_FILE"
-            parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'Unreleased' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo ""
+            echo "$CHANGELOG"
             echo ""
             echo "END_OF_FILE"
           } >> "$GITHUB_OUTPUT" 2> /dev/null
 
       - name: Release
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && steps.changelog.outputs.CHANGELOG != ''
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
         shell: bash
         run: |
           echo "${{ steps.changelog.outputs.CHANGELOG }}"
