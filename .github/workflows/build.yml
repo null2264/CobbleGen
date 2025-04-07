@@ -10,6 +10,11 @@ on:
         description: 'Version (without "v" prefix)'
         required: true
         type: string
+      bypass-test:
+        description: 'Disable test'
+        default: false
+        required: false
+        type: boolean
 
 jobs:
   generate-matrix:
@@ -71,12 +76,14 @@ jobs:
 
       # To reduce api request, so we don't hit rate-limit
       - name: Retrieve JSON
+        if: github.event.inputs.bypass-test != 'false'
         run: |
           curl -Ls -o "headlessmc.json" "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.5.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
           curl -Ls -o "mc-runtime-test.json" "https://api.github.com/repos/null2264/mc-runtime-test/releases/tags/3.1.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
 
-      - id: setup-headlessmc
-        name: Setup HeadlessMC
+      - name: Setup HeadlessMC
+        if: github.event.inputs.bypass-test != 'false'
+        id: setup-headlessmc
         run: |
           mkdir -p HeadlessMC run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods run/test-${{ matrix.mc }}-${{ matrix.loader }}/config
 
@@ -150,6 +157,7 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
 
       - name: Tests with HeadlessMC
+        if: github.event.inputs.bypass-test != 'false'
         env:
           ENABLE_NULL2264_COBBLEGEN_GAMETEST: true
         run: |
@@ -255,47 +263,44 @@ jobs:
           done
           echo "</table>" >> $GITHUB_STEP_SUMMARY;
 
-      - name: Setup release
-        id: release-setup
+      - name: Get changelog
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        id: changelog
+        shell: bash
         run: |
           # extended SemVer (major.minor.patch.hotfix)
           VERSION_FORMAT='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))?(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$|^Unreleased$'
-          CHANGELOG="$(parse-changelog CHANGELOG.md ${{ github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog")"
-          cat <<EOF >> $GITHUB_OUTPUT
-          CHANGELOG<<END_OF_FILE
-          $CHANGELOG
-          END_OF_FILE
-          EOF
-
-          MC_VER="${{ matrix.mc }}"
-          __TMP='${{ toJson(matrix.testVersions) }}'
-          __TMP2="$(echo $__TMP | jq -cr '.[-1]')"
-          [ "$(echo $__TMP | jq -cr '. | length')" -gt 1 ] && MC_VER="$MC_VER-$__TMP2"
-          LOADER="$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]')"
-          VERSION_STAGE="beta"
-          VERSION="${{ github.event.inputs.version }}+${{ matrix.mc }}b$GITHUB_RUN_NUMBER-$VERSION_STAGE-${{ matrix.loader }}"
-          TITLE="[$LOADER MC$MC_VER] ${{ github.event.inputs.version }}-$(echo "$VERSION_STAGE" | tr '[:lower:]' '[:upper:]')"
-          [ "$MC_VER" = "1.16.5" ] && TITLE="$TITLE (LITE)"
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "VERSION_STAGE=$VERSION_STAGE" >> $GITHUB_OUTPUT
-          echo "TITLE=$TITLE" >> $GITHUB_OUTPUT
+          {
+            echo "CHANGELOG<<END_OF_FILE"
+            parse-changelog CHANGELOG.md ${{ github.event.inputs.version == '' && 'Unreleased' || github.event.inputs.version }} --version-format $VERSION_FORMAT || parse-changelog CHANGELOG.md Unreleased --version-format $VERSION_FORMAT || echo ""
+            echo ""
+            echo "END_OF_FILE"
+          } >> "$GITHUB_OUTPUT" 2> /dev/null
 
       - name: Release
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
-        uses: Kira-NT/mc-publish@v3.3
-        with:
-          name: ${{ steps.release-setup.outputs.TITLE }}
-          version: ${{ steps.release-setup.outputs.VERSION }}
-          version-type: ${{ steps.release-setup.outputs.VERSION_STAGE }}
-          game-version-filter: releases | min-major | min-minor
-          files: cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar
-          # github-tag: ${{ github.event.inputs.version }}+${{ matrix.mc }}+${{ matrix.loader }}
-          # github-token: ${{ secrets.GITHUB_TOKEN }}
-          modrinth-token: ${{ secrets.MODRINTH }}
-          # curseforge-token: ${{ secrets.CURSEFORGE }}
-          changelog: |
-            ${{ steps.release-setup.outputs.CHANGELOG }}
-          java: |
-            ${{ matrix.java }}
-          retry-attempts: 5  # lucky number... 5
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && steps.changelog.outputs.CHANGELOG != ''
+        shell: bash
+        run: |
+          echo "${{ steps.changelog.outputs.CHANGELOG }}"
+          #./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
+        env:
+          CHANGELOG: ${{ steps.changelog.outputs.CHANGELOG }}
+          #CURSEFORGE: ${{ secrets.CURSEFORGE }}
+          MODRINTH: ${{ secrets.MODRINTH }}
+
+#  release:
+#    name: Release to GitHub
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Deploy to GitHub
+#        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && steps.changelog.outputs.CHANGELOG != ''
+#        uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag_name: v${{github.event.inputs.version}}
+#          name: v${{github.event.inputs.version}}
+#          body: |
+#            ${{ steps.changelog.outputs.CHANGELOG }}
+#          files: |
+#            cobblegen/build/libs/!(*-dev-shade|*-sources).jar

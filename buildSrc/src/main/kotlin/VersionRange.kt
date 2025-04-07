@@ -1,10 +1,16 @@
 import io.github.z4kn4fein.semver.Version
 import io.github.z4kn4fein.semver.constraints.toConstraint
 import io.github.z4kn4fein.semver.toVersion
+import io.github.z4kn4fein.semver.toVersionOrNull
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import kotlin.reflect.typeOf
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * @param upper No longer supported version
@@ -16,6 +22,9 @@ data class VersionRange(
     val inclusiveFrom: Boolean = false,
     val inclusiveTo: Boolean = true,
 ) {
+    val fromSanitized: String? get() = from?.replace(".x", ".9999", true)
+    val toSanitized: String? get() = to?.replace(".x", ".9999", true)
+
     fun mavenStyle(): String {
         require(from != null || to != null) { "'from' and 'to' can't be all null" }
 
@@ -23,9 +32,9 @@ data class VersionRange(
 
         return buildString {
             append(if (inclusiveFrom) "[" else ")")
-            if (from != null) append(from.replace(".x", ".9999", true))
+            if (from != null) append(fromSanitized)
             append(",")
-            if (to != null) append(to.replace(".x", ".9999", true))
+            if (to != null) append(toSanitized)
             append(if (inclusiveTo) "]" else ")")
         }
     }
@@ -38,12 +47,12 @@ data class VersionRange(
         return buildString {
             if (from != null) {
                 append(if (inclusiveFrom) ">=" else ">")
-                append(from.replace(".x", ".9999", true))
+                append(fromSanitized)
             }
             if (to != null) {
                 append(" ")
                 append(if (inclusiveTo) "<=" else "<")
-                append(to.replace(".x", ".9999", true))
+                append(toSanitized)
             }
         }
     }
@@ -66,11 +75,30 @@ fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
     }
 }
 
-fun mcVersions() {
+@Serializable
+data class MojangVersionManifest(
+    val versions: List<MinecraftVersion>,
+) {
+    @Serializable
+    data class MinecraftVersion(
+        val id: String,
+        val type: String,
+    )
+}
+
+fun mcVersions(target: VersionRange, filters: List<String> = listOf("release", "snapshot")): List<Version> {
     val client = HttpClient.newHttpClient()
+    // TODO: Caching this is probably a good idea...
     val response = client.send(
         HttpRequest.newBuilder().GET().uri(URI("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")).build(),
         HttpResponse.BodyHandlers.ofString(),
     )
-    println(response.body())
+    val data = lenientJson.decodeFromString<MojangVersionManifest>(response.body())
+    return data.versions.mapNotNull map@{
+        if (it.type !in filters) return@map null
+        val version = it.id.toVersionOrNull(false) ?: return@map null
+        if (!target.semverStyle().toConstraint().isSatisfiedBy(version)) return@map null
+
+        return@map version
+    }
 }

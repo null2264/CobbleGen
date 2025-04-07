@@ -9,9 +9,10 @@ import kotlinx.serialization.json.JsonPrimitive
 fun File.processModsToml(
     mcVersion: Int,
     /**
-     * 0 -> Not Forge
-     * 1 -> (Lex)Forge
-     * 2 -> NeoForge
+     * Possible values:
+     * - 0 -> Not Forge
+     * - 1 -> (Lex)Forge
+     * - 2 -> NeoForge
      */
     forge: Int,
 ) {
@@ -24,16 +25,6 @@ fun File.processModsToml(
         }
     }
     writeText(modsTomlContent)
-}
-
-val prettyJson = Json { prettyPrint = true }
-@OptIn(ExperimentalSerializationApi::class)
-val lenientJson = Json {
-    allowComments = true
-    allowTrailingComma = true
-}
-fun MutableList<JsonElement>.addJson(value: String) {
-    add(JsonPrimitive(value))
 }
 
 fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {

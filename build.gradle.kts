@@ -5,6 +5,7 @@ plugins {
     id("java")
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
+    id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
 
 val loaderName = project.properties["loom.platform"] as? String ?: ""
@@ -17,6 +18,7 @@ val (major, minor, patch) = mcVersionStr
     .toMutableList()
     .apply { if (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
+val versionRange = supportedVersionRange(mcVersion, loaderName)
 
 fun setupPreprocessor() {
     val buildProps = buildString {
@@ -178,7 +180,6 @@ subprojects {
         if (!isModModule) return@getting
 
         val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
-        val versionRange = supportedVersionRange(mcVersion, loaderName)
         val metadataMCVersion = if (isForge) versionRange.mavenStyle() else versionRange.semverStyle()
         val properties = mapOf(
             "version" to metadataVersion,
@@ -263,6 +264,66 @@ subprojects {
 //    }
 }
 
-tasks.create("mcVersionRange") {
-    mcVersions()
+publishMods {
+    val mainProject = project(":cobblegen")
+    file.set(mainProject.file("build/libs/${mainProject.base.archivesName}-${mainProject.version}"))
+    val releaseVersions = mcVersions(versionRange, filters = listOf("release"))
+    displayName.set(
+        buildString {
+            append("[")
+            if (isFabric) {
+                append("FABRIC")
+            } else {
+                if (isNeo) append("NEOFORGE") else append("FORGE")
+            }
+            append(" MC")
+            append(releaseVersions[0])
+            if (releaseVersions.size > 1) append("+")
+            append("]")
+            append(rootProject.properties["mod_version"])
+            append("-")
+            append(rootProject.properties["version_stage"])
+            if (mcVersion <= 11605) append(" (LITE)")
+        }
+    )
+    changelog.set(System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog")
+    version.set(mainProject.version.toString())
+    if (isFabric) {
+        modLoaders.add("fabric")
+        modLoaders.add("quilt")
+    } else {
+        if (mcVersion <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
+            modLoaders.add("forge")
+        if (mcVersion == 12001 || isNeo)
+            modLoaders.add("neoforge")
+    }
+    type = when(project.properties["version_stage"]) {
+        "ALPHA" -> ALPHA
+        "BETA" -> BETA
+        else -> STABLE
+    }
+
+    val cfToken = System.getenv("CURSEFORGE")
+    if (cfToken != null) {
+        curseforge {
+            accessToken = cfToken
+            projectId.set(project.properties["curseforge_project"] as String)
+
+            minecraftVersions = releaseVersions.map { it.toString() }
+
+            embeds {
+                slug = "jankson"
+            }
+        }
+    }
+
+    val mrToken = System.getenv("MODRINTH")
+    if (mrToken != null) {
+        modrinth {
+            accessToken = mrToken
+            projectId.set(project.properties["modrinth_project"] as String)
+
+            minecraftVersions = releaseVersions.map { it.toString() }
+        }
+    }
 }
