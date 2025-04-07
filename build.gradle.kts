@@ -1,39 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.builtins.ByteArraySerializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import net.benwoodworth.knbt.Nbt
-import net.benwoodworth.knbt.NbtCompound
-import net.benwoodworth.knbt.NbtCompression
-import net.benwoodworth.knbt.NbtInt
-import net.benwoodworth.knbt.NbtString
-import net.benwoodworth.knbt.NbtTag
-import net.benwoodworth.knbt.NbtVariant
-import net.benwoodworth.knbt.StringifiedNbt
-import net.benwoodworth.knbt.add
-import net.benwoodworth.knbt.addNbtCompound
-import net.benwoodworth.knbt.buildNbtCompound
-import net.benwoodworth.knbt.encodeToStream
-import net.benwoodworth.knbt.put
-import net.benwoodworth.knbt.putNbtCompound
-import net.benwoodworth.knbt.putNbtList
 import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
     id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
-}
-
-buildscript {
-    dependencies {
-        classpath("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
-        classpath("net.benwoodworth.knbt:knbt:0.11.8")
-    }
 }
 
 val loaderName = project.properties["loom.platform"] as? String ?: ""
@@ -234,150 +205,24 @@ subprojects {
         }
 
         doLast {
-            val nbt = Nbt {
-                variant = NbtVariant.Java
-                compression = NbtCompression.Gzip
-            }
-            val snbt = StringifiedNbt {}
-            val data = { binaryForm: Boolean ->
-                buildNbtCompound {
-                    put("DataVersion", 2730)
-                    putNbtList<NbtInt>("size") {
-                        add(8)
-                        add(8)
-                        add(8)
-                    }
-                    putNbtList("data") {
-                        for (i in 0..7) {
-                            for (j in 0..7) {
-                                for (k in 0..7) {
-                                    addNbtCompound {
-                                        putNbtList("pos") {
-                                            add(i)
-                                            add(j)
-                                            add(k)
-                                        }
-                                        if (!binaryForm)
-                                            put("state", "minecraft:air")
-                                        else
-                                            put("state", 0)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    putNbtList<NbtString>("entities") {}
-                    if (!binaryForm)
-                        putNbtList("palette") {
-                            add("minecraft:air")
-                        }
-                    else
-                        putNbtList("palette") {
-                            addNbtCompound {
-                                put("Name", "minecraft:air")
-                            }
-                        }
-                }
-            }
             // For some reason Mojang rename the structure directory on MC 1.21 to singular form
             val structureDirName = if (mcVersion >= 12100) "structure" else "structures"
             if (isFabric || mcVersion >= 12105) {
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt").writeText(
-                    snbt.encodeToString(NbtCompound.serializer(), data(false))
-                )
+                project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt")
+                    .writeStructureAsSnbt(generateStructure(false))
             } else {
                 project.file("build/resources/main/data/cobblegen/${structureDirName}/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt").outputStream().use { output ->
-                    nbt.encodeToStream(buildNbtCompound { put("", data(true)) }, output)
-                }
+                project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt")
+                    .writeStructureAsSnbt(generateStructure(false))
             }
 
-            val modsTomlFile = project.file("build/resources/main/META-INF/mods.toml")
-            val modsTomlContent = modsTomlFile.readText(Charsets.UTF_8).let {
-                when {
-                    mcVersion == 12001 -> it.replace("#==", "")
-                    isNeo -> it.replace("#<<", "")
-                    isForge -> it.replace("#>>", "")
-                    else -> it
-                }
-            }
-            modsTomlFile.writeText(modsTomlContent)
+            project.file("build/resources/main/META-INF/mods.toml")
+                .processModsToml(mcVersion, if (!isForge) 0 else (if (isNeo) 2 else 1))
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
-            val prettyJson = Json { prettyPrint = true }
-            @OptIn(ExperimentalSerializationApi::class)
-            val lenientJson = Json {
-                allowComments = true
-                allowTrailingComma = true
-            }
-            fun MutableList<JsonElement>.addJson(value: String) {
-                add(JsonPrimitive(value))
-            }
-
-            val mixinsFile = project.file("build/resources/main/cobblegen.mixins.json")
-            val both = buildList {
-                if (mcVersion >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
-                addJson("CommandsMixin")
-                addJson("MinecraftServerMixin")
-                if (mcVersion > 11605) {
-                    addJson("create.CreateFluidReactionsMixin")
-                    addJson("create.CreateFluidReactionsMixinPatchE")
-                    if (isFabric) addJson("create.CreateFluidReactionsMixinPatchF")
-                }
-                addJson("fluid.FluidEventMixin")
-                addJson("fluid.LavaEventMixin")
-                if (mcVersion >= 12105) {
-                    addJson("gametest.RegistryDataLoaderMixin\$GameTest")
-                    addJson("gametest.StructureTemplateManagerMixin\$GameTest")
-                }
-            }
-            val client = buildList {
-                if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
-                addJson("network.ClientCommonPacketListenerMixin")
-                addJson("network.ConnectionMixin")
-            }
-            val server = buildList {
-                addJson("network.PlayerManagerMixin")
-                if (mcVersion < 12002) addJson("network.ServerboundCustomPayloadPacketAccessor")
-                else addJson("network.ServerConfigurationPacketListenerMixin")
-                if (mcVersion < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
-                addJson("network.ServerCommonPacketListenerMixin")
-            }
-            val mixinsJson = JsonObject(
-                lenientJson.decodeFromString<JsonObject>(mixinsFile.readText(Charsets.UTF_8)).toMutableMap().apply {
-                    set("compatibilityLevel", JsonPrimitive(if (mcVersion <= 11605) "JAVA_8" else "JAVA_17"))
-                    set("mixins", JsonArray(both))
-                    set("client", JsonArray(client))
-                    set("server", JsonArray(server))
-                }
-            )
-            mixinsFile.writeText(prettyJson.encodeToString(JsonObject.serializer(), mixinsJson))
-
-            if (!isFabric) return@doLast
-
-            val fabricMetadataFile = project.file("build/resources/main/fabric.mod.json")
-            val fabricMetadataJson = JsonObject(
-                lenientJson.decodeFromString<JsonObject>(fabricMetadataFile.readText(Charsets.UTF_8)).toMutableMap().apply {
-                    (get("entrypoints") as? JsonObject)?.toMutableMap()?.apply {
-                        if (mcVersion > 11605) {
-                            set("jei_mod_plugin", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"))))
-                            set("rei_client", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"))))
-                            set("emi", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"))))
-                        }
-                        set(
-                            "cobblegen_plugin",
-                            JsonArray(buildList {
-                                addJson("io.github.null2264.cobblegen.integration.BuiltInPlugin")
-                                if (mcVersion > 11605) addJson("io.github.null2264.cobblegen.integration.CreatePlugin")
-                            }),
-                        )
-                    }?.let {
-                        set("entrypoints", JsonObject(it))
-                    }
-                }
-            )
-            fabricMetadataFile.writeText(prettyJson.encodeToString(JsonObject.serializer(), fabricMetadataJson))
+            project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion, isFabric)
+            if (isFabric) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
         }
     }
 
@@ -416,4 +261,8 @@ subprojects {
 //            rename("...", "...")
 //        }
 //    }
+}
+
+tasks.create("mcVersionRange") {
+    mcVersions()
 }

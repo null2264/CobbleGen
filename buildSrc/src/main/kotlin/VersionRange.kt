@@ -1,44 +1,58 @@
+import io.github.z4kn4fein.semver.Version
+import io.github.z4kn4fein.semver.constraints.toConstraint
+import io.github.z4kn4fein.semver.toVersion
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
+
 /**
  * @param upper No longer supported version
  * @param lower Last supported version
  */
 data class VersionRange(
-    private val upper: String?,
-    private val lower: String?,
+    val from: String?,
+    val to: String?,
+    val inclusiveFrom: Boolean = false,
+    val inclusiveTo: Boolean = true,
 ) {
     fun mavenStyle(): String {
-        require(upper != null || lower != null) { "Upper and lower can't all be null" }
+        require(from != null || to != null) { "'from' and 'to' can't be all null" }
+
+        if (from != null && to != null && from == to) return "[${from}]"
 
         return buildString {
-            append("(")
-            if (upper != null) append(upper.replace(".x", ".9999", true))
+            append(if (inclusiveFrom) "[" else ")")
+            if (from != null) append(from.replace(".x", ".9999", true))
             append(",")
-            if (lower != null) append(lower.replace(".x", ".9999", true))
-            append("]")
+            if (to != null) append(to.replace(".x", ".9999", true))
+            append(if (inclusiveTo) "]" else ")")
         }
     }
 
     fun semverStyle(): String {
-        require(upper != null || lower != null) { "Upper and lower can't all be null" }
+        require(from != null || to != null) { "'from' and 'to' can't be all null" }
+
+        if (from != null && to != null && from == to) return from
 
         return buildString {
-            if (upper != null) {
-                append(">")
-                append(upper.replace(".x", ".9999", true))
+            if (from != null) {
+                append(if (inclusiveFrom) ">=" else ">")
+                append(from.replace(".x", ".9999", true))
             }
-            if (lower != null) {
-                append(" <=")
-                append(lower.replace(".x", ".9999", true))
+            if (to != null) {
+                append(" ")
+                append(if (inclusiveTo) "<=" else "<")
+                append(to.replace(".x", ".9999", true))
             }
         }
     }
 }
 
-// FIXME: Exact version for 1.16.5 and 1.18.2
 fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
     return when (mcVersion) {
-        11605 -> VersionRange("1.16.4", "1.16.5")
-        11802 -> VersionRange("1.18.1", "1.18.2")
+        11605 -> VersionRange("1.16.5", "1.16.5")
+        11802 -> VersionRange("1.18.2", "1.18.2")
         in 11900..11902 -> VersionRange("1.18.x", "1.19.2")
         in 11903..11904 -> VersionRange("1.19.2", "1.19.4")
         in 12000..12001 -> VersionRange("1.19.x", "1.20.1")
@@ -50,4 +64,13 @@ fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
         12105 -> VersionRange("1.21.4", null)  // 1.21.5 or newer
         else -> VersionRange(null, null)
     }
+}
+
+fun mcVersions() {
+    val client = HttpClient.newHttpClient()
+    val response = client.send(
+        HttpRequest.newBuilder().GET().uri(URI("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json")).build(),
+        HttpResponse.BodyHandlers.ofString(),
+    )
+    println(response.body())
 }
