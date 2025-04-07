@@ -285,6 +285,7 @@ publishMods {
             append(releaseVersions[0])
             if (releaseVersions.size > 1) append("+")
             append("]")
+            append(" v")
             append(rootProject.properties["mod_version"])
             append("-")
             append(rootProject.properties["version_stage"])
