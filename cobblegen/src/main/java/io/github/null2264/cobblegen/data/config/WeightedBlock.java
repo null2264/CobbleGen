@@ -38,6 +38,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     public List<String> biomes;
     @Nullable
     public List<String> excludedBiomes;
+    @Nullable
+    public String modifier;
 
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);

@@ -40,11 +40,11 @@ public class CobbleGen
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     private static final File metaConfigFile = new File(configPath + File.separator + MOD_ID + "-meta.json5");
     @ApiStatus.Internal
-    public static ConfigMetaData META_CONFIG = loadConfig(false, metaConfigFile, null, new ConfigMetaData(), ConfigMetaData.class);
+    public static ConfigMetaData META_CONFIG = loadConfig("metadata", false, metaConfigFile, null, new ConfigMetaData(), ConfigMetaData.class);
 
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
-        loadConfig(false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
+        loadConfig("generator", false, configFile, null, ConfigData.defaultConfig(), ConfigData.class);
         #if FORGE && MC>=11801 && MC<12105
         // I was gonna do RegisterGameTestsEvent like a normal person, but there's a check that I need to bypass otherwise Forge won't register my test
         net.minecraft.gametest.framework.GameTestRegistry.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class);
@@ -62,7 +62,7 @@ public class CobbleGen
                 LiteralArgumentBuilder.<CommandSourceStack>literal("cobblegen")
                         .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").requires(arg -> arg.hasPermission(OP_LEVEL_GAMEMASTERS)).executes(c -> {
                             CGLog.info("Reloading meta config...");
-                            META_CONFIG = loadConfig(true, metaConfigFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
+                            META_CONFIG = loadConfig("metadata", true, metaConfigFile, META_CONFIG, new ConfigMetaData(), ConfigMetaData.class);
                             c.getSource().sendSuccess(
                                 #if MC>=12001
                                 () ->

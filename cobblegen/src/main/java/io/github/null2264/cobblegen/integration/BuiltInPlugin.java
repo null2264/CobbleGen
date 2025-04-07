@@ -61,7 +61,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Override
     public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
-        if (config == null || isReload) config = loadConfig(isReload, configFile, config, ConfigData.defaultConfig(), ConfigData.class);
+        if (config == null || isReload) config = loadConfig("generator", isReload, configFile, config, ConfigData.defaultConfig(), ConfigData.class);
         if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();

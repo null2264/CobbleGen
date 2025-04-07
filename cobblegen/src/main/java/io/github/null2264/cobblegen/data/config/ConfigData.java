@@ -6,6 +6,7 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +17,7 @@ public class ConfigData implements Config, JanksonSerializable
 {
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
     @NotNull
-    public String formatVersion = "1.0";
+    public String formatVersion = "1.1";
 
     @Nullable
     @Comment(value = "Default Generators\n" +
@@ -32,7 +33,8 @@ public class ConfigData implements Config, JanksonSerializable
                      "    \"mod_id:dimension_id\"\n" +
                      "  ],\n" +
                      "  \"minY\": 0,\n" +
-                     "  \"maxY\": 69\n" +
+                     "  \"maxY\": 69,\n" +
+                     "  \"modifier\": 69\n" +
                      "}")
     public ResultList cobbleGen;
 
@@ -143,15 +145,28 @@ public class ConfigData implements Config, JanksonSerializable
         ConfigData config = new ConfigData();
         JsonElement formatVersion = json.get("formatVersion");
         config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
-        /* TODO
-        if (config.formatVersion.equals("1.0")) {
-            // TODO: Migrate to 2.0
-        }
-         */
         config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
         config.basaltGen = ResultList.fromJson(json.get("basaltGen"));
-        config.customGen = CustomGen.fromJson(json.getObject("customGen"));
+        CustomGen customGen = CustomGen.fromJson(json.getObject("customGen"));
+        if (config.formatVersion.equals("1.0") && customGen != null) {
+            // TODO
+            Util.optional(customGen.cobbleGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
+                if (config.cobbleGen != null) {
+                    config.cobbleGen.addAll(value.stream().peek(result -> result.modifier = modifier.toString()).toList());
+                }
+            }));
+            Util.optional(customGen.stoneGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
+                if (config.stoneGen != null) {
+                    config.stoneGen.addAll(value.stream().peek(result -> result.modifier = modifier.toString()).toList());
+                }
+            }));
+            Util.optional(customGen.basaltGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
+                if (config.basaltGen != null) {
+                    config.basaltGen.addAll(value.stream().peek(result -> result.modifier = modifier.toString()).toList());
+                }
+            }));
+        }
         config.advanced = FluidInteractionMap.fromJson(json.getObject("advanced"));
         return config;
     }

@@ -16,14 +16,21 @@ import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigHelper {
     @ApiStatus.Internal
-    public static <T extends Config> T loadConfig(boolean reload, File configFile, T workingConfig, T defaultConfig, Class<T> clazz) {
+    public static <T extends Config> T loadConfig(
+        String name,
+        boolean reload,
+        File configFile,
+        T workingConfig,
+        T defaultConfig,
+        Class<T> clazz
+    ) {
         String string = reload ? "reload" : "load";
         try {
-            CGLog.info("Trying to " + string + " config file...");
+            CGLog.info(() -> "Trying to " + string + " '" + name + "' config file...");
             JsonObject json = JANKSON.load(configFile);
             return JANKSON.fromJson(json, clazz);
         } catch (Exception e) {
-            CGLog.error("There was an error while " + string + "ing the config file!\n" + e);
+            CGLog.error("There was an error while " + string + "ing '" + name + "' config file!\n" + e);
 
             if (reload && workingConfig != null) {
                 CGLog.warn("Falling back to previously working config...");

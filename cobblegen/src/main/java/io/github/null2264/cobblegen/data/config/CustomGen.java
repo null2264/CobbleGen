@@ -38,7 +38,7 @@ public class CustomGen implements JanksonSerializable
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
+        if (cobbleGen != null) json.put("cobbleGen", JANKSON.toJson(cobbleGen));
         if (stoneGen != null) json.put("stoneGen", JANKSON.toJson(stoneGen));
         if (basaltGen != null) json.put("basaltGen", JANKSON.toJson(basaltGen));
         return json;
