@@ -23,4 +23,11 @@ public class CollectionCompat {
     public static <T> List<T> streamToList(Stream<T> stream) {
         return (List<T>) Collections.unmodifiableList(new ArrayList<>(Arrays.asList(stream.toArray())));
     }
+
+    public static <T> List<T> mergeList(List<T> list, List<T> list2) {
+        List<T> rt = new ArrayList<>();
+        rt.addAll(list);
+        rt.addAll(list2);
+        return rt;
+    }
 }

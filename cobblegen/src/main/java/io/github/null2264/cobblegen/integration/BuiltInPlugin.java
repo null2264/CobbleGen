@@ -23,11 +23,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.elvis;
+import static io.github.null2264.cobblegen.util.Util.optional;
 
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
@@ -66,18 +68,22 @@ public class BuiltInPlugin implements CobbleGenPlugin
         AtomicInteger count = new AtomicInteger();
 
         GeneratorMap stoneGen = new GeneratorMap();
-        if (config.customGen != null && config.customGen.stoneGen != null)
-            stoneGen = config.customGen.stoneGen;
         GeneratorMap cobbleGen = new GeneratorMap();
-        if (config.customGen != null && config.customGen.cobbleGen != null)
-            cobbleGen = config.customGen.cobbleGen;
         GeneratorMap basaltGen = new GeneratorMap();
-        if (config.customGen != null && config.customGen.basaltGen != null)
-            basaltGen = config.customGen.basaltGen;
 
-        stoneGen.put(CGIdentifier.wildcard(), elvis(config.stoneGen, new ResultList()));
-        cobbleGen.put(CGIdentifier.wildcard(), elvis(config.cobbleGen, new ResultList()));
-        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), elvis(config.basaltGen, new ResultList()));
+        elvis(config.stoneGen, new ResultList())
+            .forEach(result ->
+                stoneGen.put(CGIdentifier.of(result.getModifier()), elvis(config.stoneGen, new ResultList()))
+            );
+        elvis(config.cobbleGen, new ResultList())
+            .forEach(result ->
+                cobbleGen.put(CGIdentifier.of(result.getModifier()), elvis(config.cobbleGen, new ResultList()))
+            );
+        elvis(config.basaltGen, new ResultList())
+            .forEach(result ->
+                // FIXME: Default modifier should be CGIdentifier.fromBlock(Blocks.SOUL_SOIL)
+                basaltGen.put(CGIdentifier.of(result.getModifier()), elvis(config.basaltGen, new ResultList()))
+            );
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {

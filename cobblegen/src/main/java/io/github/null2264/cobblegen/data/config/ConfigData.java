@@ -72,57 +72,28 @@ public class ConfigData implements Config, JanksonSerializable
 
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
-        config.cobbleGen = ResultList.of(new WeightedBlock(
-                "minecraft:cobblestone",
-                100.0,
-                null,
-                null,
-                null,
-                0,
-                null,
-                null,
-                null
-        ), new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null, null, null));
-        config.stoneGen = ResultList.of(new WeightedBlock("minecraft:stone", 100.0));
-        config.basaltGen = ResultList.of(new WeightedBlock("minecraft:basalt", 100.0));
-        config.customGen = new CustomGen(
-                // Cobble Gen
-                GeneratorMap.of(
-                        Pair.of(
-                                CGIdentifier.of("minecraft:bedrock"),
-                                ResultList.of(
-                                        new WeightedBlock("minecraft:emerald_ore", 2.0),
-                                        new WeightedBlock("minecraft:diamond_ore", 5.0),
-                                        new WeightedBlock("minecraft:lapis_ore", 8.0),
-                                        new WeightedBlock("minecraft:gold_ore", 10.0),
-                                        new WeightedBlock("minecraft:iron_ore", 15.0),
-                                        new WeightedBlock("minecraft:coal_ore", 20.0),
-                                        new WeightedBlock("minecraft:cobblestone", 80.0)
-                                )
-                        )
-                ),
-                // Stone Gen
-                GeneratorMap.of(
-                        Pair.of(
-                                CGIdentifier.of("minecraft:bedrock"),
-                                ResultList.of(
-                                        new WeightedBlock("minecraft:stone", 40.0),
-                                        new WeightedBlock("minecraft:diorite", 20.0),
-                                        new WeightedBlock("minecraft:andesite", 20.0),
-                                        new WeightedBlock("minecraft:granite", 20.0)
-                                )
-                        )
-                ),
-                // Basalt Gen
-                GeneratorMap.of(
-                        Pair.of(
-                                CGIdentifier.of("minecraft:bedrock"),
-                                ResultList.of(
-                                        new WeightedBlock("minecraft:end_stone", 100.0, listOf("minecraft:the_end")),
-                                        new WeightedBlock("minecraft:blackstone", 100.0, null, listOf("minecraft:overworld"))
-                                )
-                        )
-                )
+        config.cobbleGen = ResultList.of(
+            new WeightedBlock("minecraft:cobblestone", 100.0, null, null, null, 0, null, null, null),
+            new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null, null, null),
+            new WeightedBlock("minecraft:emerald_ore", 2.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:diamond_ore", 5.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:lapis_ore", 8.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:gold_ore", 10.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:iron_ore", 15.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:coal_ore", 20.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:cobblestone", 80.0).setModifier("minecraft:bedrock")
+        );
+        config.stoneGen = ResultList.of(
+            new WeightedBlock("minecraft:stone", 100.0),
+            new WeightedBlock("minecraft:stone", 40.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:diorite", 20.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:andesite", 20.0).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:granite", 20.0).setModifier("minecraft:bedrock")
+        );
+        config.basaltGen = ResultList.of(
+            new WeightedBlock("minecraft:basalt", 100.0),
+            new WeightedBlock("minecraft:end_stone", 100.0, listOf("minecraft:the_end")).setModifier("minecraft:bedrock"),
+            new WeightedBlock("minecraft:blackstone", 100.0, null, listOf("minecraft:overworld")).setModifier("minecraft:bedrock")
         );
         return config;
     }
@@ -135,7 +106,6 @@ public class ConfigData implements Config, JanksonSerializable
         if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
         if (stoneGen != null) json.put("stoneGen", stoneGen.toJson());
         if (basaltGen != null) json.put("basaltGen", basaltGen.toJson());
-        if (customGen != null) json.put("customGen", customGen.toJson());
         if (advanced != null) json.put("advanced", advanced.toJson());
         return json;
     }
@@ -153,17 +123,17 @@ public class ConfigData implements Config, JanksonSerializable
             // TODO
             Util.optional(customGen.cobbleGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
                 if (config.cobbleGen != null) {
-                    config.cobbleGen.addAll(value.stream().peek(result -> result.modifier = modifier.toString()).toList());
+                    config.cobbleGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
                 }
             }));
             Util.optional(customGen.stoneGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
                 if (config.stoneGen != null) {
-                    config.stoneGen.addAll(value.stream().peek(result -> result.modifier = modifier.toString()).toList());
+                    config.stoneGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
                 }
             }));
             Util.optional(customGen.basaltGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
                 if (config.basaltGen != null) {
-                    config.basaltGen.addAll(value.stream().peek(result -> result.modifier = modifier.toString()).toList());
+                    config.basaltGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
                 }
             }));
         }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.mergeList;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable
@@ -32,14 +33,13 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     public Integer maxY;
     @Nullable
     public Integer minY;
+    // FIXME: Currently only the first element is being used
     @Nullable
     public List<String> neighbours;
     @Nullable
     public List<String> biomes;
     @Nullable
     public List<String> excludedBiomes;
-    @Nullable
-    public String modifier;
 
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);
@@ -119,19 +119,44 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(excludedBiomes);
     }
 
+    public Optional<List<String>> getNeighbours() {
+        return Util.optional(neighbours);
+    }
+
+    public String getModifier() {
+        if (neighbours == null) return "*";
+        return neighbours[0];
+    }
+
+    public WeightedBlock setNeighbours(@Nullable List<String> neighbours) {
+        this.neighbours = neighbours;
+        return this;
+    }
+
+    public WeightedBlock setModifier(String neighbours) {
+        if (this.neighbours == null) {
+            this.neighbours = List.of(neighbours);
+            return this;
+        }
+        this.neighbours = mergeList(this.neighbours, List.of(neighbours));
+        return this;
+    }
+
     @Override
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(id);
         buf.writeDouble(weight);
 
-        buf.writeOptional(Util.optional(dimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getDimensions(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getExcludedDimensions(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
 
-        buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
-        buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
+        buf.writeOptional(getMaxY(), FriendlyByteBuf::writeInt);
+        buf.writeOptional(getMinY(), FriendlyByteBuf::writeInt);
 
-        buf.writeOptional(Util.optional(biomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedBiomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getExcludedBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+
+        buf.writeOptional(getNeighbours(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
     }
 
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
@@ -147,6 +172,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         Optional<List<String>> biomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
         Optional<List<String>> excludedBiomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
 
+        Optional<List<String>> neighbours = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+
         return new WeightedBlock(
                 id,
                 weight,
@@ -154,7 +181,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
                 excludedDimensions.orElse(null),
                 maxY.orElse(null),
                 minY.orElse(null),
-                null,
+                neighbours.orElse(null),
                 biomes.orElse(null),
                 excludedBiomes.orElse(null)
         );
@@ -172,6 +199,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         json.put("minY", JANKSON.toJson(minY));
         json.put("biomes", JANKSON.toJson(biomes));
         json.put("excludedBiomes", JANKSON.toJson(excludedBiomes));
+        json.put("neighbours", JANKSON.toJson(excludedBiomes));
         return json;
     }
 
@@ -238,6 +266,16 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             excludedBiomes = null;
         }
 
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null, biomes, excludedBiomes);
+        @Nullable
+        List<String> neighbours;
+        JsonElement _neighbours = json.get("neighbours");
+        if (_neighbours instanceof JsonArray) {
+            neighbours = new ArrayList<>();
+            ((JsonArray) _neighbours).forEach(value -> neighbours.add(((JsonPrimitive) value).asString()));
+        } else {
+            neighbours = null;
+        }
+
+        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, neighbours, biomes, excludedBiomes);
     }
 }
