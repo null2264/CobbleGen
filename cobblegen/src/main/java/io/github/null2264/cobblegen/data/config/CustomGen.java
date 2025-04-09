@@ -12,7 +12,11 @@ import java.util.Map;
 
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
-public class CustomGen implements JanksonSerializable
+/**
+ * @deprecated No longer used
+ */
+@Deprecated(since = "5.4.1")
+class CustomGen implements JanksonSerializable
 {
     @Nullable
     public GeneratorMap cobbleGen;

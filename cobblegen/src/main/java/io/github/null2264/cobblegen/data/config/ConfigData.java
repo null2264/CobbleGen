@@ -122,6 +122,7 @@ public class ConfigData implements Config, JanksonSerializable
         config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"), config.formatVersion);
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"), config.formatVersion);
         config.basaltGen = ResultList.fromJson(json.get("basaltGen"), config.formatVersion);
+        // TODO: Delete later
         CustomGen customGen = CustomGen.fromJson(json.getObject("customGen"));
         if (config.formatVersion.equals("1.0")) {
             CGLog.warn(() -> "CobbleGen config format v1.0 is deprecated, please consider migrating to v" + LATEST_FORMAT_VERSION);
