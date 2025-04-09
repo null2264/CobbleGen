@@ -219,8 +219,8 @@ jobs:
             TARGET=$i
             url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $TARGET | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }} || echo "[FAIL]")"
             [ "$url" = "[FAIL]" ] && (
-              >&2 echo "[FAIL] There's no Runtime Test Mod for MC $i, trying with a version for MC ${{ matrix.loader }} instead...";
-              url="$(echo $json | jq -r '.assets[].browser_download_url' | grep '${{ matrix.loader }}' | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }} || echo "[FAIL]")"
+              >&2 echo "[FAIL] There's no Runtime Test Mod for MC $i!";
+              exit 1;
             )
             echo "[TEST] Downloading Runtime Test Mod... [2/3]"
             curl -Ls -o "mc-runtime-test.jar" $url
