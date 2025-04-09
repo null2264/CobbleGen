@@ -99,6 +99,11 @@ public class CobbleGenerator extends BlockGenerator
     }
 
     @Override
+    public boolean check(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
+        return !fromTop;
+    }
+
+    @Override
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction) {
         BlockPos blockPos = pos.relative(direction.getOpposite());
         return tryGenerate(level, pos, state.getFluidState(), level.getFluidState(blockPos));

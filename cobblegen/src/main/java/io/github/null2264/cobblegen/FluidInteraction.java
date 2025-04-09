@@ -142,7 +142,6 @@ public class FluidInteraction
 
         for (Generator generator : generators) {
             if (!generator.check(level, pos, state, fromTop)) continue;
-            if (fromTop && generator.getType() != GeneratorType.STONE) continue;
 
             final Optional<BlockState> result = generator.tryGenerate(level, pos, state);
             if (result.isPresent()) {
