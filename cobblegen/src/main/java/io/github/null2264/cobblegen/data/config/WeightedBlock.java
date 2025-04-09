@@ -143,9 +143,9 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(neighbours);
     }
 
-    public String getModifier() {
-        if (neighbours == null) return "*";
-        return neighbours[0];
+    public Optional<String> getModifier() {
+        if (neighbours == null) return Util.optional(null);
+        return Util.optional(neighbours[0]);
     }
 
     @Override
