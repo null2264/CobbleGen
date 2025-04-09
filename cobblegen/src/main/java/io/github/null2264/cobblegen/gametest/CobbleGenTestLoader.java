@@ -15,27 +15,10 @@ import java.util.function.Consumer;
 
 public class CobbleGenTestLoader extends TestFunctionLoader {
     private static final AtomicBoolean SHOULD_REGISTER = new AtomicBoolean(true);
-    public static final boolean ENABLED = boolFromString(
-        System.getProperty(
-            "null2264.cobblegen.gametest",
-            Util.elvis(System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"), "false")
-        )
-    );
-
-    private static boolean boolFromString(String string) {
-        List<String> yes = List.of("yes", "y", "true", "t", "1", "enable", "on");
-        List<String> no = List.of("no", "n", "false", "f", "0", "disable", "off");
-
-        if (yes.contains(string.toLowerCase())) return true;
-        else if (no.contains(string.toLowerCase())) return false;
-
-        // We supposed to throw an exception here, but we'll fallback to false instead
-        return false;
-    }
 
     public static void init() {
-        CGLog.info(() -> "Is CobbleGen GameTest enabled: " + ENABLED);
-        if (ENABLED && SHOULD_REGISTER.getAndSet(false))
+        CGLog.info(() -> "Is CobbleGen GameTest enabled: " + CobbleGenTestConfig.ENABLED);
+        if (CobbleGenTestConfig.ENABLED && SHOULD_REGISTER.getAndSet(false))
             TestFunctionLoader.registerLoader(new CobbleGenTestLoader());
     }
 

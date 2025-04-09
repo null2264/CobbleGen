@@ -56,6 +56,7 @@ import java.util.function.Consumer;
  *   -> Intercepted by CobbleGen's mixin -> Gated by -Dnull2264.cobblegen.gametest=true
  *   -> BlockGenerationTest.registerInstances(...)
  */
+// TODO: Test modifiers
 public class BlockGenerationTest {
     public static final CGIdentifier TEMPLATE = CGIdentifier.of("empty");
     public static final Integer TIMEOUT_TICKS = 120;
@@ -183,8 +184,7 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.succeedWhen(
             () -> {
-                // A special config is needed for this test
-                context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
+                context.assertBlockPresent(Blocks.COBBLED_DEEPSLATE, generatedPos);
             }
         );
     }
@@ -220,8 +220,7 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.succeedWhen(
             () -> {
-                // A special config is needed for this test
-                context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
+                context.assertBlockPresent(Blocks.BLACKSTONE, generatedPos);
             }
         );
     }
@@ -269,8 +268,7 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 1, 1);
         context.succeedWhen(
             () -> {
-                // A special config is needed for this test
-                context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
+                context.assertBlockPresent(Blocks.DEEPSLATE, generatedPos);
             }
         );
     }

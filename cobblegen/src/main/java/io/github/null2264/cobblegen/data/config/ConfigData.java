@@ -74,6 +74,23 @@ public class ConfigData implements Config, JanksonSerializable
     @Nullable
     public FluidInteractionMap advanced;
 
+    public static ConfigData testConfig() {
+        ConfigData config = new ConfigData();
+        config.cobbleGen = ResultList.of(
+            new WeightedBlock.Builder().setId("minecraft:cobbled_deepslate").setWeight(100.0).build(),
+            new WeightedBlock.Builder().setId("minecraft:cobblestone").setWeight(100.0).setModifier("minecraft:bedrock").build()
+        );
+        config.stoneGen = ResultList.of(
+            new WeightedBlock.Builder().setId("minecraft:deepslate").setWeight(100.0).build(),
+            new WeightedBlock.Builder().setId("minecraft:stone").setWeight(100.0).setModifier("minecraft:bedrock").build()
+        );
+        config.basaltGen = ResultList.of(
+            new WeightedBlock.Builder().setId("minecraft:blackstone").setWeight(100.0).build(),
+            new WeightedBlock.Builder().setId("minecraft:basalt").setWeight(100.0).setModifier("minecraft:bedrock").build()
+        );
+        return config;
+    }
+
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
         config.cobbleGen = ResultList.of(
