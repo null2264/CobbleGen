@@ -32,15 +32,19 @@ public class ResultList extends ArrayList<WeightedBlock> implements JanksonSeria
 
     @Deserializer
     public static ResultList fromJson(JsonElement json) {
+        return fromJson(json, ConfigData.LATEST_FORMAT_VERSION);
+    }
+
+    public static ResultList fromJson(JsonElement json, String formatVersion) {
         if (json == null) return null;
 
         ResultList result = new ResultList();
         ((JsonArray) json).stream()
-                .filter((e) -> e instanceof JsonObject)
-                .forEach((e) -> {
-                    WeightedBlock block = WeightedBlock.fromJson((JsonObject) e);
-                    if (block != null) result.add(block);
-                });
+            .filter((e) -> e instanceof JsonObject)
+            .forEach((e) -> {
+                WeightedBlock block = WeightedBlock.fromJson((JsonObject) e, formatVersion);
+                if (block != null) result.add(block);
+            });
         return result;
     }
 }

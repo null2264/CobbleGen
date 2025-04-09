@@ -6,6 +6,7 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,9 +16,12 @@ import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 @SuppressWarnings("TextBlockMigration")
 public class ConfigData implements Config, JanksonSerializable
 {
+    public static String LATEST_FORMAT_VERSION = "1.1";
+
+    // FIXME: Make this SemVer object
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
     @NotNull
-    public String formatVersion = "1.1";
+    public String formatVersion = LATEST_FORMAT_VERSION;
 
     @Nullable
     @Comment(value = "Default Generators\n" +
@@ -102,7 +106,7 @@ public class ConfigData implements Config, JanksonSerializable
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.put("formatVersion", JsonPrimitive.of(formatVersion));
+        json.put("formatVersion", JsonPrimitive.of(LATEST_FORMAT_VERSION));
         if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
         if (stoneGen != null) json.put("stoneGen", stoneGen.toJson());
         if (basaltGen != null) json.put("basaltGen", basaltGen.toJson());
@@ -114,28 +118,30 @@ public class ConfigData implements Config, JanksonSerializable
     public static ConfigData fromJson(JsonObject json) {
         ConfigData config = new ConfigData();
         JsonElement formatVersion = json.get("formatVersion");
-        config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
-        config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
-        config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
-        config.basaltGen = ResultList.fromJson(json.get("basaltGen"));
+        config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : LATEST_FORMAT_VERSION;
+        config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"), config.formatVersion);
+        config.stoneGen = ResultList.fromJson(json.get("stoneGen"), config.formatVersion);
+        config.basaltGen = ResultList.fromJson(json.get("basaltGen"), config.formatVersion);
         CustomGen customGen = CustomGen.fromJson(json.getObject("customGen"));
-        if (config.formatVersion.equals("1.0") && customGen != null) {
-            // TODO
-            Util.optional(customGen.cobbleGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
-                if (config.cobbleGen != null) {
-                    config.cobbleGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
-                }
-            }));
-            Util.optional(customGen.stoneGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
-                if (config.stoneGen != null) {
-                    config.stoneGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
-                }
-            }));
-            Util.optional(customGen.basaltGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
-                if (config.basaltGen != null) {
-                    config.basaltGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
-                }
-            }));
+        if (config.formatVersion.equals("1.0")) {
+            CGLog.warn(() -> "CobbleGen config format v1.0 is deprecated, please consider migrating to v" + LATEST_FORMAT_VERSION);
+            if (customGen != null) {
+                Util.optional(customGen.cobbleGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
+                    if (config.cobbleGen != null) {
+                        config.cobbleGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
+                    }
+                }));
+                Util.optional(customGen.stoneGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
+                    if (config.stoneGen != null) {
+                        config.stoneGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
+                    }
+                }));
+                Util.optional(customGen.basaltGen).ifPresent(gen -> gen.forEach((modifier, value) -> {
+                    if (config.basaltGen != null) {
+                        config.basaltGen.addAll(value.stream().peek(result -> result.neighbours = listOf(modifier.toString())).toList());
+                    }
+                }));
+            }
         }
         config.advanced = FluidInteractionMap.fromJson(json.getObject("advanced"));
         return config;

@@ -32,8 +32,8 @@ public interface BuiltInGenerator extends Generator
     #endif
     randomizeBlockId(Block key, String dim, Integer yLevel, GeneratorMap candidates, @Nullable String biome) {
         ResultList blockIds = candidates.getOrDefault(
-                CGIdentifier.fromMC(Util.getBlockId(key)),
-                candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())
+            CGIdentifier.fromBlock(key),
+            candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())
         );
 
         ResultList filteredBlockIds = new ResultList();

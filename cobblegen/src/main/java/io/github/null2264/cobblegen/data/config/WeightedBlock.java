@@ -205,84 +205,85 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         json.put("minY", JANKSON.toJson(minY));
         json.put("biomes", JANKSON.toJson(biomes));
         json.put("excludedBiomes", JANKSON.toJson(excludedBiomes));
-        json.put("neighbours", JANKSON.toJson(excludedBiomes));
+        if (neighbours != null) {
+            if (neighbours.size() > 1)
+                json.put("neighbours", JANKSON.toJson(neighbours));
+            else
+                json.put("modifier", JANKSON.toJson(neighbours[0]));
+        }
         return json;
     }
 
-    @SuppressWarnings("PatternVariableCanBeUsed")
     @Deserializer
     public static WeightedBlock fromJson(JsonObject json) {
+        return fromJson(json, "1.1");
+    }
+
+    public static WeightedBlock fromJson(JsonObject json, String formatVersion) {
+        Builder builder = new WeightedBlock.Builder();
+
         JsonElement _id = json.get("id");
         if (!(_id instanceof JsonPrimitive)) return null;
-        String id = ((JsonPrimitive) _id).asString();
 
-        Double weight = json.getDouble("weight", 0.0);
+        builder.setId(((JsonPrimitive) _id).asString());
+        builder.setWeight(json.getDouble("weight", 0.0));
 
-        @Nullable
-        List<String> dimensions;
         JsonElement _dimensions = json.get("dimensions");
         if (_dimensions instanceof JsonArray) {
-            dimensions = new ArrayList<>();
+            List<String> dimensions = new ArrayList<>();
             ((JsonArray) _dimensions).forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
-        } else {
-            dimensions = null;
+            builder.setDimensions(dimensions);
         }
 
         @Nullable
-        List<String> excludedDimensions;
         JsonElement _excludedDimensions = json.get("excludedDimensions");
         if (_excludedDimensions instanceof JsonArray) {
-            excludedDimensions = new ArrayList<>();
+            List<String> excludedDimensions = new ArrayList<>();
             ((JsonArray) _excludedDimensions).forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
-        } else {
-            excludedDimensions = null;
+            builder.setExcludedDimensions(excludedDimensions);
         }
 
-        @Nullable
-        Integer maxY = null;
         JsonElement _maxY = json.get("maxY");
         if (_maxY instanceof JsonPrimitive) {
-            maxY = ((JsonPrimitive) _maxY).asInt(0);
+            builder.setMaxY(((JsonPrimitive) _maxY).asInt(0));
         }
 
-        @Nullable
-        Integer minY = null;
         JsonElement _minY = json.get("minY");
         if (_minY instanceof JsonPrimitive) {
-            minY = ((JsonPrimitive) _minY).asInt(0);
+            builder.setMinY(((JsonPrimitive) _minY).asInt(0));
         }
 
-        @Nullable
-        List<String> biomes;
         JsonElement _biomes = json.get("biomes");
         if (_biomes instanceof JsonArray) {
-            biomes = new ArrayList<>();
+            List<String> biomes = new ArrayList<>();
             ((JsonArray) _biomes).forEach(value -> biomes.add(((JsonPrimitive) value).asString()));
-        } else {
-            biomes = null;
+            builder.setBiomes(biomes);
         }
 
-        @Nullable
-        List<String> excludedBiomes;
         JsonElement _excludedBiomes = json.get("excludedBiomes");
         if (_excludedBiomes instanceof JsonArray) {
-            excludedBiomes = new ArrayList<>();
+            List<String> excludedBiomes = new ArrayList<>();
             ((JsonArray) _excludedBiomes).forEach(value -> excludedBiomes.add(((JsonPrimitive) value).asString()));
-        } else {
-            excludedBiomes = null;
+            builder.setExcludedBiomes(excludedBiomes);
         }
 
-        @Nullable
-        List<String> neighbours;
-        JsonElement _neighbours = json.get("neighbours");
-        if (_neighbours instanceof JsonArray) {
-            neighbours = new ArrayList<>();
-            ((JsonArray) _neighbours).forEach(value -> neighbours.add(((JsonPrimitive) value).asString()));
-        } else {
-            neighbours = null;
+        if (formatVersion.equals("1.1")) {
+            JsonElement _neighbours = json.get("neighbours");
+            if (_neighbours instanceof JsonArray) {
+                List<String> neighbours = new ArrayList<>();
+                ((JsonArray) _neighbours).forEach(value -> neighbours.add(((JsonPrimitive) value).asString()));
+                builder.setNeighbours(neighbours);
+            }
+
+            if (_neighbours == null) {
+                JsonElement _modifier = json.get("modifier");
+                if (_modifier instanceof JsonPrimitive) {
+                    builder.setNeighbours(listOf(((JsonPrimitive) _modifier).asString()));
+                }
+            }
         }
 
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, neighbours, biomes, excludedBiomes);
+        return builder.build();
     }
 
     public static class Builder {
