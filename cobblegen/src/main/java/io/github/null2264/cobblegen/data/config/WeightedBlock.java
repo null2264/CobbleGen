@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.github.null2264.cobblegen.compat.CollectionCompat.mergeList;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable
@@ -41,18 +41,30 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     @Nullable
     public List<String> excludedBiomes;
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
     public WeightedBlock(String id, Double weight, List<String> dimIds) {
         this(id, weight, dimIds, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
     public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions) {
         this(id, weight, dimIds, excludedDimensions, null, null, null, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
     public WeightedBlock(
             String id,
             Double weight,
@@ -75,10 +87,18 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         this.excludedBiomes = excludedBiomes;
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated(since = "5.4.1")
     public static WeightedBlock fromBlock(Block block, Double weight) {
         return fromBlock(block, weight, null, null, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated(since = "5.4.1")
     public static WeightedBlock fromBlock(
             Block block,
             Double weight,
@@ -126,20 +146,6 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     public String getModifier() {
         if (neighbours == null) return "*";
         return neighbours[0];
-    }
-
-    public WeightedBlock setNeighbours(@Nullable List<String> neighbours) {
-        this.neighbours = neighbours;
-        return this;
-    }
-
-    public WeightedBlock setModifier(String neighbours) {
-        if (this.neighbours == null) {
-            this.neighbours = List.of(neighbours);
-            return this;
-        }
-        this.neighbours = mergeList(this.neighbours, List.of(neighbours));
-        return this;
     }
 
     @Override
@@ -277,5 +283,98 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         }
 
         return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, neighbours, biomes, excludedBiomes);
+    }
+
+    public static class Builder {
+        @Nullable
+        public String id;
+        @Nullable
+        public Double weight;
+        @Nullable
+        public List<String> dimensions;
+        @Nullable
+        public List<String> excludedDimensions;
+        @Nullable
+        public Integer maxY;
+        @Nullable
+        public Integer minY;
+        @Nullable
+        public List<String> neighbours;
+        @Nullable
+        public List<String> biomes;
+        @Nullable
+        public List<String> excludedBiomes;
+
+        public static Builder of(Block block) {
+            return new Builder().setId(Util.getBlockId(block).toString());
+        }
+
+        public WeightedBlock build() {
+            if (id == null && weight == null) {
+                throw new IllegalStateException("Block ID and generation weight can't be unset!");
+            }
+
+            return new WeightedBlock(
+                id,
+                weight,
+                dimensions,
+                excludedDimensions,
+                maxY,
+                minY,
+                neighbours,
+                biomes,
+                excludedBiomes
+            );
+        }
+
+        public Builder setId(String value) {
+            this.id = value;
+            return this;
+        }
+
+        public Builder setWeight(Double value) {
+            this.weight = value;
+            return this;
+        }
+
+        public Builder setDimensions(List<String> value) {
+            this.dimensions = value;
+            return this;
+        }
+
+        public Builder setExcludedDimensions(List<String> value) {
+            this.excludedDimensions = value;
+            return this;
+        }
+
+        public Builder setMaxY(Integer value) {
+            this.maxY = value;
+            return this;
+        }
+
+        public Builder setMinY(Integer value) {
+            this.minY = value;
+            return this;
+        }
+
+        public Builder setNeighbours(List<String> value) {
+            this.neighbours = value;
+            return this;
+        }
+
+        public Builder setModifier(String value) {
+            this.neighbours = listOf(value);
+            return this;
+        }
+
+        public Builder setBiomes(List<String> value) {
+            this.biomes = value;
+            return this;
+        }
+
+        public Builder setExcludedBiomes(List<String> value) {
+            this.excludedBiomes = value;
+            return this;
+        }
     }
 }

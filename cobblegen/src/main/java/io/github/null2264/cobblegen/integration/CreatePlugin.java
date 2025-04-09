@@ -25,7 +25,9 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(Util.identifierOf("create", "limestone")), 1.0)),
+                        ResultList.of(
+                            WeightedBlock.Builder.of(Util.getBlock(Util.identifierOf("create", "limestone"))).setWeight(1.0).build()
+                        ),
                         Util.getFluid(Util.identifierOf("create", "honey")),
                         false
                 )
@@ -33,7 +35,9 @@ public class CreatePlugin implements CobbleGenPlugin
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        ResultList.of(WeightedBlock.fromBlock(Util.getBlock(Util.identifierOf("create", "scoria")), 1.0)),
+                        ResultList.of(
+                            WeightedBlock.Builder.of(Util.getBlock(Util.identifierOf("create", "scoria"))).setWeight(1.0).build()
+                        ),
                         Util.getFluid(Util.identifierOf("create", "chocolate")),
                         false
                 )

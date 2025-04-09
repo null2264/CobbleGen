@@ -73,27 +73,27 @@ public class ConfigData implements Config, JanksonSerializable
     public static ConfigData defaultConfig() {
         ConfigData config = new ConfigData();
         config.cobbleGen = ResultList.of(
-            new WeightedBlock("minecraft:cobblestone", 100.0, null, null, null, 0, null, null, null),
-            new WeightedBlock("minecraft:cobbled_deepslate", 100.0, null, null, 0, null, null, null, null),
-            new WeightedBlock("minecraft:emerald_ore", 2.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:diamond_ore", 5.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:lapis_ore", 8.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:gold_ore", 10.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:iron_ore", 15.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:coal_ore", 20.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:cobblestone", 80.0).setModifier("minecraft:bedrock")
+            new WeightedBlock.Builder().setId("minecraft:cobblestone").setWeight(100.0).setMinY(0).build(),
+            new WeightedBlock.Builder().setId("minecraft:cobbled_deepslate").setWeight(100.0).setMaxY(0).build(),
+            new WeightedBlock.Builder().setId("minecraft:emerald_ore").setWeight(2.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:diamond_ore").setWeight(5.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:lapis_ore").setWeight(8.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:gold_ore").setWeight(10.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:iron_ore").setWeight(15.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:coal_ore").setWeight(20.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:cobblestone").setWeight(80.0).setModifier("minecraft:bedrock").build()
         );
         config.stoneGen = ResultList.of(
-            new WeightedBlock("minecraft:stone", 100.0),
-            new WeightedBlock("minecraft:stone", 40.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:diorite", 20.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:andesite", 20.0).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:granite", 20.0).setModifier("minecraft:bedrock")
+            new WeightedBlock.Builder().setId("minecraft:stone").setWeight(100.0).build(),
+            new WeightedBlock.Builder().setId("minecraft:stone").setWeight(40.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:diorite").setWeight(20.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:andesite").setWeight(20.0).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:granite").setWeight(20.0).setModifier("minecraft:bedrock").build()
         );
         config.basaltGen = ResultList.of(
-            new WeightedBlock("minecraft:basalt", 100.0),
-            new WeightedBlock("minecraft:end_stone", 100.0, listOf("minecraft:the_end")).setModifier("minecraft:bedrock"),
-            new WeightedBlock("minecraft:blackstone", 100.0, null, listOf("minecraft:overworld")).setModifier("minecraft:bedrock")
+            new WeightedBlock.Builder().setId("minecraft:basalt").setWeight(100.0).build(),
+            new WeightedBlock.Builder().setId("minecraft:end_stone").setWeight(100.0).setDimensions(listOf("minecraft:the_end")).setModifier("minecraft:bedrock").build(),
+            new WeightedBlock.Builder().setId("minecraft:blackstone").setWeight(100.0).setExcludedDimensions(listOf("minecraft:overworld")).setModifier("minecraft:bedrock").build()
         );
         return config;
     }
