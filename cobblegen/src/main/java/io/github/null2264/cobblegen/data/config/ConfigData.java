@@ -68,7 +68,7 @@ public class ConfigData implements Config, JanksonSerializable {
                      "  ],\n" +
                      "  \"minY\": 0,\n" +
                      "  \"maxY\": 69,\n" +
-                     "  \"modifier\": 69\n" +
+                     "  \"modifier\": \"mod_id:modifier_block_id\"\n" +
                      "}")
     public ResultList cobbleGen;
 
