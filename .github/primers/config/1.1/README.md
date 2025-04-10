@@ -3,7 +3,7 @@
 To make it less confusing for users to configure custom generator, I decided to merge `customGen` with basic generators (`cobbleGen`/`stoneGen`/`basaltGen`). This format is a partial port of [GH-53](https://github.com/null2264/CobbleGen/issues/53).
 
 > [!NOTE]
-> If you still want to use format v1.1, you can set `formatVersion` to `1.0` (do note that it'll be removed completely at some point):
+> If you still want to use format v1.0, you can set `formatVersion` to `1.0` (do note that it'll be removed completely at some point):
 >
 > ```json5
 > {
