@@ -108,15 +108,15 @@ public class ConfigData implements Config, JanksonSerializable {
         ConfigData config = new ConfigData();
         config.cobbleGen = ResultList.of(
             new WeightedBlock.Builder().setId("minecraft:cobbled_deepslate").setWeight(100.0).build(),
-            new WeightedBlock.Builder().setId("minecraft:cobblestone").setWeight(100.0).setModifier("minecraft:bedrock").build()
+            new WeightedBlock.Builder().setId("minecraft:deepslate").setWeight(100.0).setModifier("minecraft:bedrock").build()
         );
         config.stoneGen = ResultList.of(
             new WeightedBlock.Builder().setId("minecraft:deepslate").setWeight(100.0).build(),
-            new WeightedBlock.Builder().setId("minecraft:stone").setWeight(100.0).setModifier("minecraft:bedrock").build()
+            new WeightedBlock.Builder().setId("minecraft:cobbled_deepslate").setWeight(100.0).setModifier("minecraft:bedrock").build()
         );
         config.basaltGen = ResultList.of(
             new WeightedBlock.Builder().setId("minecraft:blackstone").setWeight(100.0).build(),
-            new WeightedBlock.Builder().setId("minecraft:basalt").setWeight(100.0).setModifier("minecraft:bedrock").build()
+            new WeightedBlock.Builder().setId("minecraft:end_stone").setWeight(100.0).setModifier("minecraft:bedrock").build()
         );
         return config;
     }
