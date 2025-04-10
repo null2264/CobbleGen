@@ -8,9 +8,10 @@ import java.util.List;
 
 @manifold.ext.rt.api.Extension
 public final class ListExt {
+
     #if MC<11700
-    @SafeVarargs
     @manifold.ext.rt.api.Extension
+    @SafeVarargs
     public static <T> List<T> of(T... items) {
         return new ArrayList<>(Arrays.asList(items));
     }

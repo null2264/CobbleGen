@@ -71,17 +71,19 @@ public class BuiltInPlugin implements CobbleGenPlugin
         GeneratorMap basaltGen = new GeneratorMap();
 
         elvis(config.stoneGen, new ResultList())
-            .forEach(result ->
-                stoneGen.put(CGIdentifier.of(result.getModifier().orElse("*")), elvis(config.stoneGen, new ResultList()))
-            );
+            .forEach(result -> {
+                CGIdentifier id = CGIdentifier.of(result.getModifier().orElse("*"));
+                stoneGen.computeIfAbsent(id, r -> new ResultList()).add(result);
+            });
         elvis(config.cobbleGen, new ResultList())
-            .forEach(result ->
-                cobbleGen.put(CGIdentifier.of(result.getModifier().orElse("*")), elvis(config.cobbleGen, new ResultList()))
-            );
+            .forEach(result -> {
+                CGIdentifier id = CGIdentifier.of(result.getModifier().orElse("*"));
+                cobbleGen.computeIfAbsent(id, r -> new ResultList()).add(result);
+            });
         elvis(config.basaltGen, new ResultList())
             .forEach(result -> {
                 CGIdentifier id = result.getModifier().map(CGIdentifier::of).orElseGet(() -> CGIdentifier.fromBlock(Blocks.SOUL_SOIL));
-                basaltGen.put(id, elvis(config.basaltGen, new ResultList()));
+                basaltGen.computeIfAbsent(id, r -> new ResultList()).add(result);
             });
 
         if (config.advanced != null)
