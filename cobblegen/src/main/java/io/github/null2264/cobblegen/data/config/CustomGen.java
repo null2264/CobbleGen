@@ -13,9 +13,10 @@ import java.util.Map;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 /**
- * @deprecated No longer used
+ * @deprecated Has been merged with basic generators
+ * @see ConfigData
  */
-@Deprecated(since = "5.4.1")
+@Deprecated
 class CustomGen implements JanksonSerializable
 {
     @Nullable

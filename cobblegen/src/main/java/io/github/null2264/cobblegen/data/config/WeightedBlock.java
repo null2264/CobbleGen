@@ -44,6 +44,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     /**
      * @deprecated Use {@link WeightedBlock.Builder} instead.
      */
+    @Deprecated
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);
     }
@@ -51,6 +52,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     /**
      * @deprecated Use {@link WeightedBlock.Builder} instead.
      */
+    @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds) {
         this(id, weight, dimIds, null);
     }
@@ -58,6 +60,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     /**
      * @deprecated Use {@link WeightedBlock.Builder} instead.
      */
+    @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions) {
         this(id, weight, dimIds, excludedDimensions, null, null, null, null, null);
     }
@@ -65,6 +68,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     /**
      * @deprecated Use {@link WeightedBlock.Builder} instead.
      */
+    @Deprecated
     public WeightedBlock(
             String id,
             Double weight,
@@ -88,17 +92,17 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     }
 
     /**
-     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     * @deprecated Use {@link WeightedBlock.Builder#of(Block)} instead.
      */
-    @Deprecated(since = "5.4.1")
+    @Deprecated
     public static WeightedBlock fromBlock(Block block, Double weight) {
         return fromBlock(block, weight, null, null, null, null);
     }
 
     /**
-     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     * @deprecated Use {@link WeightedBlock.Builder#of(Block)} instead.
      */
-    @Deprecated(since = "5.4.1")
+    @Deprecated
     public static WeightedBlock fromBlock(
             Block block,
             Double weight,
