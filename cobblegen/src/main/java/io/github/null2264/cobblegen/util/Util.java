@@ -98,7 +98,7 @@ public class Util
         #if MC>11605
         final TagKey<Block> blockTag = TagKey.create(
                 #if MC<=11902
-                Registry.BLOCK_REGISTRY,
+                net.minecraft.core.Registry.BLOCK_REGISTRY,
                 #else
                 net.minecraft.core.registries.Registries.BLOCK,
                 #endif
@@ -145,7 +145,7 @@ public class Util
             .registryOrThrow(
             #endif
                     #if MC<=11902
-                    Registry.DIMENSION_TYPE_REGISTRY
+                    net.minecraft.core.Registry.DIMENSION_TYPE_REGISTRY
                     #else
                     net.minecraft.core.registries.Registries.DIMENSION_TYPE
                     #endif
@@ -168,7 +168,7 @@ public class Util
             .registryOrThrow(
             #endif
                     #if MC<=11902
-                    Registry.BIOME_REGISTRY
+                    net.minecraft.core.Registry.BIOME_REGISTRY
                     #else
                     net.minecraft.core.registries.Registries.BIOME
                     #endif
