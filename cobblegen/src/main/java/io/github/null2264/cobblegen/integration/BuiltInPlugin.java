@@ -4,6 +4,7 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.config.Config;
 import io.github.null2264.cobblegen.data.config.ConfigData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
@@ -26,12 +27,12 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.elvis;
 
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
 {
+    private static final Config.Factory<ConfigData> factory = new ConfigData.Factory();
     private static final Path configPath = LoaderCompat.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     @Nullable
@@ -60,7 +61,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Override
     public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
-        if (config == null || isReload) config = loadConfig("generator", isReload, configFile, config, ConfigData.defaultConfig(), ConfigData.class);
+        if (config == null || isReload) config = isReload ? factory.reload(configFile) : factory.load(configFile);
         if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();

@@ -6,17 +6,47 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.gametest.CobbleGenTestConfig;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
+
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 
 @SuppressWarnings("TextBlockMigration")
-public class ConfigData implements Config, JanksonSerializable
-{
+public class ConfigData implements Config, JanksonSerializable {
+
+    private static String NAME = "generator";
     public static String LATEST_FORMAT_VERSION = "1.1";
+
+    public static class Factory implements Config.Factory<ConfigData> {
+        @Override
+        public ConfigData load(File file) {
+            return ConfigHelper.loadConfig(
+                NAME,
+                false,
+                file,
+                null,
+                CobbleGenTestConfig.ENABLED ? ConfigData.testConfig() : ConfigData.defaultConfig(),
+                ConfigData.class
+            );
+        }
+
+        @Override
+        public ConfigData reload(File file) {
+            return ConfigHelper.loadConfig(
+                NAME,
+                true,
+                file,
+                null,
+                CobbleGenTestConfig.ENABLED ? ConfigData.testConfig() : ConfigData.defaultConfig(),
+                ConfigData.class
+            );
+        }
+    }
 
     // FIXME: Make this SemVer object
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")

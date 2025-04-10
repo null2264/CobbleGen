@@ -15,8 +15,7 @@ import java.util.function.Function;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class ConfigHelper {
-    @ApiStatus.Internal
-    public static <T extends Config> T loadConfig(
+    static <T extends Config> T loadConfig(
         String name,
         boolean reload,
         File configFile,
