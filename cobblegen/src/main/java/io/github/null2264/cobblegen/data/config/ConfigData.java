@@ -190,6 +190,9 @@ public class ConfigData implements Config, JanksonSerializable {
                     }
                 }));
             }
+        } else if (customGen != null) {
+            // TODO: This probably should be sent to the chat when player joined a world.
+            CGLog.warn(() -> "You're using \"customGen\" on config format v" + config.formatVersion + "! Please migrate to format v" + LATEST_FORMAT_VERSION + " or specify \"formatVersion\" on the config file, otherwise the custom generator(s) won't be used by the mod.");
         }
         config.advanced = FluidInteractionMap.fromJson(json.getObject("advanced"));
         return config;
