@@ -4,6 +4,7 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.config.Config;
 import io.github.null2264.cobblegen.data.config.ConfigData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
@@ -23,16 +24,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
-import static io.github.null2264.cobblegen.util.Util.notNullOr;
+import static io.github.null2264.cobblegen.util.Util.elvis;
 
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
 {
+    private static final Config.Factory<ConfigData> factory = new ConfigData.Factory();
     private static final Path configPath = LoaderCompat.getConfigDir();
     private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     @Nullable
@@ -61,24 +61,30 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Override
     public void registerInteraction(CGRegistry registry) {
         CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
-        if (config == null || isReload) config = loadConfig(isReload, configFile, config, ConfigData.defaultConfig(), ConfigData.class);
+        if (config == null || isReload) config = isReload ? factory.reload(configFile) : factory.load(configFile);
         if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();
 
         GeneratorMap stoneGen = new GeneratorMap();
-        if (config.customGen != null && config.customGen.stoneGen != null)
-            stoneGen = config.customGen.stoneGen;
         GeneratorMap cobbleGen = new GeneratorMap();
-        if (config.customGen != null && config.customGen.cobbleGen != null)
-            cobbleGen = config.customGen.cobbleGen;
         GeneratorMap basaltGen = new GeneratorMap();
-        if (config.customGen != null && config.customGen.basaltGen != null)
-            basaltGen = config.customGen.basaltGen;
 
-        stoneGen.put(CGIdentifier.wildcard(), notNullOr(config.stoneGen, new ResultList()));
-        cobbleGen.put(CGIdentifier.wildcard(), notNullOr(config.cobbleGen, new ResultList()));
-        basaltGen.put(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), notNullOr(config.basaltGen, new ResultList()));
+        elvis(config.stoneGen, new ResultList())
+            .forEach(result -> {
+                CGIdentifier id = CGIdentifier.of(result.getModifier().orElse("*"));
+                stoneGen.computeIfAbsent(id, r -> new ResultList()).add(result);
+            });
+        elvis(config.cobbleGen, new ResultList())
+            .forEach(result -> {
+                CGIdentifier id = CGIdentifier.of(result.getModifier().orElse("*"));
+                cobbleGen.computeIfAbsent(id, r -> new ResultList()).add(result);
+            });
+        elvis(config.basaltGen, new ResultList())
+            .forEach(result -> {
+                CGIdentifier id = result.getModifier().map(CGIdentifier::of).orElseGet(() -> CGIdentifier.fromBlock(Blocks.SOUL_SOIL));
+                basaltGen.computeIfAbsent(id, r -> new ResultList()).add(result);
+            });
 
         if (config.advanced != null)
             config.advanced.forEach((fluid, value) -> {

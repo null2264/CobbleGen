@@ -44,11 +44,11 @@ public class CGREIPlugin implements REIClientPlugin
                         registry.add(
                                 new FluidInteractionRecipe(
                                         fluid,
-                                        Util.notNullOr(generator.getFluid(), Fluids.EMPTY),
-                                        Util.notNullOr(generator.getBlock(), Blocks.AIR),
+                                        Util.elvis(generator.getFluid(), Fluids.EMPTY),
+                                        Util.elvis(generator.getBlock(), Blocks.AIR),
                                         block,
                                         generator.getType(),
-                                        Util.notNullOr(modifier, Blocks.AIR)
+                                        Util.elvis(modifier, Blocks.AIR)
                                 )
                         );
                 })));

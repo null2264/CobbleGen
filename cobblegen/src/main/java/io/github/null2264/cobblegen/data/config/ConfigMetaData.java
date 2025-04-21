@@ -3,8 +3,38 @@ package io.github.null2264.cobblegen.data.config;
 import blue.endless.jankson.Comment;
 import org.jetbrains.annotations.NotNull;
 
-public class ConfigMetaData implements Config
-{
+import java.io.File;
+
+public class ConfigMetaData implements Config {
+
+    private static final String NAME = "metadata";
+
+    public static class Factory implements Config.Factory<ConfigMetaData> {
+        @Override
+        public ConfigMetaData load(File file) {
+            return ConfigHelper.loadConfig(
+                NAME,
+                false,
+                file,
+                null,
+                new ConfigMetaData(),
+                ConfigMetaData.class
+            );
+        }
+
+        @Override
+        public ConfigMetaData reload(File file) {
+            return ConfigHelper.loadConfig(
+                NAME,
+                true,
+                file,
+                null,
+                new ConfigMetaData(),
+                ConfigMetaData.class
+            );
+        }
+    }
+
     @Comment(value="Enable Recipe Viewer support (EMI/REI/JEI)")
     @NotNull
     public Boolean enableRecipeViewer = true;

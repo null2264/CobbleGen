@@ -1,6 +1,5 @@
 package io.github.null2264.cobblegen;
 
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.data.CGRegistryImpl;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -27,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 import static io.github.null2264.cobblegen.util.Constants.LAVA_FIZZ;
-import static io.github.null2264.cobblegen.util.Util.notNullOr;
+import static io.github.null2264.cobblegen.util.Util.elvis;
 
 /**
  * Replacement for BlockGenerator. This will act like Vanilla's registry system
@@ -60,7 +59,7 @@ public class FluidInteraction
 
     @NotNull
     public Map<Fluid, List<Generator>> getGenerators() {
-        return notNullOr(serverGeneratorMap, generatorMap);
+        return elvis(serverGeneratorMap, generatorMap);
     }
 
     @ApiStatus.Internal
@@ -143,7 +142,6 @@ public class FluidInteraction
 
         for (Generator generator : generators) {
             if (!generator.check(level, pos, state, fromTop)) continue;
-            if (fromTop && generator.getType() != GeneratorType.STONE) continue;
 
             final Optional<BlockState> result = generator.tryGenerate(level, pos, state);
             if (result.isPresent()) {

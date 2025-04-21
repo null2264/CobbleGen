@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.data.model;
 
 #if MC>=12005
-import io.github.null2264.cobblegen.data.model.Generator;
 import io.netty.buffer.ByteBuf;
 #endif
 
@@ -24,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
+// TODO: Simplify this interface to make it truly a public API
 public interface Generator extends PacketSerializable<Generator>
 {
     #if MC>=12005

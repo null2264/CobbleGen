@@ -12,7 +12,12 @@ import java.util.Map;
 
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
-public class CustomGen implements JanksonSerializable
+/**
+ * @deprecated Has been merged with basic generators
+ * @see ConfigData
+ */
+@Deprecated
+class CustomGen implements JanksonSerializable
 {
     @Nullable
     public GeneratorMap cobbleGen;
@@ -38,7 +43,7 @@ public class CustomGen implements JanksonSerializable
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
+        if (cobbleGen != null) json.put("cobbleGen", JANKSON.toJson(cobbleGen));
         if (stoneGen != null) json.put("stoneGen", JANKSON.toJson(stoneGen));
         if (basaltGen != null) json.put("basaltGen", JANKSON.toJson(basaltGen));
         return json;

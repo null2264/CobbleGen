@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.util;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -15,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
@@ -47,7 +45,7 @@ public class Util
     }
 
     @NotNull
-    public static <T> T notNullOr(@Nullable T nullable, @NotNull T notNull) {
+    public static <T> T elvis(@Nullable T nullable, @NotNull T notNull) {
         if (nullable == null)
             return notNull;
         return nullable;
@@ -100,7 +98,7 @@ public class Util
         #if MC>11605
         final TagKey<Block> blockTag = TagKey.create(
                 #if MC<=11902
-                Registry.BLOCK_REGISTRY,
+                net.minecraft.core.Registry.BLOCK_REGISTRY,
                 #else
                 net.minecraft.core.registries.Registries.BLOCK,
                 #endif
@@ -147,7 +145,7 @@ public class Util
             .registryOrThrow(
             #endif
                     #if MC<=11902
-                    Registry.DIMENSION_TYPE_REGISTRY
+                    net.minecraft.core.Registry.DIMENSION_TYPE_REGISTRY
                     #else
                     net.minecraft.core.registries.Registries.DIMENSION_TYPE
                     #endif
@@ -170,7 +168,7 @@ public class Util
             .registryOrThrow(
             #endif
                     #if MC<=11902
-                    Registry.BIOME_REGISTRY
+                    net.minecraft.core.Registry.BIOME_REGISTRY
                     #else
                     net.minecraft.core.registries.Registries.BIOME
                     #endif

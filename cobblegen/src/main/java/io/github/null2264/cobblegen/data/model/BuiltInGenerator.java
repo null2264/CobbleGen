@@ -32,8 +32,8 @@ public interface BuiltInGenerator extends Generator
     #endif
     randomizeBlockId(Block key, String dim, Integer yLevel, GeneratorMap candidates, @Nullable String biome) {
         ResultList blockIds = candidates.getOrDefault(
-                CGIdentifier.fromMC(Util.getBlockId(key)),
-                candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())
+            CGIdentifier.fromBlock(key),
+            candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())
         );
 
         ResultList filteredBlockIds = new ResultList();
@@ -58,7 +58,7 @@ public interface BuiltInGenerator extends Generator
                 try {
                     List<ResourceLocation> taggedBlocks = Util.getTaggedBlockIds(ResourceLocation.tryParse(block.id.substring(1)));
                     for (ResourceLocation taggedBlock : taggedBlocks) {
-                        filteredBlockIds.add(new WeightedBlock(taggedBlock.toString(), block.weight));
+                        filteredBlockIds.add(new WeightedBlock.Builder().setId(taggedBlock.toString()).setWeight(block.weight).build());
                         totalWeight.updateAndGet(v -> v + block.weight);
                     }
                 } catch (Exception ignored) {

@@ -76,6 +76,11 @@ public class BasaltGenerator extends BlockGenerator
     }
 
     @Override
+    public boolean check(LevelAccessor level, BlockPos pos, BlockState state, boolean fromTop) {
+        return !fromTop;
+    }
+
+    @Override
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction) {
         BlockPos blockPos = pos.relative(direction.getOpposite());
         if (level.getBlockState(blockPos).getBlock() == getBlock())

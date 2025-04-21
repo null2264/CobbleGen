@@ -5,8 +5,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
-import static io.github.null2264.cobblegen.compat.CollectionCompat.streamToList;
-
 #if FABRIC
 import net.fabricmc.loader.api.FabricLoader;
 #else
@@ -28,12 +26,11 @@ public class PluginFinder
 {
     public static List<PlugInContainer> getModPlugins() {
         #if FABRIC
-        return streamToList(
-                FabricLoader.getInstance()
-                        .getEntrypointContainers("cobblegen_plugin", CobbleGenPlugin.class)
-                        .stream()
-                        .map(entrypoint -> new PlugInContainer(entrypoint.getProvider().getMetadata().getId(), entrypoint.getEntrypoint()))
-        );
+        return FabricLoader.getInstance()
+            .getEntrypointContainers("cobblegen_plugin", CobbleGenPlugin.class)
+            .stream()
+            .map(entrypoint -> new PlugInContainer(entrypoint.getProvider().getMetadata().getId(), entrypoint.getEntrypoint()))
+            .toList();
         #else
         return AnnotatedFinder.getInstances(CGPlugin.class, CobbleGenPlugin.class);
         #endif
@@ -46,11 +43,10 @@ public class PluginFinder
             List<ModFileScanData> allScanData = ModList.get().getAllScanData();
             List<PlugInContainer> instances = new ArrayList<>();
             for (ModFileScanData data : allScanData) {
-                List<String> modIds = streamToList(
-                        data.getIModInfoData().stream()
-                               .flatMap(info -> info.getMods().stream())
-                               .map(IModInfo::getModId)
-                );
+                List<String> modIds = data.getIModInfoData().stream()
+                   .flatMap(info -> info.getMods().stream())
+                   .map(IModInfo::getModId)
+                   .toList();
                 String modId = "[" + String.join(", ", modIds) + "]";
     
                 Iterable<ModFileScanData.AnnotationData> annotations = data.getAnnotations();

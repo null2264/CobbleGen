@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 import static io.github.null2264.cobblegen.util.Constants.JANKSON;
 
 public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable
@@ -32,6 +33,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     public Integer maxY;
     @Nullable
     public Integer minY;
+    // FIXME: Currently only the first element is being used
     @Nullable
     public List<String> neighbours;
     @Nullable
@@ -39,18 +41,34 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     @Nullable
     public List<String> excludedBiomes;
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds) {
         this(id, weight, dimIds, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions) {
         this(id, weight, dimIds, excludedDimensions, null, null, null, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(
             String id,
             Double weight,
@@ -73,10 +91,18 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         this.excludedBiomes = excludedBiomes;
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder#of(Block)} instead.
+     */
+    @Deprecated
     public static WeightedBlock fromBlock(Block block, Double weight) {
         return fromBlock(block, weight, null, null, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder#of(Block)} instead.
+     */
+    @Deprecated
     public static WeightedBlock fromBlock(
             Block block,
             Double weight,
@@ -117,19 +143,30 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(excludedBiomes);
     }
 
+    public Optional<List<String>> getNeighbours() {
+        return Util.optional(neighbours);
+    }
+
+    public Optional<String> getModifier() {
+        if (neighbours == null) return Util.optional(null);
+        return Util.optional(neighbours[0]);
+    }
+
     @Override
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(id);
         buf.writeDouble(weight);
 
-        buf.writeOptional(Util.optional(dimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getDimensions(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getExcludedDimensions(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
 
-        buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
-        buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
+        buf.writeOptional(getMaxY(), FriendlyByteBuf::writeInt);
+        buf.writeOptional(getMinY(), FriendlyByteBuf::writeInt);
 
-        buf.writeOptional(Util.optional(biomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedBiomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getExcludedBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+
+        buf.writeOptional(getNeighbours(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
     }
 
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
@@ -145,6 +182,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         Optional<List<String>> biomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
         Optional<List<String>> excludedBiomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
 
+        Optional<List<String>> neighbours = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+
         return new WeightedBlock(
                 id,
                 weight,
@@ -152,7 +191,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
                 excludedDimensions.orElse(null),
                 maxY.orElse(null),
                 minY.orElse(null),
-                null,
+                neighbours.orElse(null),
                 biomes.orElse(null),
                 excludedBiomes.orElse(null)
         );
@@ -170,72 +209,177 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         json.put("minY", JANKSON.toJson(minY));
         json.put("biomes", JANKSON.toJson(biomes));
         json.put("excludedBiomes", JANKSON.toJson(excludedBiomes));
+        if (neighbours != null) {
+            if (neighbours.size() > 1)
+                json.put("neighbours", JANKSON.toJson(neighbours));
+            else
+                json.put("modifier", JANKSON.toJson(neighbours[0]));
+        }
         return json;
     }
 
-    @SuppressWarnings("PatternVariableCanBeUsed")
     @Deserializer
     public static WeightedBlock fromJson(JsonObject json) {
+        return fromJson(json, "1.1");
+    }
+
+    public static WeightedBlock fromJson(JsonObject json, String formatVersion) {
+        Builder builder = new WeightedBlock.Builder();
+
         JsonElement _id = json.get("id");
         if (!(_id instanceof JsonPrimitive)) return null;
-        String id = ((JsonPrimitive) _id).asString();
 
-        Double weight = json.getDouble("weight", 0.0);
+        builder.setId(((JsonPrimitive) _id).asString());
+        builder.setWeight(json.getDouble("weight", 0.0));
 
-        @Nullable
-        List<String> dimensions;
         JsonElement _dimensions = json.get("dimensions");
         if (_dimensions instanceof JsonArray) {
-            dimensions = new ArrayList<>();
+            List<String> dimensions = new ArrayList<>();
             ((JsonArray) _dimensions).forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
-        } else {
-            dimensions = null;
+            builder.setDimensions(dimensions);
         }
 
         @Nullable
-        List<String> excludedDimensions;
         JsonElement _excludedDimensions = json.get("excludedDimensions");
         if (_excludedDimensions instanceof JsonArray) {
-            excludedDimensions = new ArrayList<>();
+            List<String> excludedDimensions = new ArrayList<>();
             ((JsonArray) _excludedDimensions).forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
-        } else {
-            excludedDimensions = null;
+            builder.setExcludedDimensions(excludedDimensions);
         }
 
-        @Nullable
-        Integer maxY = null;
         JsonElement _maxY = json.get("maxY");
         if (_maxY instanceof JsonPrimitive) {
-            maxY = ((JsonPrimitive) _maxY).asInt(0);
+            builder.setMaxY(((JsonPrimitive) _maxY).asInt(0));
         }
 
-        @Nullable
-        Integer minY = null;
         JsonElement _minY = json.get("minY");
         if (_minY instanceof JsonPrimitive) {
-            minY = ((JsonPrimitive) _minY).asInt(0);
+            builder.setMinY(((JsonPrimitive) _minY).asInt(0));
         }
 
-        @Nullable
-        List<String> biomes;
         JsonElement _biomes = json.get("biomes");
         if (_biomes instanceof JsonArray) {
-            biomes = new ArrayList<>();
+            List<String> biomes = new ArrayList<>();
             ((JsonArray) _biomes).forEach(value -> biomes.add(((JsonPrimitive) value).asString()));
-        } else {
-            biomes = null;
+            builder.setBiomes(biomes);
         }
 
-        @Nullable
-        List<String> excludedBiomes;
         JsonElement _excludedBiomes = json.get("excludedBiomes");
         if (_excludedBiomes instanceof JsonArray) {
-            excludedBiomes = new ArrayList<>();
+            List<String> excludedBiomes = new ArrayList<>();
             ((JsonArray) _excludedBiomes).forEach(value -> excludedBiomes.add(((JsonPrimitive) value).asString()));
-        } else {
-            excludedBiomes = null;
+            builder.setExcludedBiomes(excludedBiomes);
         }
 
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null, biomes, excludedBiomes);
+        if (formatVersion.equals("1.1")) {
+            JsonElement _neighbours = json.get("neighbours");
+            if (_neighbours instanceof JsonArray) {
+                List<String> neighbours = new ArrayList<>();
+                ((JsonArray) _neighbours).forEach(value -> neighbours.add(((JsonPrimitive) value).asString()));
+                builder.setNeighbours(neighbours);
+            }
+
+            if (_neighbours == null) {
+                JsonElement _modifier = json.get("modifier");
+                if (_modifier instanceof JsonPrimitive) {
+                    builder.setNeighbours(listOf(((JsonPrimitive) _modifier).asString()));
+                }
+            }
+        }
+
+        return builder.build();
+    }
+
+    public static class Builder {
+        @Nullable
+        public String id;
+        @Nullable
+        public Double weight;
+        @Nullable
+        public List<String> dimensions;
+        @Nullable
+        public List<String> excludedDimensions;
+        @Nullable
+        public Integer maxY;
+        @Nullable
+        public Integer minY;
+        @Nullable
+        public List<String> neighbours;
+        @Nullable
+        public List<String> biomes;
+        @Nullable
+        public List<String> excludedBiomes;
+
+        public static Builder of(Block block) {
+            return new Builder().setId(Util.getBlockId(block).toString());
+        }
+
+        public WeightedBlock build() {
+            if (id == null && weight == null) {
+                throw new IllegalStateException("Block ID and generation weight can't be unset!");
+            }
+
+            return new WeightedBlock(
+                id,
+                weight,
+                dimensions,
+                excludedDimensions,
+                maxY,
+                minY,
+                neighbours,
+                biomes,
+                excludedBiomes
+            );
+        }
+
+        public Builder setId(String value) {
+            this.id = value;
+            return this;
+        }
+
+        public Builder setWeight(Double value) {
+            this.weight = value;
+            return this;
+        }
+
+        public Builder setDimensions(List<String> value) {
+            this.dimensions = value;
+            return this;
+        }
+
+        public Builder setExcludedDimensions(List<String> value) {
+            this.excludedDimensions = value;
+            return this;
+        }
+
+        public Builder setMaxY(Integer value) {
+            this.maxY = value;
+            return this;
+        }
+
+        public Builder setMinY(Integer value) {
+            this.minY = value;
+            return this;
+        }
+
+        public Builder setNeighbours(List<String> value) {
+            this.neighbours = value;
+            return this;
+        }
+
+        public Builder setModifier(String value) {
+            this.neighbours = listOf(value);
+            return this;
+        }
+
+        public Builder setBiomes(List<String> value) {
+            this.biomes = value;
+            return this;
+        }
+
+        public Builder setExcludedBiomes(List<String> value) {
+            this.excludedBiomes = value;
+            return this;
+        }
     }
 }

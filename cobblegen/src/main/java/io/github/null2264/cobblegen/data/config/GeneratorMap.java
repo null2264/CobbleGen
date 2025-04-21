@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+// FIXME: CGIdentifier -> CGModifier
 public class GeneratorMap extends HashMap<CGIdentifier, ResultList> implements JanksonSerializable, PacketSerializable<GeneratorMap> {
     public GeneratorMap() {}
 
