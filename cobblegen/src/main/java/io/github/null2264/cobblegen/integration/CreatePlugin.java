@@ -15,8 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 
 @CGPlugin
-public class CreatePlugin implements CobbleGenPlugin
-{
+public class CreatePlugin implements CobbleGenPlugin {
+
     private boolean firstInit = true;
 
     @Override
@@ -44,7 +44,10 @@ public class CreatePlugin implements CobbleGenPlugin
 
     @Override
     public boolean shouldLoad() {
-        return LoaderCompat.isModLoaded("create") && CobbleGen.META_CONFIG.create.loadIntegration;
+        if (!LoaderCompat.isModLoaded("create")) return false;
+
+        CobbleGen.CreateSupport createSupport = CobbleGen.getCreateSupport();
+        return createSupport != CobbleGen.CreateSupport.NONE;
     }
 }
 #endif

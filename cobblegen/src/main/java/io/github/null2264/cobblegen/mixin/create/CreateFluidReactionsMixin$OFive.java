@@ -16,7 +16,7 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 @Pseudo
 @Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
-public abstract class CreateFluidReactionsMixin
+public abstract class CreateFluidReactionsMixin$OFive
 {
     @Inject(
             method = "handlePipeSpillCollision",

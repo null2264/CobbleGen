@@ -33,9 +33,9 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
         addJson("CommandsMixin")
         addJson("MinecraftServerMixin")
         if (mcVersion > 11605) {
-            addJson("create.CreateFluidReactionsMixin")
-            addJson("create.CreateFluidReactionsMixinPatchE")
-            if (isFabric) addJson("create.CreateFluidReactionsMixinPatchF")
+            addJson("create.CreateFluidReactionsMixin\$OFive")
+            addJson("create.CreateFluidReactionsMixin\$PatchE")
+            if (isFabric) addJson("create.CreateFluidReactionsMixin\$PatchF")
         }
         addJson("fluid.FluidEventMixin")
         addJson("fluid.LavaEventMixin")
