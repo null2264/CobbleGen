@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen.data.model;
 
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
@@ -44,7 +44,7 @@ public interface BuiltInGenerator extends Generator
 
             if (block.excludedDimensions != null && block.excludedDimensions.contains(dim)) continue;
 
-            if (biome != null && CobbleGen.META_CONFIG.enableExperimentalFeatures) {
+            if (biome != null && ConfigHolder.META.enableExperimentalFeatures) {
                 if (block.biomes != null && !block.biomes.contains(biome)) continue;
 
                 if (block.excludedBiomes != null && block.excludedBiomes.contains(biome)) continue;

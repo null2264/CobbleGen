@@ -1,7 +1,7 @@
 package io.github.null2264.cobblegen;
 
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.data.CGRegistryImpl;
+import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.network.payload.CGSyncS2CPayload;
@@ -161,7 +161,7 @@ public class FluidInteraction
      */
     @ApiStatus.Internal
     public Optional<BlockState> interactFromPipeState(Level level, BlockPos pos, Fluid fluid1, Fluid fluid2) {
-        if (CobbleGen.META_CONFIG.create.disablePipe) return Optional.empty();
+        if (ConfigHolder.META.create.disablePipe) return Optional.empty();
 
         Fluid source;
         Fluid neighbour;

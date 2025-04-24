@@ -9,6 +9,8 @@ import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
+import io.github.null2264.cobblegen.integration.create.CreateCompatUtil;
+import io.github.null2264.cobblegen.integration.create.CreateSupport;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.resources.ResourceLocation;
@@ -46,8 +48,8 @@ public class CreatePlugin implements CobbleGenPlugin {
     public boolean shouldLoad() {
         if (!LoaderCompat.isModLoaded("create")) return false;
 
-        CobbleGen.CreateSupport createSupport = CobbleGen.getCreateSupport();
-        return createSupport != CobbleGen.CreateSupport.NONE;
+        CreateSupport createSupport = CreateCompatUtil.getCreateSupport();
+        return createSupport != CreateSupport.NONE;
     }
 }
 #endif

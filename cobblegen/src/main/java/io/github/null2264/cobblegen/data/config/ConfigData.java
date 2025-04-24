@@ -6,14 +6,17 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 
 @SuppressWarnings("TextBlockMigration")
-public class ConfigData implements Config, JanksonSerializable
-{
+public class ConfigData implements Config, JanksonSerializable {
+
     @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
     @NotNull
     public String formatVersion = "1.0";

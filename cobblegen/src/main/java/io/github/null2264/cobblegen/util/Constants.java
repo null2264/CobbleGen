@@ -1,15 +1,11 @@
 package io.github.null2264.cobblegen.util;
 
 #if MC>=12005
-import io.github.null2264.cobblegen.data.model.Generator;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.material.Fluid;
 #endif
 
-import blue.endless.jankson.Jankson;
-import blue.endless.jankson.JsonPrimitive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.null2264.cobblegen.data.CGIdentifier;
@@ -17,6 +13,7 @@ import io.github.null2264.cobblegen.network.payload.*;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 
+// FIXME: Move MC related consts to :mclib
 public class Constants
 {
     public static final int SLOT_SIZE = 18;
@@ -48,11 +45,6 @@ public class Constants
                 CGSyncS2CPayload.ID, CGSyncS2CPayload.STREAM_CODEC
             );
     #endif
-    public static final Jankson JANKSON = Jankson.builder()
-            .registerSerializer(CGIdentifier.class, (it, m) -> it.toJson())
-            .registerDeserializer(JsonPrimitive .class, CGIdentifier.class, (json, m) -> CGIdentifier.fromJson(json))
-            .registerDeserializer(String.class, CGIdentifier.class, (str, m) -> CGIdentifier.of(str))
-            .build();
     public static final int LAVA_FIZZ = 1501;
     //public static final int OP_LEVEL_PLAYER = 0;
     //public static final int OP_LEVEL_MODERATORS = 1;

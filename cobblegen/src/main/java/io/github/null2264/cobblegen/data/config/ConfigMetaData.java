@@ -3,8 +3,8 @@ package io.github.null2264.cobblegen.data.config;
 import blue.endless.jankson.Comment;
 import org.jetbrains.annotations.NotNull;
 
-public class ConfigMetaData implements Config
-{
+public class ConfigMetaData implements Config {
+
     @Comment(value="Enable Recipe Viewer support (EMI/REI/JEI)")
     @NotNull
     public Boolean enableRecipeViewer = true;

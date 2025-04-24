@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static io.github.null2264.cobblegen.util.Constants.JANKSON;
+import static io.github.null2264.cobblegen.data.config.ConfigHolder.JANKSON;
 
 public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable
 {

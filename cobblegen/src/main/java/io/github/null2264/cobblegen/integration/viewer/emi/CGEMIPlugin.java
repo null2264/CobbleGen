@@ -8,9 +8,9 @@ import dev.emi.emi.api.recipe.EmiWorldInteractionRecipe;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.SlotWidget;
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
+import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.ChatFormatting;
@@ -87,10 +87,10 @@ public class CGEMIPlugin implements EmiPlugin
 
     @Override
     public void register(EmiRegistry registry) {
-        if (!CobbleGen.META_CONFIG.enableRecipeViewer)
+        if (!ConfigHolder.META.enableRecipeViewer)
             return;
 
-        if (!CobbleGen.META_CONFIG.mergeEMIRecipeCategory) {
+        if (!ConfigHolder.META.mergeEMIRecipeCategory) {
             FLUID_INTERACTION_CATEGORIES.forEach((ignored, category) -> registry.addCategory(category));
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                     (modifierId, blocks) -> {
@@ -140,7 +140,7 @@ public class CGEMIPlugin implements EmiPlugin
                                 neighbour = EmiStack.of(Objects.requireNonNull(generator.getFluid()), LoaderCompat.isForge() ? 1_000 : 81_000);
                             }
 
-                            if (CobbleGen.META_CONFIG.emi.removeOverlaps) {
+                            if (ConfigHolder.META.emi.removeOverlaps) {
                                 registry.removeRecipes(r ->
                                         new HashSet<>(r.getInputs()).containsAll(List.of(neighbour, trigger)) && r.getOutputs().contains(output) && r.getId().toString().startsWith("emi")
                                 );
@@ -156,7 +156,7 @@ public class CGEMIPlugin implements EmiPlugin
                                     recipe,
                                     trigger.copy().setRemainder(trigger),
                                     false,
-                                    CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.RIGHT : InputPosition.LEFT
+                                    ConfigHolder.META.emi.invertInput ? InputPosition.RIGHT : InputPosition.LEFT
                             );
 
                             EmiStack neighbourRemainder = neighbour.isEmpty() ? neighbour : neighbour.copy().setRemainder(neighbour);
@@ -167,27 +167,27 @@ public class CGEMIPlugin implements EmiPlugin
                                         EmiStack.of(modifier.get()),
                                         false,
                                         s -> s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.soul_soil").withStyle(ChatFormatting.GREEN)),
-                                        CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                        ConfigHolder.META.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
                                 );
                                 input(
                                         recipe,
                                         neighbourRemainder,
                                         false,
                                         s -> generator.getBlock() != null ? s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.blue_ice").withStyle(ChatFormatting.GREEN)) : s,
-                                        CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                        ConfigHolder.META.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
                                 );
                             } else {
                                 input(
                                         recipe,
                                         neighbourRemainder,
                                         false,
-                                        CobbleGen.META_CONFIG.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                        ConfigHolder.META.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
                                 );
                             }
 
                             recipe.output(output,
                                     s -> {
-                                        if (!CobbleGen.META_CONFIG.emi.addTooltip) return s;
+                                        if (!ConfigHolder.META.emi.addTooltip) return s;
 
                                         var minY = block.minY;
                                         if (minY == null)

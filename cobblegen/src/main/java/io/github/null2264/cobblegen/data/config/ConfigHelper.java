@@ -8,11 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 
-import static io.github.null2264.cobblegen.util.Constants.JANKSON;
+import static io.github.null2264.cobblegen.data.config.ConfigHolder.JANKSON;
 
 public class ConfigHelper {
     @ApiStatus.Internal

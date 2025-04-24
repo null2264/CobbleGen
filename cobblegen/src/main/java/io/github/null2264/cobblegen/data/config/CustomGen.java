@@ -3,14 +3,10 @@ package io.github.null2264.cobblegen.data.config;
 import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Map;
-
-import static io.github.null2264.cobblegen.util.Constants.JANKSON;
+import static io.github.null2264.cobblegen.data.config.ConfigHolder.JANKSON;
 
 public class CustomGen implements JanksonSerializable
 {

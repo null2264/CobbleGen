@@ -54,7 +54,9 @@ public class ModContainerCompat {
     public static ModContainerCompat fromLoader(String modid) {
         if (CACHED.containsKey(modid)) return CACHED.get(modid);
 
-        return CACHED.put(modid, new ModContainerCompat(modid));
+        ModContainerCompat rt = new ModContainerCompat(modid);
+        CACHED.put(modid, new ModContainerCompat(modid));
+        return rt;
     }
 
     public String getVersionString() {

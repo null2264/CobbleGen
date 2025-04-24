@@ -2,6 +2,8 @@ package io.github.null2264.cobblegen.mixin.core;
 
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.integration.create.CreateCompatUtil;
+import io.github.null2264.cobblegen.integration.create.CreateSupport;
 import io.github.null2264.cobblegen.util.CGLog;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -32,12 +34,12 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         if (mixinClassName.contains("CreateFluidReactionsMixin")) {
             if (!LoaderCompat.isModLoaded("create")) return false;
 
-            CobbleGen.CreateSupport createSupport = CobbleGen.getCreateSupport();
-            if (createSupport == CobbleGen.CreateSupport.NONE) return false;
+            CreateSupport createSupport = CreateCompatUtil.getCreateSupport();
+            if (createSupport == CreateSupport.NONE) return false;
             if (mixinClassName.endsWith("$OFive"))
-                return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_F || createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_E;
-            if (mixinClassName.endsWith("$PatchE")) return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_E;
-            if (mixinClassName.endsWith("$PatchF")) return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_F;
+                return createSupport == CreateSupport.O_FIVE_ONE_F || createSupport == CreateSupport.O_FIVE_ONE_E;
+            if (mixinClassName.endsWith("$PatchE")) return createSupport == CreateSupport.O_FIVE_ONE_E;
+            if (mixinClassName.endsWith("$PatchF")) return createSupport == CreateSupport.O_FIVE_ONE_F;
         }
 
         #if MC>=12105
