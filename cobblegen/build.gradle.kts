@@ -82,14 +82,13 @@ dependencies {
         }
     }
 
-    // Don't wanna deal with these atm
     if (mcVersion > 11605) {
-        // These act like a dummy, technically only here to provide their modules/packages
+        // We just want their source code so we can mixin it
         if (isFabric) {
             modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.properties["port_lib_version_1_18_2"]}")
             modCompileOnly("com.simibubi.create:create-fabric-${project.properties["minecraft_version_1_18_2"]}:${project.properties["create_version_1_18_2"]}")
         } else {
-            modCompileOnly("com.simibubi.create:create-1.18.2:0.5.1.e-318:slim") { isTransitive = false }
+            modCompileOnly(createMod(isNeo).versioned(0)) { isTransitive = false }
         }
 
         // <- EMI

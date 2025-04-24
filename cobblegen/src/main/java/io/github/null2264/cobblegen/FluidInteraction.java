@@ -165,9 +165,13 @@ public class FluidInteraction
 
         Fluid source;
         Fluid neighbour;
-        List<Generator> generators = generatorMap.get(fluid1);
+        List<Generator> generators = generatorMap.get(
+            fluid1 instanceof FlowingFluid ? ((FlowingFluid) fluid1).getSource() : fluid1
+        );
         if (generators == null) {
-            generators = generatorMap.get(fluid2);
+            generators = generatorMap.get(
+                fluid2 instanceof FlowingFluid ? ((FlowingFluid) fluid2).getSource() : fluid2
+            );
             if (generators == null)
                 return Optional.empty();
             source = fluid2;

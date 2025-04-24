@@ -13,7 +13,7 @@ import io.github.null2264.cobblegen.network.payload.*;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 
-// FIXME: Move MC related consts to :mclib
+// FIXME: Move MC related consts to :mclib, for now don't use stuff from here inside "early state" of mod loading (e.g. MixinPlugin)
 public class Constants
 {
     public static final int SLOT_SIZE = 18;

@@ -16,7 +16,7 @@ public class CreateCompatUtil {
      */
     @ApiStatus.Internal
     public static CreateSupport getCreateSupport() {
-        if (ConfigHolder.META.create.loadIntegration) return CreateSupport.NONE;
+        if (!ConfigHolder.META.create.loadIntegration) return CreateSupport.NONE;
 
         #if MC<=11605
         return CreateSupport.NONE;  // We don't support create integration for MC1.16.5

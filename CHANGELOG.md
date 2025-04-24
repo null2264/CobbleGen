@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix crashes when being loaded alongside unsupported Create mod
 - Fix `cobblegen-meta.create.loadIntegration = false` didn't stop CobbleGen from trying to mixin Create mod
+- [NeoForge] Fix Create support
 
 ## [v5.4.0] - 2025-04-07
 
