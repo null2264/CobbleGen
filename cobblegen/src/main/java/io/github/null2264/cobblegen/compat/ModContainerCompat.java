@@ -36,16 +36,29 @@ public class ModContainerCompat {
                 .stream()
                 .filter(i -> i.getModId().equals(modid))
                 .findFirst()
+                #if MC<=11605
+                .orElseThrow(NullPointerException::new);
+                #else
                 .orElseThrow();
+                #endif
         else
             modInfo = ModList.get()
                 .getModContainerById(modid)
+                #if MC<=11605
+                .orElseThrow(NullPointerException::new)
+                #else
                 .orElseThrow()
+                #endif
                 .getModInfo();
         #endif
         this.container =
         #if FABRIC
-            net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(modid).orElseThrow();
+            net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer(modid)
+                #if MC<=11605
+                .orElseThrow(NullPointerException::new);
+                #else
+                .orElseThrow();
+                #endif
         #else
             modInfo;
         #endif
