@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.4.1] - 2025-04-25
+
 ### Fixed
 - Fix crashes when being loaded alongside unsupported Create mod
 - Fix `cobblegen-meta.create.loadIntegration = false` didn't stop CobbleGen from trying to mixin Create mod
@@ -206,7 +208,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.0...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.1...main
+[v5.4.1]: https://github.com/null2264/CobbleGen/compare/v5.4.0...v5.4.1
 [v5.4.0]: https://github.com/null2264/CobbleGen/compare/v5.3.16...v5.4.0
 [v5.3.16]: https://github.com/null2264/CobbleGen/compare/v5.3.15...v5.3.16
 [v5.3.15]: https://github.com/null2264/CobbleGen/compare/v5.3.14...v5.3.15
