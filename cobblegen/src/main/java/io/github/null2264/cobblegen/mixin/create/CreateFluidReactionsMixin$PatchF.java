@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 /**
- * Mixin for Create Fabric (pre) Patch F
+ * Mixin for Create Fabric Patch F
  */
 @Pseudo
 @Mixin(targets = {"com.simibubi.create.content.contraptions.fluids.FluidReactions", "com.simibubi.create.content.fluids.FluidReactions"})
