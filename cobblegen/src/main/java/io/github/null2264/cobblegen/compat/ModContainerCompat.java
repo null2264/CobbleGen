@@ -60,7 +60,8 @@ public class ModContainerCompat {
     public String getVersionString() {
         #if FABRIC
         return container.getMetadata().getVersion().getFriendlyString();
-        #endif
+        #else
         return container.getVersion().toString();
+        #endif
     }
 }

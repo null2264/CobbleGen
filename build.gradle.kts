@@ -136,6 +136,7 @@ subprojects {
         manifoldCompile("systems.manifold:manifold-preprocessor:${manifoldVersion}")
 
         if (isModModule) {
+            compileOnly(project(":stubs"))
             compileInternal(project(":mclib")) {
                 // Remove Junit test libraries
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter")

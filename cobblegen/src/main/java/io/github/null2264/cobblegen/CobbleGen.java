@@ -83,7 +83,6 @@ public class CobbleGen
         NONE,
         O_FIVE_ONE_E,
         O_FIVE_ONE_F,
-        SIX_O,  // FIXME: Properly support 6.0.x
     }
 
     /**
@@ -121,25 +120,27 @@ public class CobbleGen
             }
             if (split.get(0) == 0) {  // 0.x.x
                 #if FORGE
-                return CobbleGen.CreateSupport.O_FIVE_ONE_E;  // Always use Patch E mixin for Forge-alike
+                return CreateSupport.O_FIVE_ONE_E;  // Always use Patch E mixin for Forge-alike
                 #else
-                if (split.get(1) == 5 && split.get(2) == 0 || split.get(1) < 5) return CobbleGen.CreateSupport.O_FIVE_ONE_E;
-                if (split.get(1) > 5 || split.get(2) > 1) return CobbleGen.CreateSupport.O_FIVE_ONE_F;  // Assume they don't introduce breaking changes on version bump
+                if (split.get(1) == 5 && split.get(2) == 0 || split.get(1) < 5) return CreateSupport.O_FIVE_ONE_E;
+                if (split.get(1) > 5 || split.get(2) > 1) return CreateSupport.O_FIVE_ONE_F;  // Assume they don't introduce breaking changes on version bump
 
                 int compare = patch.compareToIgnoreCase("e");
-                if (compare <= 0) return CobbleGen.CreateSupport.O_FIVE_ONE_E;
-                return CobbleGen.CreateSupport.O_FIVE_ONE_F;
+                if (compare <= 0) return CreateSupport.O_FIVE_ONE_E;
+                return CreateSupport.O_FIVE_ONE_F;
                 #endif
             } else if (split.get(0) == 6) {  // 6.x.x
-                // TODO
-                CGLog.warn("Create mod v6+ is not yet supported");
-                return CobbleGen.CreateSupport.NONE;
+                #if FORGE
+                return CreateSupport.O_FIVE_ONE_E;
+                #else
+                return CreateSupport.O_FIVE_ONE_F;
+                #endif
             }
             // They're definitely going to introduce breaking changes on major version bump
-            return CobbleGen.CreateSupport.NONE;
+            return CreateSupport.NONE;
         } catch (java.util.NoSuchElementException | PatternSyntaxException | NumberFormatException exc) {
             CGLog.error(exc);
-            return CobbleGen.CreateSupport.NONE;
+            return CreateSupport.NONE;
         }
         #endif
     }

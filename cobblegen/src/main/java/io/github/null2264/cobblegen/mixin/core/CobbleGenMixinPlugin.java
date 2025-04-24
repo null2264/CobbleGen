@@ -36,8 +36,8 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
             if (createSupport == CobbleGen.CreateSupport.NONE) return false;
             if (mixinClassName.endsWith("$OFive"))
                 return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_F || createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_E;
-            if (mixinClassName.endsWith("$PatchF")) return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_F;
             if (mixinClassName.endsWith("$PatchE")) return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_E;
+            if (mixinClassName.endsWith("$PatchF")) return createSupport == CobbleGen.CreateSupport.O_FIVE_ONE_F;
         }
 
         #if MC>=12105
