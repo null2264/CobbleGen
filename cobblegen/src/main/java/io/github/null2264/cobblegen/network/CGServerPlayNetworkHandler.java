@@ -5,6 +5,7 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 #else
+import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -39,6 +40,8 @@ public class CGServerPlayNetworkHandler
             #endif
             boolean isReload
     ) {
+        if (!ConfigHolder.META.enableRecipeViewer) return;
+
         if (isReload)
             CGLog.info("CobbleGen has been reloaded, trying to re-sync...");
         else

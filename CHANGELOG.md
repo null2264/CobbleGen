@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix networking
+- Fix server still try to sync recipe with client when `enableRecipeViewer` is set to false
 
 ## [v5.4.1] - 2025-04-25
 
