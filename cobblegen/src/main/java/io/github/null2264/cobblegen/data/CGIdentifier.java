@@ -8,6 +8,7 @@ import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -65,7 +66,7 @@ public record CGIdentifier(String modid, String name)
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         if (isWildcard()) return "*";
         return String.format("%s:%s", modid, name);
     }

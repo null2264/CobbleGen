@@ -1,14 +1,13 @@
 package io.github.null2264.cobblegen.network.payload;
 
 #if MC>=12005
-import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 #endif
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import static io.github.null2264.cobblegen.util.Constants.CG_SYNC;
 
@@ -43,18 +42,18 @@ public record CGSyncC2SPayload(Boolean sync)
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID.toMC();
+    public CGIdentifier id() {
+        return CG_SYNC;
     }
 
     #if MC>=12005
-    public static final StreamCodec<FriendlyByteBuf, CGSyncC2SPayload> STREAM_CODEC =
-        CustomPacketPayload.codec(CGSyncC2SPayload::write, CGSyncC2SPayload::new);
-    public static final CustomPacketPayload.Type<CGSyncC2SPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
-    
+    public static @NotNull StreamCodec<FriendlyByteBuf, CGSyncC2SPayload> codec() {
+        return CustomPacketPayload.codec(CGSyncC2SPayload::write, CGSyncC2SPayload::new);
+    }
+
     @Override
-    public Type<? extends CGPacketPayload> type() {
-        return TYPE;
+    public @NotNull Type<? extends CGPacketPayload> type() {
+        return new CustomPacketPayload.Type<>(id().toMC());
     }
     #endif
 }

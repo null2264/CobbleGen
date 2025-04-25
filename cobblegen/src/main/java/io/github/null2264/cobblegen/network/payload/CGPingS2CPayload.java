@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import static io.github.null2264.cobblegen.util.Constants.CG_PING_SERVER;
 
@@ -42,18 +42,18 @@ public record CGPingS2CPayload(Boolean reload)
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID.toMC();
+    public CGIdentifier id() {
+        return CG_PING_SERVER;
     }
 
     #if MC>=12005
-    public static final StreamCodec<FriendlyByteBuf, CGPingS2CPayload> STREAM_CODEC =
-        CustomPacketPayload.codec(CGPingS2CPayload::write, CGPingS2CPayload::new);
-    public static final CustomPacketPayload.Type<CGPingS2CPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
-    
+    public static @NotNull StreamCodec<FriendlyByteBuf, CGPingS2CPayload> codec() {
+        return CustomPacketPayload.codec(CGPingS2CPayload::write, CGPingS2CPayload::new);
+    }
+
     @Override
-    public Type<? extends CGPacketPayload> type() {
-        return TYPE;
+    public @NotNull Type<? extends CGPacketPayload> type() {
+        return new CustomPacketPayload.Type<>(id().toMC());
     }
     #endif
 }

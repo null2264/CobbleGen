@@ -7,7 +7,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import static io.github.null2264.cobblegen.util.Constants.CG_PING;
 
@@ -18,7 +18,6 @@ public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
 #endif
         implements CGPacketPayload
 {
-    public static final CGIdentifier ID = CG_PING;
 
     #if MC<=11605
     private final Boolean reload;
@@ -53,18 +52,18 @@ public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID.toMC();
+    public CGIdentifier id() {
+        return CG_PING;
     }
 
     #if MC>=12005
-    public static final StreamCodec<FriendlyByteBuf, CGPingC2SPayload> STREAM_CODEC =
-        CustomPacketPayload.codec(CGPingC2SPayload::write, CGPingC2SPayload::new);
-    public static final CustomPacketPayload.Type<CGPingC2SPayload> TYPE = new CustomPacketPayload.Type<>(ID.toMC());
-    
+    public static @NotNull StreamCodec<FriendlyByteBuf, CGPingC2SPayload> codec() {
+        return CustomPacketPayload.codec(CGPingC2SPayload::write, CGPingC2SPayload::new);
+    }
+
     @Override
-    public Type<? extends CGPacketPayload> type() {
-        return TYPE;
+    public @NotNull Type<? extends CGPacketPayload> type() {
+        return new CustomPacketPayload.Type<>(id().toMC());
     }
     #endif
 }

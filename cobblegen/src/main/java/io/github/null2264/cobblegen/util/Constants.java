@@ -14,8 +14,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 
 // FIXME: Move MC related consts to :mclib, for now don't use stuff from here inside "early state" of mod loading (e.g. MixinPlugin)
-public class Constants
-{
+public class Constants {
+
     public static final int SLOT_SIZE = 18;
     public static final int JEI_RECIPE_WIDTH = 136;
     public static final int JEI_RECIPE_HEIGHT = 36;
@@ -28,21 +28,21 @@ public class Constants
     #if MC<12005
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_SERVER_PAYLOADS =
             ImmutableMap.of(
-                CGPingC2SPayload.ID, CGPingC2SPayload::new,
-                CGSyncC2SPayload.ID, CGSyncC2SPayload::new
+                CG_PING, CGPingC2SPayload::new,
+                CG_SYNC, CGSyncC2SPayload::new
             );
     public static final ImmutableMap<CGIdentifier, CGPayloadReader<? extends CGPacketPayload>> KNOWN_CLIENT_PAYLOADS =
             ImmutableMap.of(
-                CGPingS2CPayload.ID, CGPingS2CPayload::new,
-                CGSyncS2CPayload.ID, CGSyncS2CPayload::new
+                CG_PING_SERVER, CGPingS2CPayload::new,
+                CG_SYNC_SERVER, CGSyncS2CPayload::new
             );
     #else
     public static final ImmutableMap<CGIdentifier, net.minecraft.network.codec.StreamCodec<? super FriendlyByteBuf, ? extends CGPacketPayload>> KNOWN_PAYLOADS =
             ImmutableMap.of(
-                CGPingC2SPayload.ID, CGPingC2SPayload.STREAM_CODEC,
-                CGSyncC2SPayload.ID, CGSyncC2SPayload.STREAM_CODEC,
-                CGPingS2CPayload.ID, CGPingS2CPayload.STREAM_CODEC,
-                CGSyncS2CPayload.ID, CGSyncS2CPayload.STREAM_CODEC
+                CG_PING, CGPingC2SPayload.codec(),
+                CG_SYNC, CGSyncC2SPayload.codec(),
+                CG_PING_SERVER, CGPingS2CPayload.codec(),
+                CG_SYNC_SERVER, CGSyncS2CPayload.codec()
             );
     #endif
     public static final int LAVA_FIZZ = 1501;
