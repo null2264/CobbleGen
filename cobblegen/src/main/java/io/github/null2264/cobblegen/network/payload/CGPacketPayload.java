@@ -14,12 +14,10 @@ public interface CGPacketPayload
 
     CGIdentifier cgId();
 
-    #if MC>=12002
-    #if MC<12006
+    #if MC>=12002 && MC<12006
     @Override
     #endif
     default @NotNull ResourceLocation id() {
         return cgId().toMC();
     }
-    #endif
 }
