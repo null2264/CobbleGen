@@ -37,12 +37,12 @@ public record CGPingS2CPayload(Boolean reload)
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(@NotNull FriendlyByteBuf buf) {
         buf.writeBoolean(reload);
     }
 
     @Override
-    public CGIdentifier id() {
+    public @NotNull CGIdentifier cgId() {
         return CG_PING_SERVER;
     }
 
@@ -53,7 +53,7 @@ public record CGPingS2CPayload(Boolean reload)
 
     @Override
     public @NotNull Type<? extends CGPacketPayload> type() {
-        return new CustomPacketPayload.Type<>(id().toMC());
+        return new CustomPacketPayload.Type<>(id());
     }
     #endif
 }

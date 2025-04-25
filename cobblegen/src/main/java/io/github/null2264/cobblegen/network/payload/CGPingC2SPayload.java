@@ -46,13 +46,13 @@ public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(@NotNull FriendlyByteBuf buf) {
         buf.writeBoolean(reload);
         buf.writeBoolean(hasRecipeViewer());
     }
 
     @Override
-    public CGIdentifier id() {
+    public @NotNull CGIdentifier cgId() {
         return CG_PING;
     }
 
@@ -63,7 +63,7 @@ public record CGPingC2SPayload(Boolean reload, Boolean recipeViewer)
 
     @Override
     public @NotNull Type<? extends CGPacketPayload> type() {
-        return new CustomPacketPayload.Type<>(id().toMC());
+        return new CustomPacketPayload.Type<>(id());
     }
     #endif
 }

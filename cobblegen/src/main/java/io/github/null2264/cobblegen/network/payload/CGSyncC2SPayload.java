@@ -18,7 +18,6 @@ public record CGSyncC2SPayload(Boolean sync)
 #endif
         implements CGPacketPayload
 {
-    public static final CGIdentifier ID = CG_SYNC;
 
     #if MC<=11605
     private final Boolean sync;
@@ -37,12 +36,12 @@ public record CGSyncC2SPayload(Boolean sync)
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(@NotNull FriendlyByteBuf buf) {
         buf.writeBoolean(sync);
     }
 
     @Override
-    public CGIdentifier id() {
+    public @NotNull CGIdentifier cgId() {
         return CG_SYNC;
     }
 
@@ -53,7 +52,7 @@ public record CGSyncC2SPayload(Boolean sync)
 
     @Override
     public @NotNull Type<? extends CGPacketPayload> type() {
-        return new CustomPacketPayload.Type<>(id().toMC());
+        return new CustomPacketPayload.Type<>(id());
     }
     #endif
 }

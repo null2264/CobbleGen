@@ -48,13 +48,13 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
     }
 
     @Override
-    public void write(FriendlyByteBuf buf) {
+    public void write(@NotNull FriendlyByteBuf buf) {
         buf.writeBoolean(isReload());
         FluidInteraction.write(recipe(), buf);
     }
 
     @Override
-    public CGIdentifier id() {
+    public @NotNull CGIdentifier cgId() {
         return CG_SYNC_SERVER;
     }
 
@@ -65,7 +65,7 @@ public record CGSyncS2CPayload(Boolean isReload, Map<Fluid, List<Generator>> rec
 
     @Override
     public @NotNull Type<? extends CGPacketPayload> type() {
-        return new CustomPacketPayload.Type<>(id().toMC());
+        return new CustomPacketPayload.Type<>(id());
     }
     #endif
 }
