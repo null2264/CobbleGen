@@ -5,12 +5,12 @@ import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 #else
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 #endif
 
+import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.network.payload.*;
 import io.github.null2264.cobblegen.util.CGLog;
