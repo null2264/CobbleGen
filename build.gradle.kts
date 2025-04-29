@@ -3,7 +3,7 @@ import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
-    id("dev.architectury.loom") version "1.10-SNAPSHOT" apply false
+    id("io.github.null2264.architectury-loom") version "1.10-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
@@ -103,7 +103,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
     if (isModModule) {
-        apply(plugin = "dev.architectury.loom")
+        apply(plugin = "io.github.null2264.architectury-loom")
     }
 
     val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
