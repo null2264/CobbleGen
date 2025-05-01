@@ -28,6 +28,8 @@ jobs:
     outputs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       changelog: ${{ steps.changelog.outputs.changelog }}
+      headlessmc: ${{ steps.changelog.outputs.headlessmc }}
+      mc_runtime_test: ${{ steps.changelog.outputs.mc_runtime_test }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,6 +57,14 @@ jobs:
             echo ""
             echo "END_OF_FILE"
           } >> $GITHUB_OUTPUT 2> /dev/null
+
+      # To reduce api request, so we don't hit rate-limit
+      - name: Retrieve JSON
+        run: |
+          curl -Ls -o "headlessmc.json" "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.5.1" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+          echo "headlessmc=$(jq -cr . ./headlessmc.json)" >> $GITHUB_OUTPUT
+          curl -Ls -o "mc-runtime-test.json" "https://api.github.com/repos/null2264/mc-runtime-test/releases/tags/3.1.1" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+          echo "mc_runtime_test=$(jq -cr . ./mc-runtime-test.json)" >> $GITHUB_OUTPUT
 
   build:
     name: Build
@@ -184,7 +194,7 @@ jobs:
           }
           EOF
 
-          json="$(cat ./headlessmc.json)"
+          json="${{ needs.setup.outputs.headlessmc }}"
           url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
           curl -Ls -o "headlessmc-launcher.jar" $url
 
@@ -214,7 +224,7 @@ jobs:
             echo "[TEST] Testing MC $i (${{ matrix.loader }})..."
 
             echo "[TEST] Downloading Runtime Test Mod... [0/3]"
-            json="$(cat ./mc-runtime-test.json)"
+            json="${{ needs.setup.outputs.mc_runtime_test }}"
             echo "[TEST] Downloading Runtime Test Mod... [1/3]"
             TARGET=$i
             url="$(echo $json | jq -r '.assets[].browser_download_url' | grep $TARGET | grep ${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }} || echo "[FAIL]")"
