@@ -8,6 +8,8 @@ plugins {
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
 
+val modVersion = System.getenv("VERSION") ?: project.properties["mod_version"] as? String ?: "0.0.0"
+
 val loaderName = project.properties["loom.platform"] as? String ?: ""
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
@@ -47,7 +49,7 @@ allprojects {
 
     val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
     version = buildString {
-        append(rootProject.properties["mod_version"])
+        append(modVersion)
         append("+")
         append(mcVersionStr)
         if (buildNumber != null) {
@@ -181,7 +183,7 @@ subprojects {
     val processResources by tasks.getting(ProcessResources::class) {
         if (!isModModule) return@getting
 
-        val metadataVersion = "${project.properties["mod_version"]}-${project.properties["version_stage"]}"
+        val metadataVersion = "${modVersion}-${project.properties["version_stage"]}"
         val metadataMCVersion = if (isForge) versionRange.mavenStyle() else versionRange.semverStyle()
         val properties = mapOf(
             "version" to metadataVersion,
@@ -288,7 +290,7 @@ publishMods {
             if (releaseVersions.size > 1) append("+")
             append("]")
             append(" v")
-            append(rootProject.properties["mod_version"])
+            append(modVersion)
             append("-")
             append(rootProject.properties["version_stage"])
             if (mcVersion <= 11605) append(" (LITE)")
