@@ -91,7 +91,7 @@ allprojects {
         // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
         // If Javadoc is generated, this must be specified in that task too.
         options.encoding = "UTF-8"
-        options.compilerArgs.add("-Xplugin:Manifold")
+        options.compilerArgs.add("-Xplugin:Manifold --no-bootstrap")
     }
 }
 
