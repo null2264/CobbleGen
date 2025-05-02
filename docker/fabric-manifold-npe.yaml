@@ -18,8 +18,8 @@ services:
       EULA: "TRUE"
       TYPE: FABRIC
       VERSION: "1.20.1"
-      MODS: |
-        https://cdn.modrinth.com/data/qRogT5Gy/versions/V9URgvpV/cobblegen-5.4.2%2B1.20.1b1175-BETA-fabric.jar
+      # MODS: |
+      #   https://cdn.modrinth.com/data/qRogT5Gy/versions/V9URgvpV/cobblegen-5.4.2%2B1.20.1b1175-BETA-fabric.jar
       ONLINE_MODE: "FALSE"
     volumes:
       - ./fabric-data:/data
