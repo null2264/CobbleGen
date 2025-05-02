@@ -23,4 +23,4 @@ services:
         https://cdn.modrinth.com/data/qRogT5Gy/versions/C4DpAZTb/cobblegen-5.3.11%2B1.21.1b47-BETA-neoforge.jar
       ONLINE_MODE: "FALSE"
     volumes:
-      - ./data:/data
+      - ./neo-data:/data
