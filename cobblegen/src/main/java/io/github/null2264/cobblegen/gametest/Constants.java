@@ -2,6 +2,8 @@ package io.github.null2264.cobblegen.gametest;
 
 import java.util.List;
 
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+
 public abstract class Constants {
     public static final boolean IS_GAMETEST_ENABLED = boolFromString(
         System.getProperty("null2264.cobblegen.gametest", System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"))
@@ -17,8 +19,8 @@ public abstract class Constants {
     private static boolean boolFromString(String string) {
         if (string == null) return false;
 
-        List<String> yes = List.of("yes", "y", "true", "t", "1", "enable", "on");
-        List<String> no = List.of("no", "n", "false", "f", "0", "disable", "off");
+        List<String> yes = listOf("yes", "y", "true", "t", "1", "enable", "on");
+        List<String> no = listOf("no", "n", "false", "f", "0", "disable", "off");
 
         if (yes.contains(string.toLowerCase())) return true;
         else if (no.contains(string.toLowerCase())) return false;
