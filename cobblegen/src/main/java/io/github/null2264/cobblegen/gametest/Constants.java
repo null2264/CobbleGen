@@ -2,8 +2,8 @@ package io.github.null2264.cobblegen.gametest;
 
 import java.util.List;
 
-public interface Constants {
-    boolean IS_GAMETEST_ENABLED = boolFromString(
+public abstract class Constants {
+    public static final boolean IS_GAMETEST_ENABLED = boolFromString(
         System.getProperty("null2264.cobblegen.gametest", System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"))
     );
 
