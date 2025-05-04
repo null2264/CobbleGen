@@ -151,56 +151,6 @@ jobs:
           pauseOnLostFocus:false
           EOF
 
-          cat <<EOF >> run/test-${{ matrix.mc }}-${{ matrix.loader }}/config/cobblegen.json5
-          {
-            "formatVersion": "1.0",
-            "cobbleGen": [
-              {
-                "id": "minecraft:bedrock",
-                "weight": 100.0,
-              },
-            ],
-            "stoneGen": [
-              {
-                "id": "minecraft:bedrock",
-                "weight": 100.0,
-              },
-            ],
-            "basaltGen": [
-              {
-                "id": "minecraft:bedrock",
-                "weight": 100.0,
-              },
-            ],
-            "customGen": {
-              "cobbleGen": {
-                "minecraft:bedrock": [
-                  {
-                    "id": "minecraft:bedrock",
-                    "weight": 100.0,
-                  },
-                ],
-              },
-              "stoneGen": {
-                "minecraft:bedrock": [
-                  {
-                    "id": "minecraft:bedrock",
-                    "weight": 100.0,
-                  },
-                ],
-              },
-              "basaltGen": {
-                "minecraft:bedrock": [
-                  {
-                    "id": "minecraft:bedrock",
-                    "weight": 100.0,
-                  },
-                ],
-              },
-            },
-          }
-          EOF
-
           json="$(cat ./headlessmc.json)"
           url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep launcher | grep -v jfx | grep -v wrapper)"
           curl -Ls -o "headlessmc-launcher.jar" $url

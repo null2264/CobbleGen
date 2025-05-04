@@ -18,6 +18,13 @@ public class CobbleGenTestLoader extends TestFunctionLoader {
         System.getProperty("null2264.cobblegen.gametest", System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"))
     );
 
+    /**
+     * Basically {@link Boolean#parseBoolean(String string)} but with support for other boolean representation
+     * to be more user-friendly.
+     *
+     * @param string the String containing the boolean representation
+     * @return the boolean represented by the string argument
+     */
     private static boolean boolFromString(String string) {
         if (string == null) return false;
 

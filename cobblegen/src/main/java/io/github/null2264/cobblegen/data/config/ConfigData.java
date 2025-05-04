@@ -6,6 +6,7 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.gametest.CobbleGenTestLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -101,6 +102,48 @@ public class ConfigData implements Config, JanksonSerializable {
     public FluidInteractionMap advanced;
 
     public static ConfigData defaultConfig() {
+        return CobbleGenTestLoader.ENABLED ? ConfigData.testConfig() : ConfigData.productionConfig();
+    }
+
+    public static ConfigData testConfig() {
+        ConfigData config = new ConfigData();
+        config.cobbleGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build());
+        config.stoneGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build());
+        config.basaltGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build());
+        config.customGen = new CustomGen(
+            // Cobble Gen
+            GeneratorMap.of(
+                Pair.of(
+                    CGIdentifier.of("minecraft:bedrock"),
+                    ResultList.of(
+                        new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build()
+                    )
+                )
+            ),
+            // Stone Gen
+            GeneratorMap.of(
+                Pair.of(
+                    CGIdentifier.of("minecraft:bedrock"),
+                    ResultList.of(
+                        new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build()
+                    )
+                )
+            ),
+            // Basalt Gen
+            GeneratorMap.of(
+                Pair.of(
+                    CGIdentifier.of("minecraft:bedrock"),
+                    ResultList.of(
+                        new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build()
+                    )
+                )
+            )
+        );
+
+        return config;
+    }
+
+    public static ConfigData productionConfig() {
         ConfigData config = new ConfigData();
         config.cobbleGen = ResultList.of(
             new WeightedBlock.Builder().setId("minecraft:cobblestone").setWeight(100.0).setMinY(0).build(),
