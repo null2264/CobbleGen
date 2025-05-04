@@ -57,7 +57,7 @@ public class StoneGenerator implements BuiltInGenerator
 
     @Override
     public GeneratorMap getObsidianOutput() {
-        return GeneratorMap.of(Pair.of(CGIdentifier.wildcard(), ResultList.of(WeightedBlock.fromBlock(Blocks.STONE, 100D))));
+        return GeneratorMap.of(Pair.of(CGIdentifier.wildcard(), ResultList.of(WeightedBlock.Builder.of(Blocks.STONE).setWeight(100.0).build())));
     }
 
     @Override

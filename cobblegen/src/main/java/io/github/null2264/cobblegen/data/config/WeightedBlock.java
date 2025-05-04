@@ -39,18 +39,34 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     @Nullable
     public List<String> excludedBiomes;
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(String id, Double weight) {
         this(id, weight, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds) {
         this(id, weight, dimIds, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions) {
         this(id, weight, dimIds, excludedDimensions, null, null, null, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder} instead.
+     */
+    @Deprecated
     public WeightedBlock(
             String id,
             Double weight,
@@ -73,10 +89,18 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         this.excludedBiomes = excludedBiomes;
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder#of(Block)} instead.
+     */
+    @Deprecated
     public static WeightedBlock fromBlock(Block block, Double weight) {
         return fromBlock(block, weight, null, null, null, null);
     }
 
+    /**
+     * @deprecated Use {@link WeightedBlock.Builder#of(Block)} instead.
+     */
+    @Deprecated
     public static WeightedBlock fromBlock(
             Block block,
             Double weight,
@@ -117,45 +141,41 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(excludedBiomes);
     }
 
+    public Optional<List<String>> getNeighbours() {
+        return Util.optional(neighbours);
+    }
+
     @Override
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(id);
         buf.writeDouble(weight);
 
-        buf.writeOptional(Util.optional(dimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedDimensions), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getDimensions(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getExcludedDimensions(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
 
-        buf.writeOptional(Util.optional(maxY), FriendlyByteBuf::writeInt);
-        buf.writeOptional(Util.optional(minY), FriendlyByteBuf::writeInt);
+        buf.writeOptional(getMaxY(), FriendlyByteBuf::writeInt);
+        buf.writeOptional(getMinY(), FriendlyByteBuf::writeInt);
 
-        buf.writeOptional(Util.optional(biomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
-        buf.writeOptional(Util.optional(excludedBiomes), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+        buf.writeOptional(getExcludedBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
     }
 
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
-        final String id = buf.readUtf();
-        final Double weight = buf.readDouble();
+        WeightedBlock.Builder builder = new WeightedBlock.Builder();
 
-        Optional<List<String>> dimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
-        Optional<List<String>> excludedDimensions = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+        builder.setId(buf.readUtf());
+        builder.setWeight(buf.readDouble());
 
-        Optional<Integer> maxY = buf.readOptional(FriendlyByteBuf::readInt);
-        Optional<Integer> minY = buf.readOptional(FriendlyByteBuf::readInt);
+        buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf)).ifPresent(builder::setDimensions);
+        buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf)).ifPresent(builder::setExcludedDimensions);
 
-        Optional<List<String>> biomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
-        Optional<List<String>> excludedBiomes = buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf));
+        buf.readOptional(FriendlyByteBuf::readInt).ifPresent(builder::setMaxY);
+        buf.readOptional(FriendlyByteBuf::readInt).ifPresent(builder::setMinY);
 
-        return new WeightedBlock(
-                id,
-                weight,
-                dimensions.orElse(null),
-                excludedDimensions.orElse(null),
-                maxY.orElse(null),
-                minY.orElse(null),
-                null,
-                biomes.orElse(null),
-                excludedBiomes.orElse(null)
-        );
+        buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf)).ifPresent(builder::setBiomes);
+        buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf)).ifPresent(builder::setExcludedBiomes);
+
+        return builder.build();
     }
 
     @Override
@@ -176,66 +196,134 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     @SuppressWarnings("PatternVariableCanBeUsed")
     @Deserializer
     public static WeightedBlock fromJson(JsonObject json) {
+        Builder builder = new WeightedBlock.Builder();
+
         JsonElement _id = json.get("id");
         if (!(_id instanceof JsonPrimitive)) return null;
-        String id = ((JsonPrimitive) _id).asString();
+        builder.setId(((JsonPrimitive) _id).asString());
+        builder.setWeight(json.getDouble("weight", 0.0));
 
-        Double weight = json.getDouble("weight", 0.0);
-
-        @Nullable
-        List<String> dimensions;
         JsonElement _dimensions = json.get("dimensions");
         if (_dimensions instanceof JsonArray) {
-            dimensions = new ArrayList<>();
+            List<String> dimensions = new ArrayList<>();
             ((JsonArray) _dimensions).forEach(value -> dimensions.add(((JsonPrimitive) value).asString()));
-        } else {
-            dimensions = null;
+            builder.setDimensions(dimensions);
         }
 
-        @Nullable
-        List<String> excludedDimensions;
         JsonElement _excludedDimensions = json.get("excludedDimensions");
         if (_excludedDimensions instanceof JsonArray) {
-            excludedDimensions = new ArrayList<>();
+            List<String> excludedDimensions = new ArrayList<>();
             ((JsonArray) _excludedDimensions).forEach(value -> excludedDimensions.add(((JsonPrimitive) value).asString()));
-        } else {
-            excludedDimensions = null;
+            builder.setExcludedDimensions(excludedDimensions);
         }
 
-        @Nullable
-        Integer maxY = null;
         JsonElement _maxY = json.get("maxY");
         if (_maxY instanceof JsonPrimitive) {
-            maxY = ((JsonPrimitive) _maxY).asInt(0);
+            builder.setMaxY(((JsonPrimitive) _maxY).asInt(0));
         }
 
-        @Nullable
-        Integer minY = null;
         JsonElement _minY = json.get("minY");
         if (_minY instanceof JsonPrimitive) {
-            minY = ((JsonPrimitive) _minY).asInt(0);
+            builder.setMinY(((JsonPrimitive) _minY).asInt(0));
         }
 
-        @Nullable
-        List<String> biomes;
         JsonElement _biomes = json.get("biomes");
         if (_biomes instanceof JsonArray) {
-            biomes = new ArrayList<>();
+            List<String> biomes = new ArrayList<>();
             ((JsonArray) _biomes).forEach(value -> biomes.add(((JsonPrimitive) value).asString()));
-        } else {
-            biomes = null;
+            builder.setBiomes(biomes);
         }
 
-        @Nullable
-        List<String> excludedBiomes;
         JsonElement _excludedBiomes = json.get("excludedBiomes");
         if (_excludedBiomes instanceof JsonArray) {
-            excludedBiomes = new ArrayList<>();
+            List<String> excludedBiomes = new ArrayList<>();
             ((JsonArray) _excludedBiomes).forEach(value -> excludedBiomes.add(((JsonPrimitive) value).asString()));
-        } else {
-            excludedBiomes = null;
+            builder.setExcludedBiomes(excludedBiomes);
         }
 
-        return new WeightedBlock(id, weight, dimensions, excludedDimensions, maxY, minY, null, biomes, excludedBiomes);
+        return builder.build();
+    }
+
+    public static class Builder {
+        @Nullable
+        public String id;
+        @Nullable
+        public Double weight;
+        @Nullable
+        public List<String> dimensions;
+        @Nullable
+        public List<String> excludedDimensions;
+        @Nullable
+        public Integer maxY;
+        @Nullable
+        public Integer minY;
+        @Nullable
+        public List<String> neighbours;
+        @Nullable
+        public List<String> biomes;
+        @Nullable
+        public List<String> excludedBiomes;
+
+        public static Builder of(Block block) {
+            return new Builder().setId(Util.getBlockId(block).toString());
+        }
+
+        public WeightedBlock build() {
+            if (id == null && weight == null) {
+                throw new IllegalStateException("Block ID and generation weight can't be unset!");
+            }
+
+            return new WeightedBlock(
+                id,
+                weight,
+                dimensions,
+                excludedDimensions,
+                maxY,
+                minY,
+                neighbours,
+                biomes,
+                excludedBiomes
+            );
+        }
+
+        public Builder setId(String value) {
+            this.id = value;
+            return this;
+        }
+
+        public Builder setWeight(Double value) {
+            this.weight = value;
+            return this;
+        }
+
+        public Builder setDimensions(List<String> value) {
+            this.dimensions = value;
+            return this;
+        }
+
+        public Builder setExcludedDimensions(List<String> value) {
+            this.excludedDimensions = value;
+            return this;
+        }
+
+        public Builder setMaxY(Integer value) {
+            this.maxY = value;
+            return this;
+        }
+
+        public Builder setMinY(Integer value) {
+            this.minY = value;
+            return this;
+        }
+
+        public Builder setBiomes(List<String> value) {
+            this.biomes = value;
+            return this;
+        }
+
+        public Builder setExcludedBiomes(List<String> value) {
+            this.excludedBiomes = value;
+            return this;
+        }
     }
 }
