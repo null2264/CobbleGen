@@ -10,7 +10,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.SlotWidget;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.ChatFormatting;
@@ -87,10 +87,10 @@ public class CGEMIPlugin implements EmiPlugin
 
     @Override
     public void register(EmiRegistry registry) {
-        if (!ConfigHolder.META.enableRecipeViewer)
+        if (!ConfigMetaData.INSTANCE.enableRecipeViewer)
             return;
 
-        if (!ConfigHolder.META.mergeEMIRecipeCategory) {
+        if (!ConfigMetaData.INSTANCE.mergeEMIRecipeCategory) {
             FLUID_INTERACTION_CATEGORIES.forEach((ignored, category) -> registry.addCategory(category));
             FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(
                     (modifierId, blocks) -> {
@@ -140,7 +140,7 @@ public class CGEMIPlugin implements EmiPlugin
                                 neighbour = EmiStack.of(Objects.requireNonNull(generator.getFluid()), LoaderCompat.isForge() ? 1_000 : 81_000);
                             }
 
-                            if (ConfigHolder.META.emi.removeOverlaps) {
+                            if (ConfigMetaData.INSTANCE.emi.removeOverlaps) {
                                 registry.removeRecipes(r ->
                                         new HashSet<>(r.getInputs()).containsAll(List.of(neighbour, trigger)) && r.getOutputs().contains(output) && r.getId().toString().startsWith("emi")
                                 );
@@ -156,7 +156,7 @@ public class CGEMIPlugin implements EmiPlugin
                                     recipe,
                                     trigger.copy().setRemainder(trigger),
                                     false,
-                                    ConfigHolder.META.emi.invertInput ? InputPosition.RIGHT : InputPosition.LEFT
+                                    ConfigMetaData.INSTANCE.emi.invertInput ? InputPosition.RIGHT : InputPosition.LEFT
                             );
 
                             EmiStack neighbourRemainder = neighbour.isEmpty() ? neighbour : neighbour.copy().setRemainder(neighbour);
@@ -167,27 +167,27 @@ public class CGEMIPlugin implements EmiPlugin
                                         EmiStack.of(modifier.get()),
                                         false,
                                         s -> s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.soul_soil").withStyle(ChatFormatting.GREEN)),
-                                        ConfigHolder.META.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                        ConfigMetaData.INSTANCE.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
                                 );
                                 input(
                                         recipe,
                                         neighbourRemainder,
                                         false,
                                         s -> generator.getBlock() != null ? s.appendTooltip(TextCompat.translatable("tooltip.emi.fluid_interaction.basalt.blue_ice").withStyle(ChatFormatting.GREEN)) : s,
-                                        ConfigHolder.META.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                        ConfigMetaData.INSTANCE.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
                                 );
                             } else {
                                 input(
                                         recipe,
                                         neighbourRemainder,
                                         false,
-                                        ConfigHolder.META.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
+                                        ConfigMetaData.INSTANCE.emi.invertInput ? InputPosition.LEFT : InputPosition.RIGHT
                                 );
                             }
 
                             recipe.output(output,
                                     s -> {
-                                        if (!ConfigHolder.META.emi.addTooltip) return s;
+                                        if (!ConfigMetaData.INSTANCE.emi.addTooltip) return s;
 
                                         var minY = block.minY;
                                         if (minY == null)

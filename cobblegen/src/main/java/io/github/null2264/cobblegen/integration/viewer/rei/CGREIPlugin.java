@@ -1,7 +1,7 @@
 #if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
@@ -21,7 +21,7 @@ public class CGREIPlugin implements REIClientPlugin
 {
     @Override
     public void registerCategories(CategoryRegistry registry) {
-        if (!ConfigHolder.META.enableRecipeViewer)
+        if (!ConfigMetaData.INSTANCE.enableRecipeViewer)
             return;
 
         for (GeneratorType generator : GeneratorType.values()) {
@@ -32,7 +32,7 @@ public class CGREIPlugin implements REIClientPlugin
 
     @Override
     public void registerDisplays(DisplayRegistry registry) {
-        if (!ConfigHolder.META.enableRecipeViewer)
+        if (!ConfigMetaData.INSTANCE.enableRecipeViewer)
             return;
 
         FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(

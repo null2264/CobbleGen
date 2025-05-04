@@ -3,7 +3,41 @@ package io.github.null2264.cobblegen.data.config;
 import blue.endless.jankson.Comment;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 public class ConfigMetaData implements Config {
+
+    public static ConfigMetaData INSTANCE = new Factory().load();
+
+    public static class Factory implements Config.Factory<ConfigMetaData> {
+
+        private static final String NAME = "meta";
+        private static final File PATH = new File(Config.path + File.separator + "cobblegen-meta.json5");
+
+        @Override
+        public ConfigMetaData load() {
+            return ConfigHelper.loadConfig(
+                NAME,
+                false,
+                PATH,
+                null,
+                ConfigMetaData::new,
+                ConfigMetaData.class
+            );
+        }
+
+        @Override
+        public ConfigMetaData reload(ConfigMetaData workingConfig) {
+            return ConfigHelper.loadConfig(
+                NAME,
+                true,
+                PATH,
+                workingConfig,
+                ConfigMetaData::new,
+                ConfigMetaData.class
+            );
+        }
+    }
 
     @Comment(value="Enable Recipe Viewer support (EMI/REI/JEI)")
     @NotNull

@@ -6,7 +6,7 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import org.jetbrains.annotations.Nullable;
 
-import static io.github.null2264.cobblegen.data.config.ConfigHolder.JANKSON;
+import static io.github.null2264.cobblegen.data.config.Config.JANKSON;
 
 public class CustomGen implements JanksonSerializable
 {

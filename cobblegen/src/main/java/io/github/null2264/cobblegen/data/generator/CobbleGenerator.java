@@ -2,7 +2,6 @@ package io.github.null2264.cobblegen.data.generator;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.Pair;
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
@@ -108,7 +107,7 @@ public class CobbleGenerator extends BlockGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         if (Generator.getStillFluid(neighbour) == getFluid()) {
             if (source.getType() == Fluids.LAVA && source.isSource()) {
-                if (Util.optional(ConfigHolder.META).orElse(new ConfigMetaData()).enableExperimentalFeatures)
+                if (ConfigMetaData.INSTANCE.enableExperimentalFeatures)
                     return getBlockCandidate(level, pos, getObsidianOutput(), Blocks.OBSIDIAN);
                 return Optional.of(Blocks.OBSIDIAN.defaultBlockState());
             }

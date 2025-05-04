@@ -2,7 +2,6 @@ package io.github.null2264.cobblegen.integration;
 
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
-import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ConfigData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
@@ -21,20 +20,13 @@ import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Util.notNullOr;
 
 @CGPlugin
 public class BuiltInPlugin implements CobbleGenPlugin
 {
-    private static final Path configPath = LoaderCompat.getConfigDir();
-    private static final File configFile = new File(configPath + File.separator + MOD_ID + ".json5");
     @Nullable
     private static ConfigData config = null;
 
@@ -60,8 +52,14 @@ public class BuiltInPlugin implements CobbleGenPlugin
 
     @Override
     public void registerInteraction(CGRegistry registry) {
-        CGLog.info((!isReload ? "L" : "Rel") + "oading config...");
-        if (config == null || isReload) config = loadConfig(isReload, configFile, config, ConfigData.defaultConfig(), ConfigData.class);
+        if (config == null || isReload) {
+            ConfigData.Factory factory = new ConfigData.Factory();
+            if (isReload) {
+                config = factory.reload(config);
+            } else {
+                config = factory.load();
+            }
+        }
         if (config == null) throw new RuntimeException("How?");
 
         AtomicInteger count = new AtomicInteger();

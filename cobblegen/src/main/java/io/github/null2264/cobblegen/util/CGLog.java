@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.util;
 
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public class CGLog {
     private static final String prefix = "[CobbleGen] ";
 
     public static void debug(String s, String... a) {
-        if (!ConfigHolder.META.debugLog) return;
+        if (!ConfigMetaData.INSTANCE.debugLog) return;
 
         StringBuilder rt = new StringBuilder(prefix + s);
         for (String s1 : a) {

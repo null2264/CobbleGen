@@ -1,7 +1,6 @@
 package io.github.null2264.cobblegen.integration.create;
 
 import io.github.null2264.cobblegen.compat.ModContainerCompat;
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.util.CGLog;
 import org.jetbrains.annotations.ApiStatus;
@@ -16,7 +15,7 @@ public class CreateCompatUtil {
      */
     @ApiStatus.Internal
     public static CreateSupport getCreateSupport() {
-        if (!ConfigHolder.META.create.loadIntegration) return CreateSupport.NONE;
+        if (!ConfigMetaData.INSTANCE.create.loadIntegration) return CreateSupport.NONE;
 
         #if MC<=11605
         return CreateSupport.NONE;  // We don't support create integration for MC1.16.5

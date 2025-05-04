@@ -1,7 +1,7 @@
 #if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.GeneratorType;
@@ -35,7 +35,7 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
-        if (!ConfigHolder.META.enableRecipeViewer)
+        if (!ConfigMetaData.INSTANCE.enableRecipeViewer)
             return;
 
         IJeiHelpers jeiHelpers = registration.getJeiHelpers();
@@ -50,7 +50,7 @@ public class CGJEIPlugin implements IModPlugin
 
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
-        if (!ConfigHolder.META.enableRecipeViewer)
+        if (!ConfigMetaData.INSTANCE.enableRecipeViewer)
             return;
 
         FLUID_INTERACTION.getGenerators().forEach((fluid, generators) -> generators.forEach(generator -> generator.getOutput().forEach(

@@ -4,14 +4,12 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.data.config.ConfigData;
-import io.github.null2264.cobblegen.data.config.ConfigHolder;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.util.CGLog;
 import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.ApiStatus;
 
-import static io.github.null2264.cobblegen.data.config.ConfigHelper.loadConfig;
 import static io.github.null2264.cobblegen.util.Constants.OP_LEVEL_GAMEMASTERS;
 
 #if FORGE
@@ -36,7 +34,7 @@ public class CobbleGen
 
     public CobbleGen() {
         // Force config to be generated when loading up the game instead of having to load a world
-        loadConfig(false, ConfigHolder.configFile, null, ConfigData.defaultConfig(), ConfigData.class);
+        new ConfigData.Factory().load();
         #if FORGE && MC>=11801 && MC<12105
         // I was gonna do RegisterGameTestsEvent like a normal person, but there's a check that I need to bypass otherwise Forge won't register my test
         net.minecraft.gametest.framework.GameTestRegistry.register(io.github.null2264.cobblegen.gametest.BlockGenerationTest.class);
@@ -54,7 +52,7 @@ public class CobbleGen
                 LiteralArgumentBuilder.<CommandSourceStack>literal("cobblegen")
                         .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").requires(arg -> arg.hasPermission(OP_LEVEL_GAMEMASTERS)).executes(c -> {
                             CGLog.info("Reloading meta config...");
-                            ConfigHolder.META = loadConfig(true, ConfigHolder.metaConfigFile, ConfigHolder.META, new ConfigMetaData(), ConfigMetaData.class);
+                            ConfigMetaData.INSTANCE = new ConfigMetaData.Factory().reload(ConfigMetaData.INSTANCE);
                             c.getSource().sendSuccess(
                                 #if MC>=12001
                                 () ->
