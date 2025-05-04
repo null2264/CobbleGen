@@ -1,24 +1,25 @@
 package io.github.null2264.cobblegen.network;
 
+import io.github.null2264.cobblegen.network.payload.*;
+import io.github.null2264.cobblegen.util.CGLog;
+import io.github.null2264.cobblegen.util.Util;
+import org.jetbrains.annotations.ApiStatus;
+
 #if MC<12002
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+
+import static io.github.null2264.cobblegen.util.Constants.KNOWN_CLIENT_PAYLOADS;
 #else
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 #endif
 
-import io.github.null2264.cobblegen.data.CGIdentifier;
-import io.github.null2264.cobblegen.network.payload.*;
-import io.github.null2264.cobblegen.util.CGLog;
-import io.github.null2264.cobblegen.util.Util;
-import net.minecraft.network.FriendlyByteBuf;
-import org.jetbrains.annotations.ApiStatus;
-
-import static io.github.null2264.cobblegen.CobbleGen.*;
-import static io.github.null2264.cobblegen.util.Constants.*;
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 public class CGClientPlayNetworkHandler
 {

@@ -1,21 +1,25 @@
 package io.github.null2264.cobblegen.network;
 
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
+import io.github.null2264.cobblegen.network.payload.*;
+import io.github.null2264.cobblegen.util.CGLog;
+import org.jetbrains.annotations.ApiStatus;
+
 #if MC<12002
+import io.github.null2264.cobblegen.data.CGIdentifier;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+
+import static io.github.null2264.cobblegen.util.Constants.KNOWN_SERVER_PAYLOADS;
 #else
-import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.network.ServerCommonPacketListenerImpl;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 #endif
 
-import io.github.null2264.cobblegen.network.payload.*;
-import io.github.null2264.cobblegen.util.CGLog;
-import org.jetbrains.annotations.ApiStatus;
-
-import static io.github.null2264.cobblegen.CobbleGen.*;
+import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 
 public class CGServerPlayNetworkHandler
 {
