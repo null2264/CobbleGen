@@ -43,7 +43,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin
         }
 
         #if MC>=12105
-        if (mixinClassName.endsWith("$GameTest") && io.github.null2264.cobblegen.gametest.CobbleGenTestLoader.ENABLED) {
+        if (mixinClassName.endsWith("$GameTest") && io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED) {
             // Datapack will not register automatically in Fabric without FAPI.
             // I usually prefer not depending on FAPI, but I'll make this one an exception...
             // because I ain't dealing with Resource Pack loading ever again

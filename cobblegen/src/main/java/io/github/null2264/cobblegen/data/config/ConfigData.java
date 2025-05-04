@@ -6,13 +6,13 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
-import io.github.null2264.cobblegen.gametest.CobbleGenTestLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+import static io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED;
 
 @SuppressWarnings("TextBlockMigration")
 public class ConfigData implements Config, JanksonSerializable {
@@ -102,7 +102,7 @@ public class ConfigData implements Config, JanksonSerializable {
     public FluidInteractionMap advanced;
 
     public static ConfigData defaultConfig() {
-        return CobbleGenTestLoader.ENABLED ? ConfigData.testConfig() : ConfigData.productionConfig();
+        return IS_GAMETEST_ENABLED ? ConfigData.testConfig() : ConfigData.productionConfig();
     }
 
     public static ConfigData testConfig() {
