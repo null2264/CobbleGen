@@ -1,4 +1,4 @@
-#if MC>=12105
+#if FABRIC || MC>=12105
 package net.neoforged.neoforge.gametest;
 
 import java.lang.annotation.ElementType;
