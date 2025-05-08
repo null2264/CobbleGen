@@ -5,6 +5,7 @@ import java.util.List;
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 
 public abstract class Constants {
+
     public static final boolean IS_GAMETEST_ENABLED = boolFromString(
         System.getProperty("null2264.cobblegen.gametest", System.getenv("ENABLE_NULL2264_COBBLEGEN_GAMETEST"))
     );

@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
-public class CobbleGenMixinPlugin implements IMixinConfigPlugin
-{
+public class CobbleGenMixinPlugin implements IMixinConfigPlugin {
+
     @Override
     public void onLoad(String mixinPackage) {
         #if FORGE && MC>=12105

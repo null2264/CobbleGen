@@ -57,6 +57,7 @@ import java.util.function.Consumer;
  *   -> BlockGenerationTest.registerInstances(...)
  */
 public class BlockGenerationTest {
+
     public static final CGIdentifier TEMPLATE = CGIdentifier.of("empty");
     public static final Integer TIMEOUT_TICKS = 120;
 
@@ -87,6 +88,17 @@ public class BlockGenerationTest {
         public ResourceKey<Consumer<GameTestHelper>> functionKey() {
             return ResourceKey.create(Registries.TEST_FUNCTION, id().toMC());
         }
+
+        public void registerFunction(BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
+            registerer.accept(functionKey(), function());
+        }
+
+        public void registerEnvironment(
+            Registry<GameTestInstance> testInstances,
+            Registry<TestEnvironmentDefinition> testEnvironmentRegistry
+        ) {
+            Registry.register(testInstances, id().toMC(), testInstance(testEnvironmentRegistry));
+        }
     }
 
     private static final BlockGenerationTest holder = new BlockGenerationTest();
@@ -116,11 +128,12 @@ public class BlockGenerationTest {
     );
 
     public static void registerFunctions(BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
-        registerer.accept(cobbleGenerationTest.functionKey(), cobbleGenerationTest.function());
-        registerer.accept(basaltGenerationTest.functionKey(), basaltGenerationTest.function());
-        registerer.accept(stoneGenerationTest.functionKey(), stoneGenerationTest.function());
+        cobbleGenerationTest.registerFunction(registerer);
+        basaltGenerationTest.registerFunction(registerer);
+        stoneGenerationTest.registerFunction(registerer);
     }
 
+    @SuppressWarnings("unchecked")
     public static void registerInstances(List<RegistryDataLoader.Loader<?>> registriesList) {
         Map<ResourceKey<? extends Registry<?>>, Registry<?>> registries = new IdentityHashMap<>(registriesList.size());
 
@@ -133,9 +146,9 @@ public class BlockGenerationTest {
         Registry<TestEnvironmentDefinition> testEnvironmentRegistry =
             (Registry<TestEnvironmentDefinition>) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
 
-        Registry.register(testInstances, cobbleGenerationTest.id().toMC(), cobbleGenerationTest.testInstance(testEnvironmentRegistry));
-        Registry.register(testInstances, basaltGenerationTest.id().toMC(), basaltGenerationTest.testInstance(testEnvironmentRegistry));
-        Registry.register(testInstances, stoneGenerationTest.id().toMC(), stoneGenerationTest.testInstance(testEnvironmentRegistry));
+        cobbleGenerationTest.registerEnvironment(testInstances, testEnvironmentRegistry);
+        basaltGenerationTest.registerEnvironment(testInstances, testEnvironmentRegistry);
+        stoneGenerationTest.registerEnvironment(testInstances, testEnvironmentRegistry);
     }
     #endif
 
