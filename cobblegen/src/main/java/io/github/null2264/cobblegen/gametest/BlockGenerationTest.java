@@ -17,6 +17,7 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -24,6 +25,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+#else
+    #if FORGE && FORGE==1
+    import net.minecraftforge.gametest.PrefixGameTestTemplate;
+    #else
+    import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+    #endif
 #endif
 
 /**
@@ -152,15 +159,8 @@ public class BlockGenerationTest {
     }
     #endif
 
-    #if MC<12105
     // Basically telling Forge to stop being weird
-        #if FORGE
-            #if FORGE==2
-    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
-            #elif FORGE==1
-    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
-            #endif
-        #endif
+    @PrefixGameTestTemplate(false)
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE
         templateNamespace = "cobblegen",
@@ -170,7 +170,6 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    #endif
     public void cobbleGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the water
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
@@ -202,16 +201,9 @@ public class BlockGenerationTest {
         );
     }
 
-    #if MC<12105
-        #if FORGE && MC<12105
-            #if FORGE==2
-    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
-            #elif FORGE==1
-    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
-            #endif
-        #endif
+    @PrefixGameTestTemplate(false)
     @net.minecraft.gametest.framework.GameTest(
-        #if FORGE && MC<12105
+        #if FORGE
         templateNamespace = "cobblegen",
         template = "empty",
         #else
@@ -219,7 +211,6 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    #endif
     public void basaltGenerationTest(GameTestHelper context) {
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
         // << Barrier wrapping the lava
@@ -239,15 +230,8 @@ public class BlockGenerationTest {
         );
     }
 
-    #if MC<12105
     // Basically telling Forge to stop being weird
-        #if FORGE
-            #if FORGE==2
-    @net.neoforged.neoforge.gametest.PrefixGameTestTemplate(false)
-            #elif FORGE==1
-    @net.minecraftforge.gametest.PrefixGameTestTemplate(false)
-            #endif
-        #endif
+    @PrefixGameTestTemplate(false)
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE
         templateNamespace = "cobblegen",
@@ -257,7 +241,6 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    #endif
     public void stoneGenerationTest(GameTestHelper context) {
         // << Barrier wrapping the lava
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
