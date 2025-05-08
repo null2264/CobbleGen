@@ -158,6 +158,22 @@ public class BlockGenerationTest {
             0,
             true,
             testFunctionHolder::stoneGenerationWithModifierTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("obsidian_generation"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::obsidianGenerationTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("obsidian_generation_with_modifier"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::obsidianGenerationWithModifierTest
         )
     );
 
@@ -393,6 +409,50 @@ public class BlockGenerationTest {
         context.succeedWhen(
             () -> {
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
+            }
+        );
+    }
+
+    @PrefixGameTestTemplate(false)
+    @net.minecraft.gametest.framework.GameTest(
+        #if FORGE
+        templateNamespace = "cobblegen",
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
+    public void obsidianGenerationTest(GameTestHelper context) {
+        context.setBlock(new BlockPos(1, 3, 3), Blocks.WATER);
+        context.setBlock(new BlockPos(1, 2, 3), Blocks.LAVA);
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.BARRIER);  // Barrier under the generated block
+        BlockPos generatedPos = new BlockPos(1, 2, 3);
+        context.succeedWhen(
+            () -> {
+                context.assertBlockPresent(Blocks.SAND, generatedPos);
+            }
+        );
+    }
+
+    @PrefixGameTestTemplate(false)
+    @net.minecraft.gametest.framework.GameTest(
+        #if FORGE
+        templateNamespace = "cobblegen",
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
+    public void obsidianGenerationWithModifierTest(GameTestHelper context) {
+        context.setBlock(new BlockPos(1, 3, 3), Blocks.WATER);
+        context.setBlock(new BlockPos(1, 2, 3), Blocks.LAVA);
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.GLASS);  // Barrier under the generated block
+        BlockPos generatedPos = new BlockPos(1, 2, 3);
+        context.succeedWhen(
+            () -> {
+                context.assertBlockPresent(Blocks.GLASS, generatedPos);
             }
         );
     }

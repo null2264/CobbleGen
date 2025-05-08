@@ -13,10 +13,14 @@ public class CollectionCompat {
         return new HashMap<>();
     }
 
-    public static <K, V> Map<K, V> mapOf(K key, V value) {
-        Map<K, V> rt = new HashMap<>();
+    public static <K, V> HashMap<K, V> hashMapOf(K key, V value) {
+        HashMap<K, V> rt = new HashMap<>();
         rt.put(key, value);
         return rt;
+    }
+
+    public static <K, V> Map<K, V> mapOf(K key, V value) {
+        return hashMapOf(key, value);
     }
 
     @SuppressWarnings("unchecked")

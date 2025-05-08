@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
+import static io.github.null2264.cobblegen.compat.CollectionCompat.hashMapOf;
 import static io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED;
 
 @SuppressWarnings("TextBlockMigration")
@@ -135,6 +136,31 @@ public class ConfigData implements Config, JanksonSerializable {
                     CGIdentifier.of("minecraft:bedrock"),
                     ResultList.of(
                         new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build()
+                    )
+                )
+            )
+        );
+        config.advanced = FluidInteractionMap.of(
+            "minecraft:lava",
+            hashMapOf(
+                "minecraft:water",
+                new AdvancedGen(
+                    true,
+                    GeneratorMap.of(),
+                    GeneratorMap.of(),
+                    GeneratorMap.of(
+                        Pair.of(
+                            CGIdentifier.wildcard(),
+                            ResultList.of(
+                                new WeightedBlock.Builder().setId("minecraft:sand").setWeight(100.0).build()
+                            )
+                        ),
+                        Pair.of(
+                            CGIdentifier.of("minecraft:glass"),
+                            ResultList.of(
+                                new WeightedBlock.Builder().setId("minecraft:glass").setWeight(100.0).build()
+                            )
+                        )
                     )
                 )
             )

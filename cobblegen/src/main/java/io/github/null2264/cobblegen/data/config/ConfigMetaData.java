@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
+import static io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED;
+
 public class ConfigMetaData implements Config {
 
     public static ConfigMetaData INSTANCE = new Factory().load();
@@ -45,7 +47,7 @@ public class ConfigMetaData implements Config {
     
     @Comment(value="Enable Experimental Features")
     @NotNull
-    public Boolean enableExperimentalFeatures = false;
+    public Boolean enableExperimentalFeatures = IS_GAMETEST_ENABLED;
 
     @Comment(value="Enable debug log, may spam your server console")
     public Boolean debugLog = false;
