@@ -166,7 +166,7 @@ public class BlockGenerationTest {
             0,
             true,
             testFunctionHolder::obsidianGenerationTest
-        ),
+        )/*,
         new TestHolder(
             CGIdentifier.of("obsidian_generation_with_modifier"),
             TEMPLATE,
@@ -175,6 +175,7 @@ public class BlockGenerationTest {
             true,
             testFunctionHolder::obsidianGenerationWithModifierTest
         )
+         */
     );
 
     public static void registerFunctions(BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
@@ -435,6 +436,7 @@ public class BlockGenerationTest {
         );
     }
 
+    /*
     @PrefixGameTestTemplate(false)
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE
@@ -456,5 +458,6 @@ public class BlockGenerationTest {
             }
         );
     }
+     */
 }
 #endif

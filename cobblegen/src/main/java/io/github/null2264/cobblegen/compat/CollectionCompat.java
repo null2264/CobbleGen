@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 public class CollectionCompat {
+
     @SafeVarargs
     public static <T> List<T> listOf(T... items) {
         return new ArrayList<>(Arrays.asList(items));

@@ -7,8 +7,8 @@ import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 
-public class AdvancedGen implements JanksonSerializable
-{
+public class AdvancedGen implements JanksonSerializable {
+
     public Boolean silent;
     public GeneratorMap results;
     public GeneratorMap resultsFromTop;

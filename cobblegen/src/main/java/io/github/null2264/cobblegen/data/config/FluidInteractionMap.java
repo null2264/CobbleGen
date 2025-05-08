@@ -8,6 +8,7 @@ import io.github.null2264.cobblegen.data.JanksonSerializable;
 import java.util.HashMap;
 
 public class FluidInteractionMap extends HashMap<String, HashMap<String, AdvancedGen>> implements JanksonSerializable {
+
     static FluidInteractionMap of(String fluidId, HashMap<String, AdvancedGen> fluidMap) {
         FluidInteractionMap rt = new FluidInteractionMap();
         rt.put(fluidId, fluidMap);
