@@ -4,6 +4,7 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ConfigData;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.generator.BasaltGenerator;
@@ -105,9 +106,9 @@ public class BuiltInPlugin implements CobbleGenPlugin
                         }
                     }
 
-                    if (!results.isEmpty()) {
+                    if (!results.isEmpty() || (!obi.isEmpty() && ConfigMetaData.INSTANCE.enableExperimentalFeatures)) {
                         Generator generator = null;
-                        if (isNeighbourBlock) {
+                        if (isNeighbourBlock && !results.isEmpty()) {
                             Block neighbourBlock = getBlockFromString(neighbour);
                             if (neighbourBlock != null)
                                 generator = new BasaltGenerator(results, neighbourBlock, gen.silent);
