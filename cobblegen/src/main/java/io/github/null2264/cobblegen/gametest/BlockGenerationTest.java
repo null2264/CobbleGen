@@ -6,6 +6,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
 
+#if FORGE && FORGE==1
+import net.minecraftforge.gametest.PrefixGameTestTemplate;
+#else
+import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+#endif
+
 #if MC>=12105
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
@@ -17,7 +23,6 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.resources.RegistryDataLoader;
 import net.minecraft.resources.ResourceKey;
-import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -25,12 +30,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-#else
-    #if FORGE && FORGE==1
-    import net.minecraftforge.gametest.PrefixGameTestTemplate;
-    #else
-    import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
-    #endif
+
+import static io.github.null2264.cobblegen.compat.CollectionCompat.listOf;
 #endif
 
 /**
@@ -108,36 +109,60 @@ public class BlockGenerationTest {
         }
     }
 
-    private static final BlockGenerationTest holder = new BlockGenerationTest();
-    private static final TestHolder cobbleGenerationTest = new TestHolder(
-        CGIdentifier.of("cobble_generation"),
-        TEMPLATE,
-        TIMEOUT_TICKS,
-        0,
-        true,
-        holder::cobbleGenerationTest
-    );
-    private static final TestHolder basaltGenerationTest = new TestHolder(
-        CGIdentifier.of("basalt_generation"),
-        TEMPLATE,
-        TIMEOUT_TICKS,
-        0,
-        true,
-        holder::basaltGenerationTest
-    );
-    private static final TestHolder stoneGenerationTest = new TestHolder(
-        CGIdentifier.of("stone_generation"),
-        TEMPLATE,
-        TIMEOUT_TICKS,
-        0,
-        true,
-        holder::stoneGenerationTest
+    private static final BlockGenerationTest testFunctionHolder = new BlockGenerationTest();
+    private static final List<TestHolder> testHolders = listOf(
+        new TestHolder(
+            CGIdentifier.of("cobble_generation"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::cobbleGenerationTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("cobble_generation_with_modifier"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::cobbleGenerationWithModifierTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("basalt_generation"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::basaltGenerationTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("basalt_generation_with_modifier"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::basaltGenerationWithModifierTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("stone_generation"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::stoneGenerationTest
+        ),
+        new TestHolder(
+            CGIdentifier.of("stone_generation_with_modifier"),
+            TEMPLATE,
+            TIMEOUT_TICKS,
+            0,
+            true,
+            testFunctionHolder::stoneGenerationWithModifierTest
+        )
     );
 
     public static void registerFunctions(BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
-        cobbleGenerationTest.registerFunction(registerer);
-        basaltGenerationTest.registerFunction(registerer);
-        stoneGenerationTest.registerFunction(registerer);
+        testHolders.forEach(holder -> holder.registerFunction(registerer));
     }
 
     @SuppressWarnings("unchecked")
@@ -153,9 +178,7 @@ public class BlockGenerationTest {
         Registry<TestEnvironmentDefinition> testEnvironmentRegistry =
             (Registry<TestEnvironmentDefinition>) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
 
-        cobbleGenerationTest.registerEnvironment(testInstances, testEnvironmentRegistry);
-        basaltGenerationTest.registerEnvironment(testInstances, testEnvironmentRegistry);
-        stoneGenerationTest.registerEnvironment(testInstances, testEnvironmentRegistry);
+        testHolders.forEach(holder -> holder.registerEnvironment(testInstances, testEnvironmentRegistry));
     }
     #endif
 
@@ -195,7 +218,46 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.succeedWhen(
             () -> {
-                // A special config is needed for this test
+                context.assertBlockPresent(Blocks.BARRIER, generatedPos);
+            }
+        );
+    }
+
+    @PrefixGameTestTemplate(false)
+    @net.minecraft.gametest.framework.GameTest(
+        #if FORGE
+        templateNamespace = "cobblegen",
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
+    public void cobbleGenerationWithModifierTest(GameTestHelper context) {
+        // << Barrier wrapping the water
+        context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 2, 2), Blocks.BARRIER);
+        context.setBlock(new BlockPos(2, 2, 1), Blocks.BARRIER);
+        context.setBlock(new BlockPos(2, 2, 2), Blocks.BARRIER);
+
+        context.setBlock(new BlockPos(0, 1, 2), Blocks.BARRIER);
+        context.setBlock(new BlockPos(2, 1, 2), Blocks.BARRIER);
+        // >>
+        context.setBlock(new BlockPos(1, 1, 1), Blocks.BARRIER);  // Barrier under still water
+        context.setBlock(new BlockPos(1, 0, 2), Blocks.BARRIER);  // Barrier under flowing water
+        context.setBlock(new BlockPos(1, 2, 1), Blocks.WATER);
+        // << Barrier wrapping the lava
+        context.setBlock(new BlockPos(2, 2, 4), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 2, 4), Blocks.BARRIER);
+        context.setBlock(new BlockPos(1, 2, 5), Blocks.BARRIER);
+        // >>
+        context.setBlock(new BlockPos(1, 1, 4), Blocks.BARRIER);  // Barrier under lava
+        context.setBlock(new BlockPos(1, 2, 4), Blocks.LAVA);
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.BEDROCK);  // Modifier block
+        BlockPos generatedPos = new BlockPos(1, 2, 3);
+        context.succeedWhen(
+            () -> {
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
             }
         );
@@ -224,13 +286,39 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.succeedWhen(
             () -> {
-                // A special config is needed for this test
+                context.assertBlockPresent(Blocks.BARRIER, generatedPos);
+            }
+        );
+    }
+
+    @PrefixGameTestTemplate(false)
+    @net.minecraft.gametest.framework.GameTest(
+        #if FORGE
+        templateNamespace = "cobblegen",
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
+    public void basaltGenerationWithModifierTest(GameTestHelper context) {
+        context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
+        // << Barrier wrapping the lava
+        context.setBlock(new BlockPos(2, 2, 4), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 2, 4), Blocks.BARRIER);
+        context.setBlock(new BlockPos(1, 2, 5), Blocks.BARRIER);
+        // >>
+        context.setBlock(new BlockPos(1, 1, 4), Blocks.BARRIER);  // Barrier under lava
+        context.setBlock(new BlockPos(1, 2, 4), Blocks.LAVA);
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.BEDROCK);  // For custom basalt generators
+        BlockPos generatedPos = new BlockPos(1, 2, 3);
+        context.succeedWhen(
+            () -> {
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
             }
         );
     }
 
-    // Basically telling Forge to stop being weird
     @PrefixGameTestTemplate(false)
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE
@@ -265,7 +353,45 @@ public class BlockGenerationTest {
         BlockPos generatedPos = new BlockPos(1, 1, 1);
         context.succeedWhen(
             () -> {
-                // A special config is needed for this test
+                context.assertBlockPresent(Blocks.BARRIER, generatedPos);
+            }
+        );
+    }
+
+    @PrefixGameTestTemplate(false)
+    @net.minecraft.gametest.framework.GameTest(
+        #if FORGE
+        templateNamespace = "cobblegen",
+        template = "empty",
+        #else
+        template = "cobblegen:empty",
+        #endif
+        timeoutTicks = 120
+    )
+    public void stoneGenerationWithModifierTest(GameTestHelper context) {
+        // << Barrier wrapping the lava
+        context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
+        context.setBlock(new BlockPos(1, 2, 2), Blocks.BARRIER);
+        context.setBlock(new BlockPos(2, 2, 1), Blocks.BARRIER);
+
+        context.setBlock(new BlockPos(1, 1, 0), Blocks.BARRIER);
+        context.setBlock(new BlockPos(0, 1, 1), Blocks.BARRIER);
+        context.setBlock(new BlockPos(1, 1, 2), Blocks.BARRIER);
+        context.setBlock(new BlockPos(2, 1, 1), Blocks.BARRIER);
+        // >>
+        context.setBlock(new BlockPos(1, 2, 1), Blocks.LAVA);
+        // << Barrier wrapping the water
+        context.setBlock(new BlockPos(0, 1, 2), Blocks.BARRIER);
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.BARRIER);
+        context.setBlock(new BlockPos(2, 1, 2), Blocks.BARRIER);
+        // >>
+        context.setBlock(new BlockPos(1, 0, 2), Blocks.BARRIER);  // Barrier under the water
+        context.setBlock(new BlockPos(1, 1, 2), Blocks.WATER);
+        context.setBlock(new BlockPos(1, 0, 1), Blocks.BEDROCK);  // Barrier under the generated block
+        BlockPos generatedPos = new BlockPos(1, 1, 1);
+        context.succeedWhen(
+            () -> {
                 context.assertBlockPresent(Blocks.BEDROCK, generatedPos);
             }
         );

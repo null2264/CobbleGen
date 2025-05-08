@@ -107,9 +107,9 @@ public class ConfigData implements Config, JanksonSerializable {
 
     public static ConfigData testConfig() {
         ConfigData config = new ConfigData();
-        config.cobbleGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build());
-        config.stoneGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build());
-        config.basaltGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:bedrock").setWeight(100.0).build());
+        config.cobbleGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:barrier").setWeight(100.0).build());
+        config.stoneGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:barrier").setWeight(100.0).build());
+        config.basaltGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:barrier").setWeight(100.0).build());
         config.customGen = new CustomGen(
             // Cobble Gen
             GeneratorMap.of(
