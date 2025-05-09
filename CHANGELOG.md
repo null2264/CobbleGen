@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.4.4] - 2025-05-09
+
+### Fixed
+- [Advanced] Fix obsidian generation not being registered when `results` is not defined
+
+### Other
+- Add tests for generators with modifier and advanced generator (obsidian only for now)
+
 ## [v5.4.3] - 2025-05-02
 
 ### Fixed
