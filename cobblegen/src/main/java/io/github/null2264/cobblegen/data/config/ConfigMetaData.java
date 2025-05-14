@@ -63,7 +63,7 @@ public class ConfigMetaData implements Config {
     public CreateData create = new CreateData();
 
     // TODO: Maybe allow this to be overwritten by generator config?
-    @Comment(value="Whether or not to check other position for modifier block, default is 'false', meaning it only for modifier below the generated block")
+    @Comment(value="Whether or not to check other position for modifier block, default is 'false', meaning the mod will only check for modifier below the generated block")
     public Boolean lenientModifier = false;
 
     public static class EMIData {
