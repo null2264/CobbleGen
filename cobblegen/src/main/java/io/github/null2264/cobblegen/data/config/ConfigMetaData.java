@@ -62,6 +62,10 @@ public class ConfigMetaData implements Config {
     @Comment(value="Create mod related config")
     public CreateData create = new CreateData();
 
+    // TODO: Maybe allow this to be overwritten by generator config?
+    @Comment(value="Whether or not to check other position for modifier block, default is 'false', meaning it only for modifier below the generated block")
+    public Boolean lenientModifier = false;
+
     public static class EMIData {
         @Comment(value="Add CobbleGen tooltip")
         public Boolean addTooltip = true;

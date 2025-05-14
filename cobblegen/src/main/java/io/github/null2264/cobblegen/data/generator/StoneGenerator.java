@@ -2,6 +2,7 @@ package io.github.null2264.cobblegen.data.generator;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.Pair;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
@@ -94,7 +95,7 @@ public class StoneGenerator implements BuiltInGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         Fluid fluid = Generator.getStillFluid(neighbour);
         if (getFluid() == fluid) {
-            return getBlockCandidate(level, pos, getOutput());
+            return getBlockCandidate(level, pos, getOutput(), null, ConfigMetaData.INSTANCE.lenientModifier);
         }
 
         return Optional.empty();

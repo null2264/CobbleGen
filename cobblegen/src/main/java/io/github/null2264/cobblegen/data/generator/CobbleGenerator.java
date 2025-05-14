@@ -108,11 +108,11 @@ public class CobbleGenerator extends BlockGenerator
         if (Generator.getStillFluid(neighbour) == getFluid()) {
             if (source.getType() == Fluids.LAVA && source.isSource()) {
                 if (ConfigMetaData.INSTANCE.enableExperimentalFeatures)
-                    return getBlockCandidate(level, pos, getObsidianOutput(), Blocks.OBSIDIAN);
+                    return getBlockCandidate(level, pos, getObsidianOutput(), Blocks.OBSIDIAN, ConfigMetaData.INSTANCE.lenientModifier);
                 return Optional.of(Blocks.OBSIDIAN.defaultBlockState());
             }
 
-            return getBlockCandidate(level, pos, getOutput());
+            return getBlockCandidate(level, pos, getOutput(), null, ConfigMetaData.INSTANCE.lenientModifier);
         }
         return Optional.empty();
     }

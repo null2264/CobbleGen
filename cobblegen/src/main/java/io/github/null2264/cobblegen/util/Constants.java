@@ -6,11 +6,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.material.Fluid;
 #endif
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.network.payload.*;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
 
 // FIXME: Move MC related consts to :mclib, for now don't use stuff from here inside "early state" of mod loading (e.g. MixinPlugin)
@@ -95,8 +93,4 @@ public class Constants {
             return fromId(Util.getBlockId(block));
         }
     }
-
-    public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
-            Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
-    );
 }
