@@ -70,7 +70,7 @@ public interface BuiltInGenerator extends Generator {
 
         if (filteredBlockIds.isEmpty()) return Optional.empty();
 
-        if (filteredBlockIds.size() == 1) return Optional.of(filteredBlockIds.get(0).id);
+        if (filteredBlockIds.size() == 1) return Util.optional(filteredBlockIds.get(0).id);
 
         int idx = 0;
         for (double r = Math.random() * totalWeight.get(); idx < filteredBlockIds.size() - 1; ++idx) {
@@ -78,7 +78,7 @@ public interface BuiltInGenerator extends Generator {
             if (r <= 0.0) break;
         }
 
-        return Optional.of(filteredBlockIds.get(idx).id);
+        return Util.optional(filteredBlockIds.get(idx).id);
     }
 
     default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, GeneratorMap candidates, Block defaultBlock, Boolean isLenient) {
@@ -88,12 +88,12 @@ public interface BuiltInGenerator extends Generator {
                 Block key = level.getBlockState(pos.relative(direction)).getBlock();
                 CGIdentifier id = CGIdentifier.fromMC(Util.getBlockId(key));
                 if (!candidates.containsKey(id)) continue;
-                resultCandidates = Optional.of(candidates.get(id));
+                resultCandidates = Util.optional(candidates.get(id));
             }
         } else {
             Block key = level.getBlockState(pos.below()).getBlock();
             CGIdentifier id = CGIdentifier.fromMC(Util.getBlockId(key));
-            resultCandidates = Optional.of(candidates.get(id));
+            resultCandidates = Util.optional(candidates.get(id));
         }
 
         Optional<String> replacementId = randomizeBlockId(
@@ -105,7 +105,7 @@ public interface BuiltInGenerator extends Generator {
 
         if (!replacementId.isPresent()) {
             if (defaultBlock != null)
-                return Optional.of(defaultBlock.defaultBlockState());
+                return Util.optional(defaultBlock.defaultBlockState());
             return Optional.empty();
         }
 
@@ -115,6 +115,6 @@ public interface BuiltInGenerator extends Generator {
         } catch (Exception e) {
             id = identifierOf(replacementId.get());
         }
-        return Optional.of(Util.getBlock(id).defaultBlockState());
+        return Util.optional(Util.getBlock(id).defaultBlockState());
     }
 }
