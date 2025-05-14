@@ -103,7 +103,7 @@ public interface BuiltInGenerator extends Generator {
             Util.getBiome(level, pos)
         );
 
-        if (replacementId.isEmpty()) {
+        if (!replacementId.isPresent()) {
             if (defaultBlock != null)
                 return Optional.of(defaultBlock.defaultBlockState());
             return Optional.empty();
