@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static io.github.null2264.cobblegen.mc.Constants.FLOW_DIRECTIONS;
+import static io.github.null2264.cobblegen.mc.Constants.DIRECTIONS;
 import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 @ApiStatus.Internal
@@ -84,7 +84,7 @@ public interface BuiltInGenerator extends Generator {
     default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, GeneratorMap candidates, Block defaultBlock, Boolean isLenient) {
         Optional<ResultList> resultCandidates = Optional.empty();
         if (isLenient && ConfigMetaData.INSTANCE.enableExperimentalFeatures) {
-            for (Direction direction : FLOW_DIRECTIONS) {
+            for (Direction direction : DIRECTIONS) {
                 Block key = level.getBlockState(pos.relative(direction)).getBlock();
                 CGIdentifier id = CGIdentifier.fromMC(Util.getBlockId(key));
                 if (!candidates.containsKey(id)) continue;

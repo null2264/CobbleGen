@@ -10,4 +10,7 @@ public final class Constants {
     public static final ImmutableList<Direction> FLOW_DIRECTIONS = ImmutableList.of(
         Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
     );
+    public static final ImmutableList<Direction> DIRECTIONS = ImmutableList.of(
+        Direction.UP, Direction.DOWN, Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST
+    );
 }
