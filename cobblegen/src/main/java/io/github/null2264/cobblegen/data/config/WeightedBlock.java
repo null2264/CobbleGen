@@ -20,8 +20,8 @@ import java.util.Optional;
 
 import static io.github.null2264.cobblegen.data.config.Config.JANKSON;
 
-public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable
-{
+public class WeightedBlock implements PacketSerializable<WeightedBlock>, JanksonSerializable {
+
     public String id;
     public Double weight;
     @Nullable
@@ -38,6 +38,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     public List<String> biomes;
     @Nullable
     public List<String> excludedBiomes;
+    @Nullable
+    public Boolean lenientModifier;
 
     /**
      * @deprecated Use {@link WeightedBlock.Builder} instead.
@@ -60,7 +62,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
      */
     @Deprecated
     public WeightedBlock(String id, Double weight, List<String> dimIds, List<String> excludedDimensions) {
-        this(id, weight, dimIds, excludedDimensions, null, null, null, null, null);
+        this(id, weight, dimIds, excludedDimensions, null, null, null, null, null, null);
     }
 
     /**
@@ -76,7 +78,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             @Nullable Integer minY,
             @Nullable List<String> neighbours,
             @Nullable List<String> biomes,
-            @Nullable List<String> excludedBiomes
+            @Nullable List<String> excludedBiomes,
+            @Nullable Boolean lenientModifier
     ) {
         this.id = id;
         this.weight = weight;
@@ -87,6 +90,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         this.neighbours = neighbours;
         this.biomes = biomes;
         this.excludedBiomes = excludedBiomes;
+        this.lenientModifier = lenientModifier;
     }
 
     /**
@@ -110,7 +114,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             Integer minY
     ) {
         final String id = Util.getBlockId(block).toString();
-        return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY, null, null, null);
+        return new WeightedBlock(id, weight, dimIds, excludedDimensions, maxY, minY, null, null, null, null);
     }
 
     public Block getBlock() {
@@ -145,6 +149,10 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         return Util.optional(neighbours);
     }
 
+    public Optional<Boolean> getLenientModifier() {
+        return Util.optional(lenientModifier);
+    }
+
     @Override
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(id);
@@ -158,6 +166,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         buf.writeOptional(getBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
         buf.writeOptional(getExcludedBiomes(), (o, value) -> o.writeCollection(value, FriendlyByteBuf::writeUtf));
+
+        //buf.writeOptional(getLenientModifier(), FriendlyByteBuf::writeBoolean);
     }
 
     public static WeightedBlock fromPacket(FriendlyByteBuf buf) {
@@ -175,6 +185,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf)).ifPresent(builder::setBiomes);
         buf.readOptional((o) -> o.readList(FriendlyByteBuf::readUtf)).ifPresent(builder::setExcludedBiomes);
 
+        //buf.readOptional(FriendlyByteBuf::readBoolean).ifPresent(builder::setLenientModifier);
+
         return builder.build();
     }
 
@@ -190,6 +202,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         json.put("minY", JANKSON.toJson(minY));
         json.put("biomes", JANKSON.toJson(biomes));
         json.put("excludedBiomes", JANKSON.toJson(excludedBiomes));
+        json.put("lenientModifier", JANKSON.toJson(lenientModifier));
         return json;
     }
 
@@ -241,6 +254,11 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
             builder.setExcludedBiomes(excludedBiomes);
         }
 
+        JsonElement _lenientModifier = json.get("lenientModifier");
+        if (_lenientModifier instanceof JsonPrimitive) {
+            builder.setLenientModifier(((JsonPrimitive) _lenientModifier).asBoolean(false));
+        }
+
         return builder.build();
     }
 
@@ -263,6 +281,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
         public List<String> biomes;
         @Nullable
         public List<String> excludedBiomes;
+        @Nullable
+        public Boolean lenientModifier;
 
         public static Builder of(Block block) {
             return new Builder().setId(Util.getBlockId(block).toString());
@@ -282,7 +302,8 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
                 minY,
                 neighbours,
                 biomes,
-                excludedBiomes
+                excludedBiomes,
+                lenientModifier
             );
         }
 
@@ -323,6 +344,11 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
 
         public Builder setExcludedBiomes(List<String> value) {
             this.excludedBiomes = value;
+            return this;
+        }
+
+        public Builder setLenientModifier(Boolean value) {
+            this.lenientModifier = value;
             return this;
         }
     }

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Add
+
+- [Meta (Experimental)] Added `lenientModifier` option. When enabled it allows player to place the modifier block on
+  other places other than underneath the generated block.
+
 ## [v5.4.4] - 2025-05-09
 
 ### Fixed

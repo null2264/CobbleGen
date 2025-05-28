@@ -83,12 +83,25 @@ public interface BuiltInGenerator extends Generator {
 
     default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, GeneratorMap candidates, Block defaultBlock, Boolean isLenient) {
         Optional<ResultList> resultCandidates = Optional.empty();
-        if (isLenient && ConfigMetaData.INSTANCE.enableExperimentalFeatures) {
+        if (ConfigMetaData.INSTANCE.enableExperimentalFeatures) {
             for (Direction direction : DIRECTIONS) {
                 Block key = level.getBlockState(pos.relative(direction)).getBlock();
                 CGIdentifier id = CGIdentifier.fromMC(Util.getBlockId(key));
                 if (!candidates.containsKey(id)) continue;
-                resultCandidates = Util.optional(candidates.get(id));
+
+                ResultList candidateList = new ResultList();
+                candidates.get(id).forEach((block) -> {
+                    if (
+                        block.getLenientModifier().isPresent() &&
+                        !block.getLenientModifier().get() &&
+                        direction != Direction.DOWN
+                    ) return;
+                    candidateList.add(block);
+                });
+                if (candidateList.isEmpty()) continue;
+
+                resultCandidates = Util.optional(candidateList);
+                break;
             }
         } else {
             Block key = level.getBlockState(pos.below()).getBlock();
