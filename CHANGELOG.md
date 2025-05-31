@@ -7,10 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.4.5] - 2025-05-31
+
 ### Add
 
 - [Meta (Experimental)] Added `lenientModifier` option. When enabled it allows player to place the modifier block on
-  other places other than underneath the generated block.
+  other places other than underneath the generated block.  
+  To use this option you need to set `enableExperimentalFeatures` in `config/cobblegen-meta.json5` to `true`.
 
 ## [v5.4.4] - 2025-05-09
 
@@ -232,7 +235,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.3...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.5...main
+[v5.4.5]: https://github.com/null2264/CobbleGen/compare/v5.4.4...v5.4.5
+[v5.4.4]: https://github.com/null2264/CobbleGen/compare/v5.4.3...v5.4.4
 [v5.4.3]: https://github.com/null2264/CobbleGen/compare/v5.4.2...v5.4.3
 [v5.4.2]: https://github.com/null2264/CobbleGen/compare/v5.4.1...v5.4.2
 [v5.4.1]: https://github.com/null2264/CobbleGen/compare/v5.4.0...v5.4.1
