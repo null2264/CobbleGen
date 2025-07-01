@@ -27,12 +27,9 @@ public abstract class CreateFluidReactionsMixin$PatchF
     private static void generator$handlePipeFlowCollision(
         Level level, BlockPos pos, FluidStack fluid1, FluidStack fluid2, CallbackInfo ci
     ) {
-        try {
-            final boolean success = FLUID_INTERACTION.interactFromPipe(level, pos, fluid1.getFluid(), fluid2.getFluid());
-            if (success)
-                ci.cancel();
-        } catch (IllegalAccessException ignored) {
-        }
+        final boolean success = FLUID_INTERACTION.interactFromPipe(level, pos, fluid1.getFluid(), fluid2.getFluid());
+        if (success)
+            ci.cancel();
     }
 }
 #endif
