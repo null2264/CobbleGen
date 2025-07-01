@@ -1,3 +1,4 @@
+# REF: https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/
 1.18.2: 1.0.20+91b7aa6660
 1.19: 1.0.33+e62f51a3ff
 1.19.1: 1.0.33+e62f51a3ff
@@ -18,3 +19,4 @@
 1.21.4: 2.0.26+7feeb73304
 1.21.5: 3.1.2+2a6ec84b49
 1.21.6: 3.1.8+39ce47f59c
+1.21.7: 3.1.9+39ce47f508
