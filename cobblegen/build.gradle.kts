@@ -83,12 +83,13 @@ dependencies {
     }
 
     if (mcVersion > 11605) {
+        // TODO: Maybe it's no longer needed since we can just use ':stubs'?
         // We just want their source code so we can mixin it
         if (isFabric) {
-            modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.properties["port_lib_version_1_18_2"]}")
-            modCompileOnly("com.simibubi.create:create-fabric-${project.properties["minecraft_version_1_18_2"]}:${project.properties["create_version_1_18_2"]}")
+            // modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.properties["port_lib_version_1_18_2"]}")
+            // modCompileOnly("com.simibubi.create:create-fabric-${project.properties["minecraft_version_1_18_2"]}:${project.properties["create_version_1_18_2"]}")
         } else {
-            modCompileOnly(createMod(isNeo).versioned(0)) { isTransitive = false }
+            // modCompileOnly(createMod(isNeo).versioned(0)) { isTransitive = false }
         }
 
         // <- EMI
