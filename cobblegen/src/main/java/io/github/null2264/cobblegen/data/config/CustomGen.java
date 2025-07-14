@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 import static io.github.null2264.cobblegen.data.config.Config.JANKSON;
 
-public class CustomGen implements JanksonSerializable
-{
+public class CustomGen implements JanksonSerializable {
+
     @Nullable
     public GeneratorMap cobbleGen;
     @Nullable

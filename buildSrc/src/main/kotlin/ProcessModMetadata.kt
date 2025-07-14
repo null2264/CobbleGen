@@ -37,6 +37,7 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
             addJson("create.CreateFluidReactionsMixin\$PatchE")
             if (isFabric) addJson("create.CreateFluidReactionsMixin\$PatchF")
         }
+        addJson("fluid.FlowingFluidEventMixin")
         addJson("fluid.FluidEventMixin")
         addJson("fluid.LavaEventMixin")
         if (mcVersion >= 12105) {
