@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix Water-like vs Water-like interaction
+
 ## [v5.4.5] - 2025-05-31
 
 ### Add
