@@ -176,6 +176,7 @@ subprojects {
 
         configurations = listOf(shade)
         archiveClassifier.set("dev-shade")
+        mergeServiceFiles()
     }
 
     artifacts.add("archives", shadowJar)
