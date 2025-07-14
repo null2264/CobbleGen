@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.4.6] - 2025-07-14
+
 ### Fixed
 
 - Fix Water-like vs Water-like interaction
 
 ## [v5.4.5] - 2025-05-31
 
-### Add
+### Added
 
 - [Meta (Experimental)] Added `lenientModifier` option. When enabled it allows player to place the modifier block on
   other places other than underneath the generated block.  
@@ -239,7 +241,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.5...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.6...main
+[v5.4.6]: https://github.com/null2264/CobbleGen/compare/v5.4.5...v5.4.6
 [v5.4.5]: https://github.com/null2264/CobbleGen/compare/v5.4.4...v5.4.5
 [v5.4.4]: https://github.com/null2264/CobbleGen/compare/v5.4.3...v5.4.4
 [v5.4.3]: https://github.com/null2264/CobbleGen/compare/v5.4.2...v5.4.3
