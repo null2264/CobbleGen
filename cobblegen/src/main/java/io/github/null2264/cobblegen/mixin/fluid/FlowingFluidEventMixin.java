@@ -16,7 +16,7 @@ import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
 @Mixin(FlowingFluid.class)
 public abstract class FlowingFluidEventMixin
 {
-    @Inject(method = "spreadTo", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/LevelAccessor;getFluidState(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/material/FluidState;"), cancellable = true)
+    @Inject(method = "spreadTo", at = @At(value = "HEAD"), cancellable = true)
     public void fluidInteraction$flow(
             LevelAccessor level,
             BlockPos pos,

@@ -25,8 +25,6 @@ public abstract class LavaEventMixin
             FluidState fluidState,
             CallbackInfo ci
     ) {
-        if (direction != Direction.DOWN) return;
-
         final boolean success = FLUID_INTERACTION.interact(level, pos, level.getBlockState(pos.above()), true);
 
         if (success)
