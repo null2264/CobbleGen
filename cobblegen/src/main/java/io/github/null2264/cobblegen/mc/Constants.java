@@ -3,6 +3,7 @@ package io.github.null2264.cobblegen.mc;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.core.Direction;
 
+// FIXME: Move back to :mclib once I figure out how to fix that stupid "NoClassFound" error on Forge-alike
 public final class Constants {
 
     private Constants() {}

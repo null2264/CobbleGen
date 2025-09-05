@@ -105,7 +105,7 @@ jobs:
       - name: Build with Gradle
         run: |
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
-          ./gradlew build -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
+          ./gradlew build -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
 
@@ -270,7 +270,7 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && github.event.inputs.bypass-mod-publish != 'true'
         shell: bash
         run: |
-          ./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Ploom.platform="${{ matrix.loader }}"
+          ./gradlew publishMods -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
           CHANGELOG: ${{ needs.setup.outputs.changelog }}

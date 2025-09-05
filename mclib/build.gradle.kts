@@ -1,19 +1,10 @@
-plugins {
-    id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
-}
-
-minecraft {
-    //accessWideners(project(":mclib").file(""))
-    version(project.ext["mcVersionStr"] as String)
-}
-
 repositories {
     maven("https://repo.spongepowered.org/maven/")
 }
 
 dependencies {
     // In case I'll be doing mixin
-    compileOnly("org.spongepowered:mixin:0.8.5")
+    modCompileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 publishing {

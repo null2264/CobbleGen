@@ -29,7 +29,6 @@ val supportedVersionRange: List<String?> = mapOf(
 group = project.properties["maven_group"] as String
 
 loom {
-    silentMojangMappingsLicense()
     if (mcVersion >= 12105) {
         accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
     }
@@ -59,10 +58,6 @@ loom {
 }
 
 dependencies {
-    minecraft(minecraft.versioned(mcVersion))
-
-    mappings(loom.officialMojangMappings())
-
     if (isFabric) {
         modImplementation("net.fabricmc:fabric-loader:0.16.12")
 

@@ -1,8 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import dev.architectury.plugin.ArchitectPluginExtension
+import net.fabricmc.loom.LoomGradleExtension
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import dependencies.minecraft as MC
 import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
+    id("architectury-plugin") version "3.4-SNAPSHOT"
     id("io.github.null2264.architectury-loom") version "1.11-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
@@ -10,7 +15,7 @@ plugins {
 
 val modVersion = System.getenv("VERSION") ?: project.properties["mod_version"] as? String ?: "0.0.0"
 
-val loaderName = project.properties["loom.platform"] as? String ?: ""
+val loaderName = project.properties["null2264.platform"] as? String ?: ""
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
@@ -33,6 +38,10 @@ fun setupPreprocessor() {
     project.file("build.properties").writeText(buildProps)
 }
 setupPreprocessor()
+
+architectury {
+    minecraft = MC.versioned(mcVersion)
+}
 
 allprojects {
     apply(plugin = "java")
@@ -101,11 +110,31 @@ subprojects {
     // NOTE: This here for when I finally split the API to its own module, hopefully on v6.0
     val isApi = false;  // APIs shouldn't contain anything Minecraft related
     val isModModule = project == project(":cobblegen")
+    // Modules that contains MC-related stuff
+    val isMcModule = isModModule || project == project(":mclib")
 
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
+
     if (isModModule) {
+        // NOTE: This must be set before archloom is applied!
+        extra.set("loom.platform", loaderName)
+    }
+
+    if (isMcModule) {
+        apply(plugin = "architectury-plugin")
         apply(plugin = "io.github.null2264.architectury-loom")
+        val arch = project.extensions["architectury"] as ArchitectPluginExtension
+        arch.apply {
+            if (isModModule)
+                loader(loaderName)
+            else
+                common(listOf(loaderName))
+        }
+        val loom = project.extensions["loom"] as LoomGradleExtension
+        loom.apply {
+            silentMojangMappingsLicense()
+        }
     }
 
     val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
@@ -114,11 +143,20 @@ subprojects {
         configurations.implementation.get().extendsFrom(this)
     }
 
+    val loaderProd = when {
+        isFabric -> "Fabric"
+        isNeo -> "NeoForge"
+        isForge -> "Forge"
+        else -> throw IllegalStateException("Unknown loader!")
+    }
+
     // For internal libraries
     val compileInternal: Configuration by configurations.creating {
-        shade.extendsFrom(this)
         configurations.compileClasspath.get().extendsFrom(this)
         configurations.runtimeClasspath.get().extendsFrom(this)
+        if (isModModule) {
+            configurations["development$loaderProd"].extendsFrom(this)
+        }
     }
 
     val manifoldCompile: Configuration by configurations.creating {
@@ -131,7 +169,19 @@ subprojects {
         configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
     }
 
+    val loom by lazy {
+        if (!isMcModule) {
+            throw IllegalStateException("Loom only available for MC modules")
+        }
+        project.the<LoomGradleExtensionAPI>()
+    }
+
     dependencies {
+        if (isMcModule) {
+            "minecraft"(MC.versioned(mcVersion))
+            "mappings"(loom.officialMojangMappings())
+        }
+
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
 
         shade("systems.manifold:manifold-ext-rt:${manifoldVersion}")
@@ -140,7 +190,8 @@ subprojects {
 
         if (isModModule) {
             compileOnly(project(":stubs"))
-            compileInternal(project(":mclib")) {
+            compileInternal(project(":mclib", configuration = "namedElements")) { isTransitive = false }
+            shade(project(":mclib", configuration = "transformProduction$loaderProd")) {
                 // Remove Junit test libraries
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter")
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
