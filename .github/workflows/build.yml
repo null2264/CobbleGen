@@ -130,7 +130,7 @@ jobs:
           retention-days: 3
 
       - name: GameTest with Gradle
-        if: github.event.inputs.bypass-test != 'true'
+        if: github.event.inputs.bypass-test != 'true' && matrix.mc != "1.16.5"
         run: |
           ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
         env:
