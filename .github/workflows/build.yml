@@ -100,9 +100,12 @@ jobs:
             21
           gradle-no-cache-if: true
 
-      - name: Build with Gradle
+      - name: Setup properties
         run: |
           echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
+
+      - name: Build with Gradle
+        run: |
           ./gradlew build -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
@@ -125,6 +128,13 @@ jobs:
           path: cobblegen/build/libs/*
           if-no-files-found: error
           retention-days: 3
+
+      - name: GameTest with Gradle
+        if: github.event.inputs.bypass-test != 'true'
+        run: |
+          ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
+        env:
+          VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
 
       - name: Download build artifact
         if: github.event.inputs.bypass-test != 'true'

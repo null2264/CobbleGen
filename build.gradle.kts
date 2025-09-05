@@ -142,6 +142,7 @@ subprojects {
     val shade: Configuration by configurations.creating {
         configurations.implementation.get().extendsFrom(this)
     }
+    val shadeInternal: Configuration by configurations.creating
 
     val loaderProd = when {
         isFabric -> "Fabric"
@@ -191,7 +192,7 @@ subprojects {
         if (isModModule) {
             compileOnly(project(":stubs"))
             compileInternal(project(":mclib", configuration = "namedElements")) { isTransitive = false }
-            shade(project(":mclib", configuration = "transformProduction$loaderProd")) {
+            shadeInternal(project(":mclib", configuration = "transformProduction$loaderProd")) {
                 // Remove Junit test libraries
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter")
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
@@ -216,6 +217,7 @@ subprojects {
             relocate("org.apache.logging", "io.github.null2264.shadowed.log4j")
         }
         relocate("manifold", "io.github.null2264.shadowed.manifold")
+        relocate("io.github.null2264.cobblegen.extensions", "io.github.null2264.shadowed.cobblegen.extensions")
         if (isFabric) {
             exclude("META-INF/mods.toml")
             exclude("META-INF/neoforge.mods.toml")
@@ -225,7 +227,7 @@ subprojects {
         }
         exclude("architectury.common.json")
 
-        configurations = listOf(shade)
+        configurations = listOf(shade, shadeInternal)
         archiveClassifier.set("dev-shade")
         mergeServiceFiles()
     }

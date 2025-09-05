@@ -117,8 +117,9 @@ build.properties
 run/
 run-server/
 !run/**/config/fabric_loader_dependencies.json
-!run/server/config/eula.txt
-!run/server/config/server.properties
+!run/server/eula.txt
+!run/server/server.properties
+!run/*GameTest/eula.txt
 docker/*-data
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)

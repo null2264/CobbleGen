@@ -46,6 +46,34 @@ loom {
             vmArgs += "-Dnull2264.cobblegen.gametest=true"
             ideConfigGenerated(true)
         }
+        register("gametest") {
+            server()
+            name("Headlesss GameTests")
+
+            vmArg("-Dnull2264.cobblegen.gametest=true")
+            vmArg("-Dfabric-api.gametest")
+            vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory}/junit.xml")
+            // For Forge-alike
+            property("$loaderName.enabledGameTestNamespaces", "cobblegen")
+            property("$loaderName.gameTestServer", "true")
+            property("$loaderName.enableGameTest", "true")
+
+            runDir("../run/serverGameTest")
+            ideConfigGenerated(false) // Mostly for CI
+            if (isNeo) {
+                /*
+                 * Apparently this replicate NeoGradle's
+                 *
+                 * runs {
+                 *   gameTest {
+                 *     type = "gameTestServer"
+                 *   }
+                 * }
+                 */
+                environment("gameTestServer")
+                forgeTemplate("gameTestServer")
+            }
+        }
     }
 
     if (!isFabric && !isNeo) {
@@ -62,12 +90,14 @@ dependencies {
         modImplementation("net.fabricmc:fabric-loader:0.17.2")
 
         // Mainly for testing
-        // Only use gametest API for 1.21.5, it's causing crashes on dev env
+        // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
         if (mcVersion in 11606..12104) {
             modLocalRuntime(fapi.versioned(mcVersion))
         } else if (mcVersion >= 12105) {
-            modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
+            // FIXME: Is Resource Loader even needed?
+            //modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
+            modLocalRuntime(fapiGameTest.versioned(mcVersion))
         }
     } else {
         if (!isNeo) {
