@@ -48,11 +48,11 @@ loom {
         }
         register("gametest") {
             server()
-            name("Headlesss GameTests")
+            name("Server GameTest")
 
             vmArg("-Dnull2264.cobblegen.gametest=true")
             vmArg("-Dfabric-api.gametest")
-            vmArg("-Dfabric-api.gametest.report-file=${layout.buildDirectory}/junit.xml")
+            vmArg("-Dfabric-api.gametest.report-file=${rootProject.layout.buildDirectory.file("reports/junit.xml").get().getAsFile()}")
             // For Forge-alike
             property("$loaderName.enabledGameTestNamespaces", "cobblegen")
             property("$loaderName.gameTestServer", "true")
