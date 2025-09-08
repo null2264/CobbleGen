@@ -25,26 +25,30 @@ public class ConfigData implements Config, JanksonSerializable {
 
         @Override
         public ConfigData load() {
-            return ConfigHelper.loadConfig(
-                NAME,
-                false,
-                PATH,
-                null,
-                ConfigData::defaultConfig,
-                ConfigData.class
-            );
+            return IS_GAMETEST_ENABLED
+                ? ConfigData.testConfig()
+                : ConfigHelper.loadConfig(
+                    NAME,
+                    false,
+                    PATH,
+                    null,
+                    ConfigData::productionConfig,
+                    ConfigData.class
+                );
         }
 
         @Override
         public ConfigData reload(ConfigData workingConfig) {
-            return ConfigHelper.loadConfig(
-                NAME,
-                true,
-                PATH,
-                workingConfig,
-                ConfigData::defaultConfig,
-                ConfigData.class
-            );
+            return IS_GAMETEST_ENABLED
+                ? ConfigData.testConfig()
+                : ConfigHelper.loadConfig(
+                    NAME,
+                    true,
+                    PATH,
+                    workingConfig,
+                    ConfigData::productionConfig,
+                    ConfigData.class
+                );
         }
     }
 
@@ -102,11 +106,7 @@ public class ConfigData implements Config, JanksonSerializable {
     @Nullable
     public FluidInteractionMap advanced;
 
-    public static ConfigData defaultConfig() {
-        return IS_GAMETEST_ENABLED ? ConfigData.testConfig() : ConfigData.productionConfig();
-    }
-
-    public static ConfigData testConfig() {
+    private static ConfigData testConfig() {
         ConfigData config = new ConfigData();
         config.cobbleGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:barrier").setWeight(100.0).build());
         config.stoneGen = ResultList.of(new WeightedBlock.Builder().setId("minecraft:barrier").setWeight(100.0).build());
@@ -170,7 +170,7 @@ public class ConfigData implements Config, JanksonSerializable {
         return config;
     }
 
-    public static ConfigData productionConfig() {
+    private static ConfigData productionConfig() {
         ConfigData config = new ConfigData();
         config.cobbleGen = ResultList.of(
             new WeightedBlock.Builder().setId("minecraft:cobblestone").setWeight(100.0).setMinY(0).build(),
