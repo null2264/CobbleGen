@@ -37,13 +37,13 @@ loom {
         named("client") {
             runDir = "../run/client"
             configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Client"
-            vmArgs += "-Dnull2264.cobblegen.gametest=true"
+            //vmArg("-Dnull2264.cobblegen.gametest=true")
             ideConfigGenerated(true)
         }
         named("server") {
             runDir = "../run/server"
             configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Server"
-            vmArgs += "-Dnull2264.cobblegen.gametest=true"
+            //vmArg("-Dnull2264.cobblegen.gametest=true")
             ideConfigGenerated(true)
         }
         register("gametest") {

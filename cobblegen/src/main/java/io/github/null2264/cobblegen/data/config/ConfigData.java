@@ -52,7 +52,6 @@ public class ConfigData implements Config, JanksonSerializable {
         }
     }
 
-    @Comment(value = "CobbleGen Format Version, you can leave this alone for now. v2.0 will be released in CobbleGen v6.0")
     @NotNull
     public String formatVersion = "1.0";
 
@@ -225,6 +224,10 @@ public class ConfigData implements Config, JanksonSerializable {
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
         json.put("formatVersion", JsonPrimitive.of(formatVersion));
+        json.setComment(
+            "formatVersion",
+            "CobbleGen Format Version, you can leave this alone for now. v2.0 is scheduled to be released in CobbleGen v6.0"
+        );
         if (cobbleGen != null) json.put("cobbleGen", cobbleGen.toJson());
         if (stoneGen != null) json.put("stoneGen", stoneGen.toJson());
         if (basaltGen != null) json.put("basaltGen", basaltGen.toJson());
