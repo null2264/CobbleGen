@@ -26,7 +26,16 @@ import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
 public abstract class ServerboundCustomPayloadPacketMixin {
     #if MC>=12002 && MC<12005
     @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
-    private static void read(ResourceLocation id, FriendlyByteBuf buf, CallbackInfoReturnable<CustomPacketPayload> cir) {
+    private static void read(
+        ResourceLocation id,
+        FriendlyByteBuf buf,
+        #if MC>=12003 && MC<=12004 && FORGE && FORGE==2
+        // NeoForge Moment
+        io.netty.channel.ChannelHandlerContext context,
+        net.minecraft.network.ConnectionProtocol protocol,
+        #endif
+        CallbackInfoReturnable<CustomPacketPayload> cir
+    ) {
         if (!id.getNamespace().equals(MOD_ID)) return;
     
         CGPayloadReader<? extends CGPacketPayload> reader = KNOWN_SERVER_PAYLOADS.get(CGIdentifier.fromMC(id));
