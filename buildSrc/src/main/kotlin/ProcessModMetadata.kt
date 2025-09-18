@@ -22,7 +22,11 @@ fun File.processModsToml(
             forge == 2 -> it.replace("#<<", "")
             forge == 1 -> it.replace("#>>", "")
             else -> it
-        }.replace("mandatory = true", "type = \"required\"")
+        }
+
+        if (forge == 2 && mcVersion > 12002) {
+            it.replace("mandatory = true", "type = \"required\"")
+        } else it
     }
     writeText(modsTomlContent)
 }
