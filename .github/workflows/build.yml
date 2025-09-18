@@ -132,7 +132,7 @@ jobs:
       - name: GameTest with Gradle
         if: github.event.inputs.bypass-test != 'true' && matrix.mc != '1.16.5'
         run: |
-          JAVA_HOME=$JAVA_HOME_${{ matrix.java }}_X64 ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
+          ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
 
