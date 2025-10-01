@@ -60,7 +60,7 @@ jobs:
       - name: Retrieve JSON
         run: |
           curl -Ls -o "headlessmc.json" "https://api.github.com/repos/3arthqu4ke/headlessmc/releases/tags/2.6.1" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
-          curl -Ls -o "mc-runtime-test.json" "https://api.github.com/repos/null2264/mc-runtime-test/releases/tags/4.2.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
+          curl -Ls -o "mc-runtime-test.json" "https://api.github.com/repos/null2264/mc-runtime-test/releases/tags/4.3.0" --header "Authorization: ${{ secrets.GITHUB_TOKEN }}"
 
       - name: Upload jar files
         uses: actions/upload-artifact@v4
