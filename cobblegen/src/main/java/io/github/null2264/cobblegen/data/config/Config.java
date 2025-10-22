@@ -4,6 +4,7 @@ import blue.endless.jankson.Jankson;
 import blue.endless.jankson.JsonPrimitive;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.SemVer;
 
 import java.nio.file.Path;
 
@@ -16,6 +17,9 @@ public interface Config {
         .build();
 
     Path path = LoaderCompat.getConfigDir();
+
+    // TODO: Bump to v1.1 once it's ready
+    SemVer DEFAULT_FORMAT_VERSION = new SemVer("1.0");
 
     interface Factory<T extends Config> {
         T load();
