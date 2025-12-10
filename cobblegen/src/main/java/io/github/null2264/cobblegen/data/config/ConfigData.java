@@ -6,8 +6,6 @@ import blue.endless.jankson.annotation.Serializer;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.Pair;
-import io.github.null2264.cobblegen.data.SemVer;
-import io.github.null2264.cobblegen.util.CGLog;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +53,7 @@ public class ConfigData implements Config, JanksonSerializable {
     }
 
     @NotNull
-    public SemVer formatVersion = DEFAULT_FORMAT_VERSION;
+    public String formatVersion = "1.0";
 
     @Nullable
     @Comment(value = "Default Generators\n" +
@@ -81,11 +79,7 @@ public class ConfigData implements Config, JanksonSerializable {
     @Nullable
     public ResultList basaltGen;
 
-    /**
-     * customGen will be merged with normal generators to avoid confusions, so if v1.1 format version is used, this variable is basically useless
-     */
     @Nullable
-    @Deprecated
     @Comment(value = "Custom Generators\n" +
                      "<stoneGen|cobbleGen|basaltGen>: {\n" +
                      "  \"mod_id:modifier_block_id\": [\n" +
@@ -229,7 +223,7 @@ public class ConfigData implements Config, JanksonSerializable {
     @Serializer
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.put("formatVersion", JsonPrimitive.of(formatVersion.toString()));
+        json.put("formatVersion", JsonPrimitive.of(formatVersion));
         json.setComment(
             "formatVersion",
             "CobbleGen Format Version, you can leave this alone for now. v2.0 is scheduled to be released in CobbleGen v6.0"
@@ -246,13 +240,16 @@ public class ConfigData implements Config, JanksonSerializable {
     public static ConfigData fromJson(JsonObject json) {
         ConfigData config = new ConfigData();
         JsonElement formatVersion = json.get("formatVersion");
-        config.formatVersion = new SemVer((formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0");
+        config.formatVersion = (formatVersion instanceof JsonPrimitive) ? ((JsonPrimitive) formatVersion).asString() : "1.0";
+        /* TODO
+        if (config.formatVersion.equals("1.0")) {
+            // TODO: Migrate to 2.0
+        }
+         */
         config.cobbleGen = ResultList.fromJson(json.get("cobbleGen"));
         config.stoneGen = ResultList.fromJson(json.get("stoneGen"));
         config.basaltGen = ResultList.fromJson(json.get("basaltGen"));
-//        if (config.formatVersion.isOlderThanOrEqualTo(new SemVer("1.0"))) {
-            config.customGen = CustomGen.fromJson(json.getObject("customGen"));
-//        }
+        config.customGen = CustomGen.fromJson(json.getObject("customGen"));
         config.advanced = FluidInteractionMap.fromJson(json.getObject("advanced"));
         return config;
     }
