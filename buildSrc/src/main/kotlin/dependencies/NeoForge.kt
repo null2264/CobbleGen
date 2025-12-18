@@ -12,7 +12,8 @@ val neoForge = Dependency(
             in 12005..12006 -> "121"
             in 12100..12101 -> "129"
             in 12102..12104 -> "1-beta"
-            12105 -> "25-beta"
+            in 12105..12110 -> "25-beta"
+            12111 -> "1-beta"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
         val mc = versionStr(mcVersion).substring(2)

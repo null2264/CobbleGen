@@ -1,0 +1,10 @@
+{
+	// Resources
+	"net/minecraft/resources/ResourceLocation": { // Identifier
+		local_name: "id",
+		exclusive: true,
+		fallback: [
+			"identifier"
+		]
+	}
+}

@@ -21,7 +21,7 @@ fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependen
                         12002, 12004 -> versionStr(mcVersion)
                         12003 -> "1.20.2"
                         in 12005..12006 -> "1.20.6"
-                        in 12100..12105 -> "1.21.1"
+                        in 12100..12111 -> "1.21.1"
                         else -> throw IllegalStateException("$mcVersion is not yet supported!")
                     }
                 )
@@ -48,7 +48,7 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
             in 12002..12004 -> "13.0.685"
             in 12005..12006 -> "15.0.787"
             in 12100..12101 -> "16.0.788"
-            in 12102..12105 -> "17.0.789"
+            in 12102..12111 -> "17.0.789"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -67,7 +67,7 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
                 in 12000..12001 -> "1.20.1"
                 in 12002..12004 -> "1.20.2"
                 in 12005..12006 -> versionStr(mcVersion)
-                in 12100..12105 -> "1.21.1"
+                in 12100..12111 -> "1.21.1"
                 else -> throw IllegalStateException("$mcVersion is not yet supported!")
             }
         )
@@ -91,7 +91,7 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
             in 12000..12001 -> "15.20.0.106"
             in 12002..12004 -> "16.0.0.28"
             in 12005..12006 -> "18.0.0.62"
-            in 12100..12105 -> "19.21.1.248"
+            in 12100..12111 -> "19.21.1.248"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
