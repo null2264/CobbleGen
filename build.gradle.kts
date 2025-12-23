@@ -8,7 +8,7 @@ import org.apache.tools.ant.filters.StripJavaComments
 plugins {
     id("java")
     id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("io.github.null2264.architectury-loom") version "1.11-SNAPSHOT" apply false
+    id("io.github.null2264.architectury-loom") version "1.13-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
@@ -76,24 +76,32 @@ allprojects {
 
     repositories {
         maven("https://jitpack.io")
+        maven("https://maven.fabricmc.net/")
         maven {
             url = uri("https://maven.blamejared.com/")
             content {
                 includeGroup("mezz.jei")
             }
         }
+        maven("https://maven.gegy.dev/releases/")
         maven("https://maven.shedaniel.me/")
         maven("https://maven.terraformersmc.com/")
         maven("https://api.modrinth.com/maven/")
         maven("https://cursemaven.com/")
-        maven("https://mvn.devos.one/snapshots/")
         maven("https://maven.jamieswhiteshirt.com/libs-release")
-        maven("https://maven.tterrag.com/")
         maven("https://maven.theillusivec4.top/")
         maven("https://maven.neoforged.net/releases")
         maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
         maven("https://maven.createmod.net")
         mavenLocal()
+        maven("https://mvn.devos.one/snapshots/")
+        maven {
+            url = uri("https://maven.tterrag.com/")
+            content {
+                // Tell tterrag's maven to stfu, it spits out timeout instead of 404 for some reason
+                includeGroupByRegex("(com\\.)?tterrag")
+            }
+        }
     }
 
     tasks.withType<JavaCompile> {
@@ -179,8 +187,18 @@ subprojects {
 
     dependencies {
         if (isMcModule) {
-            "minecraft"(MC.versioned(mcVersion))
-            "mappings"(loom.officialMojangMappings())
+            val mappingsProject = project.project(":mappings")
+//            val buildTask = mappingsProject.tasks.named("buildIntermediaryMappingsTiny")
+//
+            val minecraft by configurations
+            val mappings by configurations
+
+            minecraft(MC.versioned(mcVersion))
+            mappings(loom.layered {
+                officialMojangMappings()
+                parchment("org.parchmentmc.data:parchment-1.21.5:2025.06.15@zip")
+//                mappings(mappingsProject.layout.buildDirectory.dir("generated/mappings").get().file("mappings.tiny").asFile)
+            })
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")

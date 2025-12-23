@@ -39,7 +39,7 @@ open class EnigmaMappingsTask : JavaExec() {
 
 		this.jvmArgs("-Xmx2048M")
 
-		this.mappingsDir.convention(this.project.layout.projectDirectory.dir("mappings"))
+		this.mappingsDir.convention(this.project.layout.projectDirectory.dir(Constants.MAPPINGS_DIR))
 		this.enigmaProfileFile.convention(this.project.layout.projectDirectory.file("enigma_profile.json"))
 	}
 

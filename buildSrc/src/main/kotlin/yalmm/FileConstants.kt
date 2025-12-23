@@ -14,6 +14,6 @@ class FileConstants(project: Project) {
 		this.mcCacheDir = dotGradleDir.resolve("minecraft").toPath()
 		this.librariesDir = this.mcCacheDir.resolve("libraries")
 		this.mcVersionDir = this.mcCacheDir.resolve(Constants.getMinecraftVersion(project))
-		this.mappingsDir = project.file("mappings").toPath()
+		this.mappingsDir = project.file(Constants.MAPPINGS_DIR).toPath()
 	}
 }

@@ -1,10 +1,1 @@
 CLASS net/minecraft/resources/ResourceLocation net/minecraft/resources/Identifier
-	COMMENT Represents an immutable identifier used to identify things
-	COMMENT using a combination of a {@linkplain #namespace() namespace} and a {@linkplain #path() path}.
-	COMMENT Identifiers should always be compared using {@link #equals} method, not {@code ==}.
-	COMMENT <p>
-	COMMENT The namespace and path must contain only lowercase letters ({@code [a-z]}), digits ({@code [0-9]}),
-	COMMENT or the characters {@code '_'}, {@code '.'}, and {@code '-'}.
-	COMMENT The path can also contain the standard path separator {@code '/'}.
-	COMMENT
-	COMMENT @see net.minecraft.resources.ResourceKey

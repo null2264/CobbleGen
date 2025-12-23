@@ -4,7 +4,7 @@ import org.gradle.api.Project
 
 object Constants {
 	fun getMinecraftVersion(project: Project): String {
-		return project.property("minecraft_version").toString()
+		return project.property("mcVer").toString()
 	}
 
 	object Groups {
@@ -12,4 +12,6 @@ object Constants {
 		const val MAPPINGS = "mappings"
 		const val BUILD = "build"
 	}
+
+    const val MAPPINGS_DIR = "data"
 }
