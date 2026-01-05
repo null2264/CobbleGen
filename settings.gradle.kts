@@ -26,7 +26,6 @@ pluginManagement {
 
 rootProject.name = "CobbleGen"
 
-include(":mappings")
 include(":mclib")
 include(":stubs")
 include(":cobblegen")  // TODO: Maybe split?

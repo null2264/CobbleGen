@@ -4,29 +4,23 @@ import blue.endless.jankson.JsonElement;
 import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
+import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 import static io.github.null2264.cobblegen.CobbleGen.MOD_ID;
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
-#if MC<=11605
-public class CGIdentifier
-#else
 /**
  * Replaces MC's ResourceLocation, in case MC's ResourceLocation changed
  * @param modid
  * @param name
  */
-public record CGIdentifier(String modid, String name)
-#endif
+public final class CGIdentifier
 {
-    #if MC<=11605
     private final String modid;
     private final String name;
 
@@ -42,19 +36,48 @@ public record CGIdentifier(String modid, String name)
     public String name() {
         return name;
     }
-    #endif
 
-    // TODO: Add validation
     public static CGIdentifier of(String id) {
         if (id.equals("*")) return wildcard();
 
-        String[] split = id.split(":", 2);
-        if (split.length < 1)
+        String @NotNull[] split = id.split(":", 2);
+        String modId;
+        String name;
+        if (split.length < 1) {
             throw new RuntimeException("Invalid ID");
-        if (split.length == 1)
-            return new CGIdentifier(MOD_ID, split[0]);
+        } else if (split.length == 1) {
+            modId = MOD_ID;
+            name = split[0];
+        } else {
+            modId = split[0];
+            name = split[1];
+        }
 
-        return new CGIdentifier(split[0], split[1]);
+        if (!isValidPart(modId, false)) {
+            throw new RuntimeException("Invalid mod id!");
+        }
+
+        if (!isValidPart(name, true)) {
+            throw new RuntimeException("Invalid name!");
+        }
+
+        return new CGIdentifier(modId, name);
+    }
+
+    public static CGIdentifier of(GeneratorType type) {
+        return of(type.name().toLowerCase());
+    }
+
+    private static boolean isValidPart(String s, boolean isName) {
+        if (s.isEmpty()) return false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (isName && (c == '*' || c == '/')) continue;
+
+            boolean isGood = (c == '_' || c == '-' || c == '.' || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'));
+            if (!isGood) return false;
+        }
+        return true;
     }
 
     public static CGIdentifier wildcard() {
@@ -71,17 +94,46 @@ public record CGIdentifier(String modid, String name)
         return String.format("%s:%s", modid, name);
     }
 
-    public static CGIdentifier fromMC(ResourceLocation location) {
-        return new CGIdentifier(location.getNamespace(), location.getPath());
+    public static CGIdentifier fromMC(
+        net.minecraft.resources.
+        #if MC>=12111
+        Identifier
+        #else
+        ResourceLocation
+        #endif
+        location
+    ) {
+        String modId = location.getNamespace();
+        String name = location.getPath();
+        if (name.equals(MOD_ID + "/wildcard")) {
+            name = "*";
+        }
+        return new CGIdentifier(modId, name);
     }
 
-    public ResourceLocation toMC() {
-        if (isWildcard()) throw new RuntimeException("Wildcard is not a valid MC ID");
-        return identifierOf(modid, name);
+    public net.minecraft.resources.
+    #if MC>=12111
+    Identifier
+    #else
+    ResourceLocation
+    #endif
+    toMC() {
+        String actualName = isWildcard() ? (MOD_ID + "/wildcard") : name();
+        #if MC>=12100
+        return net.minecraft.resources.
+            #if MC>=12111
+            Identifier
+            #else
+            ResourceLocation
+            #endif
+            .fromNamespaceAndPath(modid(), actualName);
+        #else
+        return new net.minecraft.resources.ResourceLocation(modid(), actualName);
+        #endif
     }
 
     public static CGIdentifier fromBlock(Block block) {
-        return fromMC(Util.getBlockId(block));
+        return Util.getBlockId(block);
     }
 
     public void writeToBuf(FriendlyByteBuf buf) {
@@ -93,7 +145,7 @@ public record CGIdentifier(String modid, String name)
     }
 
     public String toDebugFileName() {
-        if (isWildcard()) return MOD_ID + "/wildcard";
+        if (isWildcard()) return modid() + "_" + MOD_ID + "_wildcard";
         return this.toString().replace('/', '_').replace(':', '_');
     }
 
@@ -108,9 +160,11 @@ public record CGIdentifier(String modid, String name)
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof CGIdentifier)) return false;
-        return this.modid().equals(((CGIdentifier) obj).modid()) && this.name().equals(((CGIdentifier) obj).name());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CGIdentifier id = (CGIdentifier) o;
+        return this.modid().equals(id.modid()) && this.name().equals(id.name());
     }
 
     @Override

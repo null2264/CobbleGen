@@ -8,6 +8,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
@@ -25,8 +26,6 @@ import net.minecraft.world.level.material.Fluid;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 public class FluidInteractionRecipe extends FluidInteractionRecipeHolder implements EmiRecipe
 {
@@ -200,23 +199,18 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     @Override
     public ResourceLocation getId() {
-        ResourceLocation resultId;
-        try {
-            resultId = ResourceLocation.tryParse(getResult().id);
-        } catch (Exception e) {
-            resultId = identifierOf(getResult().id);
-        }
-        ResourceLocation source = Util.getFluidId(getSourceFluid());
-        ResourceLocation neighbour;
+        CGIdentifier resultId = CGIdentifier.of(getResult().id);
+        CGIdentifier source = Util.getFluidId(getSourceFluid());
+        CGIdentifier neighbour;
         if (getNeighbourBlock().equals(Blocks.AIR))
             neighbour = Util.getFluidId(getNeighbourFluid());
         else
             neighbour = Util.getBlockId(getNeighbourBlock());
-        ResourceLocation modifierId = identifierOf("none");
+        CGIdentifier modifierId = CGIdentifier.of("none");
         if (!(getModifier().equals(Blocks.AIR)))
             modifierId = Util.getBlockId(getModifier());
-        return identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
-                .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName());
+        return CGIdentifier.of(CGEMIPlugin.ID_PREFIX + getType().name()
+                .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName()).toMC();
     }
 }
 #endif

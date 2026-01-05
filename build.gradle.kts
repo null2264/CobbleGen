@@ -187,18 +187,11 @@ subprojects {
 
     dependencies {
         if (isMcModule) {
-            val mappingsProject = project.project(":mappings")
-//            val buildTask = mappingsProject.tasks.named("buildIntermediaryMappingsTiny")
-//
             val minecraft by configurations
             val mappings by configurations
 
             minecraft(MC.versioned(mcVersion))
-            mappings(loom.layered {
-                officialMojangMappings()
-                parchment("org.parchmentmc.data:parchment-1.21.5:2025.06.15@zip")
-//                mappings(mappingsProject.layout.buildDirectory.dir("generated/mappings").get().file("mappings.tiny").asFile)
-            })
+            mappings(loom.officialMojangMappings())
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")

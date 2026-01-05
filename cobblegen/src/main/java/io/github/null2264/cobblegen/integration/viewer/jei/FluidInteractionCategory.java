@@ -5,6 +5,7 @@ package io.github.null2264.cobblegen.integration.viewer.jei;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 #endif
 
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
@@ -35,8 +36,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionRecipeHolder>
 {
@@ -77,7 +76,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     @NotNull
     @Override
     public RecipeType<FluidInteractionRecipeHolder> getRecipeType() {
-        return new RecipeType<>(identifierOf(type), FluidInteractionRecipeHolder.class);
+        return new RecipeType<>(CGIdentifier.of(type).toMC(), FluidInteractionRecipeHolder.class);
     }
 
     @NotNull

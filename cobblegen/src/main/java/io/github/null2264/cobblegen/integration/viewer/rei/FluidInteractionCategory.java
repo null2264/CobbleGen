@@ -2,6 +2,7 @@
 package io.github.null2264.cobblegen.integration.viewer.rei;
 
 import io.github.null2264.cobblegen.compat.TextCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
@@ -44,7 +45,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
     }
 
     public static CategoryIdentifier<? extends FluidInteractionRecipe> generateIdentifier(GeneratorType type) {
-        return CategoryIdentifier.of(Util.identifierOf(ID_PREFIX + type.name().toLowerCase()));
+        return CategoryIdentifier.of(CGIdentifier.of(ID_PREFIX + type.name().toLowerCase()).toMC());
     }
 
     @Override

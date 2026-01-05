@@ -6,6 +6,7 @@ import blue.endless.jankson.JsonObject;
 import blue.endless.jankson.JsonPrimitive;
 import blue.endless.jankson.annotation.Deserializer;
 import blue.endless.jankson.annotation.Serializer;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;
@@ -118,7 +119,7 @@ public class WeightedBlock implements PacketSerializable<WeightedBlock>, Jankson
     }
 
     public Block getBlock() {
-        return Util.getBlock(ResourceLocation.tryParse(id));
+        return Util.getBlock(CGIdentifier.of(id));
     }
 
     public Optional<List<String>> getDimensions() {

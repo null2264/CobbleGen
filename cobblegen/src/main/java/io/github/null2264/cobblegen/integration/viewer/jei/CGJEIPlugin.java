@@ -1,6 +1,7 @@
 #if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.jei;
 
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
@@ -14,7 +15,6 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
@@ -23,14 +23,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 
 import static io.github.null2264.cobblegen.CobbleGen.FLUID_INTERACTION;
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 @JeiPlugin
 public class CGJEIPlugin implements IModPlugin
 {
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
-        return identifierOf("plugin");
+    public @NotNull net.minecraft.resources.
+    #if MC>=12111
+    Identifier
+    #else
+    ResourceLocation
+    #endif
+    getPluginUid() {
+        return CGIdentifier.of("plugin").toMC();
     }
 
     @Override
@@ -71,7 +76,7 @@ public class CGJEIPlugin implements IModPlugin
                                 )
                         );
                     registration.addRecipes(new RecipeType<>(
-                            identifierOf(generator.getType()),
+                            CGIdentifier.of(generator.getType()).toMC(),
                             FluidInteractionRecipeHolder.class
                     ), recipes);
                 })));
