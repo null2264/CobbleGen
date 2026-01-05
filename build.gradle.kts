@@ -25,6 +25,7 @@ val (major, minor, patch, hotfix) = mcVersionStr
     .split(".")
     .toMutableList()
     .apply { while (this.size < 4) this.add("") }
+val mcHotfix: Int = hotfix.toInt()
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
@@ -32,7 +33,7 @@ fun setupPreprocessor() {
     val buildProps = buildString {
         append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
         append("MC=${mcVersion}\n")
-        append("BUILD=${hotfix}\n")
+        append("BUILD=${mcHotfix}\n")
         if (isFabric) append("FABRIC=1\n")
         if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
@@ -42,7 +43,7 @@ fun setupPreprocessor() {
 setupPreprocessor()
 
 architectury {
-    minecraft = MC.versioned(mcVersion, hotfix)
+    minecraft = MC.versioned(mcVersion, mcHotfix)
 }
 
 allprojects {
@@ -51,7 +52,7 @@ allprojects {
 
     ext["mcVersion"] = mcVersion
     ext["mcVersionStr"] = mcVersionStr
-    ext["mcHotfix"] = hotfix
+    ext["mcHotfix"] = mcHotfix
     ext["loaderName"] = loaderName
     ext["isFabric"] = isFabric
     ext["isForge"] = isForge
@@ -193,7 +194,7 @@ subprojects {
             val minecraft by configurations
             val mappings by configurations
 
-            minecraft(MC.versioned(mcVersion, hotfix))
+            minecraft(MC.versioned(mcVersion, mcHotfix))
             mappings(loom.officialMojangMappings())
         }
 
