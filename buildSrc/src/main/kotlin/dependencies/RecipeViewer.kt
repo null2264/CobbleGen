@@ -67,7 +67,8 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
                 in 12000..12001 -> "1.20.1"
                 in 12002..12004 -> "1.20.2"
                 in 12005..12006 -> versionStr(mcVersion)
-                in 12100..12111 -> "1.21.1"
+                in 12100..12110 -> "1.21.1"
+                12111 -> "1.21.11"
                 else -> throw IllegalStateException("$mcVersion is not yet supported!")
             }
         )
@@ -91,7 +92,8 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
             in 12000..12001 -> "15.20.0.106"
             in 12002..12004 -> "16.0.0.28"
             in 12005..12006 -> "18.0.0.62"
-            in 12100..12111 -> "19.21.1.248"
+            in 12100..12110 -> "19.21.1.248"
+            12111 -> "27.3.0.14"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

@@ -12,7 +12,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.world.level.block.Block;
@@ -75,10 +74,17 @@ public class CGJEIPlugin implements IModPlugin
                                         Util.notNullOr(modifier, Blocks.AIR)
                                 )
                         );
-                    registration.addRecipes(new RecipeType<>(
+                    registration.addRecipes(
+                        #if MC<12111
+                        new mezz.jei.api.recipe.RecipeType<>(
+                        #else
+                        mezz.jei.api.recipe.types.IRecipeType.create(
+                        #endif
                             CGIdentifier.of(generator.getType()).toMC(),
                             FluidInteractionRecipeHolder.class
-                    ), recipes);
+                        ),
+                        recipes
+                    );
                 })));
     }
 }

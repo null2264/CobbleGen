@@ -18,7 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -150,9 +149,9 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         List<String> recipeWhitelist = getResult().dimensions;
         try {
             for (String dim : recipeWhitelist) {
-                ResourceLocation id;
+                CGIdentifier id;
                 try {
-                    id = ResourceLocation.tryParse(dim);
+                    id = CGIdentifier.of(dim);
                 } catch (Exception e) {
                     continue;
                 }
@@ -178,9 +177,9 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         List<String> recipeBlacklist = getResult().excludedDimensions;
         try {
             for (String dim : recipeBlacklist) {
-                ResourceLocation id;
+                CGIdentifier id;
                 try {
-                    id = ResourceLocation.tryParse(dim);
+                    id = CGIdentifier.of(dim);
                 } catch (Exception e) {
                     continue;
                 }
@@ -198,7 +197,14 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
     }
 
     @Override
-    public ResourceLocation getId() {
+    public
+    net.minecraft.resources.
+    #if MC>=12111
+    Identifier
+    #else
+    ResourceLocation
+    #endif
+    getId() {
         CGIdentifier resultId = CGIdentifier.of(getResult().id);
         CGIdentifier source = Util.getFluidId(getSourceFluid());
         CGIdentifier neighbour;

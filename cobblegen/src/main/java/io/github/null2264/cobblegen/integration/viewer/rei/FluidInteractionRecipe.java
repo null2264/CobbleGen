@@ -3,7 +3,6 @@ package io.github.null2264.cobblegen.integration.viewer.rei;
 
 #if MC>=12102
 import me.shedaniel.rei.api.common.display.DisplaySerializer;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -67,7 +66,14 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     #if MC>=12102
     @Override
-    public Optional<ResourceLocation> getDisplayLocation() {
+    public Optional<
+        net.minecraft.resources.
+        #if MC>=12111
+        Identifier
+        #else
+        ResourceLocation
+        #endif
+    > getDisplayLocation() {
         return Optional.empty();
     }
 

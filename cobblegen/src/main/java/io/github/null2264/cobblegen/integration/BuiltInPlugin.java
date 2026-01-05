@@ -14,7 +14,6 @@ import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;

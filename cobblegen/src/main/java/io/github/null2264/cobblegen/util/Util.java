@@ -9,7 +9,6 @@ import net.minecraft.core.Registry;
 #endif
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -33,22 +32,6 @@ import net.minecraft.tags.Tag;
 
 public class Util
 {
-    public static ResourceLocation identifierOf(GeneratorType type) {
-        return identifierOf(type.name().toLowerCase());
-    }
-
-    public static ResourceLocation identifierOf(String id) {
-        return identifierOf(MOD_ID, id);
-    }
-
-    public static ResourceLocation identifierOf(String namespace, String id) {
-        #if MC>=12100
-        return ResourceLocation.fromNamespaceAndPath(namespace, id);
-        #else
-        return new ResourceLocation(namespace, id);
-        #endif
-    }
-
     @NotNull
     public static <T> T notNullOr(@Nullable T nullable, @NotNull T notNull) {
         if (nullable == null)
@@ -128,7 +111,16 @@ public class Util
         blockList.ifPresent(t -> t.stream().forEach(taggedBlock -> {
             #if MC>11605
             Optional<ResourceKey<Block>> key = taggedBlock.unwrapKey();
-            key.ifPresent(k -> blockIds.add(CGIdentifier.fromMC(k.location())));
+            key.ifPresent(k -> blockIds.add(
+                CGIdentifier.fromMC(
+                    k
+                        #if MC<12111
+                        .location()
+                        #else
+                        .identifier()
+                        #endif
+                )
+            ));
             #else
             blockIds.add(getBlockId(taggedBlock));
             #endif

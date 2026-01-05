@@ -14,7 +14,6 @@ import io.github.null2264.cobblegen.integration.create.CreateCompatUtil;
 import io.github.null2264.cobblegen.integration.create.CreateSupport;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 
 @CGPlugin

@@ -11,7 +11,6 @@ import io.github.null2264.cobblegen.data.JanksonSerializable;
 import io.github.null2264.cobblegen.data.model.PacketSerializable;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.Nullable;
 

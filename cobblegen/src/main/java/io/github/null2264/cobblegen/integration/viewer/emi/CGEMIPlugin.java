@@ -17,7 +17,6 @@ import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
@@ -203,9 +202,9 @@ public class CGEMIPlugin implements EmiPlugin
                                         List<String> recipeBlacklist = block.excludedDimensions;
                                         try {
                                             for (String dim : recipeBlacklist) {
-                                                ResourceLocation dimId;
+                                                CGIdentifier dimId;
                                                 try {
-                                                    dimId = ResourceLocation.tryParse(dim);
+                                                    dimId = CGIdentifier.of(dim);
                                                 } catch (Exception e) {
                                                     continue;
                                                 }
@@ -220,9 +219,9 @@ public class CGEMIPlugin implements EmiPlugin
                                         List<String> recipeWhitelist = block.dimensions;
                                         try {
                                             for (String dim : recipeWhitelist) {
-                                                ResourceLocation dimId;
+                                                CGIdentifier dimId;
                                                 try {
-                                                    dimId = ResourceLocation.tryParse(dim);
+                                                    dimId = CGIdentifier.of(dim);
                                                 } catch (Exception e) {
                                                     continue;
                                                 }

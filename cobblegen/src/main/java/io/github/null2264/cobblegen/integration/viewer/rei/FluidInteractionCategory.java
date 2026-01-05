@@ -17,7 +17,6 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -145,9 +144,9 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         List<String> recipeWhitelist = display.getResult().dimensions;
         try {
             for (String dim : recipeWhitelist) {
-                ResourceLocation id;
+                CGIdentifier id;
                 try {
-                    id = ResourceLocation.tryParse(dim);
+                    id = CGIdentifier.of(dim);
                 } catch (Exception e) {
                     continue;
                 }
@@ -175,9 +174,9 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         List<String> recipeBlacklist = display.getResult().excludedDimensions;
         try {
             for (String dim : recipeBlacklist) {
-                ResourceLocation id;
+                CGIdentifier id;
                 try {
-                    id = ResourceLocation.tryParse(dim);
+                    id = CGIdentifier.of(dim);
                 } catch (Exception e) {
                     continue;
                 }
