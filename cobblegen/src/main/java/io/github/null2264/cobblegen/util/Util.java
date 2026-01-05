@@ -4,7 +4,9 @@ import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.core.BlockPos;
+#if MC<=11902
 import net.minecraft.core.Registry;
+#endif
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
