@@ -20,13 +20,11 @@ val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
 val _mcVer = project.properties["mcVer"] as? String ?: ""
-// Handling Mojang's new YY.BUILD versioning scheme
-// TODO: Check if Mojang will do YY.BUILD.HOTFIX
 val mcVersionStr = if (_mcVer.startsWith("1.")) _mcVer else "2.$_mcVer"
-val (major, minor, patch) = mcVersionStr
+val (major, minor, patch, hotfix) = mcVersionStr
     .split(".")
     .toMutableList()
-    .apply { if (this.size < 3) this.add("") }
+    .apply { while (this.size < 4) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
@@ -34,6 +32,7 @@ fun setupPreprocessor() {
     val buildProps = buildString {
         append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
         append("MC=${mcVersion}\n")
+        append("BUILD=${hotfix}\n")
         if (isFabric) append("FABRIC=1\n")
         if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
@@ -43,7 +42,7 @@ fun setupPreprocessor() {
 setupPreprocessor()
 
 architectury {
-    minecraft = MC.versioned(mcVersion)
+    minecraft = MC.versioned(mcVersion, hotfix)
 }
 
 allprojects {
@@ -52,6 +51,7 @@ allprojects {
 
     ext["mcVersion"] = mcVersion
     ext["mcVersionStr"] = mcVersionStr
+    ext["mcHotfix"] = hotfix
     ext["loaderName"] = loaderName
     ext["isFabric"] = isFabric
     ext["isForge"] = isForge
@@ -193,7 +193,7 @@ subprojects {
             val minecraft by configurations
             val mappings by configurations
 
-            minecraft(MC.versioned(mcVersion))
+            minecraft(MC.versioned(mcVersion, hotfix))
             mappings(loom.officialMojangMappings())
         }
 

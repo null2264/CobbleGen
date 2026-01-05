@@ -6,7 +6,7 @@ fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependen
         // EMI migrate to NeoForge after 1.20.2
         if (loader != "fabric" && mcVersion <= 12002) "emi-forge" else "emi-$loader"
     } else "emi",
-    version = { _ ->
+    version = { _, _ ->
         buildString {
             if (mcVersion <= 11802) {
                 append("0.7.3+${versionStr(mcVersion)}")  // There are no multi-loader support in 1.18.2
@@ -38,7 +38,7 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
     } else {
         "RoughlyEnoughItems-$loader"
     },
-    version = { mcVersion ->
+    version = { mcVersion, hotfix ->
         // They didn't break API on MC version upgrade so mismatch should be fine
         when (mcVersion) {
             11802 -> "8.3.618"
@@ -82,7 +82,7 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
             append ("-api")
         }
     },
-    version = { _ ->
+    version = { _, _ ->
         // They didn't break API on MC version upgrade so mismatch should be fine
         when (mcVersion) {
             11802 -> "10.2.1.1009"

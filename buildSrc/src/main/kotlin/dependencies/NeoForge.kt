@@ -3,7 +3,7 @@ package dependencies
 val neoForge = Dependency(
     group = "net.neoforged",
     name = "neoforge",
-    version = { mcVersion ->
+    version = { mcVersion, hotfix ->
         val version = when (mcVersion) {
             // snapshot version format:
             // "0-alpha.${mc[mcVersion]}.+"
@@ -13,10 +13,14 @@ val neoForge = Dependency(
             in 12100..12101 -> "129"
             in 12102..12104 -> "1-beta"
             in 12105..12110 -> "25-beta"
-            12111 -> "1-beta"
-            else -> throw IllegalStateException("$mcVersion is not yet supported!")
+            12111 -> "24-beta"
+            22601 -> when (hotfix) {
+                0 -> "0-alpha.4+snapshot-1"
+                else -> throw IllegalStateException("Hotfix $hotfix is not yet supported!")
+            }
+            else -> throw IllegalStateException("Version $mcVersion is not yet supported!")
         }
-        val mc = versionStr(mcVersion).substring(2)
+        val mc = versionStr(mcVersion, hotfix, true).substring(2)
 
         "${mc}.${version}"
     },
