@@ -36,7 +36,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Nullable
     private Fluid getFluidFromString(String string) {
         try {
-            return Util.getFluid(ResourceLocation.tryParse(string));
+            return Util.getFluid(CGIdentifier.of(string));
         } catch (Exception e) {
             return null;
         }
@@ -45,7 +45,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Nullable
     private Block getBlockFromString(String string) {
         try {
-            return Util.getBlock(ResourceLocation.tryParse(string));
+            return Util.getBlock(CGIdentifier.of(string));
         } catch (Exception e) {
             return null;
         }

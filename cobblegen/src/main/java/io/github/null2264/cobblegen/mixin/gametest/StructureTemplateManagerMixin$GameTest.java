@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixer;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
@@ -48,7 +49,7 @@ public abstract class StructureTemplateManagerMixin$GameTest {
         #endif
         id
     ) {
-        CGIdentifier path = CGIdentifier.of(GAMETEST_STRUCTURE_LISTER.idToFile(id));
+        CGIdentifier path = CGIdentifier.fromMC(GAMETEST_STRUCTURE_LISTER.idToFile(id));
         Optional<Resource> resource = this.resourceManager.getResource(path.toMC());
 
         if (resource.isPresent()) {

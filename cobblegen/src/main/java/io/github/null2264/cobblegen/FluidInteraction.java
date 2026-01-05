@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen;
 
 import io.github.null2264.cobblegen.data.CGRegistryImpl;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
@@ -210,7 +211,7 @@ public class FluidInteraction
     public static void write(Map<Fluid, List<Generator>> generatorMap, FriendlyByteBuf buf) {
         buf.writeMap(
                 generatorMap,
-                (b, o) -> b.writeResourceLocation(Util.getFluidId(o)),
+                (b, o) -> Util.getFluidId(o).writeToBuf(b),
                 (b, generators) -> b.writeCollection(generators, (p, gen) -> gen.toPacket(p))
         );
     }
@@ -218,7 +219,7 @@ public class FluidInteraction
     @ApiStatus.Internal
     public static Map<Fluid, List<Generator>> read(FriendlyByteBuf buf) {
         return buf.readMap(
-                (o) -> Util.getFluid(o.readResourceLocation()),
+                (o) -> Util.getFluid(CGIdentifier.readFromBuf(o)),
                 (o) -> {
                     int _gensSize = o.readVarInt();
                     List<Generator> gens = new ArrayList<>(_gensSize);

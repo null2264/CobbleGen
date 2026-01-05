@@ -39,7 +39,7 @@ public class CGREIPlugin implements REIClientPlugin
                 (modifierId, blocks) -> {
                     Block modifier = null;
                     if (!modifierId.isWildcard())
-                        modifier = Util.getBlock(modifierId.toMC());
+                        modifier = Util.getBlock(modifierId);
                     for (WeightedBlock block : blocks)
                         registry.add(
                                 new FluidInteractionRecipe(

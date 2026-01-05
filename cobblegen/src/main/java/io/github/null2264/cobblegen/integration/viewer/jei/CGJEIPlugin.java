@@ -63,7 +63,7 @@ public class CGJEIPlugin implements IModPlugin
                     final ArrayList<FluidInteractionRecipeHolder> recipes = new ArrayList<>();
                     Block modifier = null;
                     if (!modifierId.isWildcard())
-                        modifier = Util.getBlock(modifierId.toMC());
+                        modifier = Util.getBlock(modifierId);
                     for (WeightedBlock block : blocks)
                         recipes.add(
                                 new FluidInteractionRecipeHolder(
