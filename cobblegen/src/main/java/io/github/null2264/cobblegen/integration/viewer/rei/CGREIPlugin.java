@@ -1,5 +1,7 @@
-#if MC>11605
+#if MC>11605 || MC>=12111
 package io.github.null2264.cobblegen.integration.viewer.rei;
+// FIXME: Enable REI integration for 1.21.11 when REI is updated
+// REF: https://github.com/shedaniel/RoughlyEnoughItems/pull/1989
 
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;

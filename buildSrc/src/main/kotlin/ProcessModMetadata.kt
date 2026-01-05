@@ -74,8 +74,13 @@ fun File.processFabricModJson(mcVersion: Int) {
             (get("entrypoints") as? JsonObject)?.toMutableMap()?.apply {
                 if (mcVersion > 11605) {
                     set("jei_mod_plugin", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"))))
-                    set("rei_client", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"))))
-                    set("emi", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"))))
+                    if (mcVersion < 12111) {
+                        // FIXME: Enable REI integration for 1.21.11 when REI is updated
+                        // REF: https://github.com/shedaniel/RoughlyEnoughItems/pull/1989
+                        set("rei_client", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"))))
+                        // FIXME: Enable EMI integration for 1.21.11 when EMI is updated
+                        set("emi", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.emi.CGEMIPlugin"))))
+                    }
                 }
                 set(
                     "cobblegen_plugin",

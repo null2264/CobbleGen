@@ -1,5 +1,7 @@
+#if MC<12111
 #if FABRIC && MC<=11802 && MC>11605 || MC>=11900
 package io.github.null2264.cobblegen.integration.viewer.emi;
+// FIXME: Enable EMI integration for 1.21.11 when EMI is updated
 
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
@@ -241,4 +243,5 @@ public class CGEMIPlugin implements EmiPlugin
         }
     }
 }
+#endif
 #endif
