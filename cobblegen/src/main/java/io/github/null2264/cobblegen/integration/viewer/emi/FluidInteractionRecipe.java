@@ -1,6 +1,7 @@
-#if MC<12111
-#if FABRIC && MC<=11802 && MC>11605 || MC>=11900
+#if (FABRIC && MC>11605 && MC<=11802) || (MC>=11900 && MC<12111) || MC>=22601
 package io.github.null2264.cobblegen.integration.viewer.emi;
+// FIXME: Enable EMI integration for 1.21.11+ when EMI is updated
+// UPDATE: Looks like EMI won't be updated to 1.21.11 and probably skip to 26.1
 
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -220,5 +221,4 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
                 .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName()).toMC();
     }
 }
-#endif
 #endif
