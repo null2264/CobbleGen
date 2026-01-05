@@ -19,7 +19,10 @@ val loaderName = project.properties["null2264.platform"] as? String ?: ""
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
-val mcVersionStr = project.properties["mcVer"] as? String ?: ""
+val _mcVer = project.properties["mcVer"] as? String ?: ""
+// Handling Mojang's new YY.BUILD versioning scheme
+// TODO: Check if Mojang will do YY.BUILD.HOTFIX
+val mcVersionStr = if (_mcVer.startsWith("1.")) _mcVer else "2.{_mcVer}"
 val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
