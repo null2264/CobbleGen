@@ -25,7 +25,7 @@ val (major, minor, patch, hotfix) = mcVersionStr
     .split(".")
     .toMutableList()
     .apply { while (this.size < 4) this.add("") }
-val mcHotfix: Int = hotfix.toInt()
+val mcHotfix: Int = hotfix.toIntOrNull() ?: 0
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
