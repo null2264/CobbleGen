@@ -27,7 +27,13 @@ public abstract class ServerboundCustomPayloadPacketMixin {
     #if MC>=12002 && MC<12005
     @Inject(method = "readPayload", at = @At("HEAD"), cancellable = true)
     private static void read(
-        ResourceLocation id,
+        net.minecraft.resources.
+        #if MC>=12111
+        Identifier
+        #else
+        ResourceLocation
+        #endif
+        id,
         FriendlyByteBuf buf,
         #if MC>=12003 && MC<=12004 && FORGE && FORGE==2
         // NeoForge Moment
