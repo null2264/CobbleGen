@@ -22,7 +22,7 @@ val isFabric = loaderName.endsWith("fabric")
 val _mcVer = project.properties["mcVer"] as? String ?: ""
 // Handling Mojang's new YY.BUILD versioning scheme
 // TODO: Check if Mojang will do YY.BUILD.HOTFIX
-val mcVersionStr = if (_mcVer.startsWith("1.")) _mcVer else "2.{_mcVer}"
+val mcVersionStr = if (_mcVer.startsWith("1.")) _mcVer else "2.$_mcVer"
 val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
