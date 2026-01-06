@@ -60,7 +60,7 @@ public abstract class NetworkRegistryMixin {
         if (packet instanceof net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket customPayloadPacket) {
             if (customPayloadPacket.payload() instanceof CGPacketPayload) {
                 #if MC<12005
-                cir.setReturnValue(true)
+                cir.setReturnValue(true);
                 #else
                 ci.cancel();
                 #endif
