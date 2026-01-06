@@ -71,7 +71,7 @@ loom {
                  *   }
                  * }
                  */
-                val type = "gameTestServer".let { if (mc>=12111) it.toLowerCase() else it }
+                val type = "gameTestServer".let { if (mcVersion>=12111) it.lowercase() else it }
                 environment(type)
                 forgeTemplate(type)
             }
