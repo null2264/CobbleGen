@@ -13,20 +13,6 @@ val isFabric = ext["isFabric"] as Boolean
 val isForge = ext["isForge"] as Boolean
 val isNeo = ext["isNeo"] as Boolean
 
-// TODO: addingVersion - Add "-" suffix to support snapshots
-val supportedVersionRange: List<String?> = mapOf(
-        11605 to listOf(null, "1.16.5"),
-        11802 to listOf(null, "1.18.2"),
-        11902 to listOf("1.19-", "1.19.2"),
-        11904 to listOf("1.19.3-", "1.19.4"),
-        12001 to listOf("1.20-", "1.20.1"),
-        12002 to listOf("1.20.2-", if (!isNeo) "1.20.4" else "1.20.3"),
-        12004 to listOf(null, "1.20.4"),  // for Neo
-        12006 to listOf("1.20.5-", "1.20.6"),
-        12101 to listOf("1.21-", "1.21.1"),
-        12103 to listOf("1.21.2-", null),
-)[mcVersion] ?: listOf()
-
 group = project.properties["maven_group"] as String
 
 loom {
@@ -71,9 +57,8 @@ loom {
                  *   }
                  * }
                  */
-                val type = "gameTestServer".let { if (mcVersion>=12111) it.lowercase() else it }
-                environment(type)
-                forgeTemplate(type)
+                environment("gameTestServer")
+                forgeTemplate("gameTestServer")
             }
         }
     }
