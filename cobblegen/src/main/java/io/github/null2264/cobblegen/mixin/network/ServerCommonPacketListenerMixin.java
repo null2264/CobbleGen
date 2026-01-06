@@ -71,39 +71,4 @@ public abstract class ServerCommonPacketListenerMixin
             ci.cancel();
         }
     }
-
-    #if MC>=12004 && FORGE && FORGE>1
-    #if MC<12005
-    @ModifyExpressionValue(
-        method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
-        at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;canSendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)Z")
-    )
-    private boolean validateCobbleGen(boolean original, Packet<?> packet) {
-        if (packet instanceof ClientboundCustomPayloadPacket customPayloadPacket) {
-            if (customPayloadPacket.payload() instanceof CGPacketPayload) {
-                return true;
-            }
-        }
-        return original;
-    }
-    #else
-    @WrapOperation(
-        method = "send(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketSendListener;)V",
-        at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ServerCommonPacketListener;)V")
-    )
-    private void validateCobbleGen(Packet<?> packet, ServerCommonPacketListener listener, Operation<Void> original) {
-        try {
-            original.call(packet, listener);
-        } catch (UnsupportedOperationException e) {
-            if (!(packet instanceof ClientboundCustomPayloadPacket customPayloadPacket)) {
-                throw e;
-            }
-
-            if (!(customPayloadPacket.payload() instanceof CGPacketPayload)) {
-                throw e;
-            }
-        }
-    }
-    #endif
-    #endif
 }

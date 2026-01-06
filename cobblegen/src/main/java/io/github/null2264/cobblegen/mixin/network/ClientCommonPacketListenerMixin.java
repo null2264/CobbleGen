@@ -69,39 +69,4 @@ public abstract class ClientCommonPacketListenerMixin
         CGClientPlayNetworkHandler.onDisconnect();
     }
     #endif
-
-    #if MC>=12004 && FORGE && FORGE>1
-        #if MC<12005
-    @ModifyExpressionValue(
-        method = "send",
-        at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;canSendPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)Z")
-    )
-    private boolean validateCobbleGen(boolean original, Packet<?> packet) {
-        if (packet instanceof ServerboundCustomPayloadPacket customPayloadPacket) {
-            if (customPayloadPacket.payload() instanceof CGPacketPayload) {
-                return true;
-            }
-        }
-        return original;
-    }
-        #else
-    @WrapOperation(
-        method = "send",
-        at = @At(value = "INVOKE", target = "Lnet/neoforged/neoforge/network/registration/NetworkRegistry;checkPacket(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/protocol/common/ClientCommonPacketListener;)V")
-    )
-    private void validateCobbleGen(Packet<?> packet, ClientCommonPacketListener listener, Operation<Void> original) {
-        try {
-            original.call(packet, listener);
-        } catch (UnsupportedOperationException e) {
-            if (!(packet instanceof ServerboundCustomPayloadPacket customPayloadPacket)) {
-                throw e;
-            }
-
-            if (!(customPayloadPacket.payload() instanceof CGPacketPayload)) {
-                throw e;
-            }
-        }
-    }
-        #endif
-    #endif
 }
