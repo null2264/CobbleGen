@@ -8,7 +8,7 @@ import org.apache.tools.ant.filters.StripJavaComments
 plugins {
     id("java")
     id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("io.github.null2264.architectury-loom") version "1.13-SNAPSHOT" apply false
+    id("io.github.null2264.architectury-loom") version "1.11-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.4"
 }
@@ -19,13 +19,11 @@ val loaderName = project.properties["null2264.platform"] as? String ?: ""
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
-val _mcVer = project.properties["mcVer"] as? String ?: ""
-val mcVersionStr = if (_mcVer.startsWith("1.")) _mcVer else "2.$_mcVer"
-val (major, minor, patch, hotfix) = mcVersionStr
+val mcVersionStr = project.properties["mcVer"] as? String ?: ""
+val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
-    .apply { while (this.size < 4) this.add("") }
-val mcHotfix: Int = hotfix.toIntOrNull() ?: 0
+    .apply { if (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
@@ -33,7 +31,6 @@ fun setupPreprocessor() {
     val buildProps = buildString {
         append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
         append("MC=${mcVersion}\n")
-        append("BUILD=${mcHotfix}\n")
         if (isFabric) append("FABRIC=1\n")
         if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
@@ -43,7 +40,7 @@ fun setupPreprocessor() {
 setupPreprocessor()
 
 architectury {
-    minecraft = MC.versioned(mcVersion, mcHotfix)
+    minecraft = MC.versioned(mcVersion)
 }
 
 allprojects {
@@ -52,7 +49,6 @@ allprojects {
 
     ext["mcVersion"] = mcVersion
     ext["mcVersionStr"] = mcVersionStr
-    ext["mcHotfix"] = mcHotfix
     ext["loaderName"] = loaderName
     ext["isFabric"] = isFabric
     ext["isForge"] = isForge
@@ -80,32 +76,24 @@ allprojects {
 
     repositories {
         maven("https://jitpack.io")
-        maven("https://maven.fabricmc.net/")
         maven {
             url = uri("https://maven.blamejared.com/")
             content {
                 includeGroup("mezz.jei")
             }
         }
-        maven("https://maven.gegy.dev/releases/")
         maven("https://maven.shedaniel.me/")
         maven("https://maven.terraformersmc.com/")
         maven("https://api.modrinth.com/maven/")
         maven("https://cursemaven.com/")
+        maven("https://mvn.devos.one/snapshots/")
         maven("https://maven.jamieswhiteshirt.com/libs-release")
+        maven("https://maven.tterrag.com/")
         maven("https://maven.theillusivec4.top/")
         maven("https://maven.neoforged.net/releases")
         maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/")
         maven("https://maven.createmod.net")
         mavenLocal()
-        maven("https://mvn.devos.one/snapshots/")
-        maven {
-            url = uri("https://maven.tterrag.com/")
-            content {
-                // Tell tterrag's maven to stfu, it spits out timeout instead of 404 for some reason
-                includeGroupByRegex("(com\\.)?tterrag")
-            }
-        }
     }
 
     tasks.withType<JavaCompile> {
@@ -191,11 +179,8 @@ subprojects {
 
     dependencies {
         if (isMcModule) {
-            val minecraft by configurations
-            val mappings by configurations
-
-            minecraft(MC.versioned(mcVersion, mcHotfix))
-            mappings(loom.officialMojangMappings())
+            "minecraft"(MC.versioned(mcVersion))
+            "mappings"(loom.officialMojangMappings())
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")

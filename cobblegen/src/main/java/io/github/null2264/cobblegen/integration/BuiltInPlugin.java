@@ -14,6 +14,7 @@ import io.github.null2264.cobblegen.data.model.CGRegistry;
 import io.github.null2264.cobblegen.data.model.Generator;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -35,7 +36,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Nullable
     private Fluid getFluidFromString(String string) {
         try {
-            return Util.getFluid(CGIdentifier.of(string));
+            return Util.getFluid(ResourceLocation.tryParse(string));
         } catch (Exception e) {
             return null;
         }
@@ -44,7 +45,7 @@ public class BuiltInPlugin implements CobbleGenPlugin
     @Nullable
     private Block getBlockFromString(String string) {
         try {
-            return Util.getBlock(CGIdentifier.of(string));
+            return Util.getBlock(ResourceLocation.tryParse(string));
         } catch (Exception e) {
             return null;
         }

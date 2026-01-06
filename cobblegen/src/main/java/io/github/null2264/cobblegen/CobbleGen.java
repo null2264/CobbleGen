@@ -50,27 +50,18 @@ public class CobbleGen
         CGLog.info("Registering command...");
         dispatcher.register(
                 LiteralArgumentBuilder.<CommandSourceStack>literal("cobblegen")
-                        .then(
-                            LiteralArgumentBuilder.
-                                <CommandSourceStack>literal("reload-meta")
-                                #if MC<12111
-                                .requires(arg -> arg.hasPermission(OP_LEVEL_GAMEMASTERS))
-                                #else
-                                .requires(net.minecraft.commands.Commands.hasPermission(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS))
+                        .then(LiteralArgumentBuilder.<CommandSourceStack>literal("reload-meta").requires(arg -> arg.hasPermission(OP_LEVEL_GAMEMASTERS)).executes(c -> {
+                            CGLog.info("Reloading meta config...");
+                            ConfigMetaData.INSTANCE = new ConfigMetaData.Factory().reload(ConfigMetaData.INSTANCE);
+                            c.getSource().sendSuccess(
+                                #if MC>=12001
+                                () ->
                                 #endif
-                                .executes(c -> {
-                                    CGLog.info("Reloading meta config...");
-                                    ConfigMetaData.INSTANCE = new ConfigMetaData.Factory().reload(ConfigMetaData.INSTANCE);
-                                    c.getSource().sendSuccess(
-                                        #if MC>=12001
-                                        () ->
-                                        #endif
-                                        TextCompat.literal("Meta config has been reloaded"), false
-                                    );
-                                    CGLog.info("Meta config has been reloaded");
-                                    return 0;
-                            })
-                        )
+                                TextCompat.literal("Meta config has been reloaded"), false
+                            );
+                            CGLog.info("Meta config has been reloaded");
+                            return 0;
+                        }))
         );
     }
 }

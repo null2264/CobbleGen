@@ -105,7 +105,7 @@ public class StoneGenerator implements BuiltInGenerator
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(this.getClass().getName());
 
-        Util.getFluidId(fluid).writeToBuf(buf);
+        buf.writeResourceLocation(Util.getFluidId(fluid));
         buf.writeBoolean(silent);
 
         getOutput().toPacket(buf);
@@ -113,7 +113,7 @@ public class StoneGenerator implements BuiltInGenerator
 
     @SuppressWarnings("unused")
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        final Fluid fluid = Util.getFluid(CGIdentifier.readFromBuf(buf));
+        final Fluid fluid = Util.getFluid(buf.readResourceLocation());
         final boolean silent = buf.readBoolean();
 
         GeneratorMap outMap = GeneratorMap.fromPacket(buf);

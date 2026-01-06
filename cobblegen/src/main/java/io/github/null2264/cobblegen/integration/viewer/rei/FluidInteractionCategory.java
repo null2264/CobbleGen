@@ -1,10 +1,7 @@
-#if MC>11605 && MC<12111
+#if MC>11605
 package io.github.null2264.cobblegen.integration.viewer.rei;
-// FIXME: Enable REI integration for 1.21.11 when REI is updated
-// REF: https://github.com/shedaniel/RoughlyEnoughItems/pull/1989
 
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.util.Constants;
 import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
@@ -19,6 +16,7 @@ import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -46,7 +44,7 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
     }
 
     public static CategoryIdentifier<? extends FluidInteractionRecipe> generateIdentifier(GeneratorType type) {
-        return CategoryIdentifier.of(CGIdentifier.of(ID_PREFIX + type.name().toLowerCase()).toMC());
+        return CategoryIdentifier.of(Util.identifierOf(ID_PREFIX + type.name().toLowerCase()));
     }
 
     @Override
@@ -146,9 +144,9 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         List<String> recipeWhitelist = display.getResult().dimensions;
         try {
             for (String dim : recipeWhitelist) {
-                CGIdentifier id;
+                ResourceLocation id;
                 try {
-                    id = CGIdentifier.of(dim);
+                    id = ResourceLocation.tryParse(dim);
                 } catch (Exception e) {
                     continue;
                 }
@@ -176,9 +174,9 @@ public class FluidInteractionCategory implements DisplayCategory<FluidInteractio
         List<String> recipeBlacklist = display.getResult().excludedDimensions;
         try {
             for (String dim : recipeBlacklist) {
-                CGIdentifier id;
+                ResourceLocation id;
                 try {
-                    id = CGIdentifier.of(dim);
+                    id = ResourceLocation.tryParse(dim);
                 } catch (Exception e) {
                     continue;
                 }

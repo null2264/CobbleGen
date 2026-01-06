@@ -1,7 +1,5 @@
-#if (FABRIC && MC>11605 && MC<=11802) || (MC>=11900 && MC<12111) || MC>=22601
+#if FABRIC && MC<=11802 && MC>11605 || MC>=11900
 package io.github.null2264.cobblegen.integration.viewer.emi;
-// FIXME: Enable EMI integration for 1.21.11+ when EMI is updated
-// UPDATE: Looks like EMI won't be updated to 1.21.11 and probably skip to 26.1
 
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
@@ -12,13 +10,13 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.SlotWidget;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
@@ -37,22 +35,22 @@ public class CGEMIPlugin implements EmiPlugin
     public static final Map<String, EmiRecipeCategory> FLUID_INTERACTION_CATEGORIES = Map.of(
             "COBBLE",
             new EmiRecipeCategory(
-                    CGIdentifier.of(
-                            ID_PREFIX + "cobble").toMC(),
+                    Util.identifierOf(
+                            ID_PREFIX + "cobble"),
                     EmiStack.of(
                             Blocks.COBBLESTONE)
             ),
             "STONE",
             new EmiRecipeCategory(
-                    CGIdentifier.of(
-                            ID_PREFIX + "stone").toMC(),
+                    Util.identifierOf(
+                            ID_PREFIX + "stone"),
                     EmiStack.of(
                             Blocks.STONE)
             ),
             "BASALT",
             new EmiRecipeCategory(
-                    CGIdentifier.of(
-                            ID_PREFIX + "basalt").toMC(),
+                    Util.identifierOf(
+                            ID_PREFIX + "basalt"),
                     EmiStack.of(
                             Blocks.BASALT)
             )
@@ -98,7 +96,7 @@ public class CGEMIPlugin implements EmiPlugin
                     (modifierId, blocks) -> {
                         Block modifier = null;
                         if (!modifierId.isWildcard())
-                            modifier = Util.getBlock(modifierId);
+                            modifier = Util.getBlock(modifierId.toMC());
                         for (WeightedBlock block : blocks)
                             registry.addRecipe(
                                     new FluidInteractionRecipe(
@@ -119,16 +117,21 @@ public class CGEMIPlugin implements EmiPlugin
 
                         Optional<Block> modifier = Optional.empty();
                         if (!modifierId.isWildcard()) {
-                            modifier = Optional.of(Util.getBlock(modifierId));
+                            modifier = Optional.of(Util.getBlock(modifierId.toMC()));
                         }
 
                         for (WeightedBlock block : blocks) {
-                            CGIdentifier resultId = CGIdentifier.of(block.id);
+                            ResourceLocation resultId;
+                            try {
+                                resultId = ResourceLocation.tryParse(block.id);
+                            } catch (Exception e) {
+                                continue;
+                            }
                             EmiStack output = EmiStack.of(Util.getBlock(resultId));
 
-                            CGIdentifier source = Util.getFluidId(fluid);
+                            ResourceLocation source = Util.getFluidId(fluid);
                             EmiStack neighbour;
-                            CGIdentifier neighbourId;
+                            ResourceLocation neighbourId;
                             if (generator.getFluid() == null) {
                                 neighbourId = Util.getBlockId(generator.getBlock());
                                 neighbour = EmiStack.of(Objects.requireNonNull(generator.getBlock()));
@@ -143,11 +146,11 @@ public class CGEMIPlugin implements EmiPlugin
                                 );
                             }
 
-                            final CGIdentifier id = CGIdentifier.of(CGEMIPlugin.ID_PREFIX + generator.getType().name()
+                            final ResourceLocation id = Util.identifierOf(CGEMIPlugin.ID_PREFIX + generator.getType().name()
                                     .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbourId.toDebugFileName() + "-" + modifierId.toDebugFileName());
 
                             final EmiWorldInteractionRecipe.Builder recipe = EmiWorldInteractionRecipe.builder()
-                                    .id(id.toMC());
+                                    .id(id);
 
                             input(
                                     recipe,
@@ -204,9 +207,9 @@ public class CGEMIPlugin implements EmiPlugin
                                         List<String> recipeBlacklist = block.excludedDimensions;
                                         try {
                                             for (String dim : recipeBlacklist) {
-                                                CGIdentifier dimId;
+                                                ResourceLocation dimId;
                                                 try {
-                                                    dimId = CGIdentifier.of(dim);
+                                                    dimId = ResourceLocation.tryParse(dim);
                                                 } catch (Exception e) {
                                                     continue;
                                                 }
@@ -221,9 +224,9 @@ public class CGEMIPlugin implements EmiPlugin
                                         List<String> recipeWhitelist = block.dimensions;
                                         try {
                                             for (String dim : recipeWhitelist) {
-                                                CGIdentifier dimId;
+                                                ResourceLocation dimId;
                                                 try {
-                                                    dimId = CGIdentifier.of(dim);
+                                                    dimId = ResourceLocation.tryParse(dim);
                                                 } catch (Exception e) {
                                                     continue;
                                                 }

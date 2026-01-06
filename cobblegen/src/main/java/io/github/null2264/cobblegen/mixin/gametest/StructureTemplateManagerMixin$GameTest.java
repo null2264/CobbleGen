@@ -5,11 +5,11 @@ import com.google.common.collect.ImmutableList;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixer;
-import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -40,17 +40,9 @@ public abstract class StructureTemplateManagerMixin$GameTest {
     private static final FileToIdConverter GAMETEST_STRUCTURE_LISTER = new FileToIdConverter("gametest/structure", ".snbt");
 
     @Unique
-    private Optional<StructureTemplate> cobblegen$loadSnbtFromResource(
-        net.minecraft.resources.
-        #if MC>=12111
-        Identifier
-        #else
-        ResourceLocation
-        #endif
-        id
-    ) {
-        CGIdentifier path = CGIdentifier.fromMC(GAMETEST_STRUCTURE_LISTER.idToFile(id));
-        Optional<Resource> resource = this.resourceManager.getResource(path.toMC());
+    private Optional<StructureTemplate> cobblegen$loadSnbtFromResource(ResourceLocation id) {
+        ResourceLocation path = GAMETEST_STRUCTURE_LISTER.idToFile(id);
+        Optional<Resource> resource = this.resourceManager.getResource(path);
 
         if (resource.isPresent()) {
             try {
@@ -66,14 +58,7 @@ public abstract class StructureTemplateManagerMixin$GameTest {
     }
 
     @Unique
-    private Stream<
-        net.minecraft.resources.
-        #if MC>=12111
-        Identifier
-        #else
-        ResourceLocation
-        #endif
-    > cobblegen$listSnbtStructures() {
+    private Stream<ResourceLocation> cobblegen$listSnbtStructures() {
         return GAMETEST_STRUCTURE_LISTER.listMatchingResources(resourceManager).keySet().stream().map(GAMETEST_STRUCTURE_LISTER::fileToId);
     }
 
