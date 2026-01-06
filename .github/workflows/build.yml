@@ -132,8 +132,48 @@ jobs:
       - name: GameTest with Gradle
         if: github.event.inputs.bypass-test != 'true' && matrix.mc != '1.16.5'
         run: |
-          # FIXME: Remove timeout once I figure out how to fix the Java version discrepancy between `build` and `runGametest`
-          timeout 15m ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" || true
+          echo "# GameTest results" >> $GITHUB_STEP_SUMMARY;
+          echo "<table>" >> $GITHUB_STEP_SUMMARY;
+          echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+          echo "<th>Status</th>" >> $GITHUB_STEP_SUMMARY;
+          echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+
+          timeout 15m ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && (
+              echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+              echo "<td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+            ) || (
+              EXIT_CODE="$?"
+              echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+              STATUS="Unknown error ($EXIT_CODE)";
+
+              case "$EXIT_CODE" in
+                "-1")
+                  STATUS="Test failed"
+                  ;;
+                "125" | "124")
+                  STATUS="Timed out"
+                  ;;
+                "255" | "1")
+                  STATUS="Crashed"
+                  ;;
+                *)
+                  ;;
+              esac
+
+              echo "<td>$STATUS</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+
+              case "$EXIT_CODE" in
+                "255" | "1")
+                  echo "</table>" >> $GITHUB_STEP_SUMMARY
+                  exit $EXIT_CODE
+                  ;;
+                *)
+                  ;;
+              esac
+            )
+
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
 
