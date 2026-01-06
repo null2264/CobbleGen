@@ -1,5 +1,7 @@
-#if FABRIC && MC<=11802 && MC>11605 || MC>=11900
+#if (FABRIC && MC>11605 && MC<=11802) || (MC>=11900 && MC<12111) || MC>=22601
 package io.github.null2264.cobblegen.integration.viewer.emi;
+// FIXME: Enable EMI integration for 1.21.11+ when EMI is updated
+// UPDATE: Looks like EMI won't be updated to 1.21.11 and probably skip to 26.1
 
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
@@ -8,6 +10,7 @@ import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.integration.viewer.FluidInteractionRecipeHolder;
 import io.github.null2264.cobblegen.util.Constants;
@@ -17,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
@@ -25,8 +27,6 @@ import net.minecraft.world.level.material.Fluid;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 public class FluidInteractionRecipe extends FluidInteractionRecipeHolder implements EmiRecipe
 {
@@ -151,9 +151,9 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         List<String> recipeWhitelist = getResult().dimensions;
         try {
             for (String dim : recipeWhitelist) {
-                ResourceLocation id;
+                CGIdentifier id;
                 try {
-                    id = ResourceLocation.tryParse(dim);
+                    id = CGIdentifier.of(dim);
                 } catch (Exception e) {
                     continue;
                 }
@@ -179,9 +179,9 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
         List<String> recipeBlacklist = getResult().excludedDimensions;
         try {
             for (String dim : recipeBlacklist) {
-                ResourceLocation id;
+                CGIdentifier id;
                 try {
-                    id = ResourceLocation.tryParse(dim);
+                    id = CGIdentifier.of(dim);
                 } catch (Exception e) {
                     continue;
                 }
@@ -199,24 +199,26 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
     }
 
     @Override
-    public ResourceLocation getId() {
-        ResourceLocation resultId;
-        try {
-            resultId = ResourceLocation.tryParse(getResult().id);
-        } catch (Exception e) {
-            resultId = identifierOf(getResult().id);
-        }
-        ResourceLocation source = Util.getFluidId(getSourceFluid());
-        ResourceLocation neighbour;
+    public
+    net.minecraft.resources.
+    #if MC>=12111
+    Identifier
+    #else
+    ResourceLocation
+    #endif
+    getId() {
+        CGIdentifier resultId = CGIdentifier.of(getResult().id);
+        CGIdentifier source = Util.getFluidId(getSourceFluid());
+        CGIdentifier neighbour;
         if (getNeighbourBlock().equals(Blocks.AIR))
             neighbour = Util.getFluidId(getNeighbourFluid());
         else
             neighbour = Util.getBlockId(getNeighbourBlock());
-        ResourceLocation modifierId = identifierOf("none");
+        CGIdentifier modifierId = CGIdentifier.of("none");
         if (!(getModifier().equals(Blocks.AIR)))
             modifierId = Util.getBlockId(getModifier());
-        return identifierOf(CGEMIPlugin.ID_PREFIX + getType().name()
-                .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName());
+        return CGIdentifier.of(CGEMIPlugin.ID_PREFIX + getType().name()
+                .toLowerCase() + "-" + source.toDebugFileName() + "-" + resultId.toDebugFileName() + "-" + neighbour.toDebugFileName() + "-" + modifierId.toDebugFileName()).toMC();
     }
 }
 #endif

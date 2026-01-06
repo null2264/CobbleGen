@@ -5,6 +5,7 @@ import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
@@ -13,7 +14,6 @@ import io.github.null2264.cobblegen.integration.create.CreateCompatUtil;
 import io.github.null2264.cobblegen.integration.create.CreateSupport;
 import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.Fluids;
 
 @CGPlugin
@@ -27,16 +27,16 @@ public class CreatePlugin implements CobbleGenPlugin {
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        ResultList.of(WeightedBlock.Builder.of(Util.getBlock(Util.identifierOf("create", "limestone"))).setWeight(1.0).build()),
-                        Util.getFluid(Util.identifierOf("create", "honey")),
+                        ResultList.of(WeightedBlock.Builder.of(Util.getBlock(new CGIdentifier("create", "limestone"))).setWeight(1.0).build()),
+                        Util.getFluid(new CGIdentifier("create", "honey")),
                         false
                 )
         );
         registry.addGenerator(
                 Fluids.LAVA,
                 new CobbleGenerator(
-                        ResultList.of(WeightedBlock.Builder.of(Util.getBlock(Util.identifierOf("create", "scoria"))).setWeight(1.0).build()),
-                        Util.getFluid(Util.identifierOf("create", "chocolate")),
+                        ResultList.of(WeightedBlock.Builder.of(Util.getBlock(new CGIdentifier("create", "scoria"))).setWeight(1.0).build()),
+                        Util.getFluid(new CGIdentifier("create", "chocolate")),
                         false
                 )
         );

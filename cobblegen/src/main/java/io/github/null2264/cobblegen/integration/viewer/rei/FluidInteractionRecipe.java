@@ -1,9 +1,10 @@
-#if MC>11605
+#if MC>11605 && MC<12111
 package io.github.null2264.cobblegen.integration.viewer.rei;
+// FIXME: Enable REI integration for 1.21.11 when REI is updated
+// REF: https://github.com/shedaniel/RoughlyEnoughItems/pull/1989
 
 #if MC>=12102
 import me.shedaniel.rei.api.common.display.DisplaySerializer;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -67,7 +68,14 @@ public class FluidInteractionRecipe extends FluidInteractionRecipeHolder impleme
 
     #if MC>=12102
     @Override
-    public Optional<ResourceLocation> getDisplayLocation() {
+    public Optional<
+        net.minecraft.resources.
+        #if MC>=12111
+        Identifier
+        #else
+        ResourceLocation
+        #endif
+    > getDisplayLocation() {
         return Optional.empty();
     }
 

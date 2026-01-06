@@ -26,7 +26,7 @@ data class VersionRange(
     val toSanitized: String? get() = to?.replace(".x", ".9999", true)
 
     fun mavenStyle(): String {
-        require(from != null || to != null) { "'from' and 'to' can't be all null" }
+        require(from != null || to != null) { "'from' and 'to' can't be all null. Update supportedVersionRange before proceeding!" }
 
         if (from != null && to != null && from == to) return "[${from}]"
 
@@ -40,7 +40,7 @@ data class VersionRange(
     }
 
     fun semverStyle(): String {
-        require(from != null || to != null) { "'from' and 'to' can't be all null" }
+        require(from != null || to != null) { "'from' and 'to' can't be all null. Update supportedVersionRange before proceeding!" }
 
         if (from != null && to != null && from == to) return from
 
@@ -70,7 +70,8 @@ fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
         in 12005..12006 -> VersionRange("1.20.4", "1.20.6")
         in 12100..12101 -> VersionRange("1.20.x", "1.21.1")
         in 12102..12104 -> VersionRange("1.21.1", "1.21.4")
-        12105 -> VersionRange("1.21.4", null)  // 1.21.5 or newer
+        in 12105..12110 -> VersionRange("1.21.4", "1.21.10")
+        12111 -> VersionRange("1.21.10", null)
         else -> VersionRange(null, null)
     }
 }

@@ -2,11 +2,13 @@ package io.github.null2264.cobblegen.util;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.RegistryCompat;
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.core.BlockPos;
+#if MC<=11902
 import net.minecraft.core.Registry;
+#endif
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -30,22 +32,6 @@ import net.minecraft.tags.Tag;
 
 public class Util
 {
-    public static ResourceLocation identifierOf(GeneratorType type) {
-        return identifierOf(type.name().toLowerCase());
-    }
-
-    public static ResourceLocation identifierOf(String id) {
-        return identifierOf(MOD_ID, id);
-    }
-
-    public static ResourceLocation identifierOf(String namespace, String id) {
-        #if MC>=12100
-        return ResourceLocation.fromNamespaceAndPath(namespace, id);
-        #else
-        return new ResourceLocation(namespace, id);
-        #endif
-    }
-
     @NotNull
     public static <T> T notNullOr(@Nullable T nullable, @NotNull T notNull) {
         if (nullable == null)
@@ -70,33 +56,33 @@ public class Util
                LoaderCompat.isModLoaded("emi");
     }
 
-    public static Fluid getFluid(ResourceLocation id) {
+    public static Fluid getFluid(CGIdentifier id) {
         return RegistryCompat.fluid()
             #if MC>12101
-            .getValue(id);
+            .getValue(id.toMC());
             #else
-            .get(id);
+            .get(id.toMC());
             #endif
     }
 
-    public static ResourceLocation getFluidId(Fluid fluid) {
-        return RegistryCompat.fluid().getKey(fluid);
+    public static CGIdentifier getFluidId(Fluid fluid) {
+        return CGIdentifier.fromMC(RegistryCompat.fluid().getKey(fluid));
     }
 
-    public static Block getBlock(ResourceLocation id) {
+    public static Block getBlock(CGIdentifier id) {
         return RegistryCompat.block()
             #if MC>12101
-            .getValue(id);
+            .getValue(id.toMC());
             #else
-            .get(id);
+            .get(id.toMC());
             #endif
     }
 
-    public static ResourceLocation getBlockId(Block block) {
-        return RegistryCompat.block().getKey(block);
+    public static CGIdentifier getBlockId(Block block) {
+        return CGIdentifier.fromMC(RegistryCompat.block().getKey(block));
     }
 
-    public static List<ResourceLocation> getTaggedBlockIds(ResourceLocation tagId) {
+    public static List<CGIdentifier> getTaggedBlockIds(CGIdentifier tagId) {
         #if MC>11605
         final TagKey<Block> blockTag = TagKey.create(
                 #if MC<=11902
@@ -104,10 +90,10 @@ public class Util
                 #else
                 net.minecraft.core.registries.Registries.BLOCK,
                 #endif
-                tagId
+                tagId.toMC()
         );
         #else
-        final Tag<Block> blockTag = BlockTags.getAllTags().getTag(tagId);
+        final Tag<Block> blockTag = BlockTags.getAllTags().getTag(tagId.toMC());
         #endif
 
         #if MC>11605
@@ -121,11 +107,20 @@ public class Util
         final Optional<List<Block>> blockList = Optional.ofNullable(blockTag != null ? blockTag.getValues() : null);
         #endif
 
-        ArrayList<ResourceLocation> blockIds = new ArrayList<>();
+        ArrayList<CGIdentifier> blockIds = new ArrayList<>();
         blockList.ifPresent(t -> t.stream().forEach(taggedBlock -> {
             #if MC>11605
             Optional<ResourceKey<Block>> key = taggedBlock.unwrapKey();
-            key.ifPresent(k -> blockIds.add(k.location()));
+            key.ifPresent(k -> blockIds.add(
+                CGIdentifier.fromMC(
+                    k
+                        #if MC<12111
+                        .location()
+                        #else
+                        .identifier()
+                        #endif
+                )
+            ));
             #else
             blockIds.add(getBlockId(taggedBlock));
             #endif
@@ -140,7 +135,7 @@ public class Util
             #else
             level.registryAccess();
             #endif
-        ResourceLocation dim = access
+        CGIdentifier dim = CGIdentifier.fromMC(access
             #if MC>12101
             .lookupOrThrow(
             #else
@@ -151,7 +146,7 @@ public class Util
                     #else
                     net.minecraft.core.registries.Registries.DIMENSION_TYPE
                     #endif
-            ).getKey(level.dimensionType());
+            ).getKey(level.dimensionType()));
         return dim != null ? dim.toString() : "minecraft:overworld";
     }
 
@@ -163,7 +158,7 @@ public class Util
             #else
             level.registryAccess();
             #endif
-        ResourceLocation biome = access
+        CGIdentifier biome = CGIdentifier.fromMC(access
             #if MC>12101
             .lookupOrThrow(
             #else
@@ -179,7 +174,7 @@ public class Util
                     #if MC>=11802
                         .value()
                     #endif
-            );
+            ));
         return biome != null ? biome.toString() : null;
     }
 }

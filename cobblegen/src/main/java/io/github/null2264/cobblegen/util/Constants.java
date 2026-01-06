@@ -56,13 +56,13 @@ public class Constants {
             @Override
             public Fluid decode(ByteBuf buf) {
                 FriendlyByteBuf compat = new FriendlyByteBuf(buf);
-                return Util.getFluid(compat.readResourceLocation());
+                return Util.getFluid(CGIdentifier.readFromBuf(compat));
             }
 
             @Override
             public void encode(ByteBuf buf, Fluid fluid) {
                 FriendlyByteBuf newBuf = FriendlyByteBuf.unpooled();
-                newBuf.writeResourceLocation(Util.getFluidId(fluid));
+                Util.getFluidId(fluid).writeToBuf(newBuf);
                 buf.writeBytes(newBuf);
             }
         };
@@ -85,7 +85,7 @@ public class Constants {
             return text;
         }
 
-        public static String fromId(net.minecraft.resources.ResourceLocation id) {
+        public static String fromId(CGIdentifier id) {
             return id.toString();
         }
 

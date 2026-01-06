@@ -5,7 +5,6 @@ import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,7 +18,13 @@ public abstract class CustomPacketPayloadMixin
 {
     @Inject(method = "findCodec", at = @At("HEAD"), cancellable = true)
     private void getCodec(
-        ResourceLocation id,
+        net.minecraft.resources.
+        #if MC>=12111
+        Identifier
+        #else
+        ResourceLocation
+        #endif
+        id,
         CallbackInfoReturnable<StreamCodec<? super FriendlyByteBuf, ? extends CustomPacketPayload>> cir
     ) {
         if (!(id.getNamespace().equals(MOD_ID))) return;

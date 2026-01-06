@@ -2,7 +2,6 @@ package io.github.null2264.cobblegen.network.payload;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
 public interface CGPacketPayload
@@ -17,7 +16,13 @@ public interface CGPacketPayload
     #if MC>=12002 && MC<12006
     @Override
     #endif
-    default @NotNull ResourceLocation id() {
+    default @NotNull net.minecraft.resources.
+    #if MC>=12111
+    Identifier
+    #else
+    ResourceLocation
+    #endif
+    id() {
         return cgId().toMC();
     }
 }

@@ -7,24 +7,11 @@ plugins {
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
+val mcHotfix = ext["mcHotfix"] as Int
 val loaderName = ext["loaderName"] as String
 val isFabric = ext["isFabric"] as Boolean
 val isForge = ext["isForge"] as Boolean
 val isNeo = ext["isNeo"] as Boolean
-
-// TODO: addingVersion - Add "-" suffix to support snapshots
-val supportedVersionRange: List<String?> = mapOf(
-        11605 to listOf(null, "1.16.5"),
-        11802 to listOf(null, "1.18.2"),
-        11902 to listOf("1.19-", "1.19.2"),
-        11904 to listOf("1.19.3-", "1.19.4"),
-        12001 to listOf("1.20-", "1.20.1"),
-        12002 to listOf("1.20.2-", if (!isNeo) "1.20.4" else "1.20.3"),
-        12004 to listOf(null, "1.20.4"),  // for Neo
-        12006 to listOf("1.20.5-", "1.20.6"),
-        12101 to listOf("1.21-", "1.21.1"),
-        12103 to listOf("1.21.2-", null),
-)[mcVersion] ?: listOf()
 
 group = project.properties["maven_group"] as String
 
@@ -72,6 +59,10 @@ loom {
                  */
                 environment("gameTestServer")
                 forgeTemplate("gameTestServer")
+                if (mcVersion >= 12111) {
+                    // REF: https://github.com/neoforged/NeoForge/blob/af6abbe00ab3071ad58c2cb70b988cb79f0b4af8/buildSrc/src/main/java/net/neoforged/neodev/CreateUserDevConfig.java#L128
+                    setDefaultMainClass("net.neoforged.fml.startup.GameTestServer")
+                }
             }
         }
     }
@@ -93,17 +84,17 @@ dependencies {
         // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
         if (mcVersion in 11606..12104) {
-            modLocalRuntime(fapi.versioned(mcVersion))
-        } else if (mcVersion >= 12105) {
+            modLocalRuntime(fapi.versioned(mcVersion, mcHotfix))
+        } else if (mcVersion in 12105..12110) {
             // FIXME: Is Resource Loader even needed?
-            //modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
-            modLocalRuntime(fapiGameTest.versioned(mcVersion))
+            //modLocalRuntime(fapiResourceLoader.versioned(mcVersion, mcHotfix))
+            modLocalRuntime(fapiGameTest.versioned(mcVersion, mcHotfix))
         }
     } else {
         if (!isNeo) {
-            "forge"(lexForge.versioned(mcVersion))
+            "forge"(lexForge.versioned(mcVersion, mcHotfix))
         } else {
-            "neoForge"(neoForge.versioned(mcVersion))
+            "neoForge"(neoForge.versioned(mcVersion, mcHotfix))
         }
     }
 
@@ -119,19 +110,19 @@ dependencies {
 
         // <- EMI
         if (mcVersion <= 11802) {
-            modCompileOnly(emi(mcVersion, null, api = true).versioned(0))
+            modCompileOnly(emi(mcVersion, null, api = true).versioned(0, 0))
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
-                modLocalRuntime(emi(mcVersion).versioned(0))
+                modLocalRuntime(emi(mcVersion).versioned(0, 0))
         } else {
-            modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0))
+            modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0, 0))
             if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime(emi(mcVersion, loaderName).versioned(0))
+                modLocalRuntime(emi(mcVersion, loaderName).versioned(0, 0))
         }
         // EMI ->
 
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
-        modCompileOnly(rei(loaderName, true).versioned(mcVersion))
+        modCompileOnly(rei(loaderName, true).versioned(mcVersion, mcHotfix))
         if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
             modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
             modCompileOnly("dev.architectury:architectury:11.1.13")
@@ -139,15 +130,15 @@ dependencies {
         if (project.properties["recipe_viewer"] == "rei") {
             if (mcVersion == 11902)  // REI's stupid dep bug
                 modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-            modLocalRuntime(rei(loaderName).versioned(mcVersion))
+            modLocalRuntime(rei(loaderName).versioned(mcVersion, mcHotfix))
         }
         // REI ->
 
         // <- JEI
-        modCompileOnly(jei(mcVersion, loaderName, common = true, api = true).versioned(0))
-        modCompileOnly(jei(mcVersion, loaderName, common = false, api = true).versioned(0))
+        modCompileOnly(jei(mcVersion, loaderName, common = true, api = true).versioned(0, 0))
+        modCompileOnly(jei(mcVersion, loaderName, common = false, api = true).versioned(0, 0))
         if (project.properties["recipe_viewer"] == "jei")
-            modCompileOnly(jei(mcVersion, loaderName, common = false, api = false).versioned(0))
+            modCompileOnly(jei(mcVersion, loaderName, common = false, api = false).versioned(0, 0))
         // JEI ->
 
         /* FIXME: Broken, somehow

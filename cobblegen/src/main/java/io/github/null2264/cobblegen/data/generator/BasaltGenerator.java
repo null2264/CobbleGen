@@ -31,7 +31,7 @@ public class BasaltGenerator extends BlockGenerator
     private final boolean silent;
 
     public BasaltGenerator(ResultList possibleBlocks, Block block, boolean silent) {
-        this(GeneratorMap.of(Pair.of(CGIdentifier.fromMC(Util.getBlockId(Blocks.SOUL_SOIL)), possibleBlocks)), block, silent);
+        this(GeneratorMap.of(Pair.of(CGIdentifier.fromBlock(Blocks.SOUL_SOIL), possibleBlocks)), block, silent);
     }
 
     public BasaltGenerator(GeneratorMap possibleBlocks, Block block, boolean silent) {
@@ -88,7 +88,7 @@ public class BasaltGenerator extends BlockGenerator
     public void toPacket(FriendlyByteBuf buf) {
         buf.writeUtf(this.getClass().getName());
 
-        buf.writeUtf(Util.getBlockId(block).toString());
+        Util.getBlockId(block).writeToBuf(buf);
         buf.writeBoolean(silent);
 
         getOutput().toPacket(buf);
@@ -96,7 +96,7 @@ public class BasaltGenerator extends BlockGenerator
 
     @SuppressWarnings("unused")
     public static Generator fromPacket(FriendlyByteBuf buf) {
-        final Block block = Util.getBlock(buf.readResourceLocation());
+        final Block block = Util.getBlock(CGIdentifier.readFromBuf(buf));
         final boolean silent = buf.readBoolean();
 
         GeneratorMap outMap = GeneratorMap.fromPacket(buf);

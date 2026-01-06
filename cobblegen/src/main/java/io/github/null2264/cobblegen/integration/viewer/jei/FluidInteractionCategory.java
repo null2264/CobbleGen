@@ -5,6 +5,7 @@ package io.github.null2264.cobblegen.integration.viewer.jei;
 import mezz.jei.api.gui.builder.ITooltipBuilder;
 #endif
 
+import io.github.null2264.cobblegen.data.CGIdentifier;
 import io.github.null2264.cobblegen.compat.GraphicsCompat;
 import io.github.null2264.cobblegen.compat.TextCompat;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
@@ -21,12 +22,10 @@ import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
@@ -36,8 +35,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
-
 public class FluidInteractionCategory implements IRecipeCategory<FluidInteractionRecipeHolder>
 {
     private final IDrawable background;
@@ -45,6 +42,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     private final IDrawable icon;
     private final GeneratorType type;
     private final int initialHeight;
+    private int height;
     private final IDrawable whitelistIcon;
     private final IDrawable blacklistIcon;
     private int dimensionIconsY = 0;
@@ -54,13 +52,15 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     ) {
         initialHeight = generatorType.equals(GeneratorType.STONE) ? Constants.JEI_RECIPE_HEIGHT_STONE
                 : Constants.JEI_RECIPE_HEIGHT;
-        background = guiHelper.createBlankDrawable(
-                Constants.JEI_RECIPE_WIDTH,
-                initialHeight + (2 * 9) // Dimensions Title's gaps (top and bottom)
-                        + 20 // Dimension Icon's height
-                        + 9
+        height =
+            initialHeight
+                // Dimensions Title's gaps (top and bottom)
+                + (2 * 9)
+                // Dimension Icon's height
+                + 20
                 // Another gap
-        );
+                + 9;
+        background = guiHelper.createBlankDrawable(Constants.JEI_RECIPE_WIDTH, height);
         full = 10 * fluidHelper.bucketVolume();
         ItemStack iconStack = Items.AIR.getDefaultInstance();
         switch (generatorType) {
@@ -76,8 +76,22 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
 
     @NotNull
     @Override
-    public RecipeType<FluidInteractionRecipeHolder> getRecipeType() {
-        return new RecipeType<>(identifierOf(type), FluidInteractionRecipeHolder.class);
+    public
+    mezz.jei.api.recipe
+        #if MC<12111
+        .RecipeType
+        #else
+        .types.IRecipeType
+        #endif
+        <FluidInteractionRecipeHolder>
+    getRecipeType() {
+        return
+            #if MC<12111
+            new mezz.jei.api.recipe.RecipeType<>(
+            #else
+            mezz.jei.api.recipe.types.IRecipeType.create(
+            #endif
+                CGIdentifier.of(type).toMC(), FluidInteractionRecipeHolder.class);
     }
 
     @NotNull
@@ -86,6 +100,17 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         return TextCompat.translatable("cobblegen.generators." + type.name().toLowerCase());
     }
 
+    #if MC>=12111
+    @Override
+    public int getWidth() {
+        return Constants.JEI_RECIPE_WIDTH;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+    #else
     #if MC<12100
     @NotNull
     #else
@@ -95,6 +120,7 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     public IDrawable getBackground() {
         return background;
     }
+    #endif
 
     @NotNull
     @Override
@@ -131,13 +157,41 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         }
 
         final IRecipeSlotBuilder coldBuilder = builder.addSlot(RecipeIngredientRole.INPUT, x, coldY);
-        if (type.equals(GeneratorType.BASALT)) coldBuilder.addItemStack(neighbourBlock.asItem().getDefaultInstance());
-        else coldBuilder.addFluidStack(neighbourFluid, full);
-        builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y).addFluidStack(source, full);
+        if (type.equals(GeneratorType.BASALT)) coldBuilder
+            #if MC<12111
+            .addItemStack(
+            #else
+            .add(
+            #endif
+                neighbourBlock.asItem().getDefaultInstance());
+        else coldBuilder
+            #if MC<12111
+            .addFluidStack(
+            #else
+            .add(
+            #endif
+                neighbourFluid, full);
+        builder.addSlot(RecipeIngredientRole.INPUT, lavaX, y)
+            #if MC<12111
+            .addFluidStack(
+            #else
+            .add(
+            #endif
+                source, full);
         builder.addSlot(RecipeIngredientRole.OUTPUT, resultX, resultY)
-                .addItemStack(output.getBlock().asItem().getDefaultInstance());
+            #if MC<12111
+            .addItemStack(
+            #else
+            .add(
+            #endif
+                output.getBlock().asItem().getDefaultInstance());
         builder.addSlot(RecipeIngredientRole.INPUT, resultX, resultModY)
-                .addItemStack(modifier.asItem().getDefaultInstance());
+            #if MC<12111
+            .addItemStack(
+            #else
+            .add(
+            #endif
+                modifier.asItem().getDefaultInstance());
     }
 
     @Override
@@ -216,9 +270,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                 dimList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.any")));
             } else {
                 for (String dim : recipeDimList) {
-                    ResourceLocation id;
+                    CGIdentifier id;
                     try {
-                        id = ResourceLocation.tryParse(dim);
+                        id = CGIdentifier.of(dim);
                     } catch (Exception e) {
                         continue;
                     }
@@ -238,9 +292,9 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
                 dimList.add(TextCompat.literal("- ").append(TextCompat.translatable("cobblegen.dim.none")));
             } else {
                 for (String dim : recipeDimList) {
-                    ResourceLocation id;
+                    CGIdentifier id;
                     try {
-                        id = ResourceLocation.tryParse(dim);
+                        id = CGIdentifier.of(dim);
                     } catch (Exception e) {
                         continue;
                     }
@@ -256,8 +310,15 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
     @SuppressWarnings("removal")
     @Deprecated
     @NotNull
-    public ResourceLocation getUid() {
-        return Util.identifierOf("fluid_interaction");
+    public
+    net.minecraft.resources.
+    #if MC>=12111
+    Identifier
+    #else
+    ResourceLocation
+    #endif
+    getUid() {
+        return CGIdentifier.of("fluid_interaction").toMC();
     }
 
     @SuppressWarnings("removal")

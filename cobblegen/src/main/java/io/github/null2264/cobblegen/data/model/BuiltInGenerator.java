@@ -8,7 +8,6 @@ import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +20,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static io.github.null2264.cobblegen.mc.Constants.DIRECTIONS;
-import static io.github.null2264.cobblegen.util.Util.identifierOf;
 
 @ApiStatus.Internal
 public interface BuiltInGenerator extends Generator {
@@ -54,13 +52,16 @@ public interface BuiltInGenerator extends Generator {
             if (block.minY != null && block.minY >= yLevel) continue;
 
             if (block.id.startsWith("#")) {
-                try {
-                    List<ResourceLocation> taggedBlocks = Util.getTaggedBlockIds(ResourceLocation.tryParse(block.id.substring(1)));
-                    for (ResourceLocation taggedBlock : taggedBlocks) {
-                        filteredBlockIds.add(new WeightedBlock.Builder().setId(taggedBlock.toString()).setWeight(block.weight).build());
-                        totalWeight.updateAndGet(v -> v + block.weight);
+                List<CGIdentifier> taggedBlocks = Util.getTaggedBlockIds(CGIdentifier.of(block.id.substring(1)));
+                for (CGIdentifier taggedBlock : taggedBlocks) {
+                    WeightedBlock actualBlock = null;
+                    try {
+                        actualBlock = new WeightedBlock.Builder().setId(taggedBlock.toMC().toString()).setWeight(block.weight).build();
+                    } catch (Exception ignored) {
                     }
-                } catch (Exception ignored) {
+                    if (actualBlock == null) continue;
+                    filteredBlockIds.add(block);
+                    totalWeight.updateAndGet(v -> v + block.weight);
                 }
             } else {
                 filteredBlockIds.add(block);
@@ -86,7 +87,7 @@ public interface BuiltInGenerator extends Generator {
         if (ConfigMetaData.INSTANCE.enableExperimentalFeatures) {
             for (Direction direction : DIRECTIONS) {
                 Block key = level.getBlockState(pos.relative(direction)).getBlock();
-                CGIdentifier id = CGIdentifier.fromMC(Util.getBlockId(key));
+                CGIdentifier id = Util.getBlockId(key);
                 if (!candidates.containsKey(id)) continue;
 
                 ResultList candidateList = new ResultList();
@@ -105,7 +106,7 @@ public interface BuiltInGenerator extends Generator {
             }
         } else {
             Block key = level.getBlockState(pos.below()).getBlock();
-            CGIdentifier id = CGIdentifier.fromMC(Util.getBlockId(key));
+            CGIdentifier id = Util.getBlockId(key);
             resultCandidates = Util.optional(candidates.get(id));
         }
 
@@ -122,12 +123,13 @@ public interface BuiltInGenerator extends Generator {
             return Optional.empty();
         }
 
-        ResourceLocation id;
+        CGIdentifier id = CGIdentifier.of(replacementId.get());
+        Block block;
         try {
-            id = ResourceLocation.tryParse(replacementId.get());
+            block = Util.getBlock(id);
         } catch (Exception e) {
-            id = identifierOf(replacementId.get());
+            block = null;
         }
-        return Util.optional(Util.getBlock(id).defaultBlockState());
+        return Util.optional(block.defaultBlockState());
     }
 }
