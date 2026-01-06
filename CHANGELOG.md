@@ -7,16 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for MC 1.21.11
+
 ## [v5.4.6] - 2025-07-14
 
 ### Fixed
-
 - Fix Water-like vs Water-like interaction
 
 ## [v5.4.5] - 2025-05-31
 
 ### Added
-
 - [Meta (Experimental)] Added `lenientModifier` option. When enabled it allows player to place the modifier block on
   other places other than underneath the generated block.  
   To use this option you need to set `enableExperimentalFeatures` in `config/cobblegen-meta.json5` to `true`.
