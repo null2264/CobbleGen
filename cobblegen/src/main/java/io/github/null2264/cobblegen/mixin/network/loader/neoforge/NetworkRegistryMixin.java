@@ -1,4 +1,4 @@
-#if FORGE>1 && MC>=12004
+#if FORGE && FORGE>1 && MC>=12004
 package io.github.null2264.cobblegen.mixin.network.loader.neoforge;
 
 import io.github.null2264.cobblegen.network.payload.CGPacketPayload;
