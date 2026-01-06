@@ -59,6 +59,10 @@ loom {
                  */
                 environment("gameTestServer")
                 forgeTemplate("gameTestServer")
+                if (mcVersion >= 12111) {
+                    // REF: https://github.com/neoforged/NeoForge/blob/af6abbe00ab3071ad58c2cb70b988cb79f0b4af8/buildSrc/src/main/java/net/neoforged/neodev/CreateUserDevConfig.java#L128
+                    setDefaultMainClass("net.neoforged.fml.startup.GameTestServer")
+                }
             }
         }
     }
