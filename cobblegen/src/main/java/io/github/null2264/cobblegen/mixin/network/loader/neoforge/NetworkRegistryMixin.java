@@ -19,7 +19,7 @@ public abstract class NetworkRegistryMixin {
         at = @At("HEAD"),
         cancellable = true
     )
-    public static void validateCobbleGenC2S(
+    private void validateCobbleGenC2S(
         net.minecraft.network.protocol.Packet<?> packet,
         net.minecraft.network.protocol.common.ServerCommonPacketListener listener,
         #if MC<12005
@@ -48,7 +48,7 @@ public abstract class NetworkRegistryMixin {
         at = @At("HEAD"),
         cancellable = true
     )
-    public static void validateCobbleGenS2C(
+    private void validateCobbleGenS2C(
         net.minecraft.network.protocol.Packet<?> packet,
         net.minecraft.network.protocol.common.ClientCommonPacketListener listener,
         #if MC<12005
