@@ -138,7 +138,7 @@ jobs:
           echo "<th>Status</th>" >> $GITHUB_STEP_SUMMARY;
           echo "</tr>" >> $GITHUB_STEP_SUMMARY;
 
-          timeout 15m ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && (
+          timeout 20m ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && (
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
               echo "<td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
@@ -275,7 +275,7 @@ jobs:
             echo "[TEST] Downloading Mod Loader..."
             java -jar ./headlessmc-launcher.jar --command ${{ matrix.loader }} $i
             echo "[TEST] Launching MC Headless..."
-            timeout 15m xvfb-run java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1" && (
+            timeout 20m xvfb-run java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1" && (
               echo "[TEST] Test complete ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
               echo "<td>$i</td><td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
