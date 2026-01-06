@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        google()
         maven("https://maven.fabricmc.net/")
         maven("https://maven.aap.my.id/") // For early access to "unstable" features
         maven("https://maven.architectury.dev/")
