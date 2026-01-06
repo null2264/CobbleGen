@@ -71,8 +71,9 @@ loom {
                  *   }
                  * }
                  */
-                environment("gameTestServer")
-                forgeTemplate("gameTestServer")
+                val type = "gameTestServer".let { if (mc>=12111) it.toLowerCase() else it }
+                environment(type)
+                forgeTemplate(type)
             }
         }
     }
