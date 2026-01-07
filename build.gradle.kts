@@ -347,7 +347,7 @@ subprojects {
 publishMods {
     val mainProject = project(":cobblegen")
     file.set(mainProject.file("build/libs/${rootProject.properties["archives_base_name"]}-${mainProject.version}.jar"))
-    val releaseVersions = mcVersions(versionRange, filters = listOf("release"))
+    val releaseVersions = mcVersions(versionRange)
     displayName.set(
         buildString {
             append("[")
@@ -357,7 +357,7 @@ publishMods {
                 if (isNeo) append("NEOFORGE") else append("FORGE")
             }
             append(" MC")
-            append(releaseVersions[0])
+            append(releaseVersions.getOrNull() ?: "0.0.0")
             if (releaseVersions.size > 1) append("+")
             append("]")
             append(" v")

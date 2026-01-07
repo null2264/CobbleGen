@@ -21,6 +21,7 @@ data class VersionRange(
     val to: String?,
     val inclusiveFrom: Boolean = false,
     val inclusiveTo: Boolean = true,
+    val isSnapshot: Boolean = false,
 ) {
     val fromSanitized: String? get() = from?.replace(".x", ".9999", true)
     val toSanitized: String? get() = to?.replace(".x", ".9999", true)
@@ -72,7 +73,7 @@ fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
         in 12102..12104 -> VersionRange("1.21.1", "1.21.4")
         in 12105..12110 -> VersionRange("1.21.4", "1.21.10")
         12111 -> VersionRange("1.21.10", "1.21.11")
-        260100 -> VersionRange("1.21.11", null)
+        260100 -> VersionRange("1.21.11", null, isSnapshot = true)
         else -> VersionRange(null, null)
     }
 }
@@ -92,7 +93,12 @@ fun Version.toMojangString(): String =
     "$major.$minor${if (patch > 0) ".$patch" else ""}${preRelease?.let { "-$preRelease" } ?: ""}" +
         (buildMetadata?.let { "+$buildMetadata" } ?: "")
 
-fun mcVersions(target: VersionRange, filters: List<String> = listOf("release", "snapshot")): List<Version> {
+fun mcVersions(target: VersionRange): List<Version> {
+    val filters = buildList {
+        add("release")
+        if (target.isSnapshot) add("snapshot")
+    }
+
     val client = HttpClient.newHttpClient()
     // TODO: Caching this is probably a good idea...
     val response = client.send(
