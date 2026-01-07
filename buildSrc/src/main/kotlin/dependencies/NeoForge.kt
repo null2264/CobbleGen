@@ -14,13 +14,10 @@ val neoForge = Dependency(
             in 12102..12104 -> "1-beta"
             in 12105..12110 -> "25-beta"
             12111 -> "24-beta"
-            22601 -> when (hotfix) {
-                0 -> "0-alpha.4+snapshot-1"
-                else -> throw IllegalStateException("Hotfix $hotfix is not yet supported!")
-            }
+            260100 -> "0-alpha.4+snapshot-1"
             else -> throw IllegalStateException("Version $mcVersion is not yet supported!")
         }
-        val mc = versionStr(mcVersion, hotfix, true).substring(2)
+        val mc = versionStr(mcVersion, true)
 
         "${mc}.${version}"
     },
