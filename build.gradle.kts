@@ -297,7 +297,13 @@ subprojects {
     }
 
     val targetJavaVersion = if (!isApi) {
-        if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
+        when (mcVersion) {
+            in 11200..11605 -> 8
+            in 11700..11701 -> 16
+            in 11800..12004 -> 17
+            in 12005..12111 -> 21
+            else -> 25
+        }
     } else {
         8  // APIs should always target Java 8
     }
