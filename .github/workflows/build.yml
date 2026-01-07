@@ -98,11 +98,12 @@ jobs:
             8
             17
             21
+            25
           gradle-no-cache-if: true
 
       - name: Setup properties
         run: |
-          echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
+          echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64,JAVA_HOME_25_X64" >> gradle.properties
 
       - name: Build with Gradle
         run: |
