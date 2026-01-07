@@ -357,7 +357,7 @@ publishMods {
                 if (isNeo) append("NEOFORGE") else append("FORGE")
             }
             append(" MC")
-            append(releaseVersions.getOrNull() ?: "0.0.0")
+            append(releaseVersions[0])
             if (releaseVersions.size > 1) append("+")
             append("]")
             append(" v")
