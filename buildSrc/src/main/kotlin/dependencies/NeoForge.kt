@@ -17,7 +17,7 @@ val neoForge = Dependency(
             260100 -> "19-beta"
             else -> throw IllegalStateException("Version $mcVersion is not yet supported!")
         }
-        val mc = versionStr(mcVersion, true)
+        val mc = versionStr(mcVersion, true).let { if (mcVersion>=260100) it else it.substring(2) }
 
         "${mc}.${version}"
     },
