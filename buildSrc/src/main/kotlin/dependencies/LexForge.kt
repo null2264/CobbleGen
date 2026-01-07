@@ -3,7 +3,7 @@ package dependencies
 val lexForge = Dependency(
     group = "net.minecraftforge",
     name = "forge",
-    version = { mcVersion, hotfix ->
+    version = { mcVersion ->
         val version = when (mcVersion) {
             11605 -> "36.2.41"
             11802 -> "40.2.9"
