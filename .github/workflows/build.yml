@@ -140,7 +140,7 @@ jobs:
 
           timeout 20m ./gradlew runGametest -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && (
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
-              echo "<td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "<td>🟩 Complete</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
             ) || (
               EXIT_CODE="$?"
@@ -149,13 +149,13 @@ jobs:
 
               case "$EXIT_CODE" in
                 "-1")
-                  STATUS="Test failed"
+                  STATUS="🟥 Test failed"
                   ;;
                 "125" | "124")
-                  STATUS="Timed out"
+                  STATUS="🟨 Timed out"
                   ;;
                 "255" | "1")
-                  STATUS="Crashed"
+                  STATUS="🟥 Crashed"
                   ;;
                 *)
                   ;;
@@ -278,7 +278,7 @@ jobs:
             timeout 20m xvfb-run java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar --command launch ${{ matrix.loader }}:$i --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1" && (
               echo "[TEST] Test complete ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
-              echo "<td>$i</td><td>Complete</td>" >> $GITHUB_STEP_SUMMARY;
+              echo "<td>$i</td><td>🟩 Complete</td>" >> $GITHUB_STEP_SUMMARY;
               echo "</tr>" >> $GITHUB_STEP_SUMMARY;
             ) || (
               EXIT_CODE="$?"
@@ -288,13 +288,13 @@ jobs:
 
               case "$EXIT_CODE" in
                 "-1")
-                  STATUS="Test failed"
+                  STATUS="🟥 Test failed"
                   ;;
                 "125" | "124")
-                  STATUS="Timed out"
+                  STATUS="🟨 Timed out"
                   ;;
                 "255" | "1")
-                  STATUS="Crashed"
+                  STATUS="🟥 Crashed"
                   ;;
                 *)
                   ;;
