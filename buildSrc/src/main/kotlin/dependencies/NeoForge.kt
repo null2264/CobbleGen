@@ -3,7 +3,7 @@ package dependencies
 val neoForge = Dependency(
     group = "net.neoforged",
     name = "neoforge",
-    version = { mcVersion, hotfix ->
+    version = { mcVersion ->
         val version = when (mcVersion) {
             // snapshot version format:
             // "0-alpha.${mc[mcVersion]}.+"

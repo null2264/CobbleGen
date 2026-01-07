@@ -16,6 +16,7 @@ val fapi = Dependency(
             in 12102..12104 -> "0.106.1+1.21.3"
             in 12105..12110 -> "0.119.9+1.21.5"
             12111 -> "0.139.5+1.21.11"
+            260100 -> "0.141.1+26.1"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -26,7 +27,9 @@ val fapiGameTest = Dependency(
     name = "fabric-gametest-api-v1",
     version = { mcVersion ->
         when (mcVersion) {
-            12105 -> "3.1.2+2a6ec84b49"
+            in 12105..12110 -> "3.1.2+2a6ec84b49"
+            12111 -> "3.1.27+4fc5413f3e"
+            260100 -> "4.0.0+574290bac9"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

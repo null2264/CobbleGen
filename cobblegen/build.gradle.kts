@@ -84,10 +84,13 @@ dependencies {
         // REF: https://github.com/FabricMC/fabric/issues/4491
         if (mcVersion in 11606..12104) {
             modLocalRuntime(fapi.versioned(mcVersion))
-        } else if (mcVersion in 12105..12110) {
-            // FIXME: Is Resource Loader even needed?
-            //modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
-            modLocalRuntime(fapiGameTest.versioned(mcVersion))
+        } else {
+            try {
+                // FIXME: Is Resource Loader even needed?
+                //modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
+                modLocalRuntime(fapiGameTest.versioned(mcVersion))
+            } catch (e: IllegalStateException) {
+            }
         }
     } else {
         if (!isNeo) {

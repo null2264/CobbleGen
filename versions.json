@@ -33,5 +33,8 @@
 
         { "mc": "1.21.11", "loader": "fabric", "java": "21", "testVersions": ["1.21.11"] },
         { "mc": "1.21.11", "loader": "neoforge", "java": "21", "testVersions": ["1.21.11"] }
+
+        { "mc": "26.1", "loader": "fabric", "java": "21", "testVersions": [] },
+        { "mc": "26.1", "loader": "neoforge", "java": "21", "testVersions": [] }
     ]
 }
