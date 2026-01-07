@@ -98,6 +98,7 @@ jobs:
             8
             17
             21
+            25
           gradle-no-cache-if: true
 
       - name: Setup properties
