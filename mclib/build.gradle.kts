@@ -1,6 +1,17 @@
+plugins {
+    id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+}
+
+minecraft {
+    version(project.ext["mcVersionStr"] as String)
+}
+
+repositories {
+    maven("https://repo.spongepowered.org/maven/")
+}
+
 dependencies {
-    // Mostly for Mixin and Arch's dependant on Fabric's @Environment annotations
-    modCompileOnly("net.fabricmc:fabric-loader:0.17.2")
+    compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 publishing {

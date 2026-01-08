@@ -118,8 +118,6 @@ subprojects {
     // NOTE: This here for when I finally split the API to its own module, hopefully on v6.0
     val isApi = false;  // APIs shouldn't contain anything Minecraft related
     val isModModule = project == project(":cobblegen")
-    // Modules that contains MC-related stuff
-    val isMcModule = isModModule || project == project(":mclib")
 
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
@@ -127,18 +125,10 @@ subprojects {
     if (isModModule) {
         // NOTE: This must be set before archloom is applied!
         extra.set("loom.platform", loaderName)
-    }
-
-    if (isMcModule) {
         apply(plugin = "architectury-plugin")
         apply(plugin = "io.github.null2264.architectury-loom")
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
-        arch.apply {
-            if (isModModule)
-                loader(loaderName)
-            else
-                common(listOf(loaderName))
-        }
+        arch.loader(loaderName)
 
         if (mcVersion < 260100) {
             val loom = project.extensions["loom"] as LoomGradleExtension
@@ -182,14 +172,14 @@ subprojects {
     }
 
     val loom by lazy {
-        if (!isMcModule) {
-            throw IllegalStateException("Loom only available for MC modules")
+        if (!isModModule) {
+            throw IllegalStateException("Loom only available for mod modules")
         }
         project.the<LoomGradleExtensionAPI>()
     }
 
     dependencies {
-        if (isMcModule) {
+        if (isModModule) {
             val minecraft by configurations
             val mappings by configurations
 
@@ -207,8 +197,8 @@ subprojects {
 
         if (isModModule) {
             compileOnly(project(":stubs"))
-            compileInternal(project(":mclib", configuration = "namedElements")) { isTransitive = false }
-            shadeInternal(project(":mclib", configuration = "transformProduction$loaderProd")) {
+            compileInternal(project(":mclib")) { isTransitive = false }
+            shadeInternal(project(":mclib")) {
                 // Remove Junit test libraries
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter")
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
