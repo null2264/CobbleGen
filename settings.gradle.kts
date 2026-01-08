@@ -1,3 +1,10 @@
+val mcVer: String by settings
+val (major, minor, patch) = mcVer
+    .split(".")
+    .toMutableList()
+    .apply { while (this.size < 3) this.add("") }
+val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
+
 pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")
@@ -10,12 +17,6 @@ pluginManagement {
         maven("https://repo.spongepowered.org/maven/")
         gradlePluginPortal()
     }
-    val mcVer: String by settings
-    val (major, minor, patch) = mcVer
-        .split(".")
-        .toMutableList()
-        .apply { while (this.size < 3) this.add("") }
-    val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 
     resolutionStrategy {
         eachPlugin {
@@ -31,6 +32,12 @@ pluginManagement {
     plugins {
         id("com.gradleup.shadow") version "9.3.1"
         id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+    }
+}
+
+gradle.beforeProject {
+    if (mcVersion >= 260100) {
+        extensions.extraProperties["fabric.loom.disableObfuscation"] = true
     }
 }
 

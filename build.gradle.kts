@@ -54,10 +54,6 @@ allprojects {
     extra["isForge"] = isForge
     extra["isNeo"] = isNeo
 
-    if (mcVersion >= 260100) {
-        extra["fabric.loom.disableObfuscation"] = true
-    }
-
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
     val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
