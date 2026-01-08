@@ -54,7 +54,7 @@ allprojects {
     extra["isForge"] = isForge
     extra["isNeo"] = isNeo
 
-    if (mcVersion >= 260100) {
+    if (mcVersion < 260100) {
         extra["fabric.loom.disableObfuscation"] = true
     }
 
