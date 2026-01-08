@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         maven("https://maven.fabricmc.net/")
         maven("https://maven.aap.my.id/") // For early access to "unstable" features
+        maven("https://maven.shedaniel.me/")
         maven("https://maven.architectury.dev/")
         maven("https://jitpack.io/")
         maven("https://files.minecraftforge.net/maven/")
