@@ -54,7 +54,9 @@ allprojects {
     extra["isForge"] = isForge
     extra["isNeo"] = isNeo
 
-    extra["fabric.loom.disableObfuscation"] = true
+    if (mcVersion >= 260100) {
+        extra["fabric.loom.disableObfuscation"] = true
+    }
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
@@ -132,9 +134,11 @@ subprojects {
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
         arch.loader(loaderName)
 
-        val loom = project.extensions["loom"] as LoomGradleExtension
-        loom.apply {
-            silentMojangMappingsLicense()
+        if (mcVersion < 260100) {
+            val loom = project.extensions["loom"] as LoomGradleExtension
+            loom.apply {
+                silentMojangMappingsLicense()
+            }
         }
     }
 
@@ -182,8 +186,10 @@ subprojects {
         if (isModModule) {
             val minecraft by configurations
             minecraft(MC.versioned(mcVersion))
-            val mappings by configurations
-            mappings(loom.officialMojangMappings())
+            if (mcVersion < 260100) {
+                val mappings by configurations
+                mappings(loom.officialMojangMappings())
+            }
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
