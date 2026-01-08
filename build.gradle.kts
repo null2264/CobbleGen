@@ -47,12 +47,16 @@ allprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
 
-    ext["mcVersion"] = mcVersion
-    ext["mcVersionStr"] = mcVersionStr
-    ext["loaderName"] = loaderName
-    ext["isFabric"] = isFabric
-    ext["isForge"] = isForge
-    ext["isNeo"] = isNeo
+    extra["mcVersion"] = mcVersion
+    extra["mcVersionStr"] = mcVersionStr
+    extra["loaderName"] = loaderName
+    extra["isFabric"] = isFabric
+    extra["isForge"] = isForge
+    extra["isNeo"] = isNeo
+
+    if (mcVersion >= 260100) {
+        extra["fabric.loom.disableObfuscation"] = true
+    }
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
@@ -125,9 +129,6 @@ subprojects {
     if (isModModule) {
         // NOTE: This must be set before archloom is applied!
         extra.set("loom.platform", loaderName)
-        if (mcVersion >= 260100) {
-            extra.set("fabric.loom.disableObfuscation", true)
-        }
         apply(plugin = "architectury-plugin")
         apply(plugin = "io.github.null2264.architectury-loom")
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
@@ -184,10 +185,9 @@ subprojects {
     dependencies {
         if (isModModule) {
             val minecraft by configurations
-            val mappings by configurations
-
             minecraft(MC.versioned(mcVersion))
             if (mcVersion < 260100) {
+                val mappings by configurations
                 mappings(loom.officialMojangMappings())
             }
         }
