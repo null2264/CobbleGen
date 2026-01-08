@@ -1,8 +1,5 @@
 plugins {
-    id("org.spongepowered.gradle.vanilla") version when(project.ext["mcVersion"] as Int) {
-        in 11605..12111 -> "0.2.2-SNAPSHOT"
-        else -> "0.3.0-SNAPSHOT"
-    }
+    id("org.spongepowered.gradle.vanilla")
 }
 
 minecraft {
