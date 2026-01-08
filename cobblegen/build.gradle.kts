@@ -75,6 +75,10 @@ loom {
     }
 }
 
+tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
+    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
 dependencies {
     if (isFabric) {
         modImplementation("net.fabricmc:fabric-loader:0.18.4")
