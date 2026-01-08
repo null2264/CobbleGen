@@ -10,11 +10,21 @@ pluginManagement {
         maven("https://repo.spongepowered.org/maven/")
         gradlePluginPortal()
     }
+    val mcVer: String by settings
+    val (major, minor, patch) = mcVer
+        .split(".")
+        .toMutableList()
+        .apply { while (this.size < 3) this.add("") }
+    val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
+
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "org.spongepowered.gradle.vanilla") {
-                // REF: https://repo.spongepowered.org/#browse/browse:maven-public:org%2Fspongepowered%2Fvanillagradle%2F0.2.1-SNAPSHOT
-                useModule("org.spongepowered:vanillagradle:0.2.1-20240507.024226-82")
+                val targetModule = when (mcVersion) {
+                    in 11605..12111 -> "org.spongepowered:vanillagradle:0.2.1-SNAPSHOT"
+                    else -> "org.spongepowered:vanillagradle:0.3.0-SNAPSHOT"
+                }
+                useModule(targetModule)
             }
         }
     }

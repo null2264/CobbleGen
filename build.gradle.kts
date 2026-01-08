@@ -129,9 +129,7 @@ subprojects {
     if (isModModule) {
         // NOTE: This must be set before archloom is applied!
         extra.set("loom.platform", loaderName)
-    }
 
-    if (isMcModule) {
         apply(plugin = "architectury-plugin")
 
         if (mcVersion < 260100) {
@@ -186,14 +184,14 @@ subprojects {
     }
 
     val loom by lazy {
-        if (!isMcModule) {
-            throw IllegalStateException("Loom only available for MC modules")
+        if (!isModModule) {
+            throw IllegalStateException("Loom only available for submodules that applied Loom")
         }
         project.the<LoomGradleExtensionAPI>()
     }
 
     dependencies {
-        if (isMcModule) {
+        if (isModModule) {
             val minecraft by configurations
             val mappings by configurations
 
