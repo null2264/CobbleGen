@@ -125,6 +125,9 @@ subprojects {
     if (isModModule) {
         // NOTE: This must be set before archloom is applied!
         extra.set("loom.platform", loaderName)
+        if (mcVersion >= 260100) {
+            extra.set("fabric.loom.disableObfuscation", true)
+        }
         apply(plugin = "architectury-plugin")
         apply(plugin = "io.github.null2264.architectury-loom")
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
