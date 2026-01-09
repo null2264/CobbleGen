@@ -79,20 +79,24 @@ tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
+fun DependencyHandlerScope.dep(configuration: String, dependency: String) {
+    add(configuration.replace("mod", "").replaceFirstChar { it.lowercase(java.util.Locale.getDefault()) }, dependency)
+}
+
 dependencies {
     if (isFabric) {
-        modImplementation("net.fabricmc:fabric-loader:0.18.4")
+        dep("modImplementation", "net.fabricmc:fabric-loader:0.18.4")
 
         // Mainly for testing
         // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
         if (mcVersion in 11606..12104) {
-            modLocalRuntime(fapi.versioned(mcVersion))
+            dep("modLocalRuntime", fapi.versioned(mcVersion))
         } else {
             try {
                 // FIXME: Is Resource Loader even needed?
                 //modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
-                modLocalRuntime(fapiGameTest.versioned(mcVersion))
+                dep("modLocalRuntime", fapiGameTest.versioned(mcVersion))
             } catch (e: IllegalStateException) {
             }
         }
@@ -116,35 +120,37 @@ dependencies {
 
         // <- EMI
         if (mcVersion <= 11802) {
-            modCompileOnly(emi(mcVersion, null, api = true).versioned(0))
+            dep("modCompileOnly", emi(mcVersion, null, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
-                modLocalRuntime(emi(mcVersion).versioned(0))
+                dep("modLocalRuntime", emi(mcVersion).versioned(0))
         } else {
-            modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0))
-            if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime(emi(mcVersion, loaderName).versioned(0))
+            if (mcVersion <= 12105) {
+                dep("modCompileOnly", emi(mcVersion, loaderName, api = true).versioned(0))
+                if (project.properties["recipe_viewer"] == "emi")
+                    dep("modLocalRuntime", emi(mcVersion, loaderName).versioned(0))
+            }
         }
         // EMI ->
 
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
-        modCompileOnly(rei(loaderName, true).versioned(mcVersion))
+        dep("modCompileOnly", rei(loaderName, true).versioned(mcVersion))
         if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
-            modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
-            modCompileOnly("dev.architectury:architectury:11.1.13")
+            dep("modCompileOnly", "me.shedaniel.cloth:basic-math:0.6.1")
+            dep("modCompileOnly", "dev.architectury:architectury:11.1.13")
         }
         if (project.properties["recipe_viewer"] == "rei") {
             if (mcVersion == 11902)  // REI's stupid dep bug
-                modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-            modLocalRuntime(rei(loaderName).versioned(mcVersion))
+                dep("modLocalRuntime", "dev.architectury:architectury-fabric:6.5.77")
+            dep("modLocalRuntime", rei(loaderName).versioned(mcVersion))
         }
         // REI ->
 
         // <- JEI
-        modCompileOnly(jei(mcVersion, loaderName, common = true, api = true).versioned(0))
-        modCompileOnly(jei(mcVersion, loaderName, common = false, api = true).versioned(0))
+        dep("modCompileOnly", jei(mcVersion, loaderName, common = true, api = true).versioned(0))
+        dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = true).versioned(0))
         if (project.properties["recipe_viewer"] == "jei")
-            modCompileOnly(jei(mcVersion, loaderName, common = false, api = false).versioned(0))
+            dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = false).versioned(0))
         // JEI ->
 
         /* FIXME: Broken, somehow

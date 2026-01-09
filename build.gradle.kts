@@ -55,6 +55,7 @@ allprojects {
     extra["isNeo"] = isNeo
 
     if (mcVersion < 260100) {
+        // This somehow enable it instead?!?! WTF??????????
         extra["fabric.loom.disableObfuscation"] = true
     }
 
