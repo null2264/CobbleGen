@@ -81,7 +81,16 @@ tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
 }
 
 fun DependencyHandlerScope.dep(configuration: String, dependency: String) {
-    add(configuration.replace("mod", "").replaceFirstChar { it.lowercase(Locale.getDefault()) }, dependency)
+    add(
+        configuration.let {
+            if (mcVersion < 260100) {
+                it
+            } else {
+                it.replace("mod", "").replaceFirstChar { it.lowercase(Locale.getDefault()) }
+            }
+        },
+        dependency,
+    )
 }
 
 dependencies {
@@ -164,13 +173,15 @@ dependencies {
     }
 }
 
-val remapJar by tasks.getting(RemapJarTask::class) {
-    val shadowJar by tasks.getting(ShadowJar::class)
-    dependsOn(shadowJar)
-    if (isForge && mcVersion >= 12105) {
-        atAccessWideners.add("cobblegen.accesswidener")
+if (mcVersion < 260100) {
+    val remapJar by tasks.getting(RemapJarTask::class) {
+        val shadowJar by tasks.getting(ShadowJar::class)
+        dependsOn(shadowJar)
+        if (isForge && mcVersion >= 12105) {
+            atAccessWideners.add("cobblegen.accesswidener")
+        }
+        inputFile.set(shadowJar.archiveFile)
     }
-    inputFile.set(shadowJar.archiveFile)
 }
 
 //val deleteResources by tasks.creating(Delete::class) {
