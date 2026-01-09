@@ -1,10 +1,12 @@
+import dependencies.minecraft as MC
+
 plugins {
     id("org.spongepowered.gradle.vanilla")
 }
 
 minecraft {
     //accessWideners(project(":mclib").file(""))
-    version(project.ext["mcVersionStr"] as String)
+    version(MC.versioned(project.ext["mcVersion"] as Int))
 }
 
 repositories {
