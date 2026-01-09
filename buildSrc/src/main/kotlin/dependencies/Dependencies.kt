@@ -3,7 +3,7 @@ package dependencies
 data class Dependency(
     private val group: String,
     private val name: String,
-    private val version: (Int) -> String,
+    val version: (Int) -> String,
 ) {
     fun versioned(mcVersion: Int): String = "${group}:${name}:${version(mcVersion)}"
 }

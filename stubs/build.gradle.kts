@@ -6,7 +6,7 @@ plugins {
 
 minecraft {
     //accessWideners(project(":mclib").file(""))
-    version(MC.versioned(project.ext["mcVersion"] as Int))
+    version(MC.version(project.ext["mcVersion"] as Int))
 }
 
 repositories {

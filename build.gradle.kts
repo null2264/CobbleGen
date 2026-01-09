@@ -40,7 +40,7 @@ fun setupPreprocessor() {
 setupPreprocessor()
 
 architectury {
-    minecraft = MC.versioned(mcVersion)
+    minecraft = MC.version(mcVersion)
 }
 
 allprojects {
