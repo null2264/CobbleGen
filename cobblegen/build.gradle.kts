@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dependencies.*
 import net.fabricmc.loom.task.RemapJarTask
+import java.util.Locale
 
 plugins {
 }
@@ -80,7 +81,7 @@ tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
 }
 
 fun DependencyHandlerScope.dep(configuration: String, dependency: String) {
-    add(configuration.replace("mod", "").replaceFirstChar { it.lowercase(java.util.Locale.getDefault()) }, dependency)
+    add(configuration.replace("mod", "").replaceFirstChar { it.lowercase(Locale.getDefault()) }, dependency)
 }
 
 dependencies {
