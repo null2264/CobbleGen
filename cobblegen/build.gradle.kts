@@ -110,6 +110,11 @@ dependencies {
             } catch (e: IllegalStateException) {
             }
         }
+
+        if (mcVersion >= 260100) {
+            // FIXME: For some reason mixin is missing?
+            dep("compileOnly", "org.spongepowered:mixin:0.8.7")
+        }
     } else {
         if (!isNeo) {
             "forge"(lexForge.versioned(mcVersion))
