@@ -81,6 +81,7 @@ allprojects {
     repositories {
         maven("https://jitpack.io")
         maven("https://maven.fabricmc.net/")
+        maven("https://libraries.minecraft.net/")
         maven {
             url = uri("https://maven.blamejared.com/")
             content {
