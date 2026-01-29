@@ -132,7 +132,7 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration:
 
 if (projectPlugin.isLoom()) projectPlugin.configureLoom()
 else if (projectPlugin.isLegacy) projectPlugin.configureNeo<LegacyForgeExtension> {
-    version = NEO.version(mcVersion)
+    version = lexForge.version(mcVersion)
 } else projectPlugin.configureNeo<NeoForgeExtension> {
     version = NEO.version(mcVersion)
 }
