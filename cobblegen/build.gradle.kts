@@ -102,7 +102,7 @@ if (projectPlugin.isLoom()) projectPlugin.configureLoom {
         create("server") {
             type = "gameTestServer"
             gameDirectory.set(rootProject.file("run/serverGameTest"))
-            ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server GameTest")
+            ideName.set("")
             jvmArgument("-Dnull2264.cobblegen.gametest=true")
             systemProperties("$loaderName.enabledGameTestNamespaces", "cobblegen")
             systemProperties("$loaderName.gameTestServer", "true")
