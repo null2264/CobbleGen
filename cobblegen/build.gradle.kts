@@ -3,7 +3,10 @@ import dependencies.*
 import net.fabricmc.loom.task.RemapJarTask
 import java.util.Locale
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.neoforged.moddevgradle.dsl.ModDevExtension
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
+import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
+import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
@@ -15,106 +18,122 @@ val projectPlugin = extra["projectPlugin"] as GradlePlugin
 
 group = project.properties["maven_group"] as String
 
-fun GradlePlugin.configureLoom(configuration: LoomGradleExtensionAPI.() -> Unit) {
+fun GradlePlugin.configureLoom(configuration: LoomGradleExtensionAPI.() -> Unit = {}) {
     assert(isLoom()) { "This project didn't use Loom!" }
-    project.the<LoomGradleExtensionAPI>().configuration()
-}
-fun GradlePlugin.configureNeo(configuration: NeoForgeExtension.() -> Unit) {
-    project.the<NeoForgeExtension>().configuration()
-}
+    project.the<LoomGradleExtensionAPI>()
+        .apply {
+            if (mcVersion >= 12105) {
+                accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
+            }
 
-if (projectPlugin.isLoom()) projectPlugin.configureLoom {
-    if (mcVersion >= 12105) {
-        accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
-    }
+            runConfigs {
+                named("client") {
+                    runDir = "../run/client"
+                    configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Client"
+                    //vmArg("-Dnull2264.cobblegen.gametest=true")
+                    ideConfigGenerated(true)
+                }
+                named("server") {
+                    runDir = "../run/server"
+                    configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Server"
+                    //vmArg("-Dnull2264.cobblegen.gametest=true")
+                    ideConfigGenerated(true)
+                }
+                register("gametest") {
+                    server()
+                    name("Server GameTest")
 
-    runConfigs {
-        named("client") {
-            runDir = "../run/client"
-            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Client"
-            //vmArg("-Dnull2264.cobblegen.gametest=true")
-            ideConfigGenerated(true)
-        }
-        named("server") {
-            runDir = "../run/server"
-            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Server"
-            //vmArg("-Dnull2264.cobblegen.gametest=true")
-            ideConfigGenerated(true)
-        }
-        register("gametest") {
-            server()
-            name("Server GameTest")
+                    vmArg("-Dnull2264.cobblegen.gametest=true")
+                    vmArg("-Dfabric-api.gametest")
+                    vmArg("-Dfabric-api.gametest.report-file=${rootProject.layout.buildDirectory.file("reports/junit.xml").get().getAsFile()}")
+                    // For Forge-alike
+                    property("$loaderName.enabledGameTestNamespaces", "cobblegen")
+                    property("$loaderName.gameTestServer", "true")
+                    property("$loaderName.enableGameTest", "true")
 
-            vmArg("-Dnull2264.cobblegen.gametest=true")
-            vmArg("-Dfabric-api.gametest")
-            vmArg("-Dfabric-api.gametest.report-file=${rootProject.layout.buildDirectory.file("reports/junit.xml").get().getAsFile()}")
-            // For Forge-alike
-            property("$loaderName.enabledGameTestNamespaces", "cobblegen")
-            property("$loaderName.gameTestServer", "true")
-            property("$loaderName.enableGameTest", "true")
+                    runDir("../run/serverGameTest")
+                    ideConfigGenerated(false) // Mostly for CI
+                    if (isNeo) {
+                        /*
+                         * Apparently this replicate NeoGradle's
+                         *
+                         * runs {
+                         *   gameTest {
+                         *     type = "gameTestServer"
+                         *   }
+                         * }
+                         */
+                        environment("gameTestServer")
+                        forgeTemplate("gameTestServer")
+                        if (mcVersion >= 12111) {
+                            // REF: https://github.com/neoforged/NeoForge/blob/af6abbe00ab3071ad58c2cb70b988cb79f0b4af8/buildSrc/src/main/java/net/neoforged/neodev/CreateUserDevConfig.java#L128
+                            defaultMainClass = "net.neoforged.fml.startup.GameTestServer"
+                        }
+                    }
+                }
+            }
 
-            runDir("../run/serverGameTest")
-            ideConfigGenerated(false) // Mostly for CI
-            if (isNeo) {
-                /*
-                 * Apparently this replicate NeoGradle's
-                 *
-                 * runs {
-                 *   gameTest {
-                 *     type = "gameTestServer"
-                 *   }
-                 * }
-                 */
-                environment("gameTestServer")
-                forgeTemplate("gameTestServer")
-                if (mcVersion >= 12111) {
-                    // REF: https://github.com/neoforged/NeoForge/blob/af6abbe00ab3071ad58c2cb70b988cb79f0b4af8/buildSrc/src/main/java/net/neoforged/neodev/CreateUserDevConfig.java#L128
-                    setDefaultMainClass("net.neoforged.fml.startup.GameTestServer")
+            if (!isFabric && !isNeo) {
+                forge {
+                    mixinConfigs = listOf(
+                        "cobblegen.mixins.json"
+                    )
                 }
             }
         }
-    }
+        .configuration()
+}
 
-    if (!isFabric && !isNeo) {
-        forge {
-            mixinConfigs = listOf(
-                "cobblegen.mixins.json"
-            )
+inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration: T.() -> Unit = {}) {
+    project.the<T>()
+        .apply {
+            validateAccessTransformers = true
+
+            runs {
+                create("client") {
+                    client()
+                    gameDirectory.set(rootProject.file("run/client"))
+                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
+                }
+                create("server") {
+                    server()
+                    gameDirectory.set(rootProject.file("run/server"))
+                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
+                }
+                create("gametest") {
+                    type = "gameTestServer"
+                    gameDirectory.set(rootProject.file("run/serverGameTest"))
+                    ideName.set("")
+                    jvmArgument("-Dnull2264.cobblegen.gametest=true")
+                    systemProperty("$loaderName.enabledGameTestNamespaces", "cobblegen")
+                    systemProperty("$loaderName.gameTestServer", "true")
+                    systemProperty("$loaderName.enableGameTest", "true")
+                }
+            }
+
+            mods {
+                create("${base.archivesName.get()}") {
+                    sourceSet(sourceSets.main.get())
+                }
+            }
         }
+        .configuration()
+
+    // Newer MC handle mixins from (neoforge.)mods.toml file
+    if (projectPlugin.isLegacy) {
+        project.the<MixinExtension>()
+            .apply {
+                add(sourceSets.main.get(), "cobblegen.mixins.refmap.json")
+                config("cobblegen.mixins.json")
+            }
     }
-} else projectPlugin.configureNeo {
-    // FIXME: Finish this section
+}
+
+if (projectPlugin.isLoom()) projectPlugin.configureLoom()
+else if (projectPlugin.isLegacy) projectPlugin.configureNeo<LegacyForgeExtension> {
     version = NEO.version(mcVersion)
-
-    validateAccessTransformers = true
-
-    runs {
-        create("client") {
-            client()
-            gameDirectory.set(rootProject.file("run/client"))
-            ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
-        }
-        create("server") {
-            server()
-            gameDirectory.set(rootProject.file("run/server"))
-            ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
-        }
-        create("server") {
-            type = "gameTestServer"
-            gameDirectory.set(rootProject.file("run/serverGameTest"))
-            ideName.set("")
-            jvmArgument("-Dnull2264.cobblegen.gametest=true")
-            systemProperty("$loaderName.enabledGameTestNamespaces", "cobblegen")
-            systemProperty("$loaderName.gameTestServer", "true")
-            systemProperty("$loaderName.enableGameTest", "true")
-        }
-    }
-
-    mods {
-        create("${base.archivesName.get()}") {
-            sourceSet(sourceSets.main.get())
-        }
-    }
+} else projectPlugin.configureNeo<NeoForgeExtension> {
+    version = NEO.version(mcVersion)
 }
 
 tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
@@ -228,6 +247,12 @@ if (mcVersion < 260100) {
         }
         inputFile.set(shadowJar.archiveFile)
     }
+}
+
+val jar by tasks.getting(Jar::class) {
+    manifest.attributes(mapOf(
+        "MixinConfigs" to "cobblegen.mixins.json",
+    ))
 }
 
 //val deleteResources by tasks.creating(Delete::class) {
