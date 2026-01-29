@@ -204,7 +204,7 @@ subprojects {
     }
 
     dependencies {
-        if (isModModule) {
+        if (isModModule && projectPlugin.isLoom()) {
             val minecraft by configurations
             minecraft((if (projectPlugin is GradlePlugin.ArchLoom) "" else "com.mojang:minecraft:") + MC.version(mcVersion))
             if (projectPlugin.isLegacyLoom()) {
