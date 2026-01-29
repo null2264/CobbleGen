@@ -7,6 +7,7 @@ import net.neoforged.moddevgradle.dsl.ModDevExtension
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
+import net.neoforged.moddevgradle.legacyforge.dsl.ObfuscationExtension
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
@@ -239,13 +240,15 @@ dependencies {
 }
 
 if (mcVersion < 260100) {
-    val remapJar by tasks.getting(RemapJarTask::class) {
+    if (projectPlugin.isLoom()) tasks.getting(RemapJarTask::class) {
         val shadowJar by tasks.getting(ShadowJar::class)
         dependsOn(shadowJar)
         if (isForge && mcVersion >= 12105) {
             atAccessWideners.add("cobblegen.accesswidener")
         }
         inputFile.set(shadowJar.archiveFile)
+    } else if (projectPlugin.isLegacy) project.the<ObfuscationExtension>().apply {
+        reobfuscate(tasks.named<ShadowJar>("shadowJar"), sourceSets.main.get())
     }
 }
 
