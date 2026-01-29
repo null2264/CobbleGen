@@ -88,6 +88,7 @@ fun GradlePlugin.configureLoom(configuration: LoomGradleExtensionAPI.() -> Unit 
 inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration: T.() -> Unit = {}) {
     project.the<T>()
         .apply {
+            // FIXME: AccessWidener to AccessTransformer
             validateAccessTransformers = true
 
             runs {
@@ -240,7 +241,7 @@ dependencies {
 }
 
 if (mcVersion < 260100) {
-    if (projectPlugin.isLoom()) tasks.getting(RemapJarTask::class) {
+    if (projectPlugin.isLoom()) tasks.named<RemapJarTask>("remapJar") {
         val shadowJar by tasks.getting(ShadowJar::class)
         dependsOn(shadowJar)
         if (isForge && mcVersion >= 12105) {
