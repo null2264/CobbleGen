@@ -7,8 +7,12 @@ import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
-    id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("io.github.null2264.architectury-loom") version "1.13-SNAPSHOT" apply false
+    id("architectury-plugin") version "3.4-SNAPSHOT" apply false
+    id(GradlePlugin.ArchLoom.id) version "1.13-SNAPSHOT" apply false
+    id(GradlePlugin.Loom.id) version "1.15-SNAPSHOT" apply false
+    id(GradlePlugin.LegacyLoom.id) version "1.15-SNAPSHOT" apply false
+    id(GradlePlugin.MDG.id) version "2.0.140" apply false
+    id(GradlePlugin.LegacyMDG.id) version "2.0.140" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
@@ -27,6 +31,26 @@ val (major, minor, patch) = mcVersionStr
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
+/**
+ * We're using LegacyMDG instead of ForgeGradle because they provide similar API to Loom instead of the atrocious "fg.deobf"
+ */
+val projectPlugin = when {
+    // LegacyMDG only support 1.17 up to 1.20.1
+    mcVersion <= 11605 -> GradlePlugin.ArchLoom
+    isForge -> {
+        assert(mcVersion <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
+        GradlePlugin.LegacyMDG
+    }
+    isNeo -> when {
+        mcVersion <= 12001 -> GradlePlugin.LegacyMDG
+        // 1.20.2+ is in some kind of limbo for whatever reason, not supported by MDG and not supported by LegacyMDG.
+        mcVersion in 12002..12006 -> GradlePlugin.ArchLoom
+        else -> GradlePlugin.MDG
+    }
+    isFabric -> if (mcVersion <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
+    else -> throw IllegalStateException()
+}
+
 fun setupPreprocessor() {
     val buildProps = buildString {
         append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
@@ -39,10 +63,6 @@ fun setupPreprocessor() {
 }
 setupPreprocessor()
 
-architectury {
-    minecraft = MC.version(mcVersion)
-}
-
 allprojects {
     apply(plugin = "java")
     apply(plugin = "maven-publish")
@@ -53,11 +73,7 @@ allprojects {
     extra["isFabric"] = isFabric
     extra["isForge"] = isForge
     extra["isNeo"] = isNeo
-
-    if (mcVersion < 260100) {
-        // This somehow enable it instead?!?! WTF??????????
-        extra["fabric.loom.disableObfuscation"] = true
-    }
+    extra["projectPlugin"] = projectPlugin
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
@@ -129,13 +145,17 @@ subprojects {
 
     if (isModModule) {
         // NOTE: This must be set before archloom is applied!
-        extra.set("loom.platform", loaderName)
-        apply(plugin = "architectury-plugin")
-        apply(plugin = "io.github.null2264.architectury-loom")
-        val arch = project.extensions["architectury"] as ArchitectPluginExtension
-        arch.loader(loaderName)
+        if (projectPlugin is GradlePlugin.ArchLoom) {
+            extra.set("loom.platform", loaderName)
+            apply(plugin = "architectury-plugin")
+        }
+        apply(plugin = projectPlugin.id)
+        if (projectPlugin is GradlePlugin.ArchLoom) {
+            val arch = project.extensions["architectury"] as ArchitectPluginExtension
+            arch.loader(loaderName)
+        }
 
-        if (mcVersion < 260100) {
+        if (projectPlugin.isLegacyLoom()) {
             val loom = project.extensions["loom"] as LoomGradleExtension
             loom.apply {
                 silentMojangMappingsLicense()
@@ -161,7 +181,7 @@ subprojects {
     val compileInternal: Configuration by configurations.creating {
         configurations.compileClasspath.get().extendsFrom(this)
         configurations.runtimeClasspath.get().extendsFrom(this)
-        if (isModModule) {
+        if (isModModule && projectPlugin is GradlePlugin.ArchLoom) {
             configurations["development$loaderProd"].extendsFrom(this)
         }
     }
@@ -172,7 +192,7 @@ subprojects {
         configurations.testAnnotationProcessor.get().extendsFrom(this)
     }
 
-    if (isModModule && !isFabric) {
+    if (isModModule && projectPlugin is GradlePlugin.ArchLoom) {
         configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
     }
 
@@ -186,8 +206,8 @@ subprojects {
     dependencies {
         if (isModModule) {
             val minecraft by configurations
-            minecraft(MC.versioned(mcVersion))
-            if (mcVersion < 260100) {
+            minecraft((if (projectPlugin is GradlePlugin.ArchLoom) "" else "com.mojang:minecraft:") + MC.version(mcVersion))
+            if (projectPlugin.isLegacyLoom()) {
                 val mappings by configurations
                 mappings(loom.officialMojangMappings())
             }

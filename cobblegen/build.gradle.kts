@@ -2,9 +2,8 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dependencies.*
 import net.fabricmc.loom.task.RemapJarTask
 import java.util.Locale
-
-plugins {
-}
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
@@ -12,10 +11,19 @@ val loaderName = ext["loaderName"] as String
 val isFabric = ext["isFabric"] as Boolean
 val isForge = ext["isForge"] as Boolean
 val isNeo = ext["isNeo"] as Boolean
+val projectPlugin = extra["projectPlugin"] as GradlePlugin
 
 group = project.properties["maven_group"] as String
 
-loom {
+fun GradlePlugin.configureLoom(configuration: LoomGradleExtensionAPI.() -> Unit) {
+    assert(isLoom()) { "This project didn't use Loom!" }
+    project.the<LoomGradleExtensionAPI>().configuration()
+}
+fun GradlePlugin.configureNeo(configuration: NeoForgeExtension.() -> Unit) {
+    project.the<NeoForgeExtension>().configuration()
+}
+
+if (projectPlugin.isLoom()) projectPlugin.configureLoom {
     if (mcVersion >= 12105) {
         accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
     }
@@ -74,6 +82,28 @@ loom {
             )
         }
     }
+} else projectPlugin.configureNeo {
+    // FIXME: Finish this section
+    version = neoForge.versioned(mcVersion)
+
+    validateAccessTransformers = true
+
+    runs {
+        named("client") {
+            gameDirectory.set(rootProject.file("run/client"))
+            ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
+        }
+        named("server") {
+            gameDirectory.set(rootProject.file("run/server"))
+            ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
+        }
+    }
+
+    mods {
+        register("${base.archivesName.get()}") {
+            sourceSet(sourceSets.main.get())
+        }
+    }
 }
 
 tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
@@ -83,10 +113,10 @@ tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
 fun DependencyHandlerScope.dep(configuration: String, dependency: String) {
     add(
         configuration.let {
-            if (mcVersion < 260100) {
+            if (projectPlugin.isLegacy) {
                 it
             } else {
-                it.replace("mod", "").replaceFirstChar { it.lowercase(Locale.getDefault()) }
+                it.replace("mod", "").replaceFirstChar { c -> c.lowercase(Locale.getDefault()) }
             }
         },
         dependency,
@@ -115,7 +145,7 @@ dependencies {
             // FIXME: For some reason mixin is missing?
             dep("compileOnly", "org.spongepowered:mixin:0.8.7")
         }
-    } else {
+    } else if (projectPlugin.isLoom()) {
         if (!isNeo) {
             "forge"(lexForge.versioned(mcVersion))
         } else {
