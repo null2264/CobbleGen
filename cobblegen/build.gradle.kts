@@ -89,18 +89,26 @@ if (projectPlugin.isLoom()) projectPlugin.configureLoom {
     validateAccessTransformers = true
 
     runs {
-        named("client") {
+        create("client") {
+            client()
             gameDirectory.set(rootProject.file("run/client"))
             ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
         }
-        named("server") {
+        create("server") {
+            server()
             gameDirectory.set(rootProject.file("run/server"))
             ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
+        }
+        create("server") {
+            type = "gameTestServer"
+            gameDirectory.set(rootProject.file("run/serverGameTest"))
+            ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server GameTest")
+            vmArg("-Dnull2264.cobblegen.gametest=true")
         }
     }
 
     mods {
-        register("${base.archivesName.get()}") {
+        create("${base.archivesName.get()}") {
             sourceSet(sourceSets.main.get())
         }
     }
