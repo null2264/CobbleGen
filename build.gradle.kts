@@ -206,7 +206,7 @@ subprojects {
     dependencies {
         if (isModModule && projectPlugin.isLoom()) {
             val minecraft by configurations
-            minecraft((if (projectPlugin is GradlePlugin.ArchLoom) "" else "com.mojang:minecraft:") + MC.version(mcVersion))
+            minecraft(MC.versioned(mcVersion))
             if (projectPlugin.isLegacyLoom()) {
                 val mappings by configurations
                 mappings(loom.officialMojangMappings())
