@@ -192,7 +192,7 @@ subprojects {
         configurations.testAnnotationProcessor.get().extendsFrom(this)
     }
 
-    if (isModModule && projectPlugin is GradlePlugin.ArchLoom) {
+    if (isModModule && !isFabric && projectPlugin is GradlePlugin.ArchLoom) {
         configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
     }
 
