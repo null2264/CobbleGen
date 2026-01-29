@@ -37,15 +37,15 @@ val versionRange = supportedVersionRange(mcVersion, loaderName)
 val projectPlugin = when {
     // LegacyMDG only support 1.17 up to 1.20.1
     mcVersion <= 11605 -> GradlePlugin.ArchLoom
-    isForge -> {
-        assert(mcVersion <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
-        GradlePlugin.LegacyMDG
-    }
     isNeo -> when {
         mcVersion <= 12001 -> GradlePlugin.LegacyMDG
         // 1.20.2+ is in some kind of limbo for whatever reason, not supported by MDG and not supported by LegacyMDG.
         mcVersion in 12002..12006 -> GradlePlugin.ArchLoom
         else -> GradlePlugin.MDG
+    }
+    isForge -> {
+        assert(mcVersion <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
+        GradlePlugin.LegacyMDG
     }
     isFabric -> if (mcVersion <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
     else -> throw IllegalStateException()
