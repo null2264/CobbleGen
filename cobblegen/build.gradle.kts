@@ -84,7 +84,7 @@ if (projectPlugin.isLoom()) projectPlugin.configureLoom {
     }
 } else projectPlugin.configureNeo {
     // FIXME: Finish this section
-    version = NEO.versioned(mcVersion)
+    version = NEO.version(mcVersion)
 
     validateAccessTransformers = true
 
