@@ -104,9 +104,9 @@ if (projectPlugin.isLoom()) projectPlugin.configureLoom {
             gameDirectory.set(rootProject.file("run/serverGameTest"))
             ideName.set("")
             jvmArgument("-Dnull2264.cobblegen.gametest=true")
-            systemProperties("$loaderName.enabledGameTestNamespaces", "cobblegen")
-            systemProperties("$loaderName.gameTestServer", "true")
-            systemProperties("$loaderName.enableGameTest", "true")
+            systemProperty("$loaderName.enabledGameTestNamespaces", "cobblegen")
+            systemProperty("$loaderName.gameTestServer", "true")
+            systemProperty("$loaderName.enableGameTest", "true")
         }
     }
 
