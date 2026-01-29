@@ -84,7 +84,7 @@ if (projectPlugin.isLoom()) projectPlugin.configureLoom {
     }
 } else projectPlugin.configureNeo {
     // FIXME: Finish this section
-    version = neoForge.versioned(mcVersion)
+    version = NEO.versioned(mcVersion)
 
     validateAccessTransformers = true
 
@@ -149,7 +149,7 @@ dependencies {
         if (!isNeo) {
             "forge"(lexForge.versioned(mcVersion))
         } else {
-            "neoForge"(neoForge.versioned(mcVersion))
+            "neoForge"(NEO.versioned(mcVersion))
         }
     }
 

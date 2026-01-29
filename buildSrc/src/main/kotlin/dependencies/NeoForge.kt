@@ -1,6 +1,6 @@
 package dependencies
 
-val neoForge = Dependency(
+val NEO = Dependency(
     group = "net.neoforged",
     name = "neoforge",
     version = { mcVersion ->
