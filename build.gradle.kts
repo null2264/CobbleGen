@@ -184,6 +184,11 @@ subprojects {
         if (isModModule && projectPlugin is GradlePlugin.ArchLoom) {
             configurations["development$loaderProd"].extendsFrom(this)
         }
+        afterEvaluate {
+            if (isModModule && mcVersion <= 12108 && !projectPlugin.isLoom()) {
+                configurations.named("additionalRuntimeClasspath").get().extendsFrom(this@creating)
+            }
+        }
     }
 
     val manifoldCompile: Configuration by configurations.creating {
@@ -198,7 +203,6 @@ subprojects {
             afterEvaluate {
                 if (mcVersion <= 12108) {
                     configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
-                    configurations.named("additionalRuntimeClasspath").get().extendsFrom(shadeInternal)
                 }
             }
         }
