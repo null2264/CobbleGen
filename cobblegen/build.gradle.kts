@@ -184,6 +184,9 @@ dependencies {
         } else {
             "neoForge"(NEO.versioned(mcVersion))
         }
+    } else if (projectPlugin.isLegacy) {
+        // needed for legacy forge, for mapping stuff
+        annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     }
 
     if (mcVersion > 11605) {
