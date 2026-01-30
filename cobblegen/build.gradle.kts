@@ -241,7 +241,7 @@ dependencies {
     }
 }
 
-tasks.withType<Jar> {
+tasks.jar {
     manifest.attributes(mapOf(
         "MixinConfigs" to "cobblegen.mixins.json",
     ))
@@ -258,11 +258,12 @@ if (mcVersion < 260100) {
         reobfuscate(tasks.named<ShadowJar>("shadowJar"), sourceSets.main.get())
     }
 } else {
-    tasks.withType<Jar> {
+    tasks.jar {
         archiveClassifier = "dev"
     }
 
     val productionJar by tasks.register<Zip>("productionJar") {
+        dependsOn(tasks.jar)
         archiveClassifier = ""
         archiveExtension = "jar"
         destinationDirectory = layout.buildDirectory.dir("libs")
