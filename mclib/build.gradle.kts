@@ -1,31 +1,11 @@
-import dependencies.NEOFORM
-import net.neoforged.moddevgradle.dsl.ModDevExtension
-import net.neoforged.moddevgradle.dsl.NeoForgeExtension
-import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import dependencies.minecraft as MC
 
-val mcVersion = ext["mcVersion"] as Int
-val projectPlugin = extra["projectPlugin"] as GradlePlugin
-if (projectPlugin.isLegacy) {
-    apply(plugin = GradlePlugin.LegacyMDG.id)
-} else {
-    apply(plugin = GradlePlugin.MDG.id)
+plugins {
+    id("org.spongepowered.gradle.vanilla")
 }
 
-inline fun <reified T: ModDevExtension> GradlePlugin.configure(configuration: T.() -> Unit = {}) {
-    project.the<T>()
-        .apply {}
-        .configuration()
-}
-
-if (projectPlugin.isLegacy) {
-    projectPlugin.configure<LegacyForgeExtension> {
-        mcpVersion = MC.version(mcVersion)
-    }
-} else {
-    projectPlugin.configure<NeoForgeExtension> {
-        neoFormVersion = NEOFORM.version(mcVersion)
-    }
+minecraft {
+    version(MC.version(project.ext["mcVersion"] as Int))
 }
 
 repositories {
@@ -33,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spongepowered:mixin:0.8.7")
+    compileOnly("org.spongepowered:mixin:0.8.5")
 }
 
 publishing {
@@ -44,7 +24,9 @@ publishing {
         }
     }
 
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
+        // Add repositories to publish to here.
     }
 }
 
