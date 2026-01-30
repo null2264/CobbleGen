@@ -258,6 +258,9 @@ if (mcVersion < 260100) {
         }
         inputFile.set(shadowJar.archiveFile)
     } else if (projectPlugin.isLegacy) project.the<ObfuscationExtension>().apply {
+        tasks.jar {
+            finalizedBy(tasks.named("reobfJar"))
+        }
         reobfuscate(tasks.named<ShadowJar>("shadowJar"), sourceSets.main.get())
     }
 }
