@@ -7,9 +7,9 @@ import dependencies.minecraft as MC
 val mcVersion = ext["mcVersion"] as Int
 val projectPlugin = extra["projectPlugin"] as GradlePlugin
 if (projectPlugin.isLegacy) {
-    apply(GradlePlugin.LegacyMDG.id)
+    apply(plugin = GradlePlugin.LegacyMDG.id)
 } else {
-    apply(GradlePlugin.MDG.id)
+    apply(plugin = GradlePlugin.MDG.id)
 }
 
 inline fun <reified T: ModDevExtension> GradlePlugin.configure(configuration: T.() -> Unit = {}) {
