@@ -193,8 +193,12 @@ subprojects {
     }
 
     if (isModModule && !isFabric) {
-        val configName = if (projectPlugin.isLoom()) "forgeRuntimeLibrary" else "additionalRuntimeClasspath"
-        configurations.named(configName).get().extendsFrom(shade)
+        if (projectPlugin.isLoom()) configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
+        else {
+            if (mcVersion <= 12108) {
+                configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
+            }
+        }
     }
 
     val loom by lazy {
