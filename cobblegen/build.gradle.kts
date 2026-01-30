@@ -242,7 +242,6 @@ dependencies {
 }
 
 tasks.withType<Jar> {
-    archiveClassifier = "dev"
     manifest.attributes(mapOf(
         "MixinConfigs" to "cobblegen.mixins.json",
     ))
@@ -258,22 +257,22 @@ if (mcVersion < 260100) {
     } else if (projectPlugin.isLegacy) project.the<ObfuscationExtension>().apply {
         reobfuscate(tasks.named<ShadowJar>("shadowJar"), sourceSets.main.get())
     }
-}
-
-val productionJar by tasks.register<Zip>("productionJar") {
-    archiveClassifier = ""
-    archiveExtension = "jar"
-    destinationDirectory = layout.buildDirectory.dir("libs")
-    if (mcVersion >= 260100 || !projectPlugin.isLoom()) {
-        from(zipTree(tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile }))
-    } else {
-        from(zipTree(tasks.named<RemapJarTask>("remapJar").flatMap { it.archiveFile }))
+} else {
+    tasks.withType<Jar> {
+        archiveClassifier = "dev"
     }
-    if (!projectPlugin.isLoom()) from(tasks.named<JarJar>("jarJar"))
-}
 
-tasks.assemble {
-    dependsOn(productionJar)
+    val productionJar by tasks.register<Zip>("productionJar") {
+        archiveClassifier = ""
+        archiveExtension = "jar"
+        destinationDirectory = layout.buildDirectory.dir("libs")
+        from(zipTree(tasks.shadowJar.flatMap { it.archiveFile }))
+        if (!projectPlugin.isLoom()) from(tasks.named<JarJar>("jarJar"))
+    }
+
+    tasks.assemble {
+        dependsOn(productionJar)
+    }
 }
 
 //val deleteResources by tasks.creating(Delete::class) {
