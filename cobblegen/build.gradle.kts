@@ -241,9 +241,8 @@ dependencies {
 }
 
 if (mcVersion < 260100) {
-    if (projectPlugin.isLoom()) tasks.named<RemapJarTask>("remapJar") {
+    if (projectPlugin.isLoom()) tasks.withType<RemapJarTask> {
         val shadowJar by tasks.getting(ShadowJar::class)
-        dependsOn(shadowJar)
         if (isForge && mcVersion >= 12105) {
             atAccessWideners.add("cobblegen.accesswidener")
         }
@@ -253,7 +252,10 @@ if (mcVersion < 260100) {
     }
 }
 
-val jar by tasks.getting(Jar::class) {
+tasks.withType<Jar> {
+    if (mcVersion >= 260100 || !projectPlugin.isLoom()) {
+        from(zipTree(tasks.named<ShadowJar>("shadowJar").map { it.archiveFile })) {}
+    }
     manifest.attributes(mapOf(
         "MixinConfigs" to "cobblegen.mixins.json",
     ))
