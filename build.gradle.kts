@@ -198,6 +198,7 @@ subprojects {
             afterEvaluate {
                 if (mcVersion <= 12108) {
                     configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
+                    configurations.named("additionalRuntimeClasspath").get().extendsFrom(shadeInternal)
                 }
             }
         }
