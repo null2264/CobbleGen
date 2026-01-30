@@ -8,6 +8,7 @@ import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.ObfuscationExtension
+import net.neoforged.moddevgradle.tasks.JarJar
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
@@ -240,6 +241,13 @@ dependencies {
     }
 }
 
+tasks.withType<Jar> {
+    archiveClassifier = "dev"
+    manifest.attributes(mapOf(
+        "MixinConfigs" to "cobblegen.mixins.json",
+    ))
+}
+
 if (mcVersion < 260100) {
     if (projectPlugin.isLoom()) tasks.withType<RemapJarTask> {
         val shadowJar by tasks.getting(ShadowJar::class)
@@ -252,13 +260,20 @@ if (mcVersion < 260100) {
     }
 }
 
-tasks.withType<Jar> {
+val productionJar by tasks.register<Zip>("productionJar") {
+    archiveClassifier = ""
+    archiveExtension = "jar"
+    destinationDirectory = layout.buildDirectory.dir("libs")
     if (mcVersion >= 260100 || !projectPlugin.isLoom()) {
-        from(zipTree(tasks.named<ShadowJar>("shadowJar").map { it.archiveFile })) {}
+        from(zipTree(tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile }))
+    } else {
+        from(zipTree(tasks.named<RemapJarTask>("remapJar").flatMap { it.archiveFile }))
     }
-    manifest.attributes(mapOf(
-        "MixinConfigs" to "cobblegen.mixins.json",
-    ))
+    if (!projectPlugin.isLoom()) from(tasks.named<JarJar>("jarJar"))
+}
+
+tasks.assemble {
+    dependsOn(productionJar)
 }
 
 //val deleteResources by tasks.creating(Delete::class) {
