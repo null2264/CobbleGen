@@ -213,7 +213,7 @@ dependencies {
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
         dep("modCompileOnly", rei(loaderName, true).versioned(mcVersion))
-        if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
+        if ((isFabric && mcVersion in 12002..12104) || (isForge && mcVersion in 11802..12001)) {  // FIXME: Not sure why it's not included
             dep("modCompileOnly", "me.shedaniel.cloth:basic-math:0.6.1")
             dep("modCompileOnly", "dev.architectury:architectury:11.1.13")
         }
@@ -257,7 +257,9 @@ if (mcVersion < 260100) {
     } else if (projectPlugin.isLegacy) project.the<ObfuscationExtension>().apply {
         reobfuscate(tasks.named<ShadowJar>("shadowJar"), sourceSets.main.get())
     }
-} else {
+}
+
+if (mcVersion >= 260100 || !projectPlugin.isLoom()){
     tasks.jar {
         archiveClassifier = "dev"
     }
