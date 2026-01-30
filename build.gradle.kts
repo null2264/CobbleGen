@@ -195,8 +195,10 @@ subprojects {
     if (isModModule && !isFabric) {
         if (projectPlugin.isLoom()) configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
         else {
-            if (mcVersion <= 12108) {
-                configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
+            afterEvaluate {
+                if (mcVersion <= 12108) {
+                    configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
+                }
             }
         }
     }
