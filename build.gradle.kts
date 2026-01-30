@@ -192,8 +192,9 @@ subprojects {
         configurations.testAnnotationProcessor.get().extendsFrom(this)
     }
 
-    if (isModModule && !isFabric && projectPlugin is GradlePlugin.ArchLoom) {
-        configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
+    if (isModModule && !isFabric) {
+        val configName = if (projectPlugin.isLoom()) "forgeRuntimeLibrary" else "additionalRuntimeClasspath"
+        configurations.named(configName).get().extendsFrom(shade)
     }
 
     val loom by lazy {
