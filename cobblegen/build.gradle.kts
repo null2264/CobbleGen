@@ -90,7 +90,7 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration:
     project.the<T>()
         .apply {
             // FIXME: AccessWidener to AccessTransformer
-            validateAccessTransformers = true
+            validateAccessTransformers = mcVersion >= 12105
 
             runs {
                 create("client") {

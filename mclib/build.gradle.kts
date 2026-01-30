@@ -31,7 +31,7 @@ publishing {
 }
 
 tasks.jar {
-    manifest {
-        attributes["Contains-Sources"] = "java,class"
-    }
+    manifest.attributes(mapOf(
+        "Contains-Sources" to "java,class",
+    ))
 }
