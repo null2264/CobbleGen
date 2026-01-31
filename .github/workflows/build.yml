@@ -119,13 +119,13 @@ jobs:
           while [ $tries -le 5 ];
           do
                   ./gradlew build -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && exit 0
-                  err="$?"
-                  echo "Try $tries failed. (code:$err)"
+                  c="$?"
+                  echo "Try $tries failed. (code:$c)"
                   sleep 5s
                   tries=$((tries+1))
           done
 
-          [ "$err" = "0" ] || exit 1
+          [ "$c" = "0" ] || exit 1
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
 
