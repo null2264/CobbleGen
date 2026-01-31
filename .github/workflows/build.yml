@@ -131,7 +131,7 @@ jobs:
           retention-days: 3
 
       - name: GameTest with Gradle
-        if: github.event.inputs.bypass-test != 'true' && matrix.gradleGameTest == 'true'
+        if: github.event.inputs.bypass-test != 'true' && matrix.gradleGameTest
         run: |
           echo "# GameTest results" >> $GITHUB_STEP_SUMMARY;
           echo "<table>" >> $GITHUB_STEP_SUMMARY;
