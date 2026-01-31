@@ -107,7 +107,25 @@ jobs:
 
       - name: Build with Gradle
         run: |
-          ./gradlew build -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}"
+          # Retry 5 times because TerraformersMC's Maven keep having a stroke
+          # and there's no way to workaround it through Gradle as there are no
+          # public API for it. So we just need to deal with it I guess.
+          #
+          # REF: https://discuss.gradle.org/t/how-to-deal-with-network-flakiness-impacting-gradle-builds/25705/3
+          # REF: https://github.com/gradle/gradle/issues/4629
+          # REF: https://github.com/gradle/gradle/issues/2779
+          tries=1
+          c="0"
+          while [ $tries -le 5 ];
+          do
+                  ./gradlew build -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && exit 0
+                  err="$?"
+                  echo "Try $tries failed. (code:$err)"
+                  sleep 5s
+                  tries=$((tries+1))
+          done
+
+          [ "$err" = "0" ] || exit 1
         env:
           VERSION: ${{ github.event.inputs.version == '' && '0.0.0' || github.event.inputs.version }}
 
