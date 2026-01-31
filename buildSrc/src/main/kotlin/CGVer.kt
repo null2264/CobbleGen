@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.provideDelegate
+
 data class CGVer(
     val code: Int,
     var alwaysShowHotfix: Boolean = false,

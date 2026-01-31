@@ -2,18 +2,32 @@ plugins {
     id("java-library")
 }
 
+val commonJava by configurations.creating {
+    isCanBeResolved = true
+}
+val commonResources by configurations.creating {
+    isCanBeResolved = true
+}
+
 dependencies {
-    compileOnly(project(":mclib"))
+    compileOnly(project(":xplat"))
+    commonJava(project(":xplat", "commonJava"))
+    commonResources(project(":xplat", "commonResources"))
 }
 
 tasks.compileJava {
-    source(project(":mclib").sourceSets.main.get().allSource)
+    dependsOn(commonJava)
+    source(commonJava)
 }
 
-//tasks.sourcesJar {
-//    from(project(":mclib").sourceSets.main.get().allJava)
-//}
+tasks.named<Jar>("sourcesJar") {
+    dependsOn(commonJava)
+    dependsOn(commonResources)
+    from(commonJava)
+    from(commonResources)
+}
 
 tasks.processResources {
-    from(project(":mclib").sourceSets.main.get().resources)
+    dependsOn(commonResources)
+    from(commonResources)
 }

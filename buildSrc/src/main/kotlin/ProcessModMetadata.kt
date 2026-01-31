@@ -27,6 +27,36 @@ fun File.processModsToml(
     writeText(modsTomlContent)
 }
 
+fun File.processMixinsJsonFabric(mcVersion: CGVer) {
+    val both = buildList {
+        if (mcVersion.code > 11605) {
+            addJson("create.CreateFluidReactionsMixin\$PatchF")
+        }
+    }
+    val mixinsJson = JsonObject(
+        lenientJson.decodeFromString<JsonObject>(readText(Charsets.UTF_8)).toMutableMap().apply {
+            set("compatibilityLevel", JsonPrimitive(if (mcVersion.code <= 11605) "JAVA_8" else "JAVA_17"))
+            set("mixins", JsonArray(both))
+            set("client", JsonArray(listOf()))
+            set("server", JsonArray(listOf()))
+        }
+    )
+}
+
+fun File.processMixinsJsonForge(mcVersion: CGVer) {
+    val server = buildList {
+        if (mcVersion.code >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
+    }
+    val mixinsJson = JsonObject(
+        lenientJson.decodeFromString<JsonObject>(readText(Charsets.UTF_8)).toMutableMap().apply {
+            set("compatibilityLevel", JsonPrimitive(if (mcVersion.code <= 11605) "JAVA_8" else "JAVA_17"))
+            set("mixins", JsonArray(listOf()))
+            set("client", JsonArray(listOf()))
+            set("server", JsonArray(server))
+        }
+    )
+}
+
 fun File.processMixinsJson(mcVersion: CGVer, isFabric: Boolean) {
     val both = buildList {
         if (mcVersion.code >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
@@ -35,7 +65,6 @@ fun File.processMixinsJson(mcVersion: CGVer, isFabric: Boolean) {
         if (mcVersion.code > 11605) {
             addJson("create.CreateFluidReactionsMixin\$OFive")
             addJson("create.CreateFluidReactionsMixin\$PatchE")
-            if (isFabric) addJson("create.CreateFluidReactionsMixin\$PatchF")
         }
         addJson("fluid.FlowingFluidEventMixin")
         addJson("fluid.FluidEventMixin")

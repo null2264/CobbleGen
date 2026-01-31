@@ -1,0 +1,62 @@
+{
+    "schemaVersion": 1,
+    "id": "cobblegen",
+    "version": "${version}",
+    "name": "CobbleGen",
+    "description": "An MC mod that allows you to customize cobblestone (stone and basalt) generators",
+    "authors": [
+        "null2264"
+    ],
+    "contact": {
+        "homepage": "https://github.com/null2264/CobbleGen",
+        "sources": "https://github.com/null2264/CobbleGen",
+        "issues": "https://github.com/null2264/CobbleGen/issues"
+    },
+    "license": "LGPL-3.0-only",
+    "icon": "icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "preLaunch": [
+          "io.github.null2264.cobblegen.fabric.CobbleGenPreLaunch"
+        ],
+        "main": [
+            "io.github.null2264.cobblegen.fabric.CobbleGenFabric"
+        ],
+        "jei_mod_plugin": [
+            // Will be added by build script (build.gradle.kts)
+        ],
+        "rei_client": [
+            // Will be added by build script (build.gradle.kts)
+        ],
+        "emi": [
+            // Will be added by build script (build.gradle.kts)
+        ],
+        "cobblegen_plugin": [
+            // Will be added by build script (build.gradle.kts)
+        ],
+        "fabric-gametest" : [
+            "io.github.null2264.cobblegen.gametest.BlockGenerationTest"
+        ]
+    },
+    "mixins": [
+        "cobblegen.fabric.mixins.json",
+        "cobblegen.mixins.json"
+    ],
+    "custom": {
+        "modmenu": {
+            "links": {
+                "modmenu.discord": "https://discord.gg/sP9xRy6",
+                "modmenu.website": "https://cobblegen.aap.my.id"
+            }
+        },
+        "mc-publish": {
+            "modrinth": "qRogT5Gy",
+            "curseforge": 581293,
+            "loaders": ["fabric", "quilt"]
+        }
+    },
+    "depends": {
+        "fabricloader": "*",
+        "minecraft": "${mcversion}"
+    }
+}

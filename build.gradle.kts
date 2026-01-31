@@ -11,8 +11,6 @@ plugins {
     id(GradlePlugin.ArchLoom.id) version "1.13-SNAPSHOT" apply false
     id(GradlePlugin.Loom.id) version "1.15-SNAPSHOT" apply false
     id(GradlePlugin.LegacyLoom.id) version "1.15-SNAPSHOT" apply false
-    id(GradlePlugin.MDG.id) version "2.0.140" apply false
-    id(GradlePlugin.LegacyMDG.id) version "2.0.140" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
@@ -135,30 +133,30 @@ allprojects {
 subprojects {
     // NOTE: This here for when I finally split the API to its own module, hopefully on v6.0
     val isApi = false;  // APIs shouldn't contain anything Minecraft related
-    val isModModule = project == project(":cobblegen")
+    val isModModule = project in listOf(project(":fabric"), project(":forge"))
 
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
 
-    if (isModModule) {
-        // NOTE: This must be set before archloom is applied!
-        if (projectPlugin is GradlePlugin.ArchLoom) {
-            extra.set("loom.platform", loaderName)
-            apply(plugin = "architectury-plugin")
-        }
-        apply(plugin = projectPlugin.id)
-        if (projectPlugin is GradlePlugin.ArchLoom) {
-            val arch = project.extensions["architectury"] as ArchitectPluginExtension
-            arch.loader(loaderName)
-        }
-
-        if (projectPlugin.isLegacyLoom()) {
-            val loom = project.extensions["loom"] as LoomGradleExtension
-            loom.apply {
-                silentMojangMappingsLicense()
-            }
-        }
-    }
+//    if (isModModule) {
+//        // NOTE: This must be set before archloom is applied!
+//        if (projectPlugin is GradlePlugin.ArchLoom) {
+//            extra.set("loom.platform", loaderName)
+//            apply(plugin = "architectury-plugin")
+//        }
+//        apply(plugin = projectPlugin.id)
+//        if (projectPlugin is GradlePlugin.ArchLoom) {
+//            val arch = project.extensions["architectury"] as ArchitectPluginExtension
+//            arch.loader(loaderName)
+//        }
+//
+//        if (projectPlugin.isLegacyLoom()) {
+//            val loom = project.extensions["loom"] as LoomGradleExtension
+//            loom.apply {
+//                silentMojangMappingsLicense()
+//            }
+//        }
+//    }
 
     val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
 
@@ -214,12 +212,6 @@ subprojects {
 
     dependencies {
         if (isModModule && projectPlugin.isLoom()) {
-            val minecraft by configurations
-            minecraft(MC.versioned(mcVersion))
-            if (projectPlugin.isLegacyLoom()) {
-                val mappings by configurations
-                mappings(loom.officialMojangMappings())
-            }
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
@@ -361,72 +353,72 @@ subprojects {
 //        .map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }.distinct().map { it.toMojangString() })
 //}
 
-publishMods {
-    val mainProject = project(":cobblegen")
-    file.set(mainProject.file("build/libs/${rootProject.properties["archives_base_name"]}-${mainProject.version}.jar"))
-    val releaseVersions = mcVersions(versionRange)
-    displayName.set(
-        buildString {
-            append("[")
-            if (isFabric) {
-                append("FABRIC")
-            } else {
-                if (isNeo) append("NEOFORGE") else append("FORGE")
-            }
-            append(" MC")
-            append(releaseVersions[0])
-            if (releaseVersions.size > 1) append("+")
-            append("]")
-            append(" v")
-            append(modVersion)
-            append("-")
-            append(rootProject.properties["version_stage"])
-            if (mcVersion.code <= 11605) append(" (LITE)")
-        }
-    )
-    changelog.set(System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog")
-    version.set(mainProject.version.toString())
-    if (isFabric) {
-        modLoaders.add("fabric")
-        modLoaders.add("quilt")
-    } else {
-        if (mcVersion.code <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
-            modLoaders.add("forge")
-        if (mcVersion.code == 12001 || isNeo)
-            modLoaders.add("neoforge")
-    }
-    type = when(rootProject.properties["version_stage"]) {
-        "ALPHA" -> ALPHA
-        "BETA" -> BETA
-        else -> STABLE
-    }
-
-    val cfToken = System.getenv("CURSEFORGE")
-    if (cfToken != null) {
-        curseforge {
-            accessToken = cfToken
-            projectId.set(rootProject.properties["curseforge_project"] as String)
-            // Because CF did it the lazy way and just group every snapshot as a single snapshot
-            minecraftVersions =
-                releaseVersions
-                    .map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }
-                    .distinct()
-                    .map { it.toMojangString() }
-
-            embeds {
-                slug = "jankson"
-            }
-        }
-    }
-
-    val mrToken = System.getenv("MODRINTH")
-    if (mrToken != null) {
-        modrinth {
-            accessToken = mrToken
-            projectId.set(rootProject.properties["modrinth_project"] as String)
-
-            minecraftVersions =
-                releaseVersions.map { it.toMojangString() }
-        }
-    }
-}
+//publishMods {
+//    val mainProject = project(":cobblegen")
+//    file.set(mainProject.file("build/libs/${rootProject.properties["archives_base_name"]}-${mainProject.version}.jar"))
+//    val releaseVersions = mcVersions(versionRange)
+//    displayName.set(
+//        buildString {
+//            append("[")
+//            if (isFabric) {
+//                append("FABRIC")
+//            } else {
+//                if (isNeo) append("NEOFORGE") else append("FORGE")
+//            }
+//            append(" MC")
+//            append(releaseVersions[0])
+//            if (releaseVersions.size > 1) append("+")
+//            append("]")
+//            append(" v")
+//            append(modVersion)
+//            append("-")
+//            append(rootProject.properties["version_stage"])
+//            if (mcVersion.code <= 11605) append(" (LITE)")
+//        }
+//    )
+//    changelog.set(System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog")
+//    version.set(mainProject.version.toString())
+//    if (isFabric) {
+//        modLoaders.add("fabric")
+//        modLoaders.add("quilt")
+//    } else {
+//        if (mcVersion.code <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
+//            modLoaders.add("forge")
+//        if (mcVersion.code == 12001 || isNeo)
+//            modLoaders.add("neoforge")
+//    }
+//    type = when(rootProject.properties["version_stage"]) {
+//        "ALPHA" -> ALPHA
+//        "BETA" -> BETA
+//        else -> STABLE
+//    }
+//
+//    val cfToken = System.getenv("CURSEFORGE")
+//    if (cfToken != null) {
+//        curseforge {
+//            accessToken = cfToken
+//            projectId.set(rootProject.properties["curseforge_project"] as String)
+//            // Because CF did it the lazy way and just group every snapshot as a single snapshot
+//            minecraftVersions =
+//                releaseVersions
+//                    .map { if (it.isPreRelease) it.copy(preRelease = "Snapshot") else it }
+//                    .distinct()
+//                    .map { it.toMojangString() }
+//
+//            embeds {
+//                slug = "jankson"
+//            }
+//        }
+//    }
+//
+//    val mrToken = System.getenv("MODRINTH")
+//    if (mrToken != null) {
+//        modrinth {
+//            accessToken = mrToken
+//            projectId.set(rootProject.properties["modrinth_project"] as String)
+//
+//            minecraftVersions =
+//                releaseVersions.map { it.toMojangString() }
+//        }
+//    }
+//}
