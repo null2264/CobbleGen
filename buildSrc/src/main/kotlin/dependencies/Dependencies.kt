@@ -1,11 +1,13 @@
 package dependencies
 
+import CGVer
+
 data class Dependency(
     private val group: String,
     private val name: String,
-    val version: (Int) -> String,
+    val version: (CGVer) -> String,
 ) {
-    fun versioned(mcVersion: Int): String = "${group}:${name}:${version(mcVersion)}"
+    fun versioned(mcVersion: CGVer): String = "${group}:${name}:${version(mcVersion)}"
 }
 
 fun legacyVersionStr(versionCode: Int): String {

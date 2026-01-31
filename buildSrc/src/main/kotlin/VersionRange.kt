@@ -59,8 +59,8 @@ data class VersionRange(
     }
 }
 
-fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
-    return when (mcVersion) {
+fun supportedVersionRange(mcVersion: CGVer, loader: String): VersionRange {
+    return when (mcVersion.code) {
         11605 -> VersionRange("1.16.5", "1.16.5")
         11802 -> VersionRange("1.18.2", "1.18.2")
         in 11900..11902 -> VersionRange("1.18.x", "1.19.2")

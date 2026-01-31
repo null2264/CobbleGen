@@ -24,11 +24,7 @@ val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
 val mcVersionStr = project.properties["mcVer"] as? String ?: ""
-val (major, minor, patch) = mcVersionStr
-    .split(".")
-    .toMutableList()
-    .apply { while (this.size < 3) this.add("") }
-val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
+val mcVersion = CGVer.fromString(mcVersionStr)
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
 /**
@@ -36,18 +32,18 @@ val versionRange = supportedVersionRange(mcVersion, loaderName)
  */
 val projectPlugin = when {
     // LegacyMDG only support 1.17 up to 1.20.1
-    mcVersion <= 11605 -> GradlePlugin.ArchLoom
+    mcVersion.code <= 11605 -> GradlePlugin.ArchLoom
     isNeo -> when {
-        mcVersion <= 12001 -> GradlePlugin.LegacyMDG
+        mcVersion.code <= 12001 -> GradlePlugin.LegacyMDG
         // 1.20.2+ is in some kind of limbo for whatever reason, not supported by MDG and not supported by LegacyMDG.
-        mcVersion in 12002..12006 -> GradlePlugin.ArchLoom
+        mcVersion.code in 12002..12006 -> GradlePlugin.ArchLoom
         else -> GradlePlugin.MDG
     }
     isForge -> {
-        assert(mcVersion <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
+        assert(mcVersion.code <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
         GradlePlugin.LegacyMDG
     }
-    isFabric -> if (mcVersion <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
+    isFabric -> if (mcVersion.code <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
     else -> throw IllegalStateException()
 }
 
@@ -185,7 +181,7 @@ subprojects {
             configurations["development$loaderProd"].extendsFrom(this)
         }
         afterEvaluate {
-            if (isModModule && mcVersion <= 12108 && !projectPlugin.isLoom()) {
+            if (isModModule && mcVersion.code <= 12108 && !projectPlugin.isLoom()) {
                 configurations.named("additionalRuntimeClasspath").get().extendsFrom(this@creating)
             }
         }
@@ -201,7 +197,7 @@ subprojects {
         if (projectPlugin.isLoom()) configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
         else {
             afterEvaluate {
-                if (mcVersion <= 12108) {
+                if (mcVersion.code <= 12108) {
                     configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
                 }
             }
@@ -243,7 +239,7 @@ subprojects {
                 isTransitive = false
             }
 
-            if (mcVersion <= 11605) {
+            if (mcVersion.code <= 11605) {
                 // slf4j is not included by MC in 1.16.5
                 shade("org.slf4j:slf4j-api:1.7.36")
                 shade("org.apache.logging.log4j:log4j-slf4j-impl:2.8.1")
@@ -254,7 +250,7 @@ subprojects {
     val shadowJar by tasks.getting(ShadowJar::class) {
         isZip64 = true
         relocate("blue.endless.jankson", "io.github.null2264.shadowed.jankson")
-        if (mcVersion <= 11605) {
+        if (mcVersion.code <= 11605) {
             relocate("org.slf4j", "io.github.null2264.shadowed.slf4j")
             relocate("org.apache.logging", "io.github.null2264.shadowed.log4j")
         }
@@ -265,7 +261,7 @@ subprojects {
             exclude("META-INF/neoforge.mods.toml")
         } else if (isForge) {
             exclude("fabric.mod.json")
-            exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
+            exclude(if (isNeo && mcVersion.code >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
         }
         exclude("architectury.common.json")
 
@@ -293,7 +289,7 @@ subprojects {
             if (isFabric) {
                 "fabric.mod.json"
             } else {
-                if (isNeo && mcVersion >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
+                if (isNeo && mcVersion.code >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
             }
 
         filesMatching(metadataFilename) {
@@ -307,8 +303,8 @@ subprojects {
 
         doLast {
             // For some reason Mojang rename the structure directory on MC 1.21 to singular form
-            val structureDirName = if (mcVersion >= 12100) "structure" else "structures"
-            if (isFabric || mcVersion >= 12105) {
+            val structureDirName = if (mcVersion.code >= 12100) "structure" else "structures"
+            if (isFabric || mcVersion.code >= 12105) {
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt")
                     .writeStructureAsSnbt(generateStructure(false))
@@ -328,7 +324,7 @@ subprojects {
     }
 
     val targetJavaVersion = if (!isApi) {
-        when (mcVersion) {
+        when (mcVersion.code) {
             in 11200..11605 -> 8
             in 11700..11701 -> 16
             in 11800..12004 -> 17
@@ -395,7 +391,7 @@ publishMods {
             append(modVersion)
             append("-")
             append(rootProject.properties["version_stage"])
-            if (mcVersion <= 11605) append(" (LITE)")
+            if (mcVersion.code <= 11605) append(" (LITE)")
         }
     )
     changelog.set(System.getenv("CHANGELOG") ?: "Please visit our [releases](https://github.com/null2264/CobbleGen/releases) for a changelog")
@@ -404,9 +400,9 @@ publishMods {
         modLoaders.add("fabric")
         modLoaders.add("quilt")
     } else {
-        if (mcVersion <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
+        if (mcVersion.code <= 12002 && !isNeo)  // No more LexForge, LexForge is too buggy
             modLoaders.add("forge")
-        if (mcVersion == 12001 || isNeo)
+        if (mcVersion.code == 12001 || isNeo)
             modLoaders.add("neoforge")
     }
     type = when(rootProject.properties["version_stage"]) {

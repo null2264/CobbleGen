@@ -7,7 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 fun File.processModsToml(
-    mcVersion: Int,
+    mcVersion: CGVer,
     /**
      * Possible values:
      * - 0 -> Not Forge
@@ -18,7 +18,7 @@ fun File.processModsToml(
 ) {
     val modsTomlContent = readText(Charsets.UTF_8).let {
         when {
-            mcVersion == 12001 -> it.replace("#==", "")
+            mcVersion.code == 12001 -> it.replace("#==", "")
             forge == 2 -> it.replace("#<<", "")
             forge == 1 -> it.replace("#>>", "")
             else -> it
@@ -27,12 +27,12 @@ fun File.processModsToml(
     writeText(modsTomlContent)
 }
 
-fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
+fun File.processMixinsJson(mcVersion: CGVer, isFabric: Boolean) {
     val both = buildList {
-        if (mcVersion >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
+        if (mcVersion.code >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
         addJson("CommandsMixin")
         addJson("MinecraftServerMixin")
-        if (mcVersion > 11605) {
+        if (mcVersion.code > 11605) {
             addJson("create.CreateFluidReactionsMixin\$OFive")
             addJson("create.CreateFluidReactionsMixin\$PatchE")
             if (isFabric) addJson("create.CreateFluidReactionsMixin\$PatchF")
@@ -40,27 +40,27 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
         addJson("fluid.FlowingFluidEventMixin")
         addJson("fluid.FluidEventMixin")
         addJson("fluid.LavaEventMixin")
-        if (mcVersion >= 12105) {
+        if (mcVersion.code >= 12105) {
             addJson("gametest.RegistryDataLoaderMixin\$GameTest")
             addJson("gametest.StructureTemplateManagerMixin\$GameTest")
         }
     }
     val client = buildList {
-        if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
+        if (mcVersion.code < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
         addJson("network.ClientCommonPacketListenerMixin")
         addJson("network.ConnectionMixin")
     }
     val server = buildList {
         addJson("network.PlayerManagerMixin")
-        if (mcVersion < 12002) addJson("network.ServerboundCustomPayloadPacketAccessor")
+        if (mcVersion.code < 12002) addJson("network.ServerboundCustomPayloadPacketAccessor")
         else addJson("network.ServerConfigurationPacketListenerMixin")
-        if (mcVersion < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
+        if (mcVersion.code < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
         addJson("network.ServerCommonPacketListenerMixin")
-        if (!isFabric && mcVersion >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
+        if (!isFabric && mcVersion.code >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
     }
     val mixinsJson = JsonObject(
         lenientJson.decodeFromString<JsonObject>(readText(Charsets.UTF_8)).toMutableMap().apply {
-            set("compatibilityLevel", JsonPrimitive(if (mcVersion <= 11605) "JAVA_8" else "JAVA_17"))
+            set("compatibilityLevel", JsonPrimitive(if (mcVersion.code <= 11605) "JAVA_8" else "JAVA_17"))
             set("mixins", JsonArray(both))
             set("client", JsonArray(client))
             set("server", JsonArray(server))
@@ -69,13 +69,13 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
     writeText(prettyJson.encodeToString(JsonObject.serializer(), mixinsJson))
 }
 
-fun File.processFabricModJson(mcVersion: Int) {
+fun File.processFabricModJson(mcVersion: CGVer) {
     val jsonObject = JsonObject(
         lenientJson.decodeFromString<JsonObject>(readText(Charsets.UTF_8)).toMutableMap().apply {
             (get("entrypoints") as? JsonObject)?.toMutableMap()?.apply {
-                if (mcVersion > 11605) {
+                if (mcVersion.code > 11605) {
                     set("jei_mod_plugin", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.jei.CGJEIPlugin"))))
-                    if (mcVersion < 12111) {
+                    if (mcVersion.code < 12111) {
                         // FIXME: Enable REI integration for 1.21.11 when REI is updated
                         // REF: https://github.com/shedaniel/RoughlyEnoughItems/pull/1989
                         set("rei_client", JsonArray(listOf(JsonPrimitive("io.github.null2264.cobblegen.integration.viewer.rei.CGREIPlugin"))))
@@ -87,7 +87,7 @@ fun File.processFabricModJson(mcVersion: Int) {
                     "cobblegen_plugin",
                     JsonArray(buildList {
                         addJson("io.github.null2264.cobblegen.integration.BuiltInPlugin")
-                        if (mcVersion > 11605) addJson("io.github.null2264.cobblegen.integration.CreatePlugin")
+                        if (mcVersion.code > 11605) addJson("io.github.null2264.cobblegen.integration.CreatePlugin")
                     }),
                 )
             }?.let {

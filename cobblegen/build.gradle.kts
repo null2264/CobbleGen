@@ -10,8 +10,7 @@ import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.ObfuscationExtension
 import net.neoforged.moddevgradle.tasks.JarJar
 
-val mcVersion = ext["mcVersion"] as Int
-val mcVersionStr = ext["mcVersionStr"] as String
+val mcVersion = ext["mcVersion"] as CGVer
 val loaderName = ext["loaderName"] as String
 val isFabric = ext["isFabric"] as Boolean
 val isForge = ext["isForge"] as Boolean
@@ -24,7 +23,7 @@ fun GradlePlugin.configureLoom(configuration: LoomGradleExtensionAPI.() -> Unit 
     assert(isLoom()) { "This project didn't use Loom!" }
     project.the<LoomGradleExtensionAPI>()
         .apply {
-            if (mcVersion >= 12105) {
+            if (mcVersion.code >= 12105) {
                 accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
             }
 
@@ -67,7 +66,7 @@ fun GradlePlugin.configureLoom(configuration: LoomGradleExtensionAPI.() -> Unit 
                          */
                         environment("gameTestServer")
                         forgeTemplate("gameTestServer")
-                        if (mcVersion >= 12111) {
+                        if (mcVersion.code >= 12111) {
                             // REF: https://github.com/neoforged/NeoForge/blob/af6abbe00ab3071ad58c2cb70b988cb79f0b4af8/buildSrc/src/main/java/net/neoforged/neodev/CreateUserDevConfig.java#L128
                             defaultMainClass = "net.neoforged.fml.startup.GameTestServer"
                         }
@@ -90,7 +89,7 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration:
     project.the<T>()
         .apply {
             // FIXME: AccessWidener to AccessTransformer
-            validateAccessTransformers = mcVersion >= 12105
+            validateAccessTransformers = mcVersion.code >= 12105
 
             runs {
                 create("client") {
@@ -163,7 +162,7 @@ dependencies {
         // Mainly for testing
         // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
-        if (mcVersion in 11606..12104) {
+        if (mcVersion.code in 11606..12104) {
             dep("modLocalRuntime", fapi.versioned(mcVersion))
         } else {
             try {
@@ -174,7 +173,7 @@ dependencies {
             }
         }
 
-        if (mcVersion >= 260100) {
+        if (mcVersion.code >= 260100) {
             // FIXME: For some reason mixin is missing?
             dep("compileOnly", "org.spongepowered:mixin:0.8.7")
         }
@@ -189,7 +188,7 @@ dependencies {
         annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     }
 
-    if (mcVersion > 11605) {
+    if (mcVersion.code > 11605) {
         // TODO: Maybe it's no longer needed since we can just use ':stubs'?
         // We just want their source code so we can mixin it
         if (isFabric) {
@@ -200,15 +199,15 @@ dependencies {
         }
 
         // <- EMI
-        if (mcVersion <= 11802) {
-            dep("modCompileOnly", emi(mcVersion, null, api = true).versioned(0))
+        if (mcVersion.code <= 11802) {
+            dep("modCompileOnly", emi(mcVersion, null, api = true).versioned(CGVer.wildcard()))
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
-                dep("modLocalRuntime", emi(mcVersion).versioned(0))
+                dep("modLocalRuntime", emi(mcVersion).versioned(CGVer.wildcard()))
         } else {
-            if (mcVersion <= 12105) {
-                dep("modCompileOnly", emi(mcVersion, loaderName, api = true).versioned(0))
+            if (mcVersion.code <= 12105) {
+                dep("modCompileOnly", emi(mcVersion, loaderName, api = true).versioned(CGVer.wildcard()))
                 if (project.properties["recipe_viewer"] == "emi")
-                    dep("modLocalRuntime", emi(mcVersion, loaderName).versioned(0))
+                    dep("modLocalRuntime", emi(mcVersion, loaderName).versioned(CGVer.wildcard()))
             }
         }
         // EMI ->
@@ -216,22 +215,22 @@ dependencies {
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
         dep("modCompileOnly", rei(loaderName, true).versioned(mcVersion))
-        if ((isFabric && mcVersion in 12002..12104) || (isForge && mcVersion in 11802..12001)) {  // FIXME: Not sure why it's not included
+        if ((isFabric && mcVersion.code in 12002..12104) || (isForge && mcVersion.code in 11802..12001)) {  // FIXME: Not sure why it's not included
             dep("modCompileOnly", "me.shedaniel.cloth:basic-math:0.6.1")
             dep("modCompileOnly", "dev.architectury:architectury:11.1.13")
         }
         if (project.properties["recipe_viewer"] == "rei") {
-            if (mcVersion == 11902)  // REI's stupid dep bug
+            if (mcVersion.code == 11902)  // REI's stupid dep bug
                 dep("modLocalRuntime", "dev.architectury:architectury-fabric:6.5.77")
             dep("modLocalRuntime", rei(loaderName).versioned(mcVersion))
         }
         // REI ->
 
         // <- JEI
-        dep("modCompileOnly", jei(mcVersion, loaderName, common = true, api = true).versioned(0))
-        dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = true).versioned(0))
+        dep("modCompileOnly", jei(mcVersion, loaderName, common = true, api = true).versioned(CGVer.wildcard()))
+        dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = true).versioned(CGVer.wildcard()))
         if (project.properties["recipe_viewer"] == "jei")
-            dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = false).versioned(0))
+            dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = false).versioned(CGVer.wildcard()))
         // JEI ->
 
         /* FIXME: Broken, somehow
@@ -250,10 +249,10 @@ tasks.jar {
     ))
 }
 
-if (mcVersion < 260100) {
+if (mcVersion.code < 260100) {
     if (projectPlugin.isLoom()) tasks.withType<RemapJarTask> {
         val shadowJar by tasks.getting(ShadowJar::class)
-        if (isForge && mcVersion >= 12105) {
+        if (isForge && mcVersion.code >= 12105) {
             atAccessWideners.add("cobblegen.accesswidener")
         }
         inputFile.set(shadowJar.archiveFile)
@@ -265,7 +264,7 @@ if (mcVersion < 260100) {
     }
 }
 
-if (mcVersion >= 260100 || !projectPlugin.isLoom()){
+if (mcVersion.code >= 260100 || !projectPlugin.isLoom()){
     tasks.jar {
         archiveClassifier = "dev"
     }

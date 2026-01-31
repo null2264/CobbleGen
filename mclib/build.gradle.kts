@@ -5,7 +5,7 @@ plugins {
 }
 
 minecraft {
-    version(MC.version(project.ext["mcVersion"] as Int))
+    version(MC.version(project.ext["mcVersion"] as CGVer))
 }
 
 repositories {

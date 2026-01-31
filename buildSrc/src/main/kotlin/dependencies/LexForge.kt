@@ -4,7 +4,7 @@ val lexForge = Dependency(
     group = "net.minecraftforge",
     name = "forge",
     version = { mcVersion ->
-        val version = when (mcVersion) {
+        val version = when (mcVersion.code) {
             11605 -> "36.2.41"
             11802 -> "40.2.9"
             in 11900..11902 -> "43.2.14"
@@ -13,6 +13,6 @@ val lexForge = Dependency(
             in 12002..12004 -> "48.0.13"
             else -> throw IllegalStateException("Forge no longer supported!")
         }
-        "${versionStr(mcVersion)}-${version}"
+        "${mcVersion}-${version}"
     },
 )
