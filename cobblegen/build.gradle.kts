@@ -10,6 +10,10 @@ import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.ObfuscationExtension
 import net.neoforged.moddevgradle.tasks.JarJar
 
+plugins {
+    id("multiloader")
+}
+
 val mcVersion = ext["mcVersion"] as CGVer
 val loaderName = ext["loaderName"] as String
 val isFabric = ext["isFabric"] as Boolean
@@ -116,6 +120,7 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration:
             mods {
                 create("${base.archivesName.get()}") {
                     sourceSet(sourceSets.main.get())
+                    sourceSet(project(":mclib").sourceSets.main.get())
                 }
             }
         }
@@ -188,8 +193,11 @@ dependencies {
         annotationProcessor("org.spongepowered:mixin:0.8.7:processor")
     }
 
+    // Bunch of dummy classes, just so that the mod compiles
+    compileOnly(project(":stubs"))
+
     if (mcVersion.code > 11605) {
-        // TODO: Maybe it's no longer needed since we can just use ':stubs'?
+        // FIXME: RuntimeOnly
         // We just want their source code so we can mixin it
         if (isFabric) {
             // modCompileOnly("io.github.fabricators_of_create:Porting-Lib:${project.properties["port_lib_version_1_18_2"]}")

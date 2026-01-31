@@ -229,17 +229,6 @@ subprojects {
         manifoldCompile("systems.manifold:manifold-preprocessor:${manifoldVersion}")
 
         if (isModModule) {
-            compileOnly(project(":stubs"))
-            compileInternal(project(":mclib")) { isTransitive = false }
-            shadeInternal(project(":mclib")) {
-                // Remove Junit test libraries
-                exclude(group = "org.junit.jupiter", module = "junit-jupiter")
-                exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
-                exclude(group = "junit", module = "junit")
-                // Removed dependencies
-                isTransitive = false
-            }
-
             if (mcVersion.code <= 11605) {
                 // slf4j is not included by MC in 1.16.5
                 shade("org.slf4j:slf4j-api:1.7.36")
