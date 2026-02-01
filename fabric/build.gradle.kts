@@ -7,8 +7,8 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 
 plugins {
     id("multiloader")
-    id(GradlePlugin.Loom.id) version "1.15-SNAPSHOT" apply false
-    id(GradlePlugin.LegacyLoom.id) version "1.15-SNAPSHOT" apply false
+    id(GradlePlugin.Loom.id) version "1.14.10" apply false
+    id(GradlePlugin.LegacyLoom.id) version "1.14.10" apply false
 }
 
 val mcVersion = ext["mcVersion"] as CGVer

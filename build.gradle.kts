@@ -3,7 +3,8 @@ import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
-    id("architectury-plugin") version "3.4-SNAPSHOT" apply false
+    // Explicitly add idea-ext here since without it being here :stubs and :fabric would both try to apply it at the same time causing error
+    id("org.jetbrains.gradle.plugin.idea-ext") version "1.3" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
@@ -21,22 +22,22 @@ val versionRange = supportedVersionRange(mcVersion, loaderName)
 /**
  * We're using LegacyMDG instead of ForgeGradle because they provide similar API to Loom instead of the atrocious "fg.deobf"
  */
-val projectPlugin = when {
-    // LegacyMDG only support 1.17 up to 1.20.1
-    mcVersion.code <= 11605 -> GradlePlugin.ArchLoom
-    isNeo -> when {
-        mcVersion.code <= 12001 -> GradlePlugin.LegacyMDG
-        // 1.20.2+ is in some kind of limbo for whatever reason, not supported by MDG and not supported by LegacyMDG.
-        mcVersion.code in 12002..12006 -> GradlePlugin.ArchLoom
-        else -> GradlePlugin.MDG
-    }
-    isForge -> {
-        assert(mcVersion.code <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
-        GradlePlugin.LegacyMDG
-    }
-    isFabric -> if (mcVersion.code <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
-    else -> throw IllegalStateException()
-}
+//val projectPlugin = when {
+//    // LegacyMDG only support 1.17 up to 1.20.1
+//    mcVersion.code <= 11605 -> GradlePlugin.ArchLoom
+//    isNeo -> when {
+//        mcVersion.code <= 12001 -> GradlePlugin.LegacyMDG
+//        // 1.20.2+ is in some kind of limbo for whatever reason, not supported by MDG and not supported by LegacyMDG.
+//        mcVersion.code in 12002..12006 -> GradlePlugin.ArchLoom
+//        else -> GradlePlugin.MDG
+//    }
+//    isForge -> {
+//        assert(mcVersion.code <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
+//        GradlePlugin.LegacyMDG
+//    }
+//    isFabric -> if (mcVersion.code <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
+//    else -> throw IllegalStateException()
+//}
 
 fun setupPreprocessor() {
     val buildProps = buildString {
@@ -60,7 +61,6 @@ allprojects {
     extra["isFabric"] = isFabric
     extra["isForge"] = isForge
     extra["isNeo"] = isNeo
-    extra["projectPlugin"] = projectPlugin
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 

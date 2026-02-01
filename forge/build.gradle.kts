@@ -7,6 +7,7 @@ import net.neoforged.moddevgradle.legacyforge.dsl.LegacyForgeExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.MixinExtension
 import net.neoforged.moddevgradle.legacyforge.dsl.ObfuscationExtension
 import net.neoforged.moddevgradle.tasks.JarJar
+import org.gradle.kotlin.dsl.configureEach
 
 plugins {
     id("multiloader")
@@ -34,6 +35,9 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configure(configuration: T.
             validateAccessTransformers = mcVersion.code >= 12105
 
             runs {
+//                configureEach {
+//                    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+//                }
 //                create("client") {
 //                    client()
 //                    gameDirectory.set(rootProject.file("run/client"))
@@ -80,9 +84,6 @@ if (projectPlugin.isLegacy) projectPlugin.configure<LegacyForgeExtension> {
     version = NEO.version(mcVersion)
 }
 
-tasks.withType<net.fabricmc.loom.task.RunGameTask>().configureEach {
-    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-}
 
 fun DependencyHandlerScope.dep(configuration: String, dependency: String) {
     add(
