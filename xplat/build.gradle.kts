@@ -14,11 +14,11 @@ repositories {
 }
 
 configurations {
-    register("commonJava") {
+    register("xplatJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonResources") {
+    register("xplatResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
@@ -30,8 +30,8 @@ dependencies {
 }
 
 artifacts {
-    add("commonJava", sourceSets.main.get().java.sourceDirectories.singleFile)
-    add("commonResources", sourceSets.main.get().resources.sourceDirectories.singleFile)
+    add("xplatJava", sourceSets.main.get().java.sourceDirectories.singleFile)
+    add("xplatResources", sourceSets.main.get().resources.sourceDirectories.singleFile)
 }
 
 publishing {

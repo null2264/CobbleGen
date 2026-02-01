@@ -16,8 +16,8 @@ plugins {
 }
 
 val mcVersion = ext["mcVersion"] as CGVer
-val loaderName = ext["loaderName"] as String
 val isNeo = mcVersion.code >= 12002
+val loaderName = if (isNeo) "neoforge" else "forge"
 val projectPlugin = if (mcVersion.code >= 12002) {
     GradlePlugin.MDG
 } else {
@@ -38,16 +38,16 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configure(configuration: T.
 //                configureEach {
 //                    javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 //                }
-//                create("client") {
-//                    client()
-//                    gameDirectory.set(rootProject.file("run/client"))
-//                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
-//                }
-//                create("server") {
-//                    server()
-//                    gameDirectory.set(rootProject.file("run/server"))
-//                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
-//                }
+                create("client") {
+                    client()
+                    gameDirectory.set(rootProject.file("run/client"))
+                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
+                }
+                create("server") {
+                    server()
+                    gameDirectory.set(rootProject.file("run/server"))
+                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
+                }
                 create("gametest") {
                     type = "gameTestServer"
                     gameDirectory.set(rootProject.file("run/serverGameTest"))

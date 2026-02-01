@@ -1,16 +1,7 @@
 #if MC>11605
-package io.github.null2264.cobblegen.mixin.create;
+package io.github.null2264.cobblegen.fabric.mixin.create;
 
-#if FABRIC
 import io.github.fabricators_of_create.porting_lib.util.FluidStack;
-#else
-    #if FORGE>=2 && MC>=12002
-import net.neoforged.neoforge.fluids.FluidStack;
-    #else
-import net.minecraftforge.fluids.FluidStack;
-    #endif
-#endif
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;

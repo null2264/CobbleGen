@@ -2,32 +2,32 @@ plugins {
     id("java-library")
 }
 
-val commonJava by configurations.creating {
+val xplatJava by configurations.creating {
     isCanBeResolved = true
 }
-val commonResources by configurations.creating {
+val xplatResources by configurations.creating {
     isCanBeResolved = true
 }
 
 dependencies {
     compileOnly(project(":xplat"))
-    commonJava(project(":xplat", "commonJava"))
-    commonResources(project(":xplat", "commonResources"))
+    xplatJava(project(":xplat", "xplatJava"))
+    xplatResources(project(":xplat", "xplatResources"))
 }
 
 tasks.compileJava {
-    dependsOn(commonJava)
-    source(commonJava)
+    dependsOn(xplatJava)
+    source(xplatJava)
 }
 
 tasks.named<Jar>("sourcesJar") {
-    dependsOn(commonJava)
-    dependsOn(commonResources)
-    from(commonJava)
-    from(commonResources)
+    dependsOn(xplatJava)
+    dependsOn(xplatResources)
+    from(xplatJava)
+    from(xplatResources)
 }
 
 tasks.processResources {
-    dependsOn(commonResources)
-    from(commonResources)
+    dependsOn(xplatResources)
+    from(xplatResources)
 }

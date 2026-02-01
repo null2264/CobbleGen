@@ -12,39 +12,14 @@ plugins {
 val modVersion = System.getenv("VERSION") ?: project.properties["mod_version"] as? String ?: "0.0.0"
 
 val loaderName = project.properties["null2264.platform"] as? String ?: ""
-val isForge = loaderName.endsWith("forge")
-val isNeo = loaderName.endsWith("neoforge")
-val isFabric = loaderName.endsWith("fabric")
 val mcVersionStr = project.properties["mcVer"] as? String ?: ""
 val mcVersion = CGVer.fromString(mcVersionStr)
 val versionRange = supportedVersionRange(mcVersion, loaderName)
-
-/**
- * We're using LegacyMDG instead of ForgeGradle because they provide similar API to Loom instead of the atrocious "fg.deobf"
- */
-//val projectPlugin = when {
-//    // LegacyMDG only support 1.17 up to 1.20.1
-//    mcVersion.code <= 11605 -> GradlePlugin.ArchLoom
-//    isNeo -> when {
-//        mcVersion.code <= 12001 -> GradlePlugin.LegacyMDG
-//        // 1.20.2+ is in some kind of limbo for whatever reason, not supported by MDG and not supported by LegacyMDG.
-//        mcVersion.code in 12002..12006 -> GradlePlugin.ArchLoom
-//        else -> GradlePlugin.MDG
-//    }
-//    isForge -> {
-//        assert(mcVersion.code <= 12001) { "Forge support ends at 1.20.1, the rest will be Neo-only" }
-//        GradlePlugin.LegacyMDG
-//    }
-//    isFabric -> if (mcVersion.code <= 12111) GradlePlugin.LegacyLoom else GradlePlugin.Loom
-//    else -> throw IllegalStateException()
-//}
 
 fun setupPreprocessor() {
     val buildProps = buildString {
         append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
         append("MC=${mcVersion.code}\n")
-        if (isFabric) append("FABRIC=1\n")
-        if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
 
     project.file("build.properties").writeText(buildProps)
@@ -58,9 +33,8 @@ allprojects {
     extra["mcVersion"] = mcVersion
     extra["mcVersionStr"] = mcVersionStr
     extra["loaderName"] = loaderName
-    extra["isFabric"] = isFabric
-    extra["isForge"] = isForge
-    extra["isNeo"] = isNeo
+    val isFabric = project == project(":fabric")
+    val isNeo = !isFabric && mcVersion.code >= 12002
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
@@ -127,6 +101,9 @@ subprojects {
     // NOTE: This here for when I finally split the API to its own module, hopefully on v6.0
     val isApi = false;  // APIs shouldn't contain anything Minecraft related
     val isModModule = project in listOf(project(":fabric"), project(":forge"))
+    val isFabric = project == project(":fabric")
+    val isForge = project == project(":forge")
+    val isNeo = isForge && mcVersion.code >= 12002
 
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
@@ -197,20 +174,20 @@ subprojects {
         if (!isModModule) return@withType
 
         val metadataVersion = "${modVersion}-${project.properties["version_stage"]}"
-        val metadataMCVersion = if (project == project(":forge")) versionRange.mavenStyle() else versionRange.semverStyle()
+        val metadataMCVersion = if (isForge) versionRange.mavenStyle() else versionRange.semverStyle()
         val properties = mapOf(
             "version" to metadataVersion,
             "mcversion" to metadataMCVersion,
-            "forge" to (if (mcVersion.code >= 12002) "neoforge" else "forge"),
+            "forge" to (if (isNeo) "neoforge" else "forge"),
         )
         inputs.properties(properties)
         filteringCharset = Charsets.UTF_8.name()
 
         val metadataFilename =
-            if (project == project(":fabric")) {
+            if (isFabric) {
                 "fabric.mod.json"
             } else {
-                if (mcVersion.code >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
+                if (isNeo && mcVersion.code >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
             }
 
         filesMatching(metadataFilename) {
@@ -225,7 +202,7 @@ subprojects {
         doLast {
             // For some reason Mojang rename the structure directory on MC 1.21 to singular form
             val structureDirName = if (mcVersion.code >= 12100) "structure" else "structures"
-            if (project == project(":fabric") || mcVersion.code >= 12105) {
+            if (isFabric || mcVersion.code >= 12105) {
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt")
                     .writeStructureAsSnbt(generateStructure(false))
@@ -239,10 +216,10 @@ subprojects {
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             project(":common").file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion)
             project.file("build/resources/main/cobblegen.${project.name}.mixins.json").apply {
-                if (project == project(":fabric")) processMixinsJsonFabric(mcVersion)
+                if (isFabric) processMixinsJsonFabric(mcVersion)
                 else processMixinsJsonForge(mcVersion)
             }
-            if (project == project(":fabric")) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
+            if (isFabric) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
             else project.file("build/resources/main/$metadataFilename").processModsToml(mcVersion, if (mcVersion.code >= 12002) 2 else 1)
         }
     }
