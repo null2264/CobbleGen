@@ -1,8 +1,5 @@
 import java.io.File
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -57,7 +54,7 @@ fun File.processMixinsJsonForge(mcVersion: CGVer) {
     )
 }
 
-fun File.processMixinsJson(mcVersion: CGVer, isFabric: Boolean) {
+fun File.processMixinsJson(mcVersion: CGVer) {
     val both = buildList {
         if (mcVersion.code >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
         addJson("CommandsMixin")
@@ -85,7 +82,6 @@ fun File.processMixinsJson(mcVersion: CGVer, isFabric: Boolean) {
         else addJson("network.ServerConfigurationPacketListenerMixin")
         if (mcVersion.code < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
         addJson("network.ServerCommonPacketListenerMixin")
-        if (!isFabric && mcVersion.code >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
     }
     val mixinsJson = JsonObject(
         lenientJson.decodeFromString<JsonObject>(readText(Charsets.UTF_8)).toMutableMap().apply {

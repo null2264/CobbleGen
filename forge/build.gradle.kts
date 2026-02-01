@@ -27,23 +27,23 @@ group = project.properties["maven_group"] as String
 
 apply(plugin = projectPlugin.id)
 
-inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration: T.() -> Unit = {}) {
+inline fun <reified T: ModDevExtension> GradlePlugin.configure(configuration: T.() -> Unit = {}) {
     project.the<T>()
         .apply {
             // FIXME: AccessWidener to AccessTransformer
             validateAccessTransformers = mcVersion.code >= 12105
 
             runs {
-                create("client") {
-                    client()
-                    gameDirectory.set(rootProject.file("run/client"))
-                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
-                }
-                create("server") {
-                    server()
-                    gameDirectory.set(rootProject.file("run/server"))
-                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
-                }
+//                create("client") {
+//                    client()
+//                    gameDirectory.set(rootProject.file("run/client"))
+//                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Client")
+//                }
+//                create("server") {
+//                    server()
+//                    gameDirectory.set(rootProject.file("run/server"))
+//                    ideName.set((if (!isNeo) "Forge" else "NeoForge") + " Server")
+//                }
                 create("gametest") {
                     type = "gameTestServer"
                     gameDirectory.set(rootProject.file("run/serverGameTest"))
@@ -74,9 +74,9 @@ inline fun <reified T: ModDevExtension> GradlePlugin.configureNeo(configuration:
     }
 }
 
-if (projectPlugin.isLegacy) projectPlugin.configureNeo<LegacyForgeExtension> {
+if (projectPlugin.isLegacy) projectPlugin.configure<LegacyForgeExtension> {
     version = lexForge.version(mcVersion)
-} else projectPlugin.configureNeo<NeoForgeExtension> {
+} else projectPlugin.configure<NeoForgeExtension> {
     version = NEO.version(mcVersion)
 }
 

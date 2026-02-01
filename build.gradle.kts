@@ -1,16 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import dev.architectury.plugin.ArchitectPluginExtension
-import net.fabricmc.loom.LoomGradleExtension
-import net.fabricmc.loom.api.LoomGradleExtensionAPI
-import dependencies.minecraft as MC
 import org.apache.tools.ant.filters.StripJavaComments
 
 plugins {
     id("java")
     id("architectury-plugin") version "3.4-SNAPSHOT" apply false
-    id(GradlePlugin.ArchLoom.id) version "1.13-SNAPSHOT" apply false
-    id(GradlePlugin.Loom.id) version "1.15-SNAPSHOT" apply false
-    id(GradlePlugin.LegacyLoom.id) version "1.15-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
@@ -138,26 +131,6 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
 
-//    if (isModModule) {
-//        // NOTE: This must be set before archloom is applied!
-//        if (projectPlugin is GradlePlugin.ArchLoom) {
-//            extra.set("loom.platform", loaderName)
-//            apply(plugin = "architectury-plugin")
-//        }
-//        apply(plugin = projectPlugin.id)
-//        if (projectPlugin is GradlePlugin.ArchLoom) {
-//            val arch = project.extensions["architectury"] as ArchitectPluginExtension
-//            arch.loader(loaderName)
-//        }
-//
-//        if (projectPlugin.isLegacyLoom()) {
-//            val loom = project.extensions["loom"] as LoomGradleExtension
-//            loom.apply {
-//                silentMojangMappingsLicense()
-//            }
-//        }
-//    }
-
     val manifoldVersion = project.properties["manifold_version"] as? String ?: ""
 
     val shade: Configuration by configurations.creating {
@@ -165,55 +138,21 @@ subprojects {
     }
     val shadeInternal: Configuration by configurations.creating
 
-    val loaderProd = when {
-        isFabric -> "Fabric"
-        isNeo -> "NeoForge"
-        isForge -> "Forge"
-        else -> throw IllegalStateException("Unknown loader!")
-    }
-
-    // For internal libraries
-    val compileInternal: Configuration by configurations.creating {
-        configurations.compileClasspath.get().extendsFrom(this)
-        configurations.runtimeClasspath.get().extendsFrom(this)
-        if (isModModule && projectPlugin is GradlePlugin.ArchLoom) {
-            configurations["development$loaderProd"].extendsFrom(this)
-        }
-        afterEvaluate {
-            if (isModModule && mcVersion.code <= 12108 && !projectPlugin.isLoom()) {
-                configurations.named("additionalRuntimeClasspath").get().extendsFrom(this@creating)
-            }
-        }
-    }
-
     val manifoldCompile: Configuration by configurations.creating {
         configurations.compileOnly.get().extendsFrom(this)
         configurations.annotationProcessor.get().extendsFrom(this)
         configurations.testAnnotationProcessor.get().extendsFrom(this)
     }
 
-    if (isModModule && !isFabric) {
-        if (projectPlugin.isLoom()) configurations.named("forgeRuntimeLibrary").get().extendsFrom(shade)
-        else {
-            afterEvaluate {
-                if (mcVersion.code <= 12108) {
-                    configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
-                }
+    if (project == project(":forge")) {
+        afterEvaluate {
+            if (mcVersion.code <= 12108) {
+                configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)
             }
         }
     }
 
-    val loom by lazy {
-        if (!isModModule) {
-            throw IllegalStateException("Loom only available for mod modules")
-        }
-        project.the<LoomGradleExtensionAPI>()
-    }
-
     dependencies {
-        if (isModModule && projectPlugin.isLoom()) {
-        }
-
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
 
         shade("systems.manifold:manifold-ext-rt:${manifoldVersion}")
@@ -254,24 +193,24 @@ subprojects {
 
     artifacts.add("archives", shadowJar)
 
-    val processResources by tasks.getting(ProcessResources::class) {
-        if (!isModModule) return@getting
+    tasks.withType<ProcessResources> {
+        if (!isModModule) return@withType
 
         val metadataVersion = "${modVersion}-${project.properties["version_stage"]}"
-        val metadataMCVersion = if (isForge) versionRange.mavenStyle() else versionRange.semverStyle()
+        val metadataMCVersion = if (project == project(":forge")) versionRange.mavenStyle() else versionRange.semverStyle()
         val properties = mapOf(
             "version" to metadataVersion,
             "mcversion" to metadataMCVersion,
-            "forge" to (if (isNeo) "neoforge" else "forge"),
+            "forge" to (if (mcVersion.code >= 12002) "neoforge" else "forge"),
         )
         inputs.properties(properties)
         filteringCharset = Charsets.UTF_8.name()
 
         val metadataFilename =
-            if (isFabric) {
+            if (project == project(":fabric")) {
                 "fabric.mod.json"
             } else {
-                if (isNeo && mcVersion.code >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
+                if (mcVersion.code >= 12006) "META-INF/neoforge.mods.toml" else "META-INF/mods.toml"
             }
 
         filesMatching(metadataFilename) {
@@ -286,7 +225,7 @@ subprojects {
         doLast {
             // For some reason Mojang rename the structure directory on MC 1.21 to singular form
             val structureDirName = if (mcVersion.code >= 12100) "structure" else "structures"
-            if (isFabric || mcVersion.code >= 12105) {
+            if (project == project(":fabric") || mcVersion.code >= 12105) {
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt")
                     .writeStructureAsSnbt(generateStructure(false))
@@ -296,12 +235,15 @@ subprojects {
                     .writeStructureAsNbt(generateStructure(true))
             }
 
-            project.file("build/resources/main/META-INF/mods.toml")
-                .processModsToml(mcVersion, if (!isForge) 0 else (if (isNeo) 2 else 1))
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
-            project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion, isFabric)
-            if (isFabric) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
+            project(":common").file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion)
+            project.file("build/resources/main/cobblegen.${project.name}.mixins.json").apply {
+                if (project == project(":fabric")) processMixinsJsonFabric(mcVersion)
+                else processMixinsJsonForge(mcVersion)
+            }
+            if (project == project(":fabric")) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
+            else project.file("build/resources/main/$metadataFilename").processModsToml(mcVersion, if (mcVersion.code >= 12002) 2 else 1)
         }
     }
 
