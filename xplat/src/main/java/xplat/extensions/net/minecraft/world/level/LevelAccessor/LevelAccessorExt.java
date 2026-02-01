@@ -1,5 +1,5 @@
 #if FORGE && MC<12002
-package io.github.null2264.cobblegen.extensions.net.minecraft.world.level.LevelAccessor;
+package xplat.extensions.net.minecraft.world.level.LevelAccessor;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.level.LevelAccessor;

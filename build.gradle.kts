@@ -121,7 +121,7 @@ subprojects {
         configurations.testAnnotationProcessor.get().extendsFrom(this)
     }
 
-    if (project == project(":forge")) {
+    if (isForge) {
         afterEvaluate {
             if (mcVersion.code <= 12108) {
                 configurations.named("additionalRuntimeClasspath").get().extendsFrom(shade)

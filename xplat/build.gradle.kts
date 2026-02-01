@@ -35,6 +35,8 @@ dependencies {
 
     compileOnly("org.spongepowered:mixin:0.8.5")
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3")!!)
+    compileOnly("org.ow2.asm:asm:9.9")
+    compileOnly("org.ow2.asm:asm-tree:9.9")
 
     compileOnly(jei(mcVersion, "", common = true, api = true).versioned(CGVer.wildcard()))
 }

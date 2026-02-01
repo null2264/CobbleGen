@@ -1,6 +1,6 @@
 package io.github.null2264.cobblegen.integration.create;
 
-import io.github.null2264.cobblegen.compat.ModContainerCompat;
+import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.util.CGLog;
 import org.jetbrains.annotations.ApiStatus;
@@ -21,7 +21,7 @@ public class CreateCompatUtil {
         return CreateSupport.NONE;  // We don't support create integration for MC1.16.5
         #else
         try {
-            String version = ModContainerCompat.fromLoader("create").getVersionString();
+            String version = LoaderCompat.getInstance().getMod("create").getVersionString();
             ArrayList<Integer> split = new ArrayList<>();
             String patch = "a";
             // version = 0.5.1-a-build.69

@@ -1,6 +1,8 @@
 package io.github.null2264.cobblegen.compat;
 
 import java.nio.file.Path;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 #if FABRIC
 import net.fabricmc.loader.api.FabricLoader;
@@ -14,6 +16,7 @@ import java.nio.file.Files;
 public abstract class LoaderCompat {
 
     private static LoaderCompat INSTANCE;
+    private static ConcurrentMap<String, ModContainerCompat> CACHED_CONTAINER = new ConcurrentHashMap<>();
 
     public static void init(LoaderCompat impl) {
         if (INSTANCE != null) throw new IllegalStateException("Already initialized!");
@@ -30,6 +33,14 @@ public abstract class LoaderCompat {
     public abstract Path getConfigDir();
 
     public abstract LoaderType getType();
+
+    public boolean isModCached(String modId) {
+        return CACHED_CONTAINER.containsKey(modId);
+    }
+
+    public ModContainerCompat getMod(String modId) {
+        return CACHED_CONTAINER.get(modId);
+    }
 
     public Boolean isFabric() {
         return getType() == LoaderType.FABRIC;

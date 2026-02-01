@@ -1,6 +1,7 @@
 package io.github.null2264.cobblegen.forge.compat;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
+import io.github.null2264.cobblegen.compat.ModContainerCompat;
 
 import java.nio.file.Path;
 
@@ -32,5 +33,14 @@ public class LoaderCompatFabric extends LoaderCompat {
     @Override
     public LoaderType getType() {
         return LoaderType.FABRIC;
+    }
+
+    @Override
+    public ModContainerCompat getMod(String modId) {
+        if (isModCached(modId)) return super.getMod(modId);
+
+        ModContainerCompat rt = new ModContainerFabric(modid);
+        CACHED.put(modid, rt);
+        return rt;
     }
 }
