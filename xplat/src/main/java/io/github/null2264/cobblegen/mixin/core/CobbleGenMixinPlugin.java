@@ -32,7 +32,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin {
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
         if (mixinClassName.contains("CreateFluidReactionsMixin")) {
-            if (!LoaderCompat.isModLoaded("create")) return false;
+            if (!LoaderCompat.getInstance().isModLoaded("create")) return false;
 
             CreateSupport createSupport = CreateCompatUtil.getCreateSupport();
             if (createSupport == CreateSupport.NONE) return false;
@@ -47,7 +47,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin {
             // Datapack will not register automatically in Fabric without FAPI.
             // I usually prefer not depending on FAPI, but I'll make this one an exception...
             // because I ain't dealing with Resource Pack loading ever again
-            if (LoaderCompat.isFabricLike() && !LoaderCompat.isModLoaded("fabric-resource-loader-v0")) {
+            if (LoaderCompat.getInstance().isFabricLike() && !LoaderCompat.getInstance().isModLoaded("fabric-resource-loader-v0")) {
                 CGLog.warn(() -> "Fabric API is required to load CobbleGen's GameTests!");
                 return false;
             }

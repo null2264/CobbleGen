@@ -101,7 +101,7 @@ public class FluidInteraction
             count.set(0);
 
             CGRegistry registry = new CGRegistryImpl();
-            for (PluginFinder.PlugInContainer container : PluginFinder.getModPlugins()) {
+            for (PluginFinder.PlugInContainer container : PluginFinder.getInstance().getModPlugins()) {
                 String id = container.getModId();
                 CobbleGenPlugin plugin = container.getPlugin();
 

@@ -15,7 +15,7 @@ public interface Config {
         .registerDeserializer(String.class, CGIdentifier.class, (str, m) -> CGIdentifier.of(str))
         .build();
 
-    Path path = LoaderCompat.getConfigDir();
+    Path path = LoaderCompat.getInstance().getConfigDir();
 
     interface Factory<T extends Config> {
         T load();

@@ -47,13 +47,13 @@ public class Util
     }
 
     public static boolean isPortingLibLoaded() {
-        return LoaderCompat.isModLoaded("porting_lib");
+        return LoaderCompat.getInstance().isModLoaded("porting_lib");
     }
 
     public static boolean isAnyRecipeViewerLoaded() {
-        return LoaderCompat.isModLoaded("roughlyenoughitems") ||
-               LoaderCompat.isModLoaded("jei") ||
-               LoaderCompat.isModLoaded("emi");
+        return LoaderCompat.getInstance().isModLoaded("roughlyenoughitems") ||
+               LoaderCompat.getInstance().isModLoaded("jei") ||
+               LoaderCompat.getInstance().isModLoaded("emi");
     }
 
     public static Fluid getFluid(CGIdentifier id) {

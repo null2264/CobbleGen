@@ -1,3 +1,4 @@
+import dependencies.jei
 import dependencies.minecraft as MC
 
 plugins {
@@ -5,8 +6,13 @@ plugins {
     id("org.spongepowered.gradle.vanilla")
 }
 
+val mcVersion: CGVer by extra
+
 minecraft {
-    version(MC.version(project.ext["mcVersion"] as CGVer))
+    version(MC.version(mcVersion))
+    if (mcVersion.code >= 12105) {
+        accessWideners(project.file("src/main/resources/cobblegen.accesswidener"))
+    }
 }
 
 repositories {
@@ -26,7 +32,11 @@ configurations {
 
 dependencies {
     compileOnly(project(":stubs"))
+
     compileOnly("org.spongepowered:mixin:0.8.5")
+    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.3")!!)
+
+    compileOnly(jei(mcVersion, "", common = true, api = true).versioned(CGVer.wildcard()))
 }
 
 artifacts {

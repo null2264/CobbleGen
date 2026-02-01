@@ -46,7 +46,7 @@ public class CreatePlugin implements CobbleGenPlugin {
 
     @Override
     public boolean shouldLoad() {
-        if (!LoaderCompat.isModLoaded("create")) return false;
+        if (!LoaderCompat.getInstance().isModLoaded("create")) return false;
 
         CreateSupport createSupport = CreateCompatUtil.getCreateSupport();
         return createSupport != CreateSupport.NONE;

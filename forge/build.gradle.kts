@@ -144,7 +144,7 @@ dependencies {
         dep("modCompileOnly", jei(mcVersion, loaderName, common = true, api = true).versioned(CGVer.wildcard()))
         dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = true).versioned(CGVer.wildcard()))
         if (project.properties["recipe_viewer"] == "jei")
-            dep("modCompileOnly", jei(mcVersion, loaderName, common = false, api = false).versioned(CGVer.wildcard()))
+            dep("modLocalRuntime", jei(mcVersion, loaderName, common = false, api = false).versioned(CGVer.wildcard()))
         // JEI ->
 
         /* FIXME: Broken, somehow

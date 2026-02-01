@@ -26,10 +26,6 @@ apply(plugin = projectPlugin.id)
 fun GradlePlugin.configure(configuration: LoomGradleExtensionAPI.() -> Unit = {}) =
     project.the<LoomGradleExtensionAPI>()
         .apply {
-            if (mcVersion.code >= 12105) {
-                accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
-            }
-
             runConfigs {
                 named("client") {
                     runDir = "../run/client"
