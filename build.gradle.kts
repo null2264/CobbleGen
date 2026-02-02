@@ -214,7 +214,7 @@ subprojects {
 
 
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
-            project(":common").file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion)
+            project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion)
             project.file("build/resources/main/cobblegen.${project.name}.mixins.json").apply {
                 if (isFabric) processMixinsJsonFabric(mcVersion)
                 else processMixinsJsonForge(mcVersion)

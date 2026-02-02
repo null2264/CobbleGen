@@ -43,8 +43,8 @@ public class LoaderCompatForge extends LoaderCompat {
     public ModContainerCompat getMod(String modId) {
         if (isModCached(modId)) return super.getMod(modId);
 
-        ModContainerCompat rt = new ModContainerForge(modid);
-        CACHED.put(modid, rt);
+        ModContainerCompat rt = new ModContainerForge(modId);
+        CACHED_CONTAINER.put(modId, rt);
         return rt;
     }
 }

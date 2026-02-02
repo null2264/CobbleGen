@@ -1,4 +1,4 @@
-package xplat.extensions.net.minecraft.network.FriendlyByteBuf;
+package cobblegen.extensions.net.minecraft.network.FriendlyByteBuf;
 
 #if MC<=11605
 import com.google.common.collect.Lists;

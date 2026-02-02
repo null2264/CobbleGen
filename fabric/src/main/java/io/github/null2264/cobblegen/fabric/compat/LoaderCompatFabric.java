@@ -2,8 +2,16 @@ package io.github.null2264.cobblegen.forge.compat;
 
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.compat.ModContainerCompat;
+import io.github.null2264.cobblegen.fabric.compat.ModContainerFabric;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;
+
+#if MC<=11605
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+#endif
 
 public class LoaderCompatFabric extends LoaderCompat {
 
@@ -39,8 +47,8 @@ public class LoaderCompatFabric extends LoaderCompat {
     public ModContainerCompat getMod(String modId) {
         if (isModCached(modId)) return super.getMod(modId);
 
-        ModContainerCompat rt = new ModContainerFabric(modid);
-        CACHED.put(modid, rt);
+        ModContainerCompat rt = new ModContainerFabric(modId);
+        CACHED_CONTAINER.put(modId, rt);
         return rt;
     }
 }

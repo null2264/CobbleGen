@@ -2,10 +2,10 @@ plugins {
     id("java-library")
 }
 
-val xplatJava by configurations.creating {
+val xplatJava: Configuration by configurations.creating {
     isCanBeResolved = true
 }
-val xplatResources by configurations.creating {
+val xplatResources: Configuration by configurations.creating {
     isCanBeResolved = true
 }
 

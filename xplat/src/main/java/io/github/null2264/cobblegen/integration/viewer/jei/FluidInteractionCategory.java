@@ -209,9 +209,23 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         var minY = recipe.getResult().minY;
-        if (minY == null) minY = minecraft.level != null ? minecraft.level.getMinBuildHeight() : 0;
+        if (minY == null) minY =
+            minecraft.level != null ?
+                #if MC>12101
+                minecraft.level.getMinY() :
+                #else
+                minecraft.level.getMinBuildHeight() :
+                #endif
+                0;
         var maxY = recipe.getResult().maxY;
-        if (maxY == null) maxY = minecraft.level != null ? minecraft.level.getMaxBuildHeight() : 256;
+        if (maxY == null) maxY =
+            minecraft.level != null ?
+                #if MC>12101
+                minecraft.level.getMaxY() :
+                #else
+                minecraft.level.getMaxBuildHeight() :
+                #endif
+                256;
         List<Component> texts = List.of(
                 TextCompat.translatable("cobblegen.info.weight")
                         .append(Component.nullToEmpty(recipe.getResult().weight.toString())),

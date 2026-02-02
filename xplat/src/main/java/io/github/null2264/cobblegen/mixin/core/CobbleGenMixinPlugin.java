@@ -14,12 +14,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
-public class CobbleGenMixinPlugin implements IMixinConfigPlugin {
+public abstract class CobbleGenMixinPlugin implements IMixinConfigPlugin {
 
+    /**
+     * This function is called even earlier than Fabric's PreLaunch.onPreLaunch
+     */
     @Override
     public void onLoad(String mixinPackage) {
-        #if FORGE && MC>=12105
-        // This is the earliest entrypoint for Forge that I know of...
+        #if MC>=12105
         io.github.null2264.cobblegen.gametest.CobbleGenTestLoader.init();
         #endif
     }

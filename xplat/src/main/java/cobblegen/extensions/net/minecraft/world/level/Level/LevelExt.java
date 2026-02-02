@@ -1,4 +1,4 @@
-package xplat.extensions.net.minecraft.world.level.Level;
+package cobblegen.extensions.net.minecraft.world.level.Level;
 
 #if MC>12101
 import manifold.ext.rt.api.This;

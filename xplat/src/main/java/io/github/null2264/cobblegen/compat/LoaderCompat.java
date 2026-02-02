@@ -4,19 +4,10 @@ import java.nio.file.Path;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-#if FABRIC
-import net.fabricmc.loader.api.FabricLoader;
-    #if MC<=11605
-import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-    #endif
-#endif
-
 public abstract class LoaderCompat {
 
     private static LoaderCompat INSTANCE;
-    private static ConcurrentMap<String, ModContainerCompat> CACHED_CONTAINER = new ConcurrentHashMap<>();
+    public static ConcurrentMap<String, ModContainerCompat> CACHED_CONTAINER = new ConcurrentHashMap<>();
 
     public static void init(LoaderCompat impl) {
         if (INSTANCE != null) throw new IllegalStateException("Already initialized!");

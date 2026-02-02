@@ -10,8 +10,6 @@ public class CobbleGenFabric extends CobbleGen implements net.fabricmc.api.ModIn
 
     @Override
     public void onInitialize() {
-        LoaderCompat.init(new LoaderCompatFabric());
-        PluginFinder.init(new PluginFinderFabric());
         super.init();
     }
 }
