@@ -121,6 +121,8 @@ jobs:
                   ./gradlew build -PmcVer="${{ matrix.mc }}" -Pnull2264.platform="${{ matrix.loader }}" && exit 0
                   c="$?"
                   echo "Try $tries failed. (code:$c)"
+                  [ "$c" = "1" ] && break
+                  ./gradlew --stop  # this should free up the memory so we didn't encounter OutOfMemory err
                   sleep 5s
                   tries=$((tries+1))
           done
