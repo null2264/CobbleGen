@@ -2,12 +2,14 @@ package io.github.null2264.cobblegen.forge.util;
 
 import io.github.null2264.cobblegen.CGPlugin;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.PluginFinder;
 import java.lang.reflect.Constructor;
 import org.objectweb.asm.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static io.github.null2264.cobblegen.compat.CollectionCompat.streamToList;
 
@@ -43,7 +45,6 @@ public class PluginFinderForge extends PluginFinder {
 
                 Iterable<ModFileScanData.AnnotationData> annotations = data.getAnnotations();
                 for (ModFileScanData.AnnotationData a : annotations) {
-
                     if (!(Objects.equals(
                             #if MC>11605
                         a.annotationType(),

@@ -2,6 +2,7 @@ import java.io.File
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import java.util.Locale
 
 fun File.processModsToml(
     mcVersion: CGVer,
@@ -60,7 +61,7 @@ fun File.processMixinsJsonForge(mcVersion: CGVer) {
     )
 }
 
-fun File.processMixinsJson(mcVersion: CGVer) {
+fun File.processMixinsJson(mcVersion: CGVer, loaderName: String) {
     val both = buildList {
         if (mcVersion.code >= 12005) addJson("network.packet.CustomPacketPayloadMixin")
         addJson("CommandsMixin")
@@ -94,6 +95,13 @@ fun File.processMixinsJson(mcVersion: CGVer) {
             set("mixins", JsonArray(both))
             set("client", JsonArray(client))
             set("server", JsonArray(server))
+            set("plugin", JsonPrimitive("io.github.null2264.cobblegen${if (!loaderName.isEmpty()) ".$loaderName" else ""}.mixin.core.CobbleGenMixinPlugin${
+                loaderName.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(
+                        Locale.getDefault()
+                    ) else it.toString()
+                }
+            }"))
         }
     )
     writeText(prettyJson.encodeToString(JsonObject.serializer(), mixinsJson))

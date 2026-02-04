@@ -32,9 +32,15 @@ allprojects {
 
     extra["mcVersion"] = mcVersion
     extra["mcVersionStr"] = mcVersionStr
-    extra["loaderName"] = loaderName
     val isFabric = project == project(":fabric")
-    val isNeo = !isFabric && mcVersion.code >= 12002
+    val isForge = project == project(":forge")
+    val isNeo = isForge && mcVersion.code >= 12002
+    extra["loaderName"] = when {
+        isFabric -> "fabric"
+        isNeo -> "neoforge"
+        isForge -> "forge"
+        else -> ""
+    }
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
@@ -104,6 +110,12 @@ subprojects {
     val isFabric = project == project(":fabric")
     val isForge = project == project(":forge")
     val isNeo = isForge && mcVersion.code >= 12002
+    val loaderName = when {
+        isFabric -> "fabric"
+        isNeo -> "neoforge"
+        isForge -> "forge"
+        else -> ""
+    }
 
     apply(plugin = "java")
     apply(plugin = "com.gradleup.shadow")
@@ -212,9 +224,8 @@ subprojects {
                     .writeStructureAsNbt(generateStructure(true))
             }
 
-
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
-            project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion)
+            project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion, if (isFabric) "fabric" else "forge")
             project.file("build/resources/main/cobblegen.${project.name}.mixins.json").apply {
                 if (isFabric) processMixinsJsonFabric(mcVersion)
                 else processMixinsJsonForge(mcVersion)
