@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.4.8] - 2026-03-12
+
 ### Fixed
 - [NeoForge] Fix a regression introduced by the last update causing client to unable to join a server with CobbleGen installed
 
@@ -247,7 +249,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.6...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.8...main
+[v5.4.8]: https://github.com/null2264/CobbleGen/compare/v5.4.7...v5.4.8
+[v5.4.7]: https://github.com/null2264/CobbleGen/compare/v5.4.6...v5.4.7
 [v5.4.6]: https://github.com/null2264/CobbleGen/compare/v5.4.5...v5.4.6
 [v5.4.5]: https://github.com/null2264/CobbleGen/compare/v5.4.4...v5.4.5
 [v5.4.4]: https://github.com/null2264/CobbleGen/compare/v5.4.3...v5.4.4
