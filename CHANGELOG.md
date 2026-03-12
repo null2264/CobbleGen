@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix a regression introduced by the last update causing client to unable to join a server with CobbleGen installed
+
 ## [v5.4.7] - 2026-01-07
 
 ### Added

@@ -44,6 +44,7 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
             addJson("gametest.RegistryDataLoaderMixin\$GameTest")
             addJson("gametest.StructureTemplateManagerMixin\$GameTest")
         }
+        if (!isFabric && mcVersion >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
     }
     val client = buildList {
         if (mcVersion < 12005) addJson("network.packet.ClientboundCustomPayloadPacketMixin")
@@ -56,7 +57,6 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
         else addJson("network.ServerConfigurationPacketListenerMixin")
         if (mcVersion < 12005) addJson("network.packet.ServerboundCustomPayloadPacketMixin")
         addJson("network.ServerCommonPacketListenerMixin")
-        if (!isFabric && mcVersion >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
     }
     val mixinsJson = JsonObject(
         lenientJson.decodeFromString<JsonObject>(readText(Charsets.UTF_8)).toMutableMap().apply {
