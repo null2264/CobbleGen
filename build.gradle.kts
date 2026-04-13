@@ -54,6 +54,10 @@ allprojects {
     ext["isForge"] = isForge
     ext["isNeo"] = isNeo
 
+    if (mcVersion < 260100) {
+        ext["fabric.loom.disableObfuscation"] = false
+    }
+
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
     val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
