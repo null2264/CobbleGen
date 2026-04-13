@@ -207,8 +207,8 @@ subprojects {
 
         if (isModModule) {
             compileOnly(project(":stubs"))
-            compileInternal(project(":mclib", configuration = "namedElements")) { isTransitive = false }
-            shadeInternal(project(":mclib", configuration = "transformProduction$loaderProd")) {
+            compileInternal(project(":mclib")) { isTransitive = false }
+            shadeInternal(project(":mclib")) {
                 // Remove Junit test libraries
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter")
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
