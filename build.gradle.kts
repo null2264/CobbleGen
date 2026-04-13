@@ -8,7 +8,8 @@ import org.apache.tools.ant.filters.StripJavaComments
 plugins {
     id("java")
     id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("io.github.null2264.architectury-loom") version "1.13-SNAPSHOT" apply false
+    id("io.github.null2264.architectury-loom-remap") version "1.14-SNAPSHOT" apply false
+    id("io.github.null2264.architectury-loom-no-remap") version "1.14-SNAPSHOT" apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
@@ -53,10 +54,6 @@ allprojects {
     ext["isFabric"] = isFabric
     ext["isForge"] = isForge
     ext["isNeo"] = isNeo
-
-    if (mcVersion < 260100) {
-        ext["fabric.loom.disableObfuscation"] = false
-    }
 
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
@@ -136,7 +133,12 @@ subprojects {
 
     if (isMcModule) {
         apply(plugin = "architectury-plugin")
-        apply(plugin = "io.github.null2264.architectury-loom")
+
+        if (mcVersion < 260100) {
+            apply(plugin = "io.github.null2264.architectury-loom-remap")
+        } else {
+            apply(plugin = "io.github.null2264.architectury-loom-no-remap")
+        }
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
         arch.apply {
             if (isModModule)
