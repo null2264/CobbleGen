@@ -12,7 +12,7 @@ repositories {
 
 dependencies {
     // Mostly for Mixin and Arch's dependant on Fabric's @Environment annotations
-    modCompileOnly("net.fabricmc:fabric-loader:0.17.2")
+    compileOnly("net.fabricmc:fabric-loader:0.17.2")
 }
 
 publishing {
