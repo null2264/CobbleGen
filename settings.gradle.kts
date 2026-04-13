@@ -21,7 +21,7 @@ pluginManagement {
         eachPlugin {
             if (requested.id.id == "org.spongepowered.gradle.vanilla") {
                 val targetModule = when (mcVersion) {
-                    in 11605..12111 -> "org.spongepowered:vanillagradle:0.2.1-SNAPSHOT"
+                    in 11605..12111 -> "org.spongepowered:vanillagradle:0.2.2-SNAPSHOT"
                     else -> "org.spongepowered:vanillagradle:0.3.0-SNAPSHOT"
                 }
                 useModule(targetModule)
