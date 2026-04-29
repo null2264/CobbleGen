@@ -8,7 +8,6 @@ import org.apache.tools.ant.filters.StripJavaComments
 plugins {
     id("java")
     id("architectury-plugin") version "3.5-SNAPSHOT"
-    id("io.github.null2264.architectury-loom-dyn") apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
