@@ -8,8 +8,7 @@ import org.apache.tools.ant.filters.StripJavaComments
 plugins {
     id("java")
     id("architectury-plugin") version "3.5-SNAPSHOT"
-    id("io.github.null2264.architectury-loom-remap") version "1.14-SNAPSHOT" apply false
-    id("io.github.null2264.architectury-loom-no-remap") version "1.14-SNAPSHOT" apply false
+    id("io.github.null2264.architectury-loom-dyn") apply false
     id("com.gradleup.shadow") apply false
     id("me.modmuss50.mod-publish-plugin") version "1.1.0"
 }
@@ -131,12 +130,7 @@ subprojects {
         extra.set("loom.platform", loaderName)
 
         apply(plugin = "architectury-plugin")
-
-        if (mcVersion < 260100) {
-            apply(plugin = "io.github.null2264.architectury-loom-remap")
-        } else {
-            apply(plugin = "io.github.null2264.architectury-loom-no-remap")
-        }
+        apply(plugin = "io.github.null2264.architectury-loom-dyn")
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
         arch.apply {
             if (isModModule)
