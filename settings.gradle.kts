@@ -27,8 +27,8 @@ pluginManagement {
                 useModule(targetModule)
             } else if (requested.id.id == "io.github.null2264.architectury-loom-dyn") {
                 val targetModule = when (mcVersion) {
-                    in 11605..12111 -> "io.github.null2264.architectury-loom:1.13-SNAPSHOT"
-                    else -> "io.github.null2264.architectury-loom-no-remap:1.14-SNAPSHOT"
+                    in 11605..12111 -> "io.github.null2264:architectury-loom:1.13-SNAPSHOT"
+                    else -> "io.github.null2264:architectury-loom-no-remap:1.14-SNAPSHOT"
                 }
                 useModule(targetModule)
             }
