@@ -144,9 +144,11 @@ subprojects {
             else
                 common(listOf(loaderName))
         }
-        val loom = project.extensions["loom"] as LoomGradleExtension
-        loom.apply {
-            silentMojangMappingsLicense()
+        if (mcVersion < 260100) {
+            val loom = project.extensions["loom"] as LoomGradleExtension
+            loom.apply {
+                silentMojangMappingsLicense()
+            }
         }
     }
 
@@ -193,10 +195,12 @@ subprojects {
     dependencies {
         if (isModModule) {
             val minecraft by configurations
-            val mappings by configurations
-
             minecraft(MC.versioned(mcVersion))
-            mappings(loom.officialMojangMappings())
+
+            if (mcVersion < 260100) {
+                val mappings by configurations
+                mappings(loom.officialMojangMappings())
+            }
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
