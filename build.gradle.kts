@@ -4,6 +4,7 @@ import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import dependencies.minecraft as MC
 import org.apache.tools.ant.filters.StripJavaComments
+import org.gradle.api.internal.file.copy.CopySpecInternal
 
 plugins {
     id("java")
@@ -232,7 +233,7 @@ subprojects {
     val shadowJar by tasks.getting(ShadowJar::class) {
         if (mcVersion >= 260100) {
             dependsOn(tasks.jar)
-            source.setFrom(files())
+            (mainSpec as CopySpecInternal).sourcePaths.clear()
             from(tasks.jar.map { zipTree(it.archiveFile) })
         }
 
