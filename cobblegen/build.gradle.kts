@@ -76,17 +76,17 @@ loom {
 }
 
 dependencies {
-    val modImplementation = configurations.maybeCreate("modImplementation")
-    val modRuntimeOnly = configurations.maybeCreate("modRuntimeOnly")
-    val modLocalRuntime = configurations.maybeCreate("modLocalRuntime")
-    val modCompileOnly = configurations.maybeCreate("modCompileOnly")
+    // val modImplementation = configurations.maybeCreate("modImplementation")
+    // val modRuntimeOnly = configurations.maybeCreate("modRuntimeOnly")
+    // val modLocalRuntime = configurations.maybeCreate("modLocalRuntime")
+    // val modCompileOnly = configurations.maybeCreate("modCompileOnly")
 
-    if (mcVersion >= 260100) {
-        configurations.findByName("implementation")?.extendsFrom(modImplementation)
-        configurations.findByName("runtimeOnly")?.extendsFrom(modRuntimeOnly)
-        configurations.findByName("localRuntime")?.extendsFrom(modLocalRuntime)
-        configurations.findByName("compileOnly")?.extendsFrom(modCompileOnly)
-    }
+    // if (mcVersion >= 260100) {
+    //     configurations.findByName("implementation")?.extendsFrom(modImplementation)
+    //     configurations.findByName("runtimeOnly")?.extendsFrom(modRuntimeOnly)
+    //     configurations.findByName("localRuntime")?.extendsFrom(modLocalRuntime)
+    //     configurations.findByName("compileOnly")?.extendsFrom(modCompileOnly)
+    // }
 
     if (isFabric) {
         modImplementation("net.fabricmc:fabric-loader:0.17.3")
