@@ -22,7 +22,7 @@ pluginManagement {
             if (requested.id.id == "org.spongepowered.gradle.vanilla") {
                 val targetModule = when (mcVersion) {
                     in 11605..12111 -> "org.spongepowered:vanillagradle:0.2.2-SNAPSHOT"
-                    else -> "org.spongepowered:vanillagradle:0.3.0-SNAPSHOT"
+                    else -> "org.spongepowered:vanillagradle:0.3.2"
                 }
                 useModule(targetModule)
             } else if (requested.id.id == "io.github.null2264.architectury-loom-dyn") {
