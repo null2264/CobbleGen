@@ -10,7 +10,7 @@ plugins {
     id("architectury-plugin") version "3.5-SNAPSHOT"
     id("io.github.null2264.architectury-loom-dyn") apply false
     id("com.gradleup.shadow") apply false
-    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
+    id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
 
 val modVersion = System.getenv("VERSION") ?: project.properties["mod_version"] as? String ?: "0.0.0"
@@ -408,6 +408,9 @@ publishMods {
             embeds {
                 slug = "jankson"
             }
+
+            client.set(true)  // Mostly for Recipe Viewer
+            server.set(true)
         }
     }
 
