@@ -165,13 +165,34 @@ dependencies {
     }
 }
 
-val remapJar by tasks.getting(RemapJarTask::class) {
-    val shadowJar by tasks.getting(ShadowJar::class)
-    dependsOn(shadowJar)
-    if (isForge && mcVersion >= 12105) {
-        atAccessWideners.add("cobblegen.accesswidener")
+if (mcVersion >= 260100) {
+    tasks.jar {
+        if (isForge) {
+            atAccessWideners.add("cobblegen.accesswidener")
+        }
+
+        archiveClassifier = "raw"
     }
-    inputFile.set(shadowJar.archiveFile)
+
+    val shadowJar by tasks.getting(ShadowJar::class) {
+        dependsOn(jar)
+        mainSpec.sourcePaths.clear() // Remove default source set inclusion
+        from(zipTree(jar.archiveFile)) // Unpack jar output (preserves Loom modifications)
+
+        configurations = listOf(project.configurations.shadowCommon)
+        archiveClassifier = null // shadowJar becomes the main artifact
+    }
+} else {
+    val remapJar by tasks.getting(RemapJarTask::class) {
+        val shadowJar by tasks.getting(ShadowJar::class)
+        dependsOn(shadowJar)
+
+        if (isForge && mcVersion >= 12105) {
+            atAccessWideners.add("cobblegen.accesswidener")
+        }
+
+        inputFile.set(shadowJar.archiveFile)
+    }
 }
 
 //val deleteResources by tasks.creating(Delete::class) {
