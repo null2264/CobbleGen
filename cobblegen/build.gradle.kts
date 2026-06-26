@@ -170,17 +170,6 @@ if (mcVersion >= 260100) {
         if (isForge) {
             atAccessWideners.add("cobblegen.accesswidener")
         }
-
-        archiveClassifier = "raw"
-    }
-
-    val shadowJar by tasks.getting(ShadowJar::class) {
-        dependsOn(jar)
-        mainSpec.sourcePaths.clear() // Remove default source set inclusion
-        from(zipTree(jar.archiveFile)) // Unpack jar output (preserves Loom modifications)
-
-        configurations = listOf(project.configurations.shadowCommon)
-        archiveClassifier = null // shadowJar becomes the main artifact
     }
 } else {
     val remapJar by tasks.getting(RemapJarTask::class) {

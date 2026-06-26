@@ -230,6 +230,12 @@ subprojects {
     }
 
     val shadowJar by tasks.getting(ShadowJar::class) {
+        if (mcVersion >= 260100) {
+            dependsOn(jar)
+            mainSpec.sourcePaths.clear()
+            from(zipTree(jar.archiveFile))
+        }
+
         isZip64 = true
         relocate("blue.endless.jankson", "io.github.null2264.shadowed.jankson")
         if (mcVersion <= 11605) {
@@ -248,7 +254,7 @@ subprojects {
         exclude("architectury.common.json")
 
         configurations = listOf(shade, shadeInternal)
-        archiveClassifier.set("dev-shade")
+        archiveClassifier.set(if (mcVersion >= 260100) null else "dev-shade")
         mergeServiceFiles()
     }
 
@@ -334,6 +340,10 @@ subprojects {
     }
 
     tasks.jar {
+        if (mcVersion >= 260100) {
+            archiveClassifier.set("raw")
+        }
+
         from("LICENSE") {
             rename { "${it}_${base.archivesName.get()}" }
         }
