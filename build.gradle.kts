@@ -231,9 +231,9 @@ subprojects {
 
     val shadowJar by tasks.getting(ShadowJar::class) {
         if (mcVersion >= 260100) {
-            dependsOn(jar)
-            mainSpec.sourcePaths.clear()
-            from(zipTree(jar.archiveFile))
+            dependsOn(tasks.jar)
+            setSource(files())
+            from(zipTree(tasks.jar.archiveFile))
         }
 
         isZip64 = true
