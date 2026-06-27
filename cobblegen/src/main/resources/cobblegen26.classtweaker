@@ -1,4 +1,4 @@
-classTweaker  v1  intermediary
+classTweaker  v1  official
 
 accessible class net/minecraft/resources/RegistryDataLoader$Loader
 
