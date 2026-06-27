@@ -16,7 +16,7 @@ group = project.properties["maven_group"] as String
 
 loom {
     if (mcVersion >= 12105) {
-        accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
+        accessWidenerPath = project.file("src/main/resources/cobblegen.classtweaker")
     }
 
     runConfigs {
