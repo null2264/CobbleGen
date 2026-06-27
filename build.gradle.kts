@@ -233,7 +233,16 @@ subprojects {
     val shadowJar by tasks.getting(ShadowJar::class) {
         if (mcVersion >= 260100) {
             dependsOn(tasks.jar)
-            (mainSpec as CopySpecInternal).sourcePaths.clear()
+
+            val mainSpecMethod = AbstractCopyTask::class.java.getDeclaredMethod("getMainSpec").apply {
+                isAccessible = true
+            }
+            val actualMainSpec = mainSpecMethod.invoke(this)
+
+            val sourcePathsMethod = actualMainSpec::class.java.getMethod("getSourcePaths")
+            val sourcePaths = sourcePathsMethod.invoke(actualMainSpec) as MutableCollection<*>
+            sourcePaths.clear()
+
             from(tasks.jar.map { zipTree(it.archiveFile) })
         }
 
