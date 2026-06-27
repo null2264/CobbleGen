@@ -15,7 +15,9 @@ val isNeo = ext["isNeo"] as Boolean
 group = project.properties["maven_group"] as String
 
 loom {
-    if (mcVersion >= 12105) {
+    if (mcVersion >= 260100) {
+        accessWidenerPath = project.file("src/main/resources/cobblegen26.classtweaker")
+    } else if (mcVersion >= 12105) {
         accessWidenerPath = project.file("src/main/resources/cobblegen.classtweaker")
     }
 
