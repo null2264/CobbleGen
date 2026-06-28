@@ -17,6 +17,12 @@ group = project.properties["maven_group"] as String
 loom {
     if (mcVersion >= 12105) {
         accessWidenerPath = project.file("src/main/resources/cobblegen.classtweaker")
+
+        if (isNeo) {
+            neoForge {
+                convertAccessWideners(tasks.jar, "cobblegen.classtweaker")
+            }
+        }
     }
 
     runConfigs {
