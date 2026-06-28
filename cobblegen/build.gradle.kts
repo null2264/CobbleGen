@@ -20,7 +20,7 @@ loom {
 
         if (isNeo && mcVersion >= 260100) {
             neoForge {
-                convertAccessWideners(
+                "convertAccessWideners"(
                     tasks.jar,
                     "cobblegen.classtweaker",
                 )
