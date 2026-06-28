@@ -22,7 +22,7 @@ fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependen
                         12003 -> "1.20.2"
                         in 12005..12006 -> "1.20.6"
                         in 12100..12111 -> "1.21.1"
-                        260100 -> "1.21.1"  // FIXME: Not confirmed, but EMI might skip 1.21.11 for 26.1
+                        // FIXME: Still stuck in 1.21.1 unfortunately...
                         else -> throw IllegalStateException("$mcVersion is not yet supported!")
                     }
                 )
@@ -50,8 +50,9 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
             in 12005..12006 -> "15.0.787"
             in 12100..12101 -> "16.0.788"
             in 12102..12110 -> "17.0.789"
-            12111 -> "17.0.789"  // FIXME: Broken in 1.21.11, waiting for new release
-            260100 -> "17.0.789"
+            12111 -> "17.0.789"  // 1.21.11 got skipped...
+            260100 -> "26.1.818"
+            260200 -> "26.2.820"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
