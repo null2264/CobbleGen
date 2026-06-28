@@ -137,15 +137,17 @@ dependencies {
 
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
-        modCompileOnly(rei(loaderName, true).versioned(mcVersion))
-        if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
-            modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
-            modCompileOnly("dev.architectury:architectury:11.1.13")
-        }
-        if (project.properties["recipe_viewer"] == "rei") {
-            if (mcVersion == 11902)  // REI's stupid dep bug
-                modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-            modLocalRuntime(rei(loaderName).versioned(mcVersion))
+        if (mcVersion < 12111 || mcVersion >= 260100) {  // REI skipped 1.21.11 entirely
+            modCompileOnly(rei(loaderName, true).versioned(mcVersion))
+            if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
+                modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
+                modCompileOnly("dev.architectury:architectury:11.1.13")
+            }
+            if (project.properties["recipe_viewer"] == "rei") {
+                if (mcVersion == 11902)  // REI's stupid dep bug
+                    modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
+                modLocalRuntime(rei(loaderName).versioned(mcVersion))
+            }
         }
         // REI ->
 
