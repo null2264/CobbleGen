@@ -18,15 +18,10 @@ loom {
     if (mcVersion >= 12105) {
         accessWidenerPath = project.file("src/main/resources/cobblegen.classtweaker")
 
-        if (isNeo) {
-            val task = when {
-                mcVersion >= 260100 -> tasks.jar
-                else -> tasks.named("remapJar", RemapJarTask::class.java)
-            }
-
+        if (isNeo && mcVersion >= 260100) {
             neoForge {
                 convertAccessWideners(
-                    task,
+                    tasks.jar,
                     "cobblegen.classtweaker",
                 )
             }
@@ -189,6 +184,10 @@ if (mcVersion >= 260100) {
     val remapJar by tasks.getting(RemapJarTask::class) {
         val shadowJar by tasks.getting(ShadowJar::class)
         dependsOn(shadowJar)
+
+        if (isForge && mcVersion >= 12105) {
+            atAccessWideners.add("cobblegen.classtweaker")
+        }
 
         inputFile.set(shadowJar.archiveFile)
     }
