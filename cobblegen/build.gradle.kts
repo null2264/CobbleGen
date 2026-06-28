@@ -127,7 +127,8 @@ dependencies {
             modCompileOnly(emi(mcVersion, null, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
                 modLocalRuntime(emi(mcVersion).versioned(0))
-        } else {
+        } else if (mcVersion < 260100) {
+            // FIXME: Not sure if EMI will ever updated past 1.21.1
             modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi")
                 modLocalRuntime(emi(mcVersion, loaderName).versioned(0))
