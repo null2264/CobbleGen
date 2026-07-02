@@ -16,14 +16,22 @@ group = project.properties["maven_group"] as String
 
 loom {
     if (mcVersion >= 12105) {
-        accessWidenerPath = project.file("src/main/resources/cobblegen.classtweaker")
+        val ctFilename = "cobblegen.classtweaker"
+        accessWidenerPath = project.file("src/main/resources/$ctFilename")
 
-        if (isNeo && mcVersion >= 260100) {
-            neoForge {
-                "convertAccessWideners"(
-                    tasks.jar,
-                    "cobblegen.classtweaker",
-                )
+        if (isForge) {
+            val task = when {
+                mcVersion < 260100 -> tasks.named("remapJar", RemapJarTask::class.java)
+                else -> tasks.named("jar", Jar::class.java)
+            }
+            if (!isNeo) {
+                forge {
+                    convertAccessWideners(task, ctFilename)
+                }
+            } else if (isNeo) {
+                neoForge {
+                    convertAccessWideners(task, ctFilename)
+                }
             }
         }
     }
@@ -185,9 +193,9 @@ if (mcVersion >= 260100) {
         val shadowJar by tasks.getting(ShadowJar::class)
         dependsOn(shadowJar)
 
-        if (isForge && mcVersion >= 12105) {
-            atAccessWideners.add("cobblegen.classtweaker")
-        }
+        // if (isForge && mcVersion >= 12105) {
+        //     atAccessWideners.add("cobblegen.classtweaker")
+        // }
 
         inputFile.set(shadowJar.archiveFile)
     }
