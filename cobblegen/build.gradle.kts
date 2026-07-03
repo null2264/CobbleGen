@@ -16,7 +16,10 @@ group = project.properties["maven_group"] as String
 
 loom {
     if (mcVersion >= 12105) {
-        val ctFilename = "cobblegen.classtweaker"
+        val ctFilename = when {
+            mcVersion < 260100 -> "cobblegen.classtweaker"
+            else -> "cobblegen26.classtweaker"
+        }
         accessWidenerPath = project.file("src/main/resources/$ctFilename")
 
         if (isForge) {
