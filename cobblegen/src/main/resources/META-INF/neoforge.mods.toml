@@ -16,7 +16,7 @@ description = "An MC mod that allows you to customize cobblestone (stone and bas
 config = "cobblegen.mixins.json"
 
 [[accessTransformers]]
-file = "accesstransformer.cfg"
+file = "META-INF/accesstransformer.cfg"
 
 [[dependencies.cobblegen]]
 modId = "neoforge"
