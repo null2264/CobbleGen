@@ -159,8 +159,10 @@ dependencies {
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
         if (mcVersion < 12111 || mcVersion >= 260100) {  // REI skipped 1.21.11 entirely
             modCompileOnly(rei(loaderName, true).versioned(mcVersion))
-            if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
-                modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
+            // The dependency got moved to cloth-config which we aren't using
+            if (mcVersion >= 12002) modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
+            if (mcVersion in 12002..12104) {
+                // Not sure why this aren't included
                 modCompileOnly("dev.architectury:architectury:11.1.13")
             }
             if (project.properties["recipe_viewer"] == "rei") {
