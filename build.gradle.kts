@@ -257,9 +257,11 @@ subprojects {
         if (isFabric) {
             exclude("META-INF/mods.toml")
             exclude("META-INF/neoforge.mods.toml")
+            exclude("META-INF/accesstransformer.cfg")
         } else if (isForge) {
             exclude("fabric.mod.json")
             exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
+            if (mcVersion < 12105) exclude("META-INF/accesstransformer.cfg")
         }
         exclude("architectury.common.json")
 
