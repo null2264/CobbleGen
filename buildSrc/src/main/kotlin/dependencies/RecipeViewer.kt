@@ -11,7 +11,14 @@ fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependen
             if (mcVersion <= 11802) {
                 append("0.7.3+${versionStr(mcVersion)}")  // There are no multi-loader support in 1.18.2
             } else {
-                append("1.1.24+")
+                append(
+                    when (mcVersion) {
+                        // These versions are drop by EMI after EMI v1.1.23, not entirely sure why.
+                        in 11903..11904 -> "1.1.22+"
+                        in 12002..12006 -> "1.1.22+"
+                        else -> "1.1.24+"
+                    }
+                )
                 append(
                     // They didn't break API on MC version upgrade so mismatch should be fine
                     when (mcVersion) {
