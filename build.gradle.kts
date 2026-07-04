@@ -317,6 +317,15 @@ subprojects {
             project.file("build/resources/main/META-INF/mods.toml")
                 .processModsToml(mcVersion, if (!isForge) 0 else (if (isNeo) 2 else 1))
 
+            if (mcVersion >= 12105) {
+                if (isForge)
+                    project.file("build/resources/main/META-INF/accesstransformer.cfg")
+                        .processAT(mcVersion)
+                else
+                    project.file("build/resources/main/cobblegen.classtweaker")
+                        .processAW(mcVersion)
+            }
+
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion, isFabric)
             if (isFabric) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
