@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dev.architectury.plugin.ArchitectPluginExtension
 import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import dependencies.minecraft as MC
 import org.apache.tools.ant.filters.StripJavaComments
 import org.gradle.api.internal.file.copy.CopySpecInternal
@@ -333,9 +334,23 @@ subprojects {
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion, isFabric)
             if (isFabric) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
+
+            if (mcVersion >= 12105) {
+                project.file("build/resources/main/META-INF/accesstransformer.cfg").run {
+                    parentFile.mkdirs()
+                    createNewFile()
+                    processAT(mcVersion)
+                }
+                project.file("build/resources/main/cobblegen.classtweaker").run {
+                    parentFile.mkdirs()
+                    createNewFile()
+                    processAW(mcVersion)
+                }
+            }
         }
     }
 
+    if (isModModule) tasks.getByName("validateAccessWidener").dependsOn(processResources)
 
     val targetJavaVersion = if (!isApi) {
         when (mcVersion) {

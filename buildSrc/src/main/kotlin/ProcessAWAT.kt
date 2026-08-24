@@ -8,7 +8,7 @@ import kotlinx.serialization.json.JsonPrimitive
 
 fun File.processAW(
     mcVersion: Int,
-) {
+): File {
     val content = buildString {
         val mappingType = if (mcVersion >= 260100) "official" else "named"
         appendLine("classTweaker v1 ${mappingType}")
@@ -20,11 +20,12 @@ fun File.processAW(
         appendLine("accessible method net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplateManager$structureProviderName <init> (Ljava/util/function/Function;Ljava/util/function/Supplier;)V")
     }
     writeText(content)
+    return this
 }
 
 fun File.processAT(
     mcVersion: Int,
-) {
+): File {
     val content = buildString {
         appendLine("public net.minecraft.resources.RegistryDataLoader\$Loader")
 
@@ -33,4 +34,5 @@ fun File.processAT(
         appendLine("public net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager$structureProviderName <init>(Ljava/util/function/Function;Ljava/util/function/Supplier;)V")
     }
     writeText(content)
+    return this
 }
