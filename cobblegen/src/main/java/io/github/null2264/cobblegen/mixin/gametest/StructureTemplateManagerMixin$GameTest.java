@@ -87,8 +87,26 @@ public abstract class StructureTemplateManagerMixin$GameTest {
             remap = false
         )
     )
-    private void addCobbleGenStructureProvider(ResourceManager resourceManager, LevelStorageSource.LevelStorageAccess levelStorageAccess, DataFixer dataFixer, HolderGetter holderGetter, CallbackInfo ci, @Local ImmutableList.Builder<StructureTemplateManager.Source> builder) {
-        builder.add(new StructureTemplateManager.Source(this::cobblegen$loadSnbtFromResource, this::cobblegen$listSnbtStructures));
+    private void addCobbleGenStructureProvider(ResourceManager resourceManager,
+                                               LevelStorageSource.LevelStorageAccess levelStorageAccess,
+                                               DataFixer dataFixer,
+                                               HolderGetter holderGetter,
+                                               CallbackInfo ci,
+                                               @Local ImmutableList.Builder<
+                                                   #if MC>=260100
+                                                   StructureTemplateManager.Provider
+                                                   #else
+                                                   StructureTemplateManager.Source
+                                                   #endif
+                                               > builder) {
+        builder.add(
+            #if MC>=260100
+            new StructureTemplateManager.Provider(
+            #else
+            new StructureTemplateManager.Source(
+            #endif
+                this::cobblegen$loadSnbtFromResource, this::cobblegen$listSnbtStructures)
+        );
     }
 }
 #endif
