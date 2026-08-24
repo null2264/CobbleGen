@@ -183,11 +183,31 @@ public class BlockGenerationTest {
     }
 
     @SuppressWarnings("unchecked")
-    public static void registerInstances(List<RegistryDataLoader.Loader<?>> registriesList) {
+    public static void registerInstances(
+        #if MC>=260100
+        List<net.minecraft.resources.RegistryLoadTask<?>> registriesList
+        #else
+        List<RegistryDataLoader.Loader<?>> registriesList
+        #endif
+    ) {
         Map<ResourceKey<? extends Registry<?>>, Registry<?>> registries = new IdentityHashMap<>(registriesList.size());
 
+        #if MC>=260100
+        for (net.minecraft.resources.RegistryLoadTask<?> entry : registriesList) {
+        #else
         for (RegistryDataLoader.Loader<?> entry : registriesList) {
-            registries.put(entry.registry().key(), entry.registry());
+        #endif
+            registries.put(
+                entry.registry
+                #if MC<260100
+                ()
+                #endif
+                .key(),
+                entry.registry
+                #if MC<260100
+                ()
+                #endif
+            );
         }
 
         Registry<GameTestInstance> testInstances =
