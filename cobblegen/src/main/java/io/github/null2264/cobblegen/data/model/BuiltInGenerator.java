@@ -5,6 +5,7 @@ import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.GeneratorMap;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
+import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -110,11 +111,16 @@ public interface BuiltInGenerator extends Generator {
             resultCandidates = Util.optional(candidates.get(id));
         }
 
+        String dim = Util.getDimension(level);
+        CGLog.debug(dim);
+        String biome = Util.getBiome(level, pos);
+        CGLog.debug(biome);
+
         Optional<String> replacementId = randomizeBlockId(
             resultCandidates.orElseGet(() -> candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())),
-            Util.getDimension(level),
+            dim,
             pos.getY(),
-            Util.getBiome(level, pos)
+            biome
         );
 
         if (!replacementId.isPresent()) {
