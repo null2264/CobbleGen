@@ -131,18 +131,16 @@ subprojects {
         extra.set("loom.platform", loaderName)
 
         if (mcVersion >= 12105) {
-            if (isForge)
-                project.file("build/resources/main/META-INF/accesstransformer.cfg").run {
-                    parentFile.mkdirs()
-                    createNewFile()
-                    processAT(mcVersion)
-                }
-            else
-                project.file("build/resources/main/cobblegen.classtweaker").run {
-                    parentFile.mkdirs()
-                    createNewFile()
-                    processAW(mcVersion)
-                }
+            project.file("build/resources/main/META-INF/accesstransformer.cfg").run {
+                parentFile.mkdirs()
+                createNewFile()
+                processAT(mcVersion)
+            }
+            project.file("build/resources/main/cobblegen.classtweaker").run {
+                parentFile.mkdirs()
+                createNewFile()
+                processAW(mcVersion)
+            }
         }
 
         apply(plugin = "architectury-plugin")
