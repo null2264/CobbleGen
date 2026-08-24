@@ -329,13 +329,13 @@ subprojects {
         if (mcVersion >= 12105) {
             if (isForge)
                 project.file("build/resources/main/META-INF/accesstransformer.cfg").run {
-                    mkdirs()
+                    parent.mkdirs()
                     createNewFile()
                     processAT(mcVersion)
                 }
             else
                 project.file("build/resources/main/cobblegen.classtweaker").run {
-                    mkdirs()
+                    parent.mkdirs()
                     createNewFile()
                     processAW(mcVersion)
                 }
