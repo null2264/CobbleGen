@@ -11,7 +11,7 @@ fun File.processAW(
 ) {
     val content = buildString {
         val mappingType = if (mcVersion >= 260100) "official" else "named"
-        appendLine("classTweaker  v1  ${mappingType}")
+        appendLine("classTweaker v1 ${mappingType}")
 
         appendLine("accessible class net/minecraft/resources/RegistryDataLoader\$Loader")
 
