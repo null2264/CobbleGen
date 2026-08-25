@@ -16,7 +16,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.commons.io.IOUtils;
-import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -110,12 +109,12 @@ public abstract class StructureTemplateManagerMixin$GameTest {
             #if MC>=260100
             new net.minecraft.world.level.levelgen.structure.templatesystem.loader.TemplateSource(dataFixer, holderGetter) {
                 @Override
-                public @NonNull Optional<StructureTemplate> load(net.minecraft.resources.Identifier id) {
+                public Optional<StructureTemplate> load(net.minecraft.resources.Identifier id) {
                     return cobblegen$loadSnbtFromResource(id);
                 }
 
                 @Override
-                public @NonNull Stream<net.minecraft.resources.Identifier> list() {
+                public Stream<net.minecraft.resources.Identifier> list() {
                     return cobblegen$listSnbtStructures();
                 }
             }
