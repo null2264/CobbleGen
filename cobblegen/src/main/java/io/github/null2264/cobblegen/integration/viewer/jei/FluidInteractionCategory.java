@@ -201,7 +201,11 @@ public class FluidInteractionCategory implements IRecipeCategory<FluidInteractio
             #if MC<12000
             com.mojang.blaze3d.vertex.PoseStack graphicsTarget,
             #else
+            #if MC>=260100
+            net.minecraft.client.gui.GuiGraphicsExtractor graphicsTarget,
+            #else
             net.minecraft.client.gui.GuiGraphics graphicsTarget,
+            #endif
             #endif
             double mouseX,
             double mouseY

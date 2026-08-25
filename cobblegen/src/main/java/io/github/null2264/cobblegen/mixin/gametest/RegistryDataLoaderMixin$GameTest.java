@@ -48,7 +48,12 @@ public abstract class RegistryDataLoaderMixin$GameTest {
         boolean fromResources,
         #endif
         CallbackInfoReturnable<RegistryAccess.Frozen> cir,
-        @Local(ordinal = 2) List<RegistryDataLoader.Loader<?>> registriesList
+        @Local(ordinal = 2)
+        #if MC>=260100
+        List<net.minecraft.resources.RegistryLoadTask<?>> registriesList
+        #else
+        List<RegistryDataLoader.Loader<?>> registriesList
+        #endif
     ) {
         if (LOADING_DYNAMIC_REGISTRIES.getAndSet(false)) {
             BlockGenerationTest.registerInstances(registriesList);
