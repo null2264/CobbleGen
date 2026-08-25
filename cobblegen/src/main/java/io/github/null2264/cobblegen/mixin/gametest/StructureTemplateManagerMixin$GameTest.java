@@ -10,7 +10,6 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
@@ -111,12 +110,12 @@ public abstract class StructureTemplateManagerMixin$GameTest {
             #if MC>=260100
             new net.minecraft.world.level.levelgen.structure.templatesystem.loader.TemplateSource(dataFixer, holderGetter) {
                 @Override
-                public @NonNull Optional<StructureTemplate> load(@NonNull Identifier id) {
+                public @NonNull Optional<StructureTemplate> load(net.minecraft.resources.Identifier id) {
                     return cobblegen$loadSnbtFromResource(id);
                 }
 
                 @Override
-                public @NonNull Stream<Identifier> list() {
+                public @NonNull Stream<net.minecraft.resources.Identifier> list() {
                     return cobblegen$listSnbtStructures();
                 }
             }
