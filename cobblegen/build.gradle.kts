@@ -39,11 +39,7 @@ loom {
         }
     }
 
-    if (mcVersion >= 260100) {
-        interfaceInjection {
-            enableDependencyInterfaceInjection = false
-        }
-    }
+    interfaceInjection.enableDependencyInterfaceInjection.set(false)
 
     runConfigs {
         named("client") {
