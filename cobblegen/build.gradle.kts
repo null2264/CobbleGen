@@ -101,6 +101,13 @@ dependencies {
     val modLocalRuntime = configurations.maybeCreate("modLocalRuntime")
     val modCompileOnly = configurations.maybeCreate("modCompileOnly")
 
+    fun DependencyHandlerScope.silent(configuration: DependencyHandlerScope.() -> Unit) {
+        try {
+            configuration()
+        } catch (e: IllegalStateException) {
+        }
+    }
+
     if (mcVersion >= 260100) {
         configurations.findByName("implementation")?.extendsFrom(modImplementation)
         configurations.findByName("runtimeOnly")?.extendsFrom(modRuntimeOnly)
@@ -114,15 +121,12 @@ dependencies {
         // Mainly for testing
         // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
+        // 26.1
         if (mcVersion in 11606..12104) {
             modLocalRuntime(fapi.versioned(mcVersion))
         } else {
-            try {
-                // FIXME: Is Resource Loader even needed?
-                //modLocalRuntime(fapiResourceLoader.versioned(mcVersion))
-                modLocalRuntime(fapiGameTest.versioned(mcVersion))
-            } catch (e: IllegalStateException) {
-            }
+            silent { modImplementation(fapiResourceLoader(if (mcVersion < 260100) 0 else 1).versioned(mcVersion)) }
+            silent { modLocalRuntime(fapiGameTest.versioned(mcVersion)) }
         }
     } else {
         if (!isNeo) {
@@ -164,6 +168,9 @@ dependencies {
             if (mcVersion in 12002..12104) {
                 // Not sure why this aren't included
                 modCompileOnly("dev.architectury:architectury:11.1.13")
+            } else if (mcVersion >= 260100) {
+                // Classic REI
+                modCompileOnly("dev.architectury:architectury:21.0.7")
             }
             if (project.properties["recipe_viewer"] == "rei") {
                 if (mcVersion == 11902)  // REI's stupid dep bug

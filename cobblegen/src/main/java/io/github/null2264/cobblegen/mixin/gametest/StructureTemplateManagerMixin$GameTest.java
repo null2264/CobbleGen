@@ -10,12 +10,14 @@ import net.minecraft.core.HolderGetter;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.resources.FileToIdConverter;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import org.apache.commons.io.IOUtils;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -54,7 +56,9 @@ public abstract class StructureTemplateManagerMixin$GameTest {
 
         if (resource.isPresent()) {
             try {
-                String snbt = IOUtils.toString(resource.get().openAsReader());
+                String snbt = IOUtils.toString(
+                    resource.orElseThrow().openAsReader()
+                );
                 CompoundTag nbt = NbtUtils.snbtToStructure(snbt);
                 return Optional.of(this.readStructure(nbt));
             } catch (IOException | CommandSyntaxException e) {
@@ -90,22 +94,35 @@ public abstract class StructureTemplateManagerMixin$GameTest {
     private void addCobbleGenStructureProvider(ResourceManager resourceManager,
                                                LevelStorageSource.LevelStorageAccess levelStorageAccess,
                                                DataFixer dataFixer,
-                                               HolderGetter holderGetter,
+                                               HolderGetter
+                                                   #if MC>=260100
+                                                   <net.minecraft.world.level.block.Block>
+                                                   #endif
+                                                       holderGetter,
                                                CallbackInfo ci,
                                                @Local ImmutableList.Builder<
                                                    #if MC>=260100
-                                                   StructureTemplateManager.Provider
+                                                   net.minecraft.world.level.levelgen.structure.templatesystem.loader.TemplateSource
                                                    #else
                                                    StructureTemplateManager.Source
                                                    #endif
                                                > builder) {
         builder.add(
             #if MC>=260100
-            new StructureTemplateManager.Provider(
+            new net.minecraft.world.level.levelgen.structure.templatesystem.loader.TemplateSource(dataFixer, holderGetter) {
+                @Override
+                public @NonNull Optional<StructureTemplate> load(@NonNull Identifier id) {
+                    return cobblegen$loadSnbtFromResource(id);
+                }
+
+                @Override
+                public @NonNull Stream<Identifier> list() {
+                    return cobblegen$listSnbtStructures();
+                }
+            }
             #else
-            new StructureTemplateManager.Source(
+            new StructureTemplateManager.Source(this::cobblegen$loadSnbtFromResource, this::cobblegen$listSnbtStructures)
             #endif
-                this::cobblegen$loadSnbtFromResource, this::cobblegen$listSnbtStructures)
         );
     }
 }

@@ -218,6 +218,11 @@ subprojects {
             }
         }
 
+        if (mcVersion >= 260100) {
+            // Nonnull is gone?
+            compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+        }
+
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
 
         shade("systems.manifold:manifold-ext-rt:${manifoldVersion}")

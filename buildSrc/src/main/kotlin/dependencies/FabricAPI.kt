@@ -35,12 +35,19 @@ val fapiGameTest = Dependency(
     },
 )
 
-val fapiResourceLoader = Dependency(
+fun fapiResourceLoader(version: Int = 0) = Dependency(
     group = "net.fabricmc.fabric-api",
-    name = "fabric-resource-loader-v0",
+    name = "fabric-resource-loader-v$version",
     version = { mcVersion ->
         when (mcVersion) {
-            12105 -> "3.1.6+02ca679649"
+            12105 -> {
+                assert(version == 0)
+                "3.1.6+02ca679649"
+            }
+            260100 -> {
+                assert(version == 1)
+                "2.0.9+d871b99ede"
+            }
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

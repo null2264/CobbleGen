@@ -78,8 +78,20 @@ public class BlockGenerationTest {
         Boolean isRequired,
         Consumer<GameTestHelper> function
     ) {
-        public GameTestInstance testInstance(Registry<TestEnvironmentDefinition> testEnvironmentRegistry) {
-            Holder.Reference<TestEnvironmentDefinition> testEnvironment = testEnvironmentRegistry.getOrThrow(GameTestEnvironments.DEFAULT_KEY);
+        public GameTestInstance testInstance(
+            Registry<
+                TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+                #endif
+            > testEnvironmentRegistry
+        ) {
+            Holder.Reference<
+                TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+                #endif
+            > testEnvironment = testEnvironmentRegistry.getOrThrow(GameTestEnvironments.DEFAULT_KEY);
 
             return new FunctionGameTestInstance(
                 ResourceKey.create(Registries.TEST_FUNCTION, id.toMC()),
@@ -103,7 +115,12 @@ public class BlockGenerationTest {
 
         public void registerEnvironment(
             Registry<GameTestInstance> testInstances,
-            Registry<TestEnvironmentDefinition> testEnvironmentRegistry
+            Registry<
+                TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+                #endif
+            > testEnvironmentRegistry
         ) {
             Registry.register(testInstances, id().toMC(), testInstance(testEnvironmentRegistry));
         }
@@ -212,8 +229,18 @@ public class BlockGenerationTest {
 
         Registry<GameTestInstance> testInstances =
             (Registry<GameTestInstance>) registries.get(Registries.TEST_INSTANCE);
-        Registry<TestEnvironmentDefinition> testEnvironmentRegistry =
-            (Registry<TestEnvironmentDefinition>) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
+        Registry<
+            TestEnvironmentDefinition
+            #if MC>=260100
+            <?>
+            #endif
+        > testEnvironmentRegistry =
+            (Registry<
+                TestEnvironmentDefinition
+                    #if MC>=260100
+                    <?>
+                    #endif
+                >) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
 
         testHolders.forEach(holder -> holder.registerEnvironment(testInstances, testEnvironmentRegistry));
     }
