@@ -39,6 +39,12 @@ loom {
         }
     }
 
+    if (mcVersion >= 260100) {
+        interfaceInjection {
+            enableDependencyInterfaceInjection = false
+        }
+    }
+
     runConfigs {
         named("client") {
             runDir = "../run/client"
