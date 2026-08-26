@@ -9,6 +9,7 @@ import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -95,6 +96,7 @@ public final class CGIdentifier
     }
 
     public static CGIdentifier fromMC(
+        @Nullable
         net.minecraft.resources.
         #if MC>=12111
         Identifier
@@ -103,6 +105,7 @@ public final class CGIdentifier
         #endif
         location
     ) {
+        if (location == null) return null;
         String modId = location.getNamespace();
         String name = location.getPath();
         if (name.equals(MOD_ID + "/wildcard")) {
