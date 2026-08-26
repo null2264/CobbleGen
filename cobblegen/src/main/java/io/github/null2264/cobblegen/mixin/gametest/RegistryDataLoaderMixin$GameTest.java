@@ -44,7 +44,11 @@ public abstract class RegistryDataLoaderMixin$GameTest {
 
     @Inject(
         #if MC>=260100
+        #if FABRIC
         method = "lambda$load$2(Ljava/util/List;Ljava/util/Map;Ljava/lang/Void;)Lnet/minecraft/core/RegistryAccess$Frozen;",
+        #else
+        method = "lambda$load$2(ZLjava/util/List;Ljava/util/Map;Ljava/lang/Void;)Lnet/minecraft/core/RegistryAccess$Frozen;",
+        #endif
         #else
         #if FABRIC
         method = "load(Lnet/minecraft/resources/RegistryDataLoader$LoadingFunction;Ljava/util/List;Ljava/util/List;)Lnet/minecraft/core/RegistryAccess$Frozen;",
@@ -64,6 +68,9 @@ public abstract class RegistryDataLoaderMixin$GameTest {
     )
     private static void beforeFreeze(
         #if MC>=260100
+        #if FORGE
+        boolean fromResources,
+        #endif
         List<net.minecraft.resources.RegistryLoadTask<?>> registriesList,
         Map<net.minecraft.resources.ResourceKey<?>, Exception> loadingErrors,
         Void ignored,
