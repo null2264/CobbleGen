@@ -366,4 +366,4 @@ jobs:
           body: |
             ${{ needs.setup.outputs.changelog }}
           files: |
-            ./!(*-dev-shade|*-sources).jar
+            ./!(*-dev-shade|*-sources|*-raw).jar
