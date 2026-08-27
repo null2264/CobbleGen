@@ -71,7 +71,8 @@ fun supportedVersionRange(mcVersion: Int, loader: String): VersionRange {
         in 12100..12101 -> VersionRange("1.20.x", "1.21.1")
         in 12102..12104 -> VersionRange("1.21.1", "1.21.4")
         in 12105..12110 -> VersionRange("1.21.4", "1.21.10")
-        12111 -> VersionRange("1.21.10", null)
+        12111 -> VersionRange("1.21.10", "1.21.11")
+        260100 -> VersionRange("1.21.11", null)
         else -> VersionRange(null, null)
     }
 }

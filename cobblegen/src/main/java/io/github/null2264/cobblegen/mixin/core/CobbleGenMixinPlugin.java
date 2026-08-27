@@ -47,7 +47,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin {
             // Datapack will not register automatically in Fabric without FAPI.
             // I usually prefer not depending on FAPI, but I'll make this one an exception...
             // because I ain't dealing with Resource Pack loading ever again
-            if (LoaderCompat.isFabricLike() && !LoaderCompat.isModLoaded("fabric-resource-loader-v0")) {
+            if (LoaderCompat.isFabricLike() && !(LoaderCompat.isModLoaded("fabric-resource-loader-v0") || LoaderCompat.isModLoaded("fabric-resource-loader-v1"))) {
                 CGLog.warn(() -> "Fabric API is required to load CobbleGen's GameTests!");
                 return false;
             }

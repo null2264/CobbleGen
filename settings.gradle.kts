@@ -10,16 +10,32 @@ pluginManagement {
         maven("https://repo.spongepowered.org/maven/")
         gradlePluginPortal()
     }
+    val mcVer: String by settings
+    val (major, minor, patch) = mcVer
+        .split(".")
+        .toMutableList()
+        .apply { while (this.size < 3) this.add("") }
+    val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
+
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id == "org.spongepowered.gradle.vanilla") {
-                // REF: https://repo.spongepowered.org/#browse/browse:maven-public:org%2Fspongepowered%2Fvanillagradle%2F0.2.1-SNAPSHOT
-                useModule("org.spongepowered:vanillagradle:0.2.1-20240507.024226-82")
+                val targetModule = when (mcVersion) {
+                    in 11605..12111 -> "org.spongepowered:vanillagradle:0.2.2-SNAPSHOT"
+                    else -> "org.spongepowered:vanillagradle:0.3.2"
+                }
+                useModule(targetModule)
+            } else if (requested.id.id == "io.github.null2264.architectury-loom-dyn") {
+                val targetModule = when (mcVersion) {
+                    in 11605..12111 -> "io.github.null2264.architectury-loom:io.github.null2264.architectury-loom.gradle.plugin:1.17-SNAPSHOT"
+                    else -> "io.github.null2264.architectury-loom-no-remap:io.github.null2264.architectury-loom-no-remap.gradle.plugin:1.17-SNAPSHOT"
+                }
+                useModule(targetModule)
             }
         }
     }
     plugins {
-        id("com.gradleup.shadow") version "8.3.5"
+        id("com.gradleup.shadow") version "9.3.1"
         id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
     }
 }

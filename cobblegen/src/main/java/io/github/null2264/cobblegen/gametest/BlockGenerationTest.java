@@ -78,8 +78,20 @@ public class BlockGenerationTest {
         Boolean isRequired,
         Consumer<GameTestHelper> function
     ) {
-        public GameTestInstance testInstance(Registry<TestEnvironmentDefinition> testEnvironmentRegistry) {
-            Holder.Reference<TestEnvironmentDefinition> testEnvironment = testEnvironmentRegistry.getOrThrow(GameTestEnvironments.DEFAULT_KEY);
+        public GameTestInstance testInstance(
+            Registry<
+                TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+                #endif
+            > testEnvironmentRegistry
+        ) {
+            Holder.Reference<
+                TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+                #endif
+            > testEnvironment = testEnvironmentRegistry.getOrThrow(GameTestEnvironments.DEFAULT_KEY);
 
             return new FunctionGameTestInstance(
                 ResourceKey.create(Registries.TEST_FUNCTION, id.toMC()),
@@ -103,7 +115,12 @@ public class BlockGenerationTest {
 
         public void registerEnvironment(
             Registry<GameTestInstance> testInstances,
-            Registry<TestEnvironmentDefinition> testEnvironmentRegistry
+            Registry<
+                TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+                #endif
+            > testEnvironmentRegistry
         ) {
             Registry.register(testInstances, id().toMC(), testInstance(testEnvironmentRegistry));
         }
@@ -183,17 +200,47 @@ public class BlockGenerationTest {
     }
 
     @SuppressWarnings("unchecked")
-    public static void registerInstances(List<RegistryDataLoader.Loader<?>> registriesList) {
+    public static void registerInstances(
+        #if MC>=260100
+        List<net.minecraft.resources.RegistryLoadTask<?>> registriesList
+        #else
+        List<RegistryDataLoader.Loader<?>> registriesList
+        #endif
+    ) {
         Map<ResourceKey<? extends Registry<?>>, Registry<?>> registries = new IdentityHashMap<>(registriesList.size());
 
+        #if MC>=260100
+        for (net.minecraft.resources.RegistryLoadTask<?> entry : registriesList) {
+        #else
         for (RegistryDataLoader.Loader<?> entry : registriesList) {
-            registries.put(entry.registry().key(), entry.registry());
+        #endif
+            registries.put(
+                entry.registry
+                #if MC<260100
+                ()
+                #endif
+                .key(),
+                entry.registry
+                #if MC<260100
+                ()
+                #endif
+            );
         }
 
         Registry<GameTestInstance> testInstances =
             (Registry<GameTestInstance>) registries.get(Registries.TEST_INSTANCE);
-        Registry<TestEnvironmentDefinition> testEnvironmentRegistry =
-            (Registry<TestEnvironmentDefinition>) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
+        Registry<
+            TestEnvironmentDefinition
+            #if MC>=260100
+            <?>
+            #endif
+        > testEnvironmentRegistry =
+            (Registry<
+                TestEnvironmentDefinition
+                    #if MC>=260100
+                    <?>
+                    #endif
+                >) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
 
         testHolders.forEach(holder -> holder.registerEnvironment(testInstances, testEnvironmentRegistry));
     }

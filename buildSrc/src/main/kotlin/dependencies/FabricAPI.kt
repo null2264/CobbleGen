@@ -3,7 +3,7 @@ package dependencies
 val fapi = Dependency(
     group = "net.fabricmc.fabric-api",
     name = "fabric-api",
-    version = { mcVersion, hotfix ->
+    version = { mcVersion ->
         when (mcVersion) {
             11605 -> "0.42.0+1.16"
             11802 -> "0.76.0+1.18.2"
@@ -16,6 +16,7 @@ val fapi = Dependency(
             in 12102..12104 -> "0.106.1+1.21.3"
             in 12105..12110 -> "0.119.9+1.21.5"
             12111 -> "0.139.5+1.21.11"
+            260100 -> "0.145.1+26.1"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -24,20 +25,29 @@ val fapi = Dependency(
 val fapiGameTest = Dependency(
     group = "net.fabricmc.fabric-api",
     name = "fabric-gametest-api-v1",
-    version = { mcVersion, hotfix ->
+    version = { mcVersion ->
         when (mcVersion) {
-            12105 -> "3.1.2+2a6ec84b49"
+            in 12105..12110 -> "3.1.2+2a6ec84b49"
+            12111 -> "3.1.27+4fc5413f3e"
+            260100 -> "4.0.13+00a1fba639"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
 )
 
-val fapiResourceLoader = Dependency(
+fun fapiResourceLoader(version: Int = 0) = Dependency(
     group = "net.fabricmc.fabric-api",
-    name = "fabric-resource-loader-v0",
-    version = { mcVersion, hotfix ->
+    name = "fabric-resource-loader-v$version",
+    version = { mcVersion ->
         when (mcVersion) {
-            12105 -> "3.1.6+02ca679649"
+            12105 -> {
+                assert(version == 0)
+                "3.1.6+02ca679649"
+            }
+            260100 -> {
+                assert(version == 1)
+                "2.0.9+d871b99ede"
+            }
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

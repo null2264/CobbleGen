@@ -6,12 +6,19 @@ fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependen
         // EMI migrate to NeoForge after 1.20.2
         if (loader != "fabric" && mcVersion <= 12002) "emi-forge" else "emi-$loader"
     } else "emi",
-    version = { _, _ ->
+    version = { _ ->
         buildString {
             if (mcVersion <= 11802) {
                 append("0.7.3+${versionStr(mcVersion)}")  // There are no multi-loader support in 1.18.2
             } else {
-                append("1.1.21+")
+                append(
+                    when (mcVersion) {
+                        // These versions are drop by EMI after EMI v1.1.23, not entirely sure why.
+                        in 11903..11904 -> "1.1.22+"
+                        in 12002..12006 -> "1.1.22+"
+                        else -> "1.1.24+"
+                    }
+                )
                 append(
                     // They didn't break API on MC version upgrade so mismatch should be fine
                     when (mcVersion) {
@@ -22,6 +29,7 @@ fun emi(mcVersion: Int, loader: String? = null, api: Boolean = false) = Dependen
                         12003 -> "1.20.2"
                         in 12005..12006 -> "1.20.6"
                         in 12100..12111 -> "1.21.1"
+                        // FIXME: Still stuck in 1.21.1 unfortunately...
                         else -> throw IllegalStateException("$mcVersion is not yet supported!")
                     }
                 )
@@ -38,7 +46,7 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
     } else {
         "RoughlyEnoughItems-$loader"
     },
-    version = { mcVersion, hotfix ->
+    version = { mcVersion ->
         // They didn't break API on MC version upgrade so mismatch should be fine
         when (mcVersion) {
             11802 -> "8.3.618"
@@ -48,7 +56,10 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
             in 12002..12004 -> "13.0.685"
             in 12005..12006 -> "15.0.787"
             in 12100..12101 -> "16.0.788"
-            in 12102..12111 -> "17.0.789"
+            in 12102..12110 -> "17.0.789"
+            12111 -> "17.0.789"  // 1.21.11 got skipped...
+            260100 -> "26.1.818"
+            260200 -> "26.2.820"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -68,7 +79,9 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
                 in 12002..12004 -> "1.20.2"
                 in 12005..12006 -> versionStr(mcVersion)
                 in 12100..12110 -> "1.21.1"
-                12111 -> "1.21.11"
+                12111 -> versionStr(mcVersion)
+                260100 -> versionStr(mcVersion)
+                260200 -> versionStr(mcVersion)
                 else -> throw IllegalStateException("$mcVersion is not yet supported!")
             }
         )
@@ -83,7 +96,7 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
             append ("-api")
         }
     },
-    version = { _, _ ->
+    version = { _ ->
         // They didn't break API on MC version upgrade so mismatch should be fine
         when (mcVersion) {
             11802 -> "10.2.1.1009"
@@ -94,6 +107,8 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
             in 12005..12006 -> "18.0.0.62"
             in 12100..12110 -> "19.21.1.248"
             12111 -> "27.3.0.14"
+            260100 -> "29.2.0.21"
+            260200 -> "30.2.0.15"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

@@ -15,7 +15,14 @@ public class GraphicsCompat {
     #else
     void
     #endif
-    drawString(net.minecraft.client.gui.GuiGraphics graphics, Component text, int x, int y, int colour) {
+    drawString(
+        #if MC>=260100
+        net.minecraft.client.gui.GuiGraphicsExtractor graphics,
+        #else
+        net.minecraft.client.gui.GuiGraphics graphics,
+        #endif
+        Component text, int x, int y, int colour
+    ) {
     #endif
         Font font = Minecraft.getInstance().font;
         #if MC<12000
@@ -24,7 +31,13 @@ public class GraphicsCompat {
         #if MC<12111
         return
         #endif
-        graphics.drawString(font, text, x, y, colour, false);
+        graphics
+            #if MC>=260100
+            .text
+            #else
+            .drawString
+            #endif
+            (font, text, x, y, colour, false);
         #endif
     }
 }

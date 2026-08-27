@@ -2,15 +2,17 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import dev.architectury.plugin.ArchitectPluginExtension
 import net.fabricmc.loom.LoomGradleExtension
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import dependencies.minecraft as MC
 import org.apache.tools.ant.filters.StripJavaComments
+import org.gradle.api.internal.file.copy.CopySpecInternal
 
 plugins {
     id("java")
-    id("architectury-plugin") version "3.4-SNAPSHOT"
-    id("io.github.null2264.architectury-loom") version "1.13-SNAPSHOT" apply false
+    id("architectury-plugin") version "3.5-SNAPSHOT"
+    id("io.github.null2264.architectury-loom-dyn") apply false
     id("com.gradleup.shadow") apply false
-    id("me.modmuss50.mod-publish-plugin") version "1.1.0"
+    id("me.modmuss50.mod-publish-plugin") version "2.1.1"
 }
 
 val modVersion = System.getenv("VERSION") ?: project.properties["mod_version"] as? String ?: "0.0.0"
@@ -19,13 +21,11 @@ val loaderName = project.properties["null2264.platform"] as? String ?: ""
 val isForge = loaderName.endsWith("forge")
 val isNeo = loaderName.endsWith("neoforge")
 val isFabric = loaderName.endsWith("fabric")
-val _mcVer = project.properties["mcVer"] as? String ?: ""
-val mcVersionStr = if (_mcVer.startsWith("1.")) _mcVer else "2.$_mcVer"
-val (major, minor, patch, hotfix) = mcVersionStr
+val mcVersionStr = project.properties["mcVer"] as? String ?: ""
+val (major, minor, patch) = mcVersionStr
     .split(".")
     .toMutableList()
-    .apply { while (this.size < 4) this.add("") }
-val mcHotfix: Int = hotfix.toIntOrNull() ?: 0
+    .apply { while (this.size < 3) this.add("") }
 val mcVersion: Int = "${major}${minor.padStart(2, '0')}${patch.padStart(2, '0')}".toInt()
 val versionRange = supportedVersionRange(mcVersion, loaderName)
 
@@ -33,7 +33,6 @@ fun setupPreprocessor() {
     val buildProps = buildString {
         append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
         append("MC=${mcVersion}\n")
-        append("BUILD=${mcHotfix}\n")
         if (isFabric) append("FABRIC=1\n")
         if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
     }
@@ -43,7 +42,7 @@ fun setupPreprocessor() {
 setupPreprocessor()
 
 architectury {
-    minecraft = MC.versioned(mcVersion, mcHotfix)
+    minecraft = MC.versioned(mcVersion)
 }
 
 allprojects {
@@ -52,7 +51,6 @@ allprojects {
 
     ext["mcVersion"] = mcVersion
     ext["mcVersionStr"] = mcVersionStr
-    ext["mcHotfix"] = mcHotfix
     ext["loaderName"] = loaderName
     ext["isFabric"] = isFabric
     ext["isForge"] = isForge
@@ -132,11 +130,28 @@ subprojects {
     if (isModModule) {
         // NOTE: This must be set before archloom is applied!
         extra.set("loom.platform", loaderName)
-    }
 
-    if (isMcModule) {
+        if (mcVersion >= 12105) {
+            project.file("build/resources/main/META-INF/accesstransformer.cfg").run {
+                parentFile.mkdirs()
+                createNewFile()
+                processAT(mcVersion)
+            }
+            project.file("build/resources/main/cobblegen.classtweaker").run {
+                parentFile.mkdirs()
+                createNewFile()
+                processAW(mcVersion)
+            }
+        }
+
         apply(plugin = "architectury-plugin")
-        apply(plugin = "io.github.null2264.architectury-loom")
+
+        if (mcVersion < 260100) {
+            apply(plugin = "io.github.null2264.architectury-loom")
+        } else {
+            apply(plugin = "io.github.null2264.architectury-loom-no-remap")
+        }
+
         val arch = project.extensions["architectury"] as ArchitectPluginExtension
         arch.apply {
             if (isModModule)
@@ -144,9 +159,11 @@ subprojects {
             else
                 common(listOf(loaderName))
         }
-        val loom = project.extensions["loom"] as LoomGradleExtension
-        loom.apply {
-            silentMojangMappingsLicense()
+        if (mcVersion < 260100) {
+            val loom = project.extensions["loom"] as LoomGradleExtension
+            loom.apply {
+                silentMojangMappingsLicense()
+            }
         }
     }
 
@@ -184,19 +201,26 @@ subprojects {
     }
 
     val loom by lazy {
-        if (!isMcModule) {
-            throw IllegalStateException("Loom only available for MC modules")
+        if (!isModModule) {
+            throw IllegalStateException("Loom only available for submodules that applied Loom")
         }
         project.the<LoomGradleExtensionAPI>()
     }
 
     dependencies {
-        if (isMcModule) {
+        if (isModModule) {
             val minecraft by configurations
-            val mappings by configurations
+            minecraft(MC.versioned(mcVersion))
 
-            minecraft(MC.versioned(mcVersion, mcHotfix))
-            mappings(loom.officialMojangMappings())
+            if (mcVersion < 260100) {
+                val mappings by configurations
+                mappings(loom.officialMojangMappings())
+            }
+        }
+
+        if (mcVersion >= 260100) {
+            // Nonnull is gone?
+            compileOnly("com.google.code.findbugs:jsr305:3.0.2")
         }
 
         shade("blue.endless:jankson:${project.properties["jankson_version"]}")
@@ -207,8 +231,8 @@ subprojects {
 
         if (isModModule) {
             compileOnly(project(":stubs"))
-            compileInternal(project(":mclib", configuration = "namedElements")) { isTransitive = false }
-            shadeInternal(project(":mclib", configuration = "transformProduction$loaderProd")) {
+            compileInternal(project(":mclib")) { isTransitive = false }
+            shadeInternal(project(":mclib")) {
                 // Remove Junit test libraries
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter")
                 exclude(group = "org.junit.jupiter", module = "junit-jupiter-engine")
@@ -226,6 +250,21 @@ subprojects {
     }
 
     val shadowJar by tasks.getting(ShadowJar::class) {
+        if (mcVersion >= 260100) {
+            dependsOn(tasks.jar)
+
+            val mainSpecMethod = AbstractCopyTask::class.java.getDeclaredMethod("getMainSpec").apply {
+                isAccessible = true
+            }
+            val actualMainSpec = mainSpecMethod.invoke(this)
+
+            val sourcePathsMethod = actualMainSpec::class.java.getMethod("getSourcePaths")
+            val sourcePaths = sourcePathsMethod.invoke(actualMainSpec) as MutableCollection<*>
+            sourcePaths.clear()
+
+            from(tasks.jar.map { zipTree(it.archiveFile) })
+        }
+
         isZip64 = true
         relocate("blue.endless.jankson", "io.github.null2264.shadowed.jankson")
         if (mcVersion <= 11605) {
@@ -237,14 +276,16 @@ subprojects {
         if (isFabric) {
             exclude("META-INF/mods.toml")
             exclude("META-INF/neoforge.mods.toml")
+            exclude("META-INF/accesstransformer.cfg")
         } else if (isForge) {
             exclude("fabric.mod.json")
             exclude(if (isNeo && mcVersion >= 12006) "META-INF/mods.toml" else "META-INF/neoforge.mods.toml")
+            if (mcVersion < 12105) exclude("META-INF/accesstransformer.cfg")
         }
         exclude("architectury.common.json")
 
         configurations = listOf(shade, shadeInternal)
-        archiveClassifier.set("dev-shade")
+        archiveClassifier.set(if (mcVersion >= 260100) null else "dev-shade")
         mergeServiceFiles()
     }
 
@@ -298,11 +339,32 @@ subprojects {
             // We can't preprocess resources files with Manifold, so we'll construct the json files manually here instead.
             project.file("build/resources/main/cobblegen.mixins.json").processMixinsJson(mcVersion, isFabric)
             if (isFabric) project.file("build/resources/main/fabric.mod.json").processFabricModJson(mcVersion)
+
+            if (mcVersion >= 12105) {
+                project.file("build/resources/main/META-INF/accesstransformer.cfg").run {
+                    parentFile.mkdirs()
+                    createNewFile()
+                    processAT(mcVersion)
+                }
+                project.file("build/resources/main/cobblegen.classtweaker").run {
+                    parentFile.mkdirs()
+                    createNewFile()
+                    processAW(mcVersion)
+                }
+            }
         }
     }
 
+    if (isModModule) tasks.getByName("validateAccessWidener").dependsOn(processResources)
+
     val targetJavaVersion = if (!isApi) {
-        if (mcVersion >= 12006) 21 else (if (mcVersion >= 11700) 17 else 8)
+        when (mcVersion) {
+            in 11200..11605 -> 8
+            in 11700..11701 -> 16
+            in 11800..12004 -> 17
+            in 12005..12111 -> 21
+            else -> 25
+        }
     } else {
         8  // APIs should always target Java 8
     }
@@ -324,6 +386,10 @@ subprojects {
     }
 
     tasks.jar {
+        if (mcVersion >= 260100) {
+            archiveClassifier.set("raw")
+        }
+
         from("LICENSE") {
             rename { "${it}_${base.archivesName.get()}" }
         }
@@ -398,6 +464,9 @@ publishMods {
             embeds {
                 slug = "jankson"
             }
+
+            client.set(true)  // Mostly for Recipe Viewer
+            server.set(true)
         }
     }
 

@@ -7,7 +7,6 @@ plugins {
 
 val mcVersion = ext["mcVersion"] as Int
 val mcVersionStr = ext["mcVersionStr"] as String
-val mcHotfix = ext["mcHotfix"] as Int
 val loaderName = ext["loaderName"] as String
 val isFabric = ext["isFabric"] as Boolean
 val isForge = ext["isForge"] as Boolean
@@ -17,8 +16,30 @@ group = project.properties["maven_group"] as String
 
 loom {
     if (mcVersion >= 12105) {
-        accessWidenerPath = project.file("src/main/resources/cobblegen.accesswidener")
+        val ctFilename = "cobblegen.classtweaker"
+        accessWidenerPath = project.file("build/resources/main/$ctFilename").run {
+            parentFile.mkdirs()
+            processAW(mcVersion)
+        }
+
+        if (isForge) {
+            val task = when {
+                mcVersion < 260100 -> tasks.named("remapJar", RemapJarTask::class.java)
+                else -> tasks.named("jar", Jar::class.java)
+            }
+            if (!isNeo) {
+                forge {
+                    convertAccessWideners(task, ctFilename)
+                }
+            } else if (isNeo) {
+                neoForge {
+                    convertAccessWideners(task, ctFilename)
+                }
+            }
+        }
     }
+
+    interfaceInjection.enableDependencyInterfaceInjection.set(false)
 
     runConfigs {
         named("client") {
@@ -77,24 +98,43 @@ loom {
 }
 
 dependencies {
+    val modImplementation = configurations.maybeCreate("modImplementation")
+    val modRuntimeOnly = configurations.maybeCreate("modRuntimeOnly")
+    val modLocalRuntime = configurations.maybeCreate("modLocalRuntime")
+    val modCompileOnly = configurations.maybeCreate("modCompileOnly")
+
+    fun DependencyHandlerScope.silent(configuration: DependencyHandlerScope.() -> Unit) {
+        try {
+            configuration()
+        } catch (e: IllegalStateException) {
+        }
+    }
+
+    if (mcVersion >= 260100) {
+        configurations.findByName("implementation")?.extendsFrom(modImplementation)
+        configurations.findByName("runtimeOnly")?.extendsFrom(modRuntimeOnly)
+        configurations.findByName("localRuntime")?.extendsFrom(modLocalRuntime)
+        configurations.findByName("compileOnly")?.extendsFrom(modCompileOnly)
+    }
+
     if (isFabric) {
-        modImplementation("net.fabricmc:fabric-loader:0.17.2")
+        modImplementation("net.fabricmc:fabric-loader:0.18.4")
 
         // Mainly for testing
         // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
         // REF: https://github.com/FabricMC/fabric/issues/4491
+        // 26.1
         if (mcVersion in 11606..12104) {
-            modLocalRuntime(fapi.versioned(mcVersion, mcHotfix))
-        } else if (mcVersion in 12105..12110) {
-            // FIXME: Is Resource Loader even needed?
-            //modLocalRuntime(fapiResourceLoader.versioned(mcVersion, mcHotfix))
-            modLocalRuntime(fapiGameTest.versioned(mcVersion, mcHotfix))
+            modLocalRuntime(fapi.versioned(mcVersion))
+        } else {
+            silent { modImplementation(fapiResourceLoader(if (mcVersion < 260100) 0 else 1).versioned(mcVersion)) }
+            silent { modLocalRuntime(fapiGameTest.versioned(mcVersion)) }
         }
     } else {
         if (!isNeo) {
-            "forge"(lexForge.versioned(mcVersion, mcHotfix))
+            "forge"(lexForge.versioned(mcVersion))
         } else {
-            "neoForge"(neoForge.versioned(mcVersion, mcHotfix))
+            "neoForge"(neoForge.versioned(mcVersion))
         }
     }
 
@@ -110,35 +150,43 @@ dependencies {
 
         // <- EMI
         if (mcVersion <= 11802) {
-            modCompileOnly(emi(mcVersion, null, api = true).versioned(0, 0))
+            modCompileOnly(emi(mcVersion, null, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi" && isFabric)
-                modLocalRuntime(emi(mcVersion).versioned(0, 0))
-        } else {
-            modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0, 0))
+                modLocalRuntime(emi(mcVersion).versioned(0))
+        } else if (mcVersion < 260100) {
+            // FIXME: Not sure if EMI will ever updated past 1.21.1
+            modCompileOnly(emi(mcVersion, loaderName, api = true).versioned(0))
             if (project.properties["recipe_viewer"] == "emi")
-                modLocalRuntime(emi(mcVersion, loaderName).versioned(0, 0))
+                modLocalRuntime(emi(mcVersion, loaderName).versioned(0))
         }
         // EMI ->
 
         // <- REI
         // Use the full package instead of 'api-' for (neo)forge, since the 'api-' didn't include @REIPlugin*
-        modCompileOnly(rei(loaderName, true).versioned(mcVersion, mcHotfix))
-        if (mcVersion in 12002..12104) {  // FIXME: Not sure why it's not included
-            modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
-            modCompileOnly("dev.architectury:architectury:11.1.13")
-        }
-        if (project.properties["recipe_viewer"] == "rei") {
-            if (mcVersion == 11902)  // REI's stupid dep bug
-                modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
-            modLocalRuntime(rei(loaderName).versioned(mcVersion, mcHotfix))
+        if (mcVersion < 12111 || mcVersion >= 260100) {  // REI skipped 1.21.11 entirely
+            modCompileOnly(rei(loaderName, true).versioned(mcVersion))
+            // The dependency got moved to cloth-config which we aren't using
+            if (mcVersion >= 12002) modCompileOnly("me.shedaniel.cloth:basic-math:0.6.1")
+            if (mcVersion in 12002..12104) {
+                // Not sure why this aren't included
+                modCompileOnly("dev.architectury:architectury:11.1.13")
+            } else if (mcVersion >= 260100) {
+                // Classic REI
+                modCompileOnly("dev.architectury:architectury:21.0.7")
+            }
+            if (project.properties["recipe_viewer"] == "rei") {
+                if (mcVersion == 11902)  // REI's stupid dep bug
+                    modLocalRuntime("dev.architectury:architectury-fabric:6.5.77")
+                modLocalRuntime(rei(loaderName).versioned(mcVersion))
+            }
         }
         // REI ->
 
         // <- JEI
-        modCompileOnly(jei(mcVersion, loaderName, common = true, api = true).versioned(0, 0))
-        modCompileOnly(jei(mcVersion, loaderName, common = false, api = true).versioned(0, 0))
+        modCompileOnly(jei(mcVersion, loaderName, common = true, api = true).versioned(0))
+        modCompileOnly(jei(mcVersion, loaderName, common = false, api = true).versioned(0))
         if (project.properties["recipe_viewer"] == "jei")
-            modCompileOnly(jei(mcVersion, loaderName, common = false, api = false).versioned(0, 0))
+            modCompileOnly(jei(mcVersion, loaderName, common = false, api = false).versioned(0))
         // JEI ->
 
         /* FIXME: Broken, somehow
@@ -151,13 +199,20 @@ dependencies {
     }
 }
 
-val remapJar by tasks.getting(RemapJarTask::class) {
-    val shadowJar by tasks.getting(ShadowJar::class)
-    dependsOn(shadowJar)
-    if (isForge && mcVersion >= 12105) {
-        atAccessWideners.add("cobblegen.accesswidener")
+if (mcVersion >= 260100) {
+    tasks.jar {
     }
-    inputFile.set(shadowJar.archiveFile)
+} else {
+    val remapJar by tasks.getting(RemapJarTask::class) {
+        val shadowJar by tasks.getting(ShadowJar::class)
+        dependsOn(shadowJar)
+
+        // if (isForge && mcVersion >= 12105) {
+        //     atAccessWideners.add("cobblegen.classtweaker")
+        // }
+
+        inputFile.set(shadowJar.archiveFile)
+    }
 }
 
 //val deleteResources by tasks.creating(Delete::class) {
