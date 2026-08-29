@@ -2,10 +2,10 @@
 package io.github.null2264.cobblegen.integration;
 
 import io.github.null2264.cobblegen.CGPlugin;
-import io.github.null2264.cobblegen.CobbleGen;
 import io.github.null2264.cobblegen.CobbleGenPlugin;
 import io.github.null2264.cobblegen.compat.LoaderCompat;
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.data.config.ConfigMetaData;
 import io.github.null2264.cobblegen.data.config.ResultList;
 import io.github.null2264.cobblegen.data.config.WeightedBlock;
 import io.github.null2264.cobblegen.data.generator.CobbleGenerator;
@@ -49,7 +49,7 @@ public class CreatePlugin implements CobbleGenPlugin {
         if (!LoaderCompat.isModLoaded("create")) return false;
 
         CreateSupport createSupport = CreateCompatUtil.getCreateSupport();
-        return createSupport != CreateSupport.NONE;
+        return createSupport != CreateSupport.NONE && !ConfigMetaData.INSTANCE.create.disablePlugin;
     }
 }
 #endif

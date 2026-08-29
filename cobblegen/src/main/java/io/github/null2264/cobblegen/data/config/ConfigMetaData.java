@@ -83,5 +83,8 @@ public class ConfigMetaData implements Config {
 
         @Comment(value="Disable Create's pipe support")
         public Boolean disablePipe = false;
+
+        @Comment(value="Disable CobbleGen's built-in Create plugin")
+        public Boolean disablePlugin = true;
     }
 }
