@@ -59,20 +59,29 @@ allprojects {
     base.archivesName.set(rootProject.properties["archives_base_name"] as? String ?: "")
 
     val buildNumber: String? = System.getenv("GITHUB_RUN_NUMBER")
+    val versionStage = when(rootProject.properties["version_stage"]) {
+        "ALPHA" -> "A" // Alpha
+        "BETA" -> "B"  // Beta
+        else -> "S"    // Stable
+    }
+    val loaderLabel = when {
+        isFabric -> "L"  // L as in Loom
+        isForge && !isNeo -> "F"
+        isForge && isNeo -> "N"
+        else -> "X"
+    }
     version = buildString {
+        // 0.0.0+26.1b5BFXBL
         append(modVersion)
         append("+")
         append(mcVersionStr)
         if (buildNumber != null) {
             append("b")
-            append(buildNumber)
+            append(buildNumber.toString(16).uppercase())
         }
-        append("-")
-        append(rootProject.properties["version_stage"])
-        if (isFabric)
-            append("-fabric")
-        else
-            append(if (isNeo) "-neoforge" else "-forge")
+        append("X")
+        append(versionStage)
+        append(loaderLabel)
     }
     group = rootProject.properties["maven_group"] as String
 
