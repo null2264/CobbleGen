@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.Blocks;
 import io.github.null2264.cobblegen.mixin.gametest.GameTestHelperLegacy$GameTest;
 #endif
 
-#if FORGE && FORGE==1
+#if MC>11605 && FORGE && FORGE==1
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
 #else
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
