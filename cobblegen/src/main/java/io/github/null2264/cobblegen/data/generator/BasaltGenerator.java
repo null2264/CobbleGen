@@ -13,6 +13,7 @@ import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -80,7 +81,7 @@ public class BasaltGenerator extends BlockGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, BlockState state, Direction direction) {
         BlockPos blockPos = pos.relative(direction.getOpposite());
         if (level.getBlockState(blockPos).getBlock() == getBlock())
-            return getBlockCandidate(level, pos, getOutput(), null, ConfigMetaData.INSTANCE.lenientModifier);
+            return getBlockCandidate((Level) level, pos, getOutput(), null, ConfigMetaData.INSTANCE.lenientModifier);
         return Optional.empty();
     }
 

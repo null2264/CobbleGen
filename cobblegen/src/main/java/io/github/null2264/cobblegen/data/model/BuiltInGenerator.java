@@ -9,7 +9,7 @@ import io.github.null2264.cobblegen.util.CGLog;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.ApiStatus;
@@ -83,7 +83,7 @@ public interface BuiltInGenerator extends Generator {
         return Util.optional(filteredBlockIds.get(idx).id);
     }
 
-    default Optional<BlockState> getBlockCandidate(LevelAccessor level, BlockPos pos, GeneratorMap candidates, Block defaultBlock, Boolean isLenient) {
+    default Optional<BlockState> getBlockCandidate(Level level, BlockPos pos, GeneratorMap candidates, Block defaultBlock, Boolean isLenient) {
         Optional<ResultList> resultCandidates = Optional.empty();
         if (ConfigMetaData.INSTANCE.enableExperimentalFeatures) {
             for (Direction direction : DIRECTIONS) {
@@ -112,9 +112,9 @@ public interface BuiltInGenerator extends Generator {
         }
 
         String dim = Util.getDimension(level);
-        CGLog.debug(dim);
+        CGLog.debug("dimension=" + dim);
         String biome = Util.getBiome(level, pos);
-        CGLog.debug(biome);
+        CGLog.debug("biome=" + biome);
 
         Optional<String> replacementId = randomizeBlockId(
             resultCandidates.orElseGet(() -> candidates.getOrDefault(CGIdentifier.wildcard(), new ResultList())),

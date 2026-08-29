@@ -12,6 +12,7 @@ import io.github.null2264.cobblegen.util.GeneratorType;
 import io.github.null2264.cobblegen.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -95,7 +96,7 @@ public class StoneGenerator implements BuiltInGenerator
     public Optional<BlockState> tryGenerate(LevelAccessor level, BlockPos pos, FluidState source, FluidState neighbour) {
         Fluid fluid = Generator.getStillFluid(neighbour);
         if (getFluid() == fluid) {
-            return getBlockCandidate(level, pos, getOutput(), null, ConfigMetaData.INSTANCE.lenientModifier);
+            return getBlockCandidate((Level) level, pos, getOutput(), null, ConfigMetaData.INSTANCE.lenientModifier);
         }
 
         return Optional.empty();

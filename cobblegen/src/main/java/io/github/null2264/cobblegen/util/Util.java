@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 #endif
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
@@ -128,25 +129,15 @@ public class Util
         return blockIds;
     }
 
-    public static String getDimension(LevelAccessor level) {
-        RegistryAccess access =
-            #if FORGE && MC<12002
-            level.registryAccessCompat();
-            #else
-            level.registryAccess();
-            #endif
-        CGIdentifier dim = CGIdentifier.fromMC(access
-            #if MC>12101
-            .lookupOrThrow(
-            #else
-            .registryOrThrow(
-            #endif
-                    #if MC<=11902
-                    Registry.DIMENSION_TYPE_REGISTRY
-                    #else
-                    net.minecraft.core.registries.Registries.DIMENSION_TYPE
-                    #endif
-            ).getKey(level.dimensionType()));
+    public static String getDimension(Level level) {
+        CGIdentifier dim = CGIdentifier.fromMC(
+            level.dimension()
+                #if MC<12111
+                .location()
+                #else
+                .identifier()
+                #endif
+        );
         return dim != null ? dim.toString() : "minecraft:overworld";
     }
 
