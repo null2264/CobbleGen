@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix dimension/excludedDimensions ignoring custom dimensions
+
 ## [v5.4.9] - 2026-03-12
 
 ### Added
