@@ -33,16 +33,20 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
         addJson("CommandsMixin")
         addJson("MinecraftServerMixin")
         if (mcVersion > 11605) {
-            addJson("create.CreateFluidReactionsMixin\$OFive")
-            addJson("create.CreateFluidReactionsMixin\$PatchE")
-            if (isFabric) addJson("create.CreateFluidReactionsMixin\$PatchF")
+            addJson($$"create.CreateFluidReactionsMixin$OFive")
+            addJson($$"create.CreateFluidReactionsMixin$PatchE")
+            if (isFabric) addJson($$"create.CreateFluidReactionsMixin$PatchF")
         }
         addJson("fluid.FlowingFluidEventMixin")
         addJson("fluid.FluidEventMixin")
         addJson("fluid.LavaEventMixin")
         if (mcVersion >= 12105) {
-            addJson("gametest.RegistryDataLoaderMixin\$GameTest")
-            addJson("gametest.StructureTemplateManagerMixin\$GameTest")
+            addJson($$"gametest.RegistryDataLoaderMixin$GameTest")
+            addJson($$"gametest.StructureTemplateManagerMixin$GameTest")
+        }
+        if (mcVersion <= 11605) {
+            addJson($$"gametest.GameTestHelperLegacy$GameTest")
+            addJson($$"gametest.GameTestInfoLegacy$GameTest")
         }
         if (!isFabric && mcVersion >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
     }

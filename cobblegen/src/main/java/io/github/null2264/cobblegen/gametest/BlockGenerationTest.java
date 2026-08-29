@@ -1,7 +1,7 @@
-#if MC>=11801
 package io.github.null2264.cobblegen.gametest;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
+import io.github.null2264.cobblegen.mixin.gametest.GameTestHelperLegacy$GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
@@ -257,7 +257,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void cobbleGenerationTest(GameTestHelper context) {
+    public void cobbleGenerationTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         // << Barrier wrapping the water
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
         context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
@@ -297,7 +308,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void cobbleGenerationWithModifierTest(GameTestHelper context) {
+    public void cobbleGenerationWithModifierTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         // << Barrier wrapping the water
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
         context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
@@ -337,7 +359,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void basaltGenerationTest(GameTestHelper context) {
+    public void basaltGenerationTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
         // << Barrier wrapping the lava
         context.setBlock(new BlockPos(2, 2, 4), Blocks.BARRIER);
@@ -365,7 +398,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void basaltGenerationWithModifierTest(GameTestHelper context) {
+    public void basaltGenerationWithModifierTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         context.setBlock(new BlockPos(1, 2, 2), Blocks.BLUE_ICE);
         // << Barrier wrapping the lava
         context.setBlock(new BlockPos(2, 2, 4), Blocks.BARRIER);
@@ -393,7 +437,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void stoneGenerationTest(GameTestHelper context) {
+    public void stoneGenerationTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         // << Barrier wrapping the lava
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
         context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
@@ -432,7 +487,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void stoneGenerationWithModifierTest(GameTestHelper context) {
+    public void stoneGenerationWithModifierTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         // << Barrier wrapping the lava
         context.setBlock(new BlockPos(1, 2, 0), Blocks.BARRIER);
         context.setBlock(new BlockPos(0, 2, 1), Blocks.BARRIER);
@@ -471,7 +537,18 @@ public class BlockGenerationTest {
         #endif
         timeoutTicks = 120
     )
-    public void obsidianGenerationTest(GameTestHelper context) {
+    public void obsidianGenerationTest(
+        GameTestHelper
+            #if MC<=11605
+            ctx
+            #else
+            context
+            #endif
+    ) {
+        #if MC<=11605
+        GameTestHelperLegacy$GameTest context =
+            (GameTestHelperLegacy$GameTest) ctx;
+        #endif
         context.setBlock(new BlockPos(1, 3, 3), Blocks.WATER);
         context.setBlock(new BlockPos(1, 2, 3), Blocks.LAVA);
         context.setBlock(new BlockPos(1, 1, 3), Blocks.BARRIER);  // Barrier under the generated block
@@ -507,4 +584,3 @@ public class BlockGenerationTest {
     }
      */
 }
-#endif

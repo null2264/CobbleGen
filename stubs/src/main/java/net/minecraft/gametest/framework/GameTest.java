@@ -1,4 +1,4 @@
-#if MC>=12105
+#if MC<=11605 || MC>=12105
 package net.minecraft.gametest.framework;
 
 import java.lang.annotation.ElementType;

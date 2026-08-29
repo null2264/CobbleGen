@@ -11,6 +11,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED;
+
 @Mixin(Commands.class)
 public abstract class CommandsMixin {
     @Shadow @Final private CommandDispatcher<CommandSourceStack> dispatcher;
@@ -24,5 +26,10 @@ public abstract class CommandsMixin {
             CallbackInfo ci
     ) {
         CobbleGen.initCommands(this.dispatcher);
+        #if MC<=11605
+        if (IS_GAMETEST_ENABLED) {
+            net.minecraft.gametest.framework.TestCommand.register(this.dispatcher);
+        }
+        #endif
     }
 }
