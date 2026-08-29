@@ -1,0 +1,7 @@
+{
+    "pack": {
+        "description": "Datapack that add Glass Dimension to test custom dimension support",
+        "min_format": 9,
+        "max_format": 88
+    }
+}
