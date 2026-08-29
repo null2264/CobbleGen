@@ -1,10 +1,13 @@
 package io.github.null2264.cobblegen.gametest;
 
 import io.github.null2264.cobblegen.data.CGIdentifier;
-import io.github.null2264.cobblegen.mixin.gametest.GameTestHelperLegacy$GameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.level.block.Blocks;
+
+#if MC<=11605
+import io.github.null2264.cobblegen.mixin.gametest.GameTestHelperLegacy$GameTest;
+#endif
 
 #if FORGE && FORGE==1
 import net.minecraftforge.gametest.PrefixGameTestTemplate;
