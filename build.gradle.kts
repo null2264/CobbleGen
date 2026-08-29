@@ -77,7 +77,7 @@ allprojects {
         append(mcVersionStr)
         if (buildNumber != null) {
             append("b")
-            append(buildNumber.toString(16).uppercase())
+            append(buildNumber.toIntOrNull()?.toString(16)?.uppercase() ?: "1")
         }
         append("X")
         append(versionStage)
