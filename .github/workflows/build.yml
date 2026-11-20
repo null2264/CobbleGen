@@ -17,7 +17,7 @@ on:
         type: boolean
       bypass-mod-publish:
         description: 'Disable publishing the mods to mod hosts (Modrinth, CurseForge)'
-        default: false
+        default: true
         required: false
         type: boolean
       target-mc-version:
