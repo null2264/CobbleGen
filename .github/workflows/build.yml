@@ -60,7 +60,7 @@ jobs:
         uses: taiki-e/install-action@parse-changelog
 
       - name: Retrieve changelog
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && github.event.inputs.bypass-mod-publish != 'true'
         id: changelog
         run: |
           # extended SemVer (major.minor.patch.hotfix)
