@@ -350,7 +350,7 @@ jobs:
   release:
     name: Release to GitHub
     needs: [setup, build]
-    if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != ''
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.version != '' && github.event.inputs.bypass-mod-publish != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Setup CHANGELOG parser
