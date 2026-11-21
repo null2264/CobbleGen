@@ -239,7 +239,14 @@ jobs:
           wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz -O - |\
             tar xz && sudo mv ${BINARY} /usr/bin/yq
 
-          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*-BETA-${{ matrix.loader }}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
+          case "${{ matrix.loader }}" in
+            fabric)   loader_label="L" ;;
+            forge)    loader_label="F" ;;
+            neoforge) loader_label="N" ;;
+            *)        loader_label="I" ;;
+          esac
+
+          cp cobblegen/build/libs/cobblegen-*+${{ matrix.mc }}*XB${loader_label}.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
           echo "# [$(echo "${{ matrix.loader }}" | tr '[:lower:]' '[:upper:]') - ${{ matrix.mc }}] Test results" >> $GITHUB_STEP_SUMMARY;
           echo "<table>" >> $GITHUB_STEP_SUMMARY;

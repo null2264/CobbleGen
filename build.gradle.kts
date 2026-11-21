@@ -65,13 +65,13 @@ allprojects {
         else -> "S"    // Stable
     }
     val loaderLabel = when {
-        isFabric -> "L"  // L as in Loom
+        isFabric -> "L"  // L for Loom
         isForge && !isNeo -> "F"
         isForge && isNeo -> "N"
-        else -> "X"
+        else -> "I"  // I for Invalid
     }
     version = buildString {
-        // 0.0.0+26.1b5BFXBL
+        // 0.0.0+26.1b5BFXBL -> Version 0.0.0 BETA build 1471 for Fabric 26.1
         append(modVersion)
         append("+")
         append(mcVersionStr)
