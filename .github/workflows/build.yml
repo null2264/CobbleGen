@@ -51,6 +51,8 @@ jobs:
 
           [ "$TARGET" = "" ] || [ "$RUNTIME" = "" ] && MATRIX="$(jq -cr --arg v "$TARGET" '.include |= map(select(.mc == $v))' versions.json)" || MATRIX="$(jq -cr --arg v "$TARGET" --argjson tv "[\"$RUNTIME\"]" '.include |= (map(select(.mc == $v)) | map(.testVersions = $tv))' versions.json)"
 
+          echo $MATRIX
+
           # Invalid target version
           [ "$MATRIX" = '{"include":[]}' ] && exit 1
 
