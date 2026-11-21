@@ -47,9 +47,14 @@ jobs:
         run: |
           TARGET="${{ github.event.inputs.target-mc-version }}"
           RUNTIME="${{ github.event.inputs.runtime-mc-version }}"
-          MATRIX="$(jq -cr . ./versions.json)"
 
-          [ "$TARGET" = "" ] || [ "$RUNTIME" = "" ] && MATRIX="$(jq -cr --arg v "$TARGET" '.include |= map(select(.mc == $v))' versions.json)" || MATRIX="$(jq -cr --arg v "$TARGET" --argjson tv "[\"$RUNTIME\"]" '.include |= (map(select(.mc == $v)) | map(.testVersions = $tv))' versions.json)"
+          if [ "$TARGET" != "" ] && [ "$RUNTIME" != "" ]; then
+            MATRIX="$(jq -cr --arg v "$TARGET" --argjson tv "[\"$RUNTIME\"]" '.include |= (map(select(.mc == $v)) | map(.testVersions = $tv))' versions.json)"
+          elif [ "$TARGET" != "" ]; then
+            MATRIX="$(jq -cr --arg v "$TARGET" '.include |= map(select(.mc == $v))' versions.json)"
+          else
+            MATRIX="$(jq -cr . ./versions.json)"
+          fi
 
           echo $MATRIX
 
