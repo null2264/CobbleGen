@@ -1,6 +1,10 @@
 package io.github.null2264.cobblegen.extensions.net.minecraft.network.FriendlyByteBuf;
 
 #if MC<=11605
+import java.util.Optional;
+#endif
+
+#if MC<=11605 || MC>=260300
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import manifold.ext.rt.api.This;
@@ -9,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -40,7 +43,9 @@ public final class ByteBufExt {
     public static <T> @NotNull Optional<T> readOptional(@This FriendlyByteBuf thiz, @NotNull Function<FriendlyByteBuf, T> predicate) {
         return thiz.readBoolean() ? Optional.of(predicate.apply(thiz)) : Optional.empty();
     }
+    #endif
 
+    #if MC<=11605 || MC>=260300
     public static <T> void writeCollection(@This FriendlyByteBuf thiz, Collection<T> collection, @NotNull BiConsumer<FriendlyByteBuf, T> predicate) {
         thiz.writeVarInt(collection.size());
 
@@ -61,7 +66,7 @@ public final class ByteBufExt {
     }
 
     public static <T> @NotNull List<T> readList(@This FriendlyByteBuf thiz, @NotNull Function<FriendlyByteBuf, T> predicate) {
-        return thiz.readCollection(Lists::newArrayListWithCapacity, predicate);
+        return readCollection(thiz, Lists::newArrayListWithCapacity, predicate);
     }
 
     public static <K, V> void writeMap(@This FriendlyByteBuf thiz, Map<K, V> map, @NotNull BiConsumer<FriendlyByteBuf, K> predicate, @NotNull BiConsumer<FriendlyByteBuf, V> predicate1) {
@@ -86,7 +91,7 @@ public final class ByteBufExt {
     }
 
     public static <K, V> @NotNull Map<K, V> readMap(@This FriendlyByteBuf thiz, @NotNull Function<FriendlyByteBuf, K> predicate, @NotNull Function<FriendlyByteBuf, V> predicate2) {
-        return thiz.readMap(Maps::newHashMapWithExpectedSize, predicate, predicate2);
+        return readMap(thiz, Maps::newHashMapWithExpectedSize, predicate, predicate2);
     }
     #endif
 }

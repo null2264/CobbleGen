@@ -17,6 +17,7 @@ val fapi = Dependency(
             in 12105..12110 -> "0.119.9+1.21.5"
             12111 -> "0.139.5+1.21.11"
             260100 -> "0.145.1+26.1"
+            260300 -> "0.166.2+26.3"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -30,6 +31,7 @@ val fapiGameTest = Dependency(
             in 12105..12110 -> "3.1.2+2a6ec84b49"
             12111 -> "3.1.27+4fc5413f3e"
             260100 -> "4.0.13+00a1fba639"
+            260300 -> "4.0.37+3434d6d95d"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -47,6 +49,10 @@ fun fapiResourceLoader(version: Int = 0) = Dependency(
             260100 -> {
                 assert(version == 1)
                 "2.0.9+d871b99ede"
+            }
+            260300 -> {
+                assert(version == 1)
+                "3.1.1+5af7744b5d"
             }
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }

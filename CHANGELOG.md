@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for MC 26.3
+
 ## [v5.4.11] - 2026-08-29
 
 Skipped v5.4.10 due to publishing issue

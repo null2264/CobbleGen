@@ -13,7 +13,13 @@ import java.util.function.Consumer;
 
 import static io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED;
 
-public class CobbleGenTestLoader extends TestFunctionLoader {
+public class CobbleGenTestLoader
+    #if MC<260300
+    extends
+    #else
+    implements
+    #endif
+TestFunctionLoader {
     private static final AtomicBoolean SHOULD_REGISTER = new AtomicBoolean(true);
 
     public static void init() {

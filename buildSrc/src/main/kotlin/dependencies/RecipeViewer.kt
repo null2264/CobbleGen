@@ -60,6 +60,7 @@ fun rei(loader: String, api: Boolean = false) = Dependency(
             12111 -> "17.0.789"  // 1.21.11 got skipped...
             260100 -> "26.1.818"
             260200 -> "26.2.820"
+            260300 -> "26.3.824"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },
@@ -80,8 +81,7 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
                 in 12005..12006 -> versionStr(mcVersion)
                 in 12100..12110 -> "1.21.1"
                 12111 -> versionStr(mcVersion)
-                260100 -> versionStr(mcVersion)
-                260200 -> versionStr(mcVersion)
+                in 260100..260300 -> versionStr(mcVersion)
                 else -> throw IllegalStateException("$mcVersion is not yet supported!")
             }
         )
@@ -109,6 +109,7 @@ fun jei(mcVersion: Int, loader: String, common: Boolean = false, api: Boolean = 
             12111 -> "27.3.0.14"
             260100 -> "29.2.0.21"
             260200 -> "30.2.0.15"
+            260300 -> "31.23.0.130"
             else -> throw IllegalStateException("$mcVersion is not yet supported!")
         }
     },

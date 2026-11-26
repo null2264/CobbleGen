@@ -118,7 +118,7 @@ dependencies {
     }
 
     if (isFabric) {
-        modImplementation("net.fabricmc:fabric-loader:0.18.4")
+        modImplementation("net.fabricmc:fabric-loader:0.19.3")
 
         // Mainly for testing
         // Only use gametest API for 1.21.5+, because the full FAPI is causing crashes on dev env
