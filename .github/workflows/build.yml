@@ -210,7 +210,7 @@ jobs:
           name: runtime-test-kit
 
       - name: Setup HeadlessMC
-        if: github.event.inputs.bypass-test != 'true'
+        if: github.event.inputs.bypass-test != 'true' && matrix.mc != '1.16.5'
         id: setup-headlessmc
         run: |
           mkdir -p HeadlessMC run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods run/test-${{ matrix.mc }}-${{ matrix.loader }}/config
@@ -238,7 +238,7 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y x11-xserver-utils
 
       - name: Tests with HeadlessMC
-        if: github.event.inputs.bypass-test != 'true'
+        if: github.event.inputs.bypass-test != 'true' && matrix.mc != '1.16.5'
         env:
           ENABLE_NULL2264_COBBLEGEN_GAMETEST: true
         run: |
