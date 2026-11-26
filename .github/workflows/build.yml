@@ -304,7 +304,7 @@ jobs:
             echo "[TEST] Downloading MC and Mod Loader..."
             java -jar ./headlessmc-launcher.jar version install ${{ matrix.loader }} $i
             echo "[TEST] Launching MC Headless..."
-            timeout 20m xvfb-run  -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar launch --offline --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1 -DMcRuntimeGameTestNamespaces=cobblegen" ${{ matrix.loader }} $i && (
+            timeout 20m xvfb-run  -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar launch --offline --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1 -DMcRuntimeGameTestNamespaces=cobblegen -Dnull2264.cobblegen.gametest=true" ${{ matrix.loader }} $i && (
               echo "[TEST] Test complete ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
               echo "<td>$i</td><td>🟩 Complete</td>" >> $GITHUB_STEP_SUMMARY;
