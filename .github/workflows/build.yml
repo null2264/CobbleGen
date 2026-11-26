@@ -301,10 +301,17 @@ jobs:
               )
             )
 
+            HMC_JVM_OPTIONS="-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1 -DMcRuntimeGameTestNamespaces=cobblegen -Dnull2264.cobblegen.gametest=true"
+            grep "forge" <<< "${{ matrix.loader }}" && (
+              # Needed this because FML is dogshit
+              echo "[TEST] Adding java agent to (Neo)Forge";
+              curl -fsSL -O https://github.com/void-community/ModLoaderFixes/releases/latest/download/modloaderfixes.jar;
+              HMC_JVM_OPTIONS="-javaagent:$PWD/modloaderfixes.jar $HMC_JVM_OPTIONS";
+            )
             echo "[TEST] Downloading MC and Mod Loader..."
             java -jar ./headlessmc-launcher.jar version install ${{ matrix.loader }} $i
             echo "[TEST] Launching MC Headless..."
-            timeout 20m xvfb-run  -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar launch --offline --retries 3 --jvm "-Djava.awt.headless=true -DMcRuntimeGameTestMinExpectedGameTests=1 -DMcRuntimeGameTestNamespaces=cobblegen -Dnull2264.cobblegen.gametest=true" ${{ matrix.loader }} $i && (
+            timeout 20m xvfb-run  -a -s "-screen 0 1920x1080x24 +extension GLX +render -noreset" java -Dhmc.check.xvfb=true -jar ./headlessmc-launcher.jar launch --offline --retries 3 --jvm "${HMC_JVM_OPTIONS}" ${{ matrix.loader }} $i && (
               echo "[TEST] Test complete ($i)"; true;
               echo "<tr>" >> $GITHUB_STEP_SUMMARY;
               echo "<td>$i</td><td>🟩 Complete</td>" >> $GITHUB_STEP_SUMMARY;
