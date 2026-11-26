@@ -153,14 +153,13 @@ public class ConfigData implements Config, JanksonSerializable {
                             ResultList.of(
                                 new WeightedBlock.Builder().setId("minecraft:sand").setWeight(100.0).build()
                             )
-                        )/*,
+                        ),
                         Pair.of(
                             CGIdentifier.of("minecraft:glass"),
                             ResultList.of(
                                 new WeightedBlock.Builder().setId("minecraft:glass").setWeight(100.0).build()
                             )
                         )
-                        */
                     )
                 )
             )

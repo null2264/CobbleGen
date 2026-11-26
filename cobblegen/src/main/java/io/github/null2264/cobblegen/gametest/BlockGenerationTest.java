@@ -186,7 +186,7 @@ public class BlockGenerationTest {
             0,
             true,
             testFunctionHolder::obsidianGenerationTest
-        )/*,
+        ),
         new TestHolder(
             CGIdentifier.of("obsidian_generation_with_modifier"),
             TEMPLATE,
@@ -195,7 +195,6 @@ public class BlockGenerationTest {
             true,
             testFunctionHolder::obsidianGenerationWithModifierTest
         )
-         */
     );
 
     public static void registerFunctions(BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
@@ -564,9 +563,9 @@ public class BlockGenerationTest {
         GameTestHelperLegacy$GameTest context =
             (GameTestHelperLegacy$GameTest) ctx;
         #endif
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.BARRIER);  // Block under the generated block
         context.setBlock(new BlockPos(1, 3, 3), Blocks.WATER);
         context.setBlock(new BlockPos(1, 2, 3), Blocks.LAVA);
-        context.setBlock(new BlockPos(1, 1, 3), Blocks.BARRIER);  // Barrier under the generated block
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.succeedWhen(
             () -> {
@@ -575,7 +574,6 @@ public class BlockGenerationTest {
         );
     }
 
-    /*
     @PrefixGameTestTemplate(false)
     @net.minecraft.gametest.framework.GameTest(
         #if FORGE
@@ -587,9 +585,9 @@ public class BlockGenerationTest {
         timeoutTicks = 120
     )
     public void obsidianGenerationWithModifierTest(GameTestHelper context) {
+        context.setBlock(new BlockPos(1, 1, 3), Blocks.GLASS);  // Block under the generated block
         context.setBlock(new BlockPos(1, 3, 3), Blocks.WATER);
         context.setBlock(new BlockPos(1, 2, 3), Blocks.LAVA);
-        context.setBlock(new BlockPos(1, 1, 3), Blocks.GLASS);  // Barrier under the generated block
         BlockPos generatedPos = new BlockPos(1, 2, 3);
         context.succeedWhen(
             () -> {
@@ -597,5 +595,4 @@ public class BlockGenerationTest {
             }
         );
     }
-     */
 }
