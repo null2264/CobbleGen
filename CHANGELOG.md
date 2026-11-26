@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v5.4.12] - 2026-11-26
+
 ### Added
 - Support for MC 26.3
 
@@ -264,7 +266,8 @@ Skipped v5.4.10 due to publishing issue
 - REI and EMI integration
 - Create Pipe support
 
-[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.11...main
+[unreleased]: https://github.com/null2264/CobbleGen/compare/v5.4.12...main
+[v5.4.12]: https://github.com/null2264/CobbleGen/compare/v5.4.11...v5.4.12
 [v5.4.11]: https://github.com/null2264/CobbleGen/compare/v5.4.9...v5.4.11
 [v5.4.9]: https://github.com/null2264/CobbleGen/compare/v5.4.8...v5.4.9
 [v5.4.8]: https://github.com/null2264/CobbleGen/compare/v5.4.7...v5.4.8
