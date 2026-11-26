@@ -245,6 +245,18 @@ public class BlockGenerationTest {
                     #endif
                 >) Objects.requireNonNull(registries.get(Registries.TEST_ENVIRONMENT));
 
+        registerInstances(testInstances, testEnvironmentRegistry);
+    }
+
+    public static void registerInstances(
+        Registry<GameTestInstance> testInstances,
+        Registry<
+            TestEnvironmentDefinition
+                #if MC>=260100
+                <?>
+            #endif
+            > testEnvironmentRegistry
+    ) {
         testHolders.forEach(holder -> holder.registerEnvironment(testInstances, testEnvironmentRegistry));
     }
     #endif

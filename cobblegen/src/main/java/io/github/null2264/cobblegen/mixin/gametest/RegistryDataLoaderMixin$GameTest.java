@@ -1,7 +1,15 @@
 #if MC>=12105
 package io.github.null2264.cobblegen.mixin.gametest;
 
+#if MC>=260100
+import net.minecraft.core.Registry;
+import net.minecraft.gametest.framework.GameTestInstance;
+import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.resources.ResourceKey;
+#endif
+
 import io.github.null2264.cobblegen.gametest.BlockGenerationTest;
+import io.github.null2264.cobblegen.util.CGLog;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -16,11 +24,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Mixin(RegistryDataLoader.class)
 public abstract class RegistryDataLoaderMixin$GameTest {
     @Unique
     private static final AtomicBoolean LOADING_DYNAMIC_REGISTRIES = new AtomicBoolean(false);
+    @Unique
+    private static final AtomicBoolean SHOULD_LOAD_TESTS = new AtomicBoolean(true);
 
     @Inject(
         #if MC>=260100
@@ -87,9 +98,26 @@ public abstract class RegistryDataLoaderMixin$GameTest {
         List<RegistryDataLoader.Loader<?>> registriesList
         #endif
     ) {
+        if (!SHOULD_LOAD_TESTS.getAndSet(false)) return;
+
+        CGLog.debug("Registering test instances...");
+
         if (LOADING_DYNAMIC_REGISTRIES.getAndSet(false)) {
+            CGLog.debug("Registering test instances using first...");
             BlockGenerationTest.registerInstances(registriesList);
+            return;
         }
+
+        #if MC>=260100
+        Map<? extends ResourceKey<? extends Registry<?>>, ? extends Registry<?>> byKeyMap = registriesList.stream().collect(Collectors.toMap((d) -> d.registry.key(), (d) -> d.registry));
+        Registry<GameTestInstance> testsRegistry = (Registry<GameTestInstance>) byKeyMap.get(Registries.TEST_INSTANCE);
+        Registry<TestEnvironmentDefinition<?>> testEnvironmentRegistry = (Registry<TestEnvironmentDefinition<?>>) byKeyMap.get(Registries.TEST_ENVIRONMENT);
+
+        if (!LOADING_DYNAMIC_REGISTRIES.getAndSet(false) && testsRegistry != null && testEnvironmentRegistry != null) {
+            CGLog.debug("Registering test instances using second method...");
+            BlockGenerationTest.registerInstances(testsRegistry, testEnvironmentRegistry);
+        }
+        #endif
     }
 }
 #endif
