@@ -118,7 +118,7 @@ jobs:
       - name: Setup Gradle
         uses: null2264/actions/gradle-java-setup@42c90870e07df97a16feed94d0708ea0cbd25222
         with:
-          distro: zulu
+          distro: temurin
           java: |
             8
             17
