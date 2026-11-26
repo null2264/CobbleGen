@@ -31,7 +31,7 @@ val versionRange = supportedVersionRange(mcVersion, loaderName)
 
 fun setupPreprocessor() {
     val buildProps = buildString {
-        append("# DON'T TOUCH THIS FILE, This is handled by the build script\n")
+        append("# DON'T TOUCH THIS FILE!!! This is handled by the build script, edit gradle.properties instead!\n")
         append("MC=${mcVersion}\n")
         if (isFabric) append("FABRIC=1\n")
         if (isForge) append("FORGE=${if (!isNeo) "1" else "2"}\n")
