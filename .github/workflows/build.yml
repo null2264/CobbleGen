@@ -229,6 +229,8 @@ jobs:
           pauseOnLostFocus:false
           EOF
 
+          echo "HMC_FILES_LOCATION=$PWD/HeadlessMC" >> "$GITHUB_ENV"
+
           json="$(cat ./headlessmc.json)"
           url="$(echo $json | jq -r '.assets[].browser_download_url' | grep .jar | grep -v jfx | grep -v lwjgl)"
           curl -Ls -o "headlessmc-launcher.jar" $url
