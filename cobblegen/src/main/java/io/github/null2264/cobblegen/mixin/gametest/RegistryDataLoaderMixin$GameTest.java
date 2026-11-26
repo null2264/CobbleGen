@@ -103,7 +103,7 @@ public abstract class RegistryDataLoaderMixin$GameTest {
         CGLog.debug("Registering test instances...");
 
         if (LOADING_DYNAMIC_REGISTRIES.getAndSet(false)) {
-            CGLog.debug("Registering test instances using first...");
+            CGLog.debug("Registering test instances using first method...");
             BlockGenerationTest.registerInstances(registriesList);
             return;
         }
