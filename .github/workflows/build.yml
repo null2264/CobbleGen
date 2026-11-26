@@ -270,7 +270,7 @@ jobs:
             RUNTIME_VERSION="5.1.0"
             echo "[TEST] Downloading Runtime Test Mod... [1/3]"
             TARGET=$i
-            url="https://github.com/headlesshq/mc-runtime-test-mod/releases/download/${TARGET}-${RUNTIME_VERSION}/mc-runtime-test-${TARGET}-${{ matrix.loader == 'forge' && 'lexforge' || matrix.loader }}-${RUNTIME_VERSION}.jar"
+            url="https://github.com/headlesshq/mc-runtime-test-mod/releases/download/${TARGET}-${RUNTIME_VERSION}/mc-runtime-test-${TARGET}-${{ matrix.loader }}-${RUNTIME_VERSION}.jar"
             echo "[TEST] Downloading Runtime Test Mod... [2/3]"
             curl -Ls -o "mc-runtime-test.jar" $url
             echo "[TEST] Downloading Runtime Test Mod... [3/3]"
