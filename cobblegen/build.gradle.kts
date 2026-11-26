@@ -43,31 +43,31 @@ loom {
 
     runConfigs {
         named("client") {
-            runDir = "../run/client"
-            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Client"
+            runDirectory.set(project.file("../run/client"))
+            displayName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Client"
             //vmArg("-Dnull2264.cobblegen.gametest=true")
-            ideConfigGenerated(true)
+            generateRunConfig = true
         }
         named("server") {
-            runDir = "../run/server"
-            configName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Server"
+            runDirectory.set(project.file("../run/server"))
+            displayName = (if (isFabric) "Fabric" else if (!isNeo) "Forge" else "NeoForge") + " Server"
             //vmArg("-Dnull2264.cobblegen.gametest=true")
-            ideConfigGenerated(true)
+            generateRunConfig = true
         }
         register("gametest") {
             server()
-            name("Server GameTest")
+            displayName = "Server GameTest"
 
-            vmArg("-Dnull2264.cobblegen.gametest=true")
-            vmArg("-Dfabric-api.gametest")
-            vmArg("-Dfabric-api.gametest.report-file=${rootProject.layout.buildDirectory.file("reports/junit.xml").get().getAsFile()}")
+            jvmArguments.add("-Dnull2264.cobblegen.gametest=true")
+            jvmArguments.add("-Dfabric-api.gametest")
+            jvmArguments.add("-Dfabric-api.gametest.report-file=${rootProject.layout.buildDirectory.file("reports/junit.xml").get().getAsFile()}")
             // For Forge-alike
-            property("$loaderName.enabledGameTestNamespaces", "cobblegen")
-            property("$loaderName.gameTestServer", "true")
-            property("$loaderName.enableGameTest", "true")
+            systemProperties.put("$loaderName.enabledGameTestNamespaces", "cobblegen")
+            systemProperties.put("$loaderName.gameTestServer", "true")
+            systemProperties.put("$loaderName.enableGameTest", "true")
 
-            runDir("../run/serverGameTest")
-            ideConfigGenerated(false) // Mostly for CI
+            runDirectory.set(project.file("../run/serverGameTest"))
+            generateRunConfig = false // Mostly for CI
             if (isNeo) {
                 /*
                  * Apparently this replicate NeoGradle's
@@ -78,11 +78,11 @@ loom {
                  *   }
                  * }
                  */
-                environment("gameTestServer")
-                forgeTemplate("gameTestServer")
+                runtimeEnvironment = "gameTestServer"
+                forgeTemplate = "gameTestServer"
                 if (mcVersion >= 12111) {
                     // REF: https://github.com/neoforged/NeoForge/blob/af6abbe00ab3071ad58c2cb70b988cb79f0b4af8/buildSrc/src/main/java/net/neoforged/neodev/CreateUserDevConfig.java#L128
-                    setDefaultMainClass("net.neoforged.fml.startup.GameTestServer")
+                    mainClass = "net.neoforged.fml.startup.GameTestServer"
                 }
             }
         }
