@@ -272,7 +272,7 @@ jobs:
             TARGET=$i
             url="https://github.com/headlesshq/mc-runtime-test-mod/releases/download/${TARGET}-${RUNTIME_VERSION}/mc-runtime-test-${TARGET}-${{ matrix.loader }}-${RUNTIME_VERSION}.jar"
             echo "[TEST] Downloading Runtime Test Mod... [2/3]"
-            curl -Ls -o "mc-runtime-test.jar" $url
+            curl -fLs -o "mc-runtime-test.jar" $url
             echo "[TEST] Downloading Runtime Test Mod... [3/3]"
             mv -f ./mc-runtime-test.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
 
