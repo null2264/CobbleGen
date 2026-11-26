@@ -30,7 +30,13 @@ public class LoaderCompat {
         #else
         ModList modlist = ModList.get();
         if (modlist == null)  // mainly for MixinConfigPlugin
-            return LoadingModList.get().getModFileById(mod) != null;
+            return
+                #if MC<260300
+                LoadingModList.get()
+                #else
+                net.neoforged.fml.loading.FMLLoader.getCurrent().getLoadingModList()
+                #endif
+                .getModFileById(mod) != null;
         return modlist.isLoaded(mod);
         #endif
     }

@@ -30,7 +30,12 @@ public class ModContainerCompat {
         IModInfo modInfo;
         if (ModList.get() == null)  // mainly for MixinConfigPlugin
             // I hate this... but should be fine since it happened on loading state
-            modInfo = LoadingModList.get()
+            modInfo =
+                #if MC<260300
+                LoadingModList.get()
+                #else
+                net.neoforged.fml.loading.FMLLoader.getCurrent().getLoadingModList()
+                #endif
                 .getModFileById(modid)
                 .getMods()
                 .stream()
