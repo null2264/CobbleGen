@@ -216,11 +216,12 @@ jobs:
           mkdir -p HeadlessMC run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods run/test-${{ matrix.mc }}-${{ matrix.loader }}/config
 
           cat <<EOF >> HeadlessMC/config.properties
-          hmc.java.versions=$JAVA_HOME_${{ matrix.java }}_X64/bin/java
-          hmc.gamedir=$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}
-          hmc.offline=true
-          hmc.rethrow.launch.exceptions=true
-          hmc.exit.on.failed.command=true
+          hmc.java.versions=$JAVA_HOME_${{ matrix.java }}_X64
+          hmc.files.game=$PWD/run/test-${{ matrix.mc }}-${{ matrix.loader }}
+          hmc.files.game-for-each-version=false
+          hmc.files.mc=$HOME/.minecraft
+          hmc.jline.enabled=false
+          hmc.launcher.crash-report-watcher=true
           EOF
 
           cat <<EOF >> run/test-${{ matrix.mc }}-${{ matrix.loader }}/options.txt
