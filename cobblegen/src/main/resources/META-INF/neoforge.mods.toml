@@ -8,7 +8,8 @@ modId = "cobblegen"
 version = "${version}"
 displayName = "CobbleGen"
 displayURL = "https://github.com/null2264/CobbleGen"
-logoFile = "icon.png"
+logoFile = "icon.png"  # Kept for pre-26.3
+iconFile = "icon.png"  # In v26.3, NeoForge replaced logoFile with iconFile and also added bannerFile
 authors = "null2264"
 description = "An MC mod that allows you to customize cobblestone (stone and basalt) generators"
 
