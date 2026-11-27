@@ -281,7 +281,7 @@ jobs:
             success=0
             while [ $tries -le 5 ];
             do
-              curl -fLs -o "mc-runtime-test.jar" $url && success=1 && break
+              curl -fsSL -o "mc-runtime-test.jar" $url && success=1 && break
               echo "[TEST] Failed to download Runtime Test Mod, retrying in $SLEEP_DURATION seconds... [$tries/5]"
               tries=$((tries+1))
               sleep $SLEEP_DURATION
@@ -301,7 +301,7 @@ jobs:
               fapi="$(yq -M ".[\"$i\"]" fabric-versions.yaml || echo 'null')"
               [ "$fapi" = "null" ] || (
                 url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$fapi+$i/fabric-api-$fapi+$i.jar"
-                curl -fLs -o "fapi.jar" $url
+                curl -fsSL -o "fapi.jar" $url
                 mv -f ./fapi.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
               )
 
@@ -312,12 +312,12 @@ jobs:
                 resource="$(yq -M ".[\"$i\"]" fabric-resource-versions.yaml || echo 'null')"
                 [ "$resource" = "null" ] || (
                   url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-resource-loader-v0/$resource/fabric-resource-loader-v0-$resource.jar"
-                  curl -fLs -o "fapi-resource.jar" $url
+                  curl -fsSL -o "fapi-resource.jar" $url
                   mv -f ./fapi-resource.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
                 )
 
                 url="https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-gametest-api-v1/$gametest/fabric-gametest-api-v1-$gametest.jar"
-                curl -fLs -o "fapi-gametest.jar" $url
+                curl -fsSL -o "fapi-gametest.jar" $url
                 mv -f ./fapi-gametest.jar run/test-${{ matrix.mc }}-${{ matrix.loader }}/mods
               )
             )
