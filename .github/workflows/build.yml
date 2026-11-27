@@ -272,6 +272,10 @@ jobs:
             echo "[TEST] Downloading Runtime Test Mod... [1/3]"
 
             TARGET=$i
+            case "$TARGET" in
+              "1.21.9") TARGET="1.21.8" ;;
+              *) ;;
+            esac
             url="https://github.com/headlesshq/mc-runtime-test-mod/releases/download/${TARGET}-${RUNTIME_VERSION}/mc-runtime-test-${TARGET}-${{ matrix.loader }}-${RUNTIME_VERSION}.jar"
 
             echo "[TEST] Downloading Runtime Test Mod... [2/3]"
