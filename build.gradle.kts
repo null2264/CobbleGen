@@ -331,15 +331,21 @@ subprojects {
 
         doLast {
             // For some reason Mojang rename the structure directory on MC 1.21 to singular form
-            val structureDirName = if (mcVersion >= 12100) "structure" else "structures"
-            if (isFabric || mcVersion >= 12105) {
+            val structureDirName =
+                if (mcVersion <= 11605) "gameteststructures"
+                else if (mcVersion >= 12100) "structure"
+                else "structures"
+            if (isFabric && mcVersion > 11605 || mcVersion >= 12105) {
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/").mkdirs()
                 project.file("build/resources/main/data/cobblegen/gametest/${structureDirName}/empty.snbt")
                     .writeStructureAsSnbt(generateStructure(false))
             } else {
                 project.file("build/resources/main/data/cobblegen/${structureDirName}/").mkdirs()
-                project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.nbt")
-                    .writeStructureAsNbt(generateStructure(true))
+                val filetype = if (mcVersion <= 11605) "snbt" else "nbt"
+                project.file("build/resources/main/data/cobblegen/${structureDirName}/empty.${filetype}").let {
+                    if (filetype == "nbt") it.writeStructureAsNbt(generateStructure(true))
+                    else it.writeStructureAsSnbt(generateStructure(false))
+                }
             }
 
             project.file("build/resources/main/META-INF/mods.toml")

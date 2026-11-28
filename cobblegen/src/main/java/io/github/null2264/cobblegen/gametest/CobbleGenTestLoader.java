@@ -1,9 +1,11 @@
-#if MC>=12105
+#if MC<=11605 || MC>=12105
 package io.github.null2264.cobblegen.gametest;
 
 import io.github.null2264.cobblegen.util.CGLog;
 import net.minecraft.gametest.framework.GameTestHelper;
+#if MC>11605
 import net.minecraft.gametest.framework.TestFunctionLoader;
+#endif
 import net.minecraft.resources.ResourceKey;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,23 +16,32 @@ import java.util.function.Consumer;
 import static io.github.null2264.cobblegen.gametest.Constants.IS_GAMETEST_ENABLED;
 
 public class CobbleGenTestLoader
+#if MC>11605
     #if MC<260300
     extends
     #else
     implements
     #endif
-TestFunctionLoader {
+TestFunctionLoader
+#endif
+{
     private static final AtomicBoolean SHOULD_REGISTER = new AtomicBoolean(true);
 
     public static void init() {
         CGLog.info(() -> "Is CobbleGen GameTest enabled: " + IS_GAMETEST_ENABLED);
         if (IS_GAMETEST_ENABLED && SHOULD_REGISTER.getAndSet(false))
+            #if MC>11605
             TestFunctionLoader.registerLoader(new CobbleGenTestLoader());
+            #else
+            BlockGenerationTest.register();
+            #endif
     }
 
+    #if MC>11605
     @Override
     public void load(@NotNull BiConsumer<ResourceKey<Consumer<GameTestHelper>>, Consumer<GameTestHelper>> registerer) {
         BlockGenerationTest.registerFunctions(registerer);
     }
+    #endif
 }
 #endif

@@ -44,10 +44,6 @@ fun File.processMixinsJson(mcVersion: Int, isFabric: Boolean) {
             addJson($$"gametest.RegistryDataLoaderMixin$GameTest")
             addJson($$"gametest.StructureTemplateManagerMixin$GameTest")
         }
-        if (mcVersion <= 11605) {
-            addJson($$"gametest.GameTestHelperLegacy$GameTest")
-            addJson($$"gametest.GameTestInfoLegacy$GameTest")
-        }
         if (!isFabric && mcVersion >= 12004) addJson("network.loader.neoforge.NetworkRegistryMixin")
     }
     val client = buildList {

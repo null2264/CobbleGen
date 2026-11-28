@@ -18,7 +18,7 @@ public class CobbleGenMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
-        #if FORGE && MC>=12105
+        #if FORGE && MC>=12105 || MC<=11605
         // This is the earliest entrypoint for Forge that I know of...
         io.github.null2264.cobblegen.gametest.CobbleGenTestLoader.init();
         #endif
